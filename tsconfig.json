@@ -12,25 +12,16 @@
     "declaration": false,
     "downlevelIteration": true,
     "paths": {
-      "ng-gun": [
-        "dist/ng-gun/ng-gun",
-        "dist/ng-gun"
-      ]
+      "ng-gun": ["dist/ng-gun/ng-gun", "dist/ng-gun"]
     },
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "es2015",
     "module": "es2020",
-    "lib": [
-      "es2018",
-      "dom"
-    ]
+    "lib": ["es2018", "dom"]
   },
   "angularCompilerOptions": {
-    "enableI18nLegacyMessageIdFormat": false,
-    "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true,
-    "strictTemplates": true
+    "enableI18nLegacyMessageIdFormat": false
   }
 }
