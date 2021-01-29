@@ -1,4 +1,4 @@
-import { Inject, Injectable, NgZone, Optional } from '@angular/core';
+import { Inject, Injectable, NgZone, Optional, SkipSelf } from '@angular/core';
 import * as Gun from 'gun';
 import { IGunChainReference } from 'gun/types/chain';
 import {
@@ -9,7 +9,7 @@ import {
   DisallowPrimitives,
 } from 'gun/types/types';
 import { fromEventPattern, Observable, of } from 'rxjs';
-import { map, scan, shareReplay } from 'rxjs/operators';
+import { filter, map, scan, shareReplay, take } from 'rxjs/operators';
 import { LexicalQuery } from './LexicalQuery';
 
 export const GUN_NODE = Symbol('GUN_NODE');
@@ -21,6 +21,10 @@ export interface GunChainCallbackOptions {
 export interface GunChainFunctions {
   secret: (value: any) => IGunChainReference;
   grant: (value: any) => IGunChainReference;
+}
+
+export interface GunChainMeta {
+  _: any;
 }
 
 @Injectable()
@@ -35,7 +39,8 @@ export class GunChain<
     @Optional()
     @Inject(GUN_NODE)
     public gun: IGunChainReference<DataType, ReferenceKey, IsTop> &
-      Partial<GunChainFunctions>
+      Partial<GunChainFunctions> &
+      Partial<GunChainMeta>
   ) {
     if (!gun) {
       this.gun = new Gun() as any;
@@ -177,18 +182,22 @@ export class GunChain<
   }
 
   auth() {
-    return new GunAuthChain(this.ngZone, this.gun.user());
+    return new GunAuthChain<DataType, ReferenceKey, false>(
+      this.ngZone,
+      this.gun.user() as any,
+      this as any
+    );
   }
 
-  user(pubKey: string) {
+  user(pubKey?: string) {
     return this.from(this.gun.user(pubKey));
   }
 
-  onEvent(event: string) {
+  onEvent(event: string, node = this.gun): Observable<any> {
     if (!this.sources.has(event)) {
       const source = fromEventPattern((handler) => {
         // console.log('add handler');
-        (this.gun as any).on(event, (...args: any) => {
+        (node as any).on(event, (...args: any) => {
           this.ngZone.run(() => {
             handler(...args);
           });
@@ -196,7 +205,7 @@ export class GunChain<
       }).pipe(shareReplay(1));
       this.sources.set(event, source);
     }
-    return this.sources.get(event);
+    return this.sources.get(event) as Observable<any>;
   }
 }
 
@@ -205,8 +214,35 @@ export class GunAuthChain<
   ReferenceKey = any,
   IsTop extends 'pre_root' | 'root' | false = false
 > extends GunChain<DataType, ReferenceKey, IsTop> {
+  constructor(
+    ngZone: NgZone,
+    @Optional()
+    @SkipSelf()
+    gun: IGunChainReference<DataType, ReferenceKey, IsTop> &
+      Partial<GunChainFunctions> &
+      Partial<GunChainMeta>,
+    @Optional() @SkipSelf() private root: GunChain
+  ) {
+    super(ngZone, gun);
+  }
+
   login(alias: string, pass: string) {
-    return this.from(this.gun.auth(alias, pass));
+    // TODO return a more useful observable
+    if (this.gun._?.root) {
+      const auth$ = this.root.onEvent('auth').pipe(
+        filter((ack) => {
+          return ack.put.alias === alias;
+        }),
+        take(1)
+      );
+      this.gun.auth(alias, pass);
+      return auth$;
+    }
+    return null;
+  }
+
+  create(alias: string, pass: string) {
+    return this.from(this.gun.create(alias, pass));
   }
 
   secret(value: any) {
@@ -217,7 +253,7 @@ export class GunAuthChain<
   }
 
   from<T>(gun: IGunChainReference<T>) {
-    return new GunAuthChain<T>(this.ngZone, gun);
+    return new GunAuthChain<T>(this.ngZone, gun, this.root);
   }
 }
 
