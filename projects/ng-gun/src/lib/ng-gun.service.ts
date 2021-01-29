@@ -3,22 +3,21 @@ import { Inject, Injectable, NgZone } from '@angular/core';
 import * as Gun from 'gun';
 import { IGunChainReference } from 'gun/types/chain';
 import { IGunConstructorOptions } from 'gun/types/options';
-import { GunRx } from './functions/gun-rx';
-
+import { GunChain } from './classes/GunChain';
 export const GunOptions = 'gun-options';
 
 @Injectable({
   providedIn: 'root',
 })
-export class NgGunService<B> {
-  readonly gun: IGunChainReference<B, any, 'pre_root'>;
+export class NgGunService<
+  DataType = Record<string, any>,
+  ReferenceKey = any
+> extends GunChain<DataType, ReferenceKey, 'pre_root'> {
   constructor(
     @Inject(GunOptions)
     private gunOptions: IGunConstructorOptions,
-    private ngZone: NgZone
+    ngZone: NgZone
   ) {
-    console.log(gunOptions);
-    this.gun = Gun(gunOptions);
-    GunRx(ngZone)(Gun);
+    super(ngZone, new Gun(gunOptions));
   }
 }
