@@ -125,14 +125,18 @@ export class GunChain<
       .on({ includeKeys: true })
       .pipe(
         scan((acc: any, val: any) => {
-          if (val[0] === null) {
+          if (val[0] === null || undefined === val[0]) {
             delete acc[val[1]];
           } else {
             acc[val[1]] = val[0];
           }
           return acc;
         }, {} as DataType[]),
-        map((v) => (options?.includeKeys ? v : Object.values(v)))
+        map((v) =>
+          options?.includeKeys
+            ? v
+            : Object.values(v).filter((v) => v !== undefined)
+        )
       );
   }
 

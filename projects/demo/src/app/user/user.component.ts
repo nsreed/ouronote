@@ -22,4 +22,8 @@ export class UserComponent implements OnInit {
       text: 'hello',
     });
   }
+
+  onMessageRemove(message: any) {
+    this.messages.unset(message);
+  }
 }

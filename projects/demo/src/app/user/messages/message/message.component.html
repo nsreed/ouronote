@@ -1,0 +1,7 @@
+<nav>
+  <app-messages></app-messages>
+</nav>
+<h3>Message {{(message|async)?._['#']}}</h3>
+<section>
+  {{(message|async)?.text}}
+</section>
