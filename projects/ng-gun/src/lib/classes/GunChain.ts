@@ -78,7 +78,11 @@ export class GunChain<
   get<K extends keyof DataType>(
     key: ArrayOf<DataType> extends never ? K : ArrayOf<DataType>
   ) {
-    return this.from(this.gun.get(key));
+    const soul: ArrayOf<DataType> extends never ? K : ArrayOf<DataType> =
+      typeof key === 'object' && Gun.node.is(key)
+        ? (Gun.node.soul(key) as any)
+        : key;
+    return this.from(this.gun.get(soul));
   }
 
   put(
