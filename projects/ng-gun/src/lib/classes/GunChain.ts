@@ -163,12 +163,8 @@ export class GunChain<
                 handler(data);
               }
             };
-            // FIXME: this is causing an infinite recursion
+            // FIXME: this is causing an infinite recursion?
             this.ngZone.run(dispatchHandler);
-            // if (this.ngZone.isStable) {
-            // } else {
-            //   dispatchHandler();
-            // }
           }
         );
         return signal;
@@ -209,7 +205,7 @@ export class GunChain<
       (handler, signal) => {
         signal.stopped = true;
       }
-    );
+    ).pipe(take(1));
   }
 
   auth() {
