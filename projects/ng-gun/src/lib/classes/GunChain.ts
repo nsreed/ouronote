@@ -1,6 +1,7 @@
 import { Inject, Injectable, NgZone, Optional, SkipSelf } from '@angular/core';
 import * as Gun from 'gun';
 import { IGunChainReference } from 'gun/types/chain';
+import { IGunStaticSEA } from 'gun/types/static/sea';
 import {
   AlwaysDisallowedType,
   ArrayAsRecord,
@@ -8,9 +9,20 @@ import {
   DisallowArray,
   DisallowPrimitives,
 } from 'gun/types/types';
-import { fromEventPattern, Observable, of } from 'rxjs';
-import { filter, map, scan, shareReplay, take } from 'rxjs/operators';
+import { from, fromEventPattern, Observable, of, throwError } from 'rxjs';
+import {
+  delay,
+  filter,
+  map,
+  mergeAll,
+  mergeMap,
+  retryWhen,
+  scan,
+  shareReplay,
+  take,
+} from 'rxjs/operators';
 import { LexicalQuery } from './LexicalQuery';
+import { tap } from 'rxjs/operators';
 
 export const GUN_NODE = Symbol('GUN_NODE');
 
@@ -33,7 +45,6 @@ export class GunChain<
   ReferenceKey = any,
   IsTop extends 'pre_root' | 'root' | false = false
 > {
-  private sources = new Map<string, Observable<any>>();
   constructor(
     protected ngZone: NgZone,
     @Optional()
@@ -48,6 +59,17 @@ export class GunChain<
       this.gun = gun;
     }
   }
+  private sources = new Map<string, Observable<any>>();
+  private _auth: GunAuthChain<DataType, ReferenceKey> | null = null;
+  SEA: IGunStaticSEA & {
+    certify: (
+      certificants: any,
+      policies: any,
+      authority: any,
+      cb?: any,
+      opt?: any
+    ) => Promise<any>;
+  } = Gun.SEA as any;
 
   from<T>(gun: IGunChainReference<T>) {
     return new GunChain<T>(this.ngZone, gun);
@@ -98,7 +120,7 @@ export class GunChain<
     return this.from(this.gun.map());
   }
 
-  reduce() {
+  reduce(options?: GunChainCallbackOptions) {
     return this.from(this.gun.map())
       .on({ includeKeys: true })
       .pipe(
@@ -110,7 +132,7 @@ export class GunChain<
           }
           return acc;
         }, {} as DataType[]),
-        map((v) => Object.values(v))
+        map((v) => (options?.includeKeys ? v : Object.values(v)))
       );
   }
 
@@ -130,14 +152,19 @@ export class GunChain<
             if (signal.stopped) {
               return ev.off();
             }
-            // FIXME: this is causing an infinite recursion
-            this.ngZone.run(() => {
+            const dispatchHandler = () => {
               if (options?.includeKeys) {
                 handler(data, key);
               } else {
                 handler(data);
               }
-            });
+            };
+            // FIXME: this is causing an infinite recursion
+            this.ngZone.run(dispatchHandler);
+            // if (this.ngZone.isStable) {
+            // } else {
+            //   dispatchHandler();
+            // }
           }
         );
         return signal;
@@ -182,11 +209,15 @@ export class GunChain<
   }
 
   auth() {
-    return new GunAuthChain<DataType, ReferenceKey, false>(
-      this.ngZone,
-      this.gun.user() as any,
-      this as any
-    );
+    if (!this._auth) {
+      this._auth = new GunAuthChain<DataType, ReferenceKey>(
+        this.ngZone,
+        // FIXME gun.user.is is static! can't have multiple logins on a single gun instance
+        this.gun.user() as any,
+        this as any
+      );
+    }
+    return this._auth;
   }
 
   user(pubKey?: string) {
@@ -211,38 +242,69 @@ export class GunChain<
 
 export class GunAuthChain<
   DataType = Record<string, any>,
-  ReferenceKey = any,
-  IsTop extends 'pre_root' | 'root' | false = false
-> extends GunChain<DataType, ReferenceKey, IsTop> {
+  ReferenceKey = any
+> extends GunChain<DataType, ReferenceKey, false> {
+  is: any;
+  auth$ = this.root.onEvent('auth').pipe(
+    tap((ack) => {
+      if (!ack.err) {
+        this.is = ack.put;
+      }
+    }),
+    shareReplay(1)
+  );
+
   constructor(
     ngZone: NgZone,
     @Optional()
     @SkipSelf()
-    gun: IGunChainReference<DataType, ReferenceKey, IsTop> &
+    gun: IGunChainReference<DataType, ReferenceKey, false> &
       Partial<GunChainFunctions> &
       Partial<GunChainMeta>,
-    @Optional() @SkipSelf() private root: GunChain
+    @Optional() @SkipSelf() public root: GunChain
   ) {
     super(ngZone, gun);
   }
 
   login(alias: string, pass: string) {
-    // TODO return a more useful observable
-    if (this.gun._?.root) {
-      const auth$ = this.root.onEvent('auth').pipe(
-        filter((ack) => {
-          return ack.put.alias === alias;
-        }),
-        take(1)
-      );
-      this.gun.auth(alias, pass);
-      return auth$;
-    }
-    return null;
+    const auth$ = this.root.onEvent('auth').pipe(
+      filter((ack) => !ack.err),
+      filter((ack) => {
+        return ack.put.alias === alias;
+      }),
+      take(1)
+    );
+
+    const login$ = fromEventPattern(
+      (handler) => {
+        const signal = { stopped: false };
+        this.gun.auth(alias, pass, (ack: any) => {
+          this.ngZone.run(() => {
+            handler(ack);
+          });
+        });
+        return signal;
+      },
+      (handler, signal) => {
+        signal.stopped = true;
+      }
+    ).pipe(
+      mergeMap((ack: any) => (ack.wait ? throwError(new Error(ack)) : of(ack))),
+      retryWhen((errors) => errors.pipe(delay(1000), take(10)))
+    );
+    const loginOrAuth$ = from([auth$, login$]).pipe(mergeAll(), take(1));
+    return loginOrAuth$;
   }
 
   create(alias: string, pass: string) {
-    return this.from(this.gun.create(alias, pass));
+    const auth$ = this.root.onEvent('auth').pipe(
+      filter((ack) => {
+        return ack.put.alias === alias;
+      }),
+      take(1)
+    );
+    this.gun.create(alias, pass);
+    return auth$;
   }
 
   secret(value: any) {
@@ -254,6 +316,21 @@ export class GunAuthChain<
 
   from<T>(gun: IGunChainReference<T>) {
     return new GunAuthChain<T>(this.ngZone, gun, this.root);
+  }
+
+  certify(certificants: any, policies: any, authority: any) {
+    return from(this.SEA.certify(certificants, policies, authority));
+  }
+
+  recall() {
+    this.gun.recall({ sessionStorage: true }, (ack) => {
+      console.log('recall ack', ack);
+    });
+    return this.auth$;
+  }
+
+  logout() {
+    this.gun.leave();
   }
 }
 

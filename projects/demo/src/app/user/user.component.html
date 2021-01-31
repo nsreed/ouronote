@@ -1,0 +1,8 @@
+<h2>User</h2>
+<div>
+  <h3>Messages</h3>
+  <div *ngFor="let message of inbox|async">
+    {{message|json}}
+  </div>
+</div>
+<button (click)="onMessageClick()">Message</button>
