@@ -1,10 +1,12 @@
 <h3>Messages</h3>
-<div *ngFor="let message of inbox|async">
-  <ng-container *ngIf="message && message._">
-    <a [routerLink]="['/user/messages/', message._['#']]">{{message.text}}</a>
-    <button (click)="onMessageUpdate(message)">Read</button>
-    <button [routerLink]="['/user/messages/', message._['#'], 'edit']">Edit</button>
-    <button (click)="onMessageRemove(message)">Remove</button>
+<div id="Messages">
+  <ng-container *ngFor="let message of inbox|async">
+    <ng-container *ngIf="message && message._">
+      <a [routerLink]="['/user/messages/', message._['#']]">{{message.text}}</a>
+      <button (click)="onMessageUpdate(message)">Read</button>
+      <button [routerLink]="['/user/messages/', message._['#'], 'edit']">Edit</button>
+      <button (click)="onMessageRemove(message)">Remove</button>
+    </ng-container>
   </ng-container>
 </div>
 <button (click)="onMessageClick()">Message</button>

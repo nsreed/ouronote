@@ -3,22 +3,12 @@ import { ActivatedRoute } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 import { MessageService } from '../message.service';
 import { Observable } from 'rxjs';
+import { RouteMessageDirective } from '../route-message.directive';
 
 @Component({
   templateUrl: './message.component.html',
   styleUrls: ['./message.component.scss'],
 })
-export class MessageComponent implements OnInit {
-  message: Observable<any> = this.route.data.pipe(
-    switchMap((data) => this.messageService.messages.get(data.message).on())
-  );
-  constructor(
-    private messageService: MessageService,
-    private route: ActivatedRoute
-  ) {
-    this.route.data.subscribe((d) => console.log('route data', d));
-    this.message.subscribe((m) => console.log('got message', m));
-  }
-
+export class MessageComponent extends RouteMessageDirective implements OnInit {
   ngOnInit(): void {}
 }

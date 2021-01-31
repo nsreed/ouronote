@@ -12,6 +12,7 @@ import { AppComponent } from './app.component';
       provide: 'gun-options',
       useValue: {
         localStorage: true,
+        peers: ['http://localhost:8765/gun'],
       },
     },
   ],

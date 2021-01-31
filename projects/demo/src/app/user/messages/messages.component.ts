@@ -6,7 +6,7 @@ import * as Gun from 'gun';
 @Component({
   selector: 'app-messages',
   templateUrl: './messages.component.html',
-  styleUrls: ['./messages.component.css'],
+  styleUrls: ['./messages.component.scss'],
 })
 export class MessagesComponent implements OnInit {
   inbox = this.messageService.messages.reduce();

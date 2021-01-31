@@ -22,12 +22,6 @@ export class MessageResolver implements Resolve<any> {
       .get('messages')
       .get(route.params.soul)
       .once()
-      .pipe(
-        map((message: any) => {
-          console.log('mapping', message);
-          return message._;
-        }),
-        take(1)
-      );
+      .pipe(map((message: any) => message._));
   }
 }
