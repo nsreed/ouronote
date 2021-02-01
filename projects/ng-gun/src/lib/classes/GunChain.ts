@@ -61,15 +61,6 @@ export class GunChain<
   }
   private sources = new Map<string, Observable<any>>();
   private _auth: GunAuthChain<DataType, ReferenceKey> | null = null;
-  SEA: IGunStaticSEA & {
-    certify: (
-      certificants: any,
-      policies: any,
-      authority: any,
-      cb?: any,
-      opt?: any
-    ) => Promise<any>;
-  } = Gun.SEA as any;
 
   from<T>(gun: IGunChainReference<T>) {
     return new GunChain<T>(this.ngZone, gun);
@@ -320,10 +311,6 @@ export class GunAuthChain<
 
   from<T>(gun: IGunChainReference<T>) {
     return new GunAuthChain<T>(this.ngZone, gun, this.root);
-  }
-
-  certify(certificants: any, policies: any, authority: any) {
-    return from(this.SEA.certify(certificants, policies, authority));
   }
 
   recall() {
