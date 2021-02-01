@@ -139,7 +139,7 @@ export class GunChain<
         map((v) =>
           options?.includeKeys
             ? v
-            : Object.values(v).filter((v) => v !== undefined)
+            : Object.values(v).filter((ov) => ov !== undefined)
         )
       );
   }
@@ -216,7 +216,7 @@ export class GunChain<
     if (!this._auth) {
       this._auth = new GunAuthChain<DataType, ReferenceKey>(
         this.ngZone,
-        // FIXME gun.user.is is static! can't have multiple logins on a single gun instance
+        // no fix for this... gun.user.is is static! can't have multiple logins on a single gun instance
         this.gun.user() as any,
         this as any
       );
