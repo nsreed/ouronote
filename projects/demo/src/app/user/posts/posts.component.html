@@ -1,0 +1,16 @@
+<h3>Posts</h3>
+<nav>
+  <button (click)="create()">New Post</button>
+</nav>
+<div id="Posts" class="list">
+  <ng-container *ngFor="let post of posts|async">
+    <input type="checkbox">
+    <a [routerLink]="['/user/posts', post._['#']]">{{post.title}}</a>
+    <div>{{post._['>'].title | date}}</div>
+    <div>
+      <button [routerLink]="['/user/posts', post._['#'], 'edit']">Edit</button>
+      <button>Remove</button>
+    </div>
+  </ng-container>
+</div>
+<router-outlet></router-outlet>

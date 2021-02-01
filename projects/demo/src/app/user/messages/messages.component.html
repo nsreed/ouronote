@@ -1,5 +1,8 @@
 <h3>Messages</h3>
-<div id="Messages">
+<nav>
+  <button (click)="onMessageClick()">New Message</button>
+</nav>
+<div id="Messages" class="list">
   <ng-container *ngFor="let message of inbox|async">
     <ng-container *ngIf="message && message._">
       <input type="checkbox">
@@ -9,5 +12,4 @@
     </ng-container>
   </ng-container>
 </div>
-<button (click)="onMessageClick()">Message</button>
 <router-outlet></router-outlet>

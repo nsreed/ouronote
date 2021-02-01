@@ -1,4 +1,38 @@
 /* You can add global styles to this file, and also import other style files */
 body {
-  font-family: sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
+}
+nav {
+  display: flex;
+  gap: 1em;
+  padding: 1em;
+}
+.list {
+  display: grid;
+  column-gap: 0.25rem;
+  align-items: baseline;
+}
+button,
+input[type="button"] {
+  padding: 0.25em 0.5em;
+  font-size: medium;
+  line-height: 1.2rem;
+  border: none;
+  text-transform: uppercase;
+  outline: inset 2px #fee;
+  background-image: linear-gradient(to bottom, #fff, #ccc);
+
+  &:hover {
+    outline-color: #bcc;
+  }
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+header {
+  font-size: large;
+  line-height: 1.5em;
 }
