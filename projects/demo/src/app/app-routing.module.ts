@@ -8,7 +8,11 @@ const routes: Routes = [
     loadChildren: () => import('./user/user.module').then((m) => m.UserModule),
     canActivateChild: [GunAuthGuard],
   },
-  { path: 'posts', loadChildren: () => import('./user/posts/posts.module').then(m => m.PostsModule) },
+  {
+    path: 'posts',
+    loadChildren: () =>
+      import('./user/posts/posts.module').then((m) => m.PostsModule),
+  },
 ];
 
 @NgModule({

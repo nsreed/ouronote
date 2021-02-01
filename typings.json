@@ -1,0 +1,5 @@
+{
+  "globalDependencies": {
+    "paper": "registry:dt/paper#0.9.22+20170310065207"
+  }
+}

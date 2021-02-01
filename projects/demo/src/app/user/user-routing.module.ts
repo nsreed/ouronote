@@ -17,6 +17,11 @@ const routes: Routes = [
         loadChildren: () =>
           import('./posts/posts.module').then((m) => m.PostsModule),
       },
+      {
+        path: 'vectors',
+        loadChildren: () =>
+          import('./vectors/vectors.module').then((m) => m.VectorsModule),
+      },
     ],
   },
 ];

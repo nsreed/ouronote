@@ -12,7 +12,14 @@
     "declaration": false,
     "downlevelIteration": true,
     "paths": {
-      "ng-gun": ["dist/ng-gun/ng-gun", "dist/ng-gun"]
+      "ng-gun": [
+        "dist/ng-gun/ng-gun",
+        "dist/ng-gun"
+      ],
+      "ng-gun-forms": [
+        "dist/ng-gun-forms/ng-gun-forms",
+        "dist/ng-gun-forms"
+      ]
     },
     "experimentalDecorators": true,
     "moduleResolution": "node",

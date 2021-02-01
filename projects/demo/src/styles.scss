@@ -11,6 +11,14 @@ app-root {
 }
 body > app-root {
   overflow-y: auto;
+  background: rgb(107, 106, 122);
+  background: linear-gradient(
+    0deg,
+    rgba(107, 106, 122, 0.6852941005503764) 0%,
+    rgba(255, 255, 255, 0.3659663694579395) 6%,
+    rgba(0, 212, 255, 0) 43%
+  );
+  padding-bottom: 6%;
 }
 nav {
   display: flex;

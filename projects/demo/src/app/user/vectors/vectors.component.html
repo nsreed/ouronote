@@ -1,0 +1,4 @@
+<button (click)="create()">New Vector</button>
+<ng-container *ngFor="let vector of vectors|async">
+  <a [routerLink]="['/user/vectors', vector|soul, 'edit']">{{vector.title}}</a>
+</ng-container>
