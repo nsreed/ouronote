@@ -8,11 +8,11 @@ import { MessageService } from './message.service';
   selector: '[appRouteMessage]',
 })
 export class RouteMessageDirective {
-  message: Observable<any> = this.route.data.pipe(
+  message$: Observable<any> = this.route.data.pipe(
     switchMap((data) => this.messageService.messages.get(data.message).on())
   );
   constructor(
-    private messageService: MessageService,
+    protected messageService: MessageService,
     private route: ActivatedRoute
   ) {
     // this.route.data.subscribe((d) => console.log('route data', d));

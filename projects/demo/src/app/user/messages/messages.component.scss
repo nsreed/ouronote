@@ -1,4 +1,6 @@
 #Messages {
   display: grid;
-  grid-template-columns: auto auto auto auto;
+  grid-template-columns: min-content auto auto auto;
+  column-gap: 0.25em;
+  row-gap: 0.15em;
 }

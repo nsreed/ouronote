@@ -1,12 +1,13 @@
 import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-
+import { Message } from './model';
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, AppRoutingModule],
+  imports: [BrowserModule, AppRoutingModule, ReactiveFormsModule],
   providers: [
     {
       provide: 'gun-options',
@@ -16,6 +17,7 @@ import { AppComponent } from './app.component';
       },
     },
   ],
+  exports: [],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

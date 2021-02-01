@@ -1,6 +1,8 @@
+export interface Message {
+  text: string;
+}
+
 export interface User {
-  messages: {
-    text: string;
-  }[];
+  messages: Message[];
   name: string;
 }
