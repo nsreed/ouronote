@@ -1,16 +1,30 @@
 /* You can add global styles to this file, and also import other style files */
-body {
+body,
+app-root {
   font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  overflow: hidden;
+  height: 100vh;
 }
 nav {
   display: flex;
   gap: 1em;
-  padding: 1em;
+  align-items: baseline;
+  & > button {
+    margin-left: auto;
+  }
 }
 .list {
   display: grid;
   column-gap: 0.25rem;
   align-items: baseline;
+}
+.list,
+nav,
+form {
+  padding: 1em;
 }
 button,
 input[type="button"] {
@@ -34,5 +48,22 @@ h5,
 h6,
 header {
   font-size: large;
-  line-height: 1.5em;
+  line-height: 1.5rem;
+}
+form {
+  display: flex;
+  flex-direction: column;
+
+  align-items: stretch;
+  flex: 1 1 auto;
+  textarea {
+    flex: 1 1 auto;
+  }
+}
+router-outlet + * {
+  flex-grow: 1;
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }

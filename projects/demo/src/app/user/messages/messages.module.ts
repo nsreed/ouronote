@@ -7,6 +7,7 @@ import { MessageComponent } from './message/message.component';
 import { RouteMessageDirective } from './route-message.directive';
 import { EditMessageComponent } from './edit-message/edit-message.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NgGunModule } from '../../../../../ng-gun/src/lib/ng-gun.module';
 
 @NgModule({
   declarations: [
@@ -15,6 +16,11 @@ import { ReactiveFormsModule } from '@angular/forms';
     RouteMessageDirective,
     EditMessageComponent,
   ],
-  imports: [CommonModule, MessagesRoutingModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    MessagesRoutingModule,
+    ReactiveFormsModule,
+    NgGunModule,
+  ],
 })
 export class MessagesModule {}
