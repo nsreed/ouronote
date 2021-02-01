@@ -3,4 +3,9 @@
   grid-template-columns: min-content auto auto auto;
   column-gap: 0.25em;
   row-gap: 0.15em;
+  flex-shrink: 1;
+  overflow-y: scroll;
+}
+:host {
+  min-height: 45em;
 }

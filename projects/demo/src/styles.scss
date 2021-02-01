@@ -7,14 +7,26 @@ app-root {
   align-items: stretch;
   overflow: hidden;
   height: 100vh;
+  max-height: 100vh;
+}
+body > app-root {
+  overflow-y: auto;
 }
 nav {
   display: flex;
+  position: sticky;
+  top: 0;
   gap: 1em;
   align-items: baseline;
   & > button {
     margin-left: auto;
   }
+  background-color: rgb(53, 21, 42);
+  color: white;
+}
+a {
+  color: inherit;
+  font-weight: bold;
 }
 .list {
   display: grid;
@@ -28,16 +40,20 @@ form {
 }
 button,
 input[type="button"] {
-  padding: 0.25em 0.5em;
+  padding: 0.5em 0.75em;
   font-size: medium;
   line-height: 1.2rem;
   border: none;
   text-transform: uppercase;
-  outline: inset 2px #fee;
-  background-image: linear-gradient(to bottom, #fff, #ccc);
+  outline: inset 2px #ffeeee;
+  background-image: linear-gradient(
+    to bottom,
+    rgba(243, 237, 237, 0.246),
+    rgb(235, 227, 227)
+  );
 
   &:hover {
-    outline-color: #bcc;
+    outline-color: #b0c0c099;
   }
 }
 h1,
