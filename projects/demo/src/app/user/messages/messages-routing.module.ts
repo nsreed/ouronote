@@ -9,22 +9,21 @@ const routes: Routes = [
   {
     path: '',
     component: MessagesComponent,
-    children: [
-      {
-        path: ':soul',
-        component: MessageComponent,
-        resolve: {
-          message: MessageResolver,
-        },
-      },
-      {
-        path: ':soul/edit',
-        component: EditMessageComponent,
-        resolve: {
-          message: MessageResolver,
-        },
-      },
-    ],
+    children: [],
+  },
+  {
+    path: ':soul',
+    component: MessageComponent,
+    resolve: {
+      message: MessageResolver,
+    },
+  },
+  {
+    path: ':soul/edit',
+    component: EditMessageComponent,
+    resolve: {
+      message: MessageResolver,
+    },
   },
 ];
 

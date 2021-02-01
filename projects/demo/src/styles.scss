@@ -32,6 +32,11 @@ a {
   display: grid;
   column-gap: 0.25rem;
   align-items: baseline;
+  a {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
 }
 .list,
 nav,

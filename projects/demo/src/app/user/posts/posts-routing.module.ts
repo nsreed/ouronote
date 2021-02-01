@@ -9,22 +9,36 @@ const routes: Routes = [
   {
     path: '',
     component: PostsComponent,
-    children: [
-      {
-        path: ':soul',
-        component: ViewPostComponent,
-        resolve: {
-          soul: PostResolver,
-        },
-      },
-      {
-        path: ':soul/edit',
-        component: EditPostComponent,
-        resolve: {
-          soul: PostResolver,
-        },
-      },
-    ],
+    // children: [
+    //   {
+    //     path: ':soul',
+    //     component: ViewPostComponent,
+    //     resolve: {
+    //       soul: PostResolver,
+    //     },
+    //   },
+    //   {
+    //     path: ':soul/edit',
+    //     component: EditPostComponent,
+    //     resolve: {
+    //       soul: PostResolver,
+    //     },
+    //   },
+    // ],
+  },
+  {
+    path: ':soul',
+    component: ViewPostComponent,
+    resolve: {
+      soul: PostResolver,
+    },
+  },
+  {
+    path: ':soul/edit',
+    component: EditPostComponent,
+    resolve: {
+      soul: PostResolver,
+    },
   },
 ];
 
