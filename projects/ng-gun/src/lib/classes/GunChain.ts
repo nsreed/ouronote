@@ -11,6 +11,7 @@ import {
 } from 'gun/types/types';
 import { from, fromEventPattern, Observable, of, throwError } from 'rxjs';
 import {
+  debounceTime,
   delay,
   filter,
   map,
@@ -28,6 +29,7 @@ export const GUN_NODE = Symbol('GUN_NODE');
 
 export interface GunChainCallbackOptions {
   includeKeys?: boolean;
+  includeNulls?: boolean;
 }
 
 export interface GunChainFunctions {
@@ -111,28 +113,47 @@ export class GunChain<
     return this.from(this.gun.get(query as any)) as any;
   }
 
-  map() {
+  load() {
+    // return this.from((this.gun as any).load((d: any) => d) as any);
+    return fromEventPattern(
+      (handler) => {
+        const signal = { stopped: false };
+        (this.gun as any).load((data: any) => {
+          const converted = data;
+          this.ngZone.run(() => {
+            handler(converted);
+          });
+        });
+      },
+      (handler, signal) => {
+        signal.stopped = true;
+      }
+    );
+  }
+
+  map(options?: GunChainCallbackOptions) {
     return this.from(this.gun.map());
   }
 
   reduce(options?: GunChainCallbackOptions) {
-    return this.from(this.gun.map())
-      .on({ includeKeys: true })
-      .pipe(
-        scan((acc: any, val: any) => {
-          if (val[0] === null || undefined === val[0]) {
-            delete acc[val[1]];
-          } else {
-            acc[val[1]] = val[0];
-          }
-          return acc;
-        }, {} as DataType[]),
-        map((v) =>
-          options?.includeKeys
-            ? v
-            : Object.values(v).filter((ov) => ov !== undefined)
-        )
-      );
+    const base = this.from(this.gun.map());
+
+    return base.on({ includeKeys: true }).pipe(
+      scan((acc: any, val: any) => {
+        if (val[0] === null || undefined === val[0]) {
+          delete acc[val[1]];
+        } else {
+          acc[val[1]] = val[0];
+        }
+        return acc;
+      }, {} as DataType[]),
+      map((v) =>
+        options?.includeNulls
+          ? v
+          : Object.values(v).filter((ov) => ov !== undefined)
+      ),
+      debounceTime(100)
+    );
   }
 
   on(

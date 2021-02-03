@@ -7,7 +7,8 @@ import {
   OnInit,
 } from '@angular/core';
 import * as paper from 'paper';
-import { fromEvent } from 'rxjs';
+import { fromEvent, from } from 'rxjs';
+import { mergeAll, tap, map, distinct } from 'rxjs/operators';
 @Directive({
   selector: '[appPaper]',
   exportAs: 'appPaper',
@@ -20,22 +21,70 @@ export class PaperDirective implements OnInit {
   private tool = new paper.Tool();
 
   @Output()
-  toolDown = fromEvent<paper.ToolEvent>(this.tool, 'mousedown');
+  toolDown$ = new EventEmitter<paper.ToolEvent>();
   @Output()
-  toolUp = fromEvent<paper.ToolEvent>(this.tool, 'mouseup');
+  toolUp$ = new EventEmitter<paper.ToolEvent>();
   @Output()
-  toolDrag = fromEvent<paper.ToolEvent>(this.tool, 'mousedrag');
+  toolDrag$ = new EventEmitter<paper.ToolEvent>();
   @Output()
-  toolMove = fromEvent<paper.ToolEvent>(this.tool, 'mousemove');
+  toolMove$ = new EventEmitter<paper.ToolEvent>();
 
-  data = fromEvent<paper.Event>(this.project.view, 'mouseup');
+  private toolDown = fromEvent<paper.ToolEvent>(this.tool, 'mousedown').pipe(
+    tap((event) => this.beforeTool(event)),
+    tap((event) => this.beforeEach(event)),
+    tap((event) => this.toolDown$.emit(event)),
+    tap((event) => this.afterEach(event))
+  );
+  private toolUp = fromEvent<paper.ToolEvent>(this.tool, 'mouseup').pipe(
+    tap((event) => this.beforeEach(event)),
+    tap((event) => this.toolUp$.emit(event)),
+    tap((event) => this.afterEach(event)),
+    tap((event) => this.afterTool(event))
+  );
+  private toolDrag = fromEvent<paper.ToolEvent>(this.tool, 'mousedrag').pipe(
+    tap((event) => this.beforeEach(event)),
+    tap((event) => this.toolDrag$.emit(event)),
+    tap((event) => this.afterEach(event))
+  );
+  private toolMove = fromEvent<paper.ToolEvent>(this.tool, 'mousemove').pipe(
+    // tap((event) => this.beforeEach(event)),
+    tap((event) => this.toolMove$.emit(event))
+    // tap((event) => this.afterEach(event))
+  );
+
+  data$ = this.toolUp.pipe(
+    map(() => this.project.exportJSON()),
+    distinct()
+  );
 
   constructor(private el: ElementRef<HTMLCanvasElement>) {
     this.project.currentStyle.strokeColor = new paper.Color(1, 0, 0);
+    [this.toolDown, this.toolUp, this.toolDrag, this.toolMove].forEach((e$) => {
+      e$.subscribe();
+    });
   }
+
+  beforeTool(event: paper.ToolEvent) {
+    console.log('beforeTool', event);
+  }
+
+  // TODO this might be unnecessary for anything except re-drawing grid between events
+  beforeEach(event: paper.ToolEvent) {
+    // console.log('beforeEach', event);
+  }
+
+  afterEach(event: paper.ToolEvent) {
+    // console.log('afterEach', event);
+  }
+
+  afterTool(event: paper.ToolEvent) {
+    console.log('afterTool', event);
+  }
+
   ngOnInit(): void {
     this.updateViewSize();
   }
+
   updateViewSize() {
     if (!this.project) {
       console.warn('scope not set on CanvasDirective');

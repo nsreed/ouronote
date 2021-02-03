@@ -1,6 +1,9 @@
+export type PaperExport<T> = [string, T];
+
 export interface Vector {
   title: string;
   data?: string;
+  project?: any;
 }
 
 export interface Post {
