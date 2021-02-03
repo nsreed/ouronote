@@ -4,6 +4,7 @@ export interface Vector {
   title: string;
   data?: string;
   project?: any;
+  [key: string]: any;
 }
 
 export interface Post {

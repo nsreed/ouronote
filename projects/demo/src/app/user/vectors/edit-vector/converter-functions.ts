@@ -83,21 +83,12 @@ export function bindArray(data: any[], parent: GunChain) {
         const soul =
           getItemSoul(value) || (parent.gun as any)._.root.opt.uuid();
         setItemSoul(value, soul);
-        // if (value.data) {
-        //   value.data['#'] = soul;
-        // } else {
-        //   value.data = {
-        //     '#': soul,
-        //   };
-        // }
         obj[soul] = { ...value, index };
         return obj;
       }, {});
-      // console.log('bound values to object', boundValues);
       return boundValues;
     default:
       return `${JSON.stringify(data)}`;
-    // just primitives, stringify it
   }
 }
 
@@ -119,7 +110,11 @@ export function bindPaperJSON(data: any, parent: GunChain): any {
   } else if (typeof data === 'object') {
     // console.log('handling object', data);
     return Object.keys(data).reduce((target: any, key) => {
-      target[key] = bindPaperJSON(data[key], parent.get(key));
+      const isArray = Array.isArray(data[key]);
+      target[isArray ? `${ARRAY_PREFIX}${key}` : key] = bindPaperJSON(
+        data[key],
+        parent.get(key)
+      );
       return target;
     }, {});
   } else {
@@ -133,6 +128,7 @@ export function gunifyProject(node: GunChain, project: paper.Project) {
   const gunified = bindPaperJSON(projectData, node);
   console.log('gunified', gunified);
   // node.put(null as never);
+  // TODO Uncomment this when you're ready for actually putting paper data in graph
   // node.put(gunified);
   // project.layers.map((layer) => {
   //   bindItem(node, layer);
@@ -152,7 +148,7 @@ function loadNode(node: GunChain, ctx?: any): Observable<any> {
           const ref = node.get(key);
           const soul = Gun.node.soul(valueOrRef);
           const subKeys = Object.keys(valueOrRef).filter((k) => k !== '_');
-          console.log('%s  has keys %s', soul, subKeys.join(', '));
+          // console.log('%s  has keys %s', soul, subKeys.join(', '));
           // const subNodes = subKeys.map((sk) => ref.get(sk));
           return from(subKeys).pipe(
             map((sk) => {
@@ -164,26 +160,47 @@ function loadNode(node: GunChain, ctx?: any): Observable<any> {
             mergeAll()
           );
         } else {
-          console.log('value %s %s', ctx, key, valueOrRef);
+          // console.log('value %s %s', ctx, key, valueOrRef);
           return of(valueOrRef);
         }
       })
     );
 }
 
-export function deGunifyLoaded(loaded: any) {
+export function deGunifyLoaded(loaded: any, asArray = false): any {
+  if (asArray) {
+    return Object.values(loaded).map((v: any) => deGunifyLoaded(v));
+  }
   // console.log('degunifying loaded:', loaded);
   if (typeof loaded === 'object') {
     const obj = {} as any;
-    if (Object.keys(loaded).length === 0) {
+    const loadedKeys = Object.keys(loaded);
+    if (loadedKeys.length === 0) {
       console.warn('possibly unloaded value!!!');
       throw new Error('unloaded key');
     }
+    if (loadedKeys.includes('className')) {
+      // console.log('should convert to [classname, obj]', loaded);
+      const { className, ...degunned } = loaded;
+      return [className, deGunifyLoaded(degunned)];
+    }
     // tslint:disable-next-line: forin
     for (const key in loaded) {
+      const toArray = key.startsWith(ARRAY_PREFIX);
       const value = loaded[key];
-      const degunned = deGunifyLoaded(value);
-      obj[key] = degunned;
+      if (toArray) {
+        const arrkey = key.replace(/^&/, '');
+        if (typeof value === 'string') {
+          // console.log('should unpack to child array: ', key, value);
+          obj[arrkey] = JSON.parse(value);
+        } else {
+          // console.log('should convert to child array: ', key, value);
+          obj[arrkey] = Object.values(value).map((v: any) => deGunifyLoaded(v));
+        }
+      } else {
+        const degunned = deGunifyLoaded(value);
+        obj[key] = degunned;
+      }
       // console.log({ key, degunned });
     }
     return obj;
@@ -203,13 +220,15 @@ export function deGunifyProject(node: GunChain, project: paper.Project) {
       // const values = keys.map((k) => [k, loaded[k]]);
       // console.log('loaded project', { keys, values, loaded });
       try {
-        const degunned = deGunifyLoaded(loaded);
+        const degunned = deGunifyLoaded(loaded, true);
         const stringed = JSON.stringify(degunned, null, 2);
-        console.log('should import', {
-          degunned,
-          stringed,
-          length: stringed.length,
-        });
+        // console.log('should import', {
+        //   degunned,
+        //   stringed,
+        //   length: stringed.length,
+        // });
+        project.clear();
+        project.importJSON(stringed);
       } catch (e) {
         console.warn(e.message);
       }

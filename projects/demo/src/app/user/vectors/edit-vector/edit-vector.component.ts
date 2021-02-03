@@ -17,6 +17,8 @@ import {
   deGunifyProject,
 } from './converter-functions';
 
+const VECTOR_PAPER_JSON_KEY = 'projectJSON';
+
 @Component({
   templateUrl: './edit-vector.component.html',
   styleUrls: ['./edit-vector.component.scss'],
@@ -43,13 +45,15 @@ export class EditVectorComponent
 
       if (!vector.data) {
         // This is a newly imported project
-        console.log('vector has no data!');
+        console.log('vector is probably a new project');
         this.vectorService.vectors.get(vector).put({
           title: vector.title,
           data,
         });
       } else if (data !== vector.data) {
-        console.log('importing vector data\n%s\n%s', data, vector.data);
+        // TODO replace with calls to new deGunifyProject and gunifyProject methods
+        // TODO not so fast, the new methods only support load() and do not attempt to find/update items in the project
+        // console.log('importing vector data\n%s\n%s', data, vector.data);
         this.paperDirective.project.clear();
         this.paperDirective.project.importJSON(vector.data);
       }
@@ -85,18 +89,18 @@ export class EditVectorComponent
     // If gun node is empty, goto export
     // export:
 
-    gun
-      .get('data')
-      .once()
-      .subscribe((node: any) => {
-        const unsynced = project.getItems((item: any) => !item.data['#']);
-        project.clear();
-        project.importJSON(node);
-        // bindProject(gun.get('project'), project as any);
-        // console.log({ unsynced, node });
-      });
+    // gun
+    //   .get('data')
+    //   .once()
+    //   .subscribe((node: any) => {
+    //     const unsynced = project.getItems((item: any) => !item.data['#']);
+    //     project.clear();
+    //     project.importJSON(node);
+    //     // bindProject(gun.get('project'), project as any);
+    //     // console.log({ unsynced, node });
+    //   });
 
-    gunifyProject(gun.get('project'), project as any);
-    deGunifyProject(gun.get('project'), project as any);
+    gunifyProject(gun.get(VECTOR_PAPER_JSON_KEY), project as any);
+    deGunifyProject(gun.get(VECTOR_PAPER_JSON_KEY), project as any);
   }
 }
