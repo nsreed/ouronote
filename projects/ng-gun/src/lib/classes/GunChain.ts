@@ -124,11 +124,30 @@ export class GunChain<
             handler(converted);
           });
         });
+        return signal;
       },
       (handler, signal) => {
         signal.stopped = true;
       }
-    );
+    ).pipe(take(1));
+  }
+  open() {
+    // return this.from((this.gun as any).load((d: any) => d) as any);
+    return fromEventPattern(
+      (handler) => {
+        const signal = { stopped: false };
+        (this.gun as any).open((data: any) => {
+          const converted = data;
+          this.ngZone.run(() => {
+            handler(converted);
+          });
+        });
+        return signal;
+      },
+      (handler, signal) => {
+        signal.stopped = true;
+      }
+    ).pipe(debounceTime(25));
   }
 
   map(options?: GunChainCallbackOptions) {

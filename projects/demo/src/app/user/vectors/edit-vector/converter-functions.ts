@@ -7,8 +7,11 @@ import {
   take,
   mergeAll,
   takeLast,
+  delay,
+  catchError,
 } from 'rxjs/operators';
 import { of, Observable, from } from 'rxjs';
+import { distinct } from 'rxjs/operators';
 const quit = Symbol('unmatched');
 const SOUL_KEY = 'soul';
 const CLASS_KEY = 'className';
@@ -150,25 +153,66 @@ function loadNode(node: GunChain, ctx?: any): Observable<any> {
           const soul = Gun.node.soul(valueOrRef);
           const subKeys = Object.keys(valueOrRef).filter((k) => k !== '_');
           console.log('%s  has keys %s', soul, subKeys.join(', '));
-          const subNodes = subKeys.map((sk) => ref.get(sk));
-          return from(subNodes).pipe(mergeMap((sn) => loadNode(sn)));
+          // const subNodes = subKeys.map((sk) => ref.get(sk));
+          return from(subKeys).pipe(
+            map((sk) => {
+              const subLoad = loadNode(ref.get(sk), soul + '/' + sk);
+              const r = {} as any;
+              r[sk] = subLoad;
+              return subLoad;
+            }),
+            mergeAll()
+          );
         } else {
-          console.log('value %s', key, valueOrRef);
+          console.log('value %s %s', ctx, key, valueOrRef);
           return of(valueOrRef);
         }
       })
     );
 }
 
+export function deGunifyLoaded(loaded: any) {
+  // console.log('degunifying loaded:', loaded);
+  if (typeof loaded === 'object') {
+    const obj = {} as any;
+    if (Object.keys(loaded).length === 0) {
+      console.warn('possibly unloaded value!!!');
+      throw new Error('unloaded key');
+    }
+    // tslint:disable-next-line: forin
+    for (const key in loaded) {
+      const value = loaded[key];
+      const degunned = deGunifyLoaded(value);
+      obj[key] = degunned;
+      // console.log({ key, degunned });
+    }
+    return obj;
+  }
+  return loaded;
+}
+
 export function deGunifyProject(node: GunChain, project: paper.Project) {
-  // ungunPaperChain(node, null, project);
-  // console.log('ungunified', ungun);
-  // node.load().subscribe((gunified: any) => {
-  //   // console.log('degunifying data', gunified, JSON.stringify(gunified));
-  //   // const descs = Object.getOwnPropertyDescriptors(gunified);
-  //   // console.log('property descriptors', descs);
-  //   const ungun = unBindPaperJSON(gunified);
-  //   console.log('ungunified:', ungun);
-  // });
-  loadNode(node).subscribe((toImport) => console.log('to import', toImport));
+  node
+    .open()
+    .pipe(
+      delay(1000),
+      distinct((v) => JSON.stringify(v))
+    )
+    .subscribe((loaded: any) => {
+      // const keys = Object.keys(loaded);
+      // const values = keys.map((k) => [k, loaded[k]]);
+      // console.log('loaded project', { keys, values, loaded });
+      try {
+        const degunned = deGunifyLoaded(loaded);
+        const stringed = JSON.stringify(degunned, null, 2);
+        console.log('should import', {
+          degunned,
+          stringed,
+          length: stringed.length,
+        });
+      } catch (e) {
+        console.warn(e.message);
+      }
+    });
+  // loadNode(node).subscribe((toImport) => console.log('to import', toImport));
 }
