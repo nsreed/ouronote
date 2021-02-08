@@ -24,6 +24,7 @@ import {
 } from 'rxjs/operators';
 import { LexicalQuery } from './LexicalQuery';
 import { tap } from 'rxjs/operators';
+import { IGunPeer } from './IGunPeer';
 
 export const GUN_NODE = Symbol('GUN_NODE');
 
@@ -37,8 +38,20 @@ export interface GunChainFunctions {
   grant: (value: any) => IGunChainReference;
 }
 
+interface IGunPeers {
+  [key: string]: IGunPeer;
+}
+
+interface IGunRootOpt {
+  peers: IGunPeers;
+}
+
 export interface GunChainMeta {
-  _: any;
+  _: {
+    root: {
+      opt: IGunRootOpt;
+    };
+  } & any;
 }
 
 @Injectable()
@@ -52,8 +65,8 @@ export class GunChain<
     @Optional()
     @Inject(GUN_NODE)
     public gun: IGunChainReference<DataType, ReferenceKey, IsTop> &
-      Partial<GunChainFunctions> &
-      Partial<GunChainMeta>
+      GunChainFunctions &
+      GunChainMeta
   ) {
     if (!gun) {
       this.gun = new Gun() as any;
@@ -65,7 +78,7 @@ export class GunChain<
   private _auth: GunAuthChain<DataType, ReferenceKey> | null = null;
 
   from<T>(gun: IGunChainReference<T>) {
-    return new GunChain<T>(this.ngZone, gun);
+    return new GunChain<T>(this.ngZone, gun as any);
   }
 
   get<K extends keyof DataType>(
@@ -298,7 +311,7 @@ export class GunAuthChain<
       Partial<GunChainMeta>,
     @Optional() @SkipSelf() public root: GunChain
   ) {
-    super(ngZone, gun);
+    super(ngZone, gun as any);
   }
 
   login(alias: string, pass: string) {

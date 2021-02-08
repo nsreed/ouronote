@@ -13,11 +13,15 @@ export class NgGunService<
   DataType = Record<string, any>,
   ReferenceKey = any
 > extends GunChain<DataType, ReferenceKey, 'pre_root'> {
+  get peers() {
+    return this.gun._.root.opt.peers;
+  }
+
   constructor(
     @Inject(GunOptions)
     private gunOptions: IGunConstructorOptions,
     ngZone: NgZone
   ) {
-    super(ngZone, new Gun(gunOptions));
+    super(ngZone, new Gun(gunOptions) as any);
   }
 }
