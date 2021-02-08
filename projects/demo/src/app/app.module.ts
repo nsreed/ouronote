@@ -4,9 +4,10 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { GunPeersComponent } from './gun-peers/gun-peers.component';
 import { Message } from './model';
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [GunPeersComponent, AppComponent],
   imports: [BrowserModule, AppRoutingModule, ReactiveFormsModule],
   providers: [
     {
