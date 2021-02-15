@@ -15,6 +15,7 @@ export class MessagesComponent implements OnInit {
     private userService: UserService,
     private messageService: MessageService
   ) {}
+
   ngOnInit() {}
 
   onMessageClick() {

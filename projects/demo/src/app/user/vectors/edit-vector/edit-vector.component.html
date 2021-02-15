@@ -1,2 +1,11 @@
-<div>{{(paper.toolMove$|async)?.point | json}}</div>
-<canvas appPaper #paper="appPaper"></canvas>
+<!-- <div>Output: {{(output.toolMove$|async)?.point | json}}</div> -->
+<div class="row">
+  <aside>
+    <h3>Style</h3>
+    <hr>
+  </aside>
+  <canvas appPaper #paper="appPaper"></canvas>
+  <!-- <canvas appPaper #output="appPaper"></canvas> -->
+
+</div>
+<div>Paper: {{(paper.toolMove$|async)?.point | json}}</div>

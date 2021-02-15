@@ -96,3 +96,17 @@ router-outlet + * {
   flex-direction: column;
   align-items: stretch;
 }
+
+.row,
+.column {
+  display: flex;
+  align-items: stretch;
+}
+
+.column {
+  flex-direction: column;
+}
+
+.row {
+  flex-direction: row;
+}

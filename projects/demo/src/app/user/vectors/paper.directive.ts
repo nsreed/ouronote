@@ -1,4 +1,8 @@
 import {
+  PaperMouseWheelEvent,
+  PaperToolWheelEvent,
+} from './classes/paper-mouse-wheel-event';
+import {
   Directive,
   ElementRef,
   EventEmitter,
@@ -7,7 +11,8 @@ import {
   OnInit,
 } from '@angular/core';
 import * as paper from 'paper';
-import { fromEvent, from } from 'rxjs';
+import { Color, Project } from 'paper';
+import { fromEvent, from, Observable } from 'rxjs';
 import { mergeAll, tap, map, distinct } from 'rxjs/operators';
 @Directive({
   selector: '[appPaper]',
@@ -16,7 +21,8 @@ import { mergeAll, tap, map, distinct } from 'rxjs/operators';
 export class PaperDirective implements OnInit {
   @Output()
   appPaperChange = new EventEmitter();
-  project = new paper.Project(this.el.nativeElement);
+  project!: paper.Project;
+  scope = new paper.PaperScope();
 
   private tool = new paper.Tool();
 
@@ -28,11 +34,23 @@ export class PaperDirective implements OnInit {
   toolDrag$ = new EventEmitter<paper.ToolEvent>();
   @Output()
   toolMove$ = new EventEmitter<paper.ToolEvent>();
+  @Output()
+  toolWheel$ = new EventEmitter<PaperToolWheelEvent>();
 
+  private toolMove = fromEvent<paper.ToolEvent>(this.tool, 'mousemove').pipe(
+    // tap((event) => this.beforeEach(event)),
+    tap((event) => this.toolMove$.emit(event))
+    // tap((event) => this.afterEach(event))
+  );
   private toolDown = fromEvent<paper.ToolEvent>(this.tool, 'mousedown').pipe(
     tap((event) => this.beforeTool(event)),
     tap((event) => this.beforeEach(event)),
     tap((event) => this.toolDown$.emit(event)),
+    tap((event) => this.afterEach(event))
+  );
+  private toolDrag = fromEvent<paper.ToolEvent>(this.tool, 'mousedrag').pipe(
+    tap((event) => this.beforeEach(event)),
+    tap((event) => this.toolDrag$.emit(event)),
     tap((event) => this.afterEach(event))
   );
   private toolUp = fromEvent<paper.ToolEvent>(this.tool, 'mouseup').pipe(
@@ -41,15 +59,15 @@ export class PaperDirective implements OnInit {
     tap((event) => this.afterEach(event)),
     tap((event) => this.afterTool(event))
   );
-  private toolDrag = fromEvent<paper.ToolEvent>(this.tool, 'mousedrag').pipe(
-    tap((event) => this.beforeEach(event)),
-    tap((event) => this.toolDrag$.emit(event)),
-    tap((event) => this.afterEach(event))
-  );
-  private toolMove = fromEvent<paper.ToolEvent>(this.tool, 'mousemove').pipe(
-    // tap((event) => this.beforeEach(event)),
-    tap((event) => this.toolMove$.emit(event))
-    // tap((event) => this.afterEach(event))
+
+  private toolWheel = fromEvent<PaperToolWheelEvent>(
+    this.tool,
+    'mousewheel'
+  ).pipe(
+    tap((event) => this.beforeEach(event as any)),
+    tap((event) => this.toolWheel$.emit(event as any)),
+    tap((event) => this.afterEach(event as any)),
+    tap((event) => this.afterTool(event as any))
   );
 
   data$ = this.toolUp.pipe(
@@ -58,10 +76,9 @@ export class PaperDirective implements OnInit {
   );
 
   constructor(private el: ElementRef<HTMLCanvasElement>) {
-    this.project.currentStyle.strokeColor = new paper.Color(1, 0, 0);
-    [this.toolDown, this.toolUp, this.toolDrag, this.toolMove].forEach((e$) => {
-      e$.subscribe();
-    });
+    // (this.tool as any).exportJSON = () => '';
+
+    this.toolWheel.subscribe(console.log);
   }
 
   beforeTool(event: paper.ToolEvent) {
@@ -82,6 +99,25 @@ export class PaperDirective implements OnInit {
   }
 
   ngOnInit(): void {
+    // this.scope.install(this.el.nativeElement);
+    this.project = new paper.Project(this.el.nativeElement) as any;
+    // this.project = this.scope.setup(this.el.nativeElement) as any;
+    // this.project.exportJSON = () => {
+    //   return '';
+    // };
+    this.project.activate();
+    this.scope.tools.push(this.tool);
+    this.tool.activate();
+    // this.scope.project = this.project as any;
+    this.project.currentStyle = new this.scope.Style({}) as any;
+    this.project.currentStyle.strokeColor = new this.scope.Color(
+      1,
+      0,
+      0
+    ) as any;
+    [this.toolDown, this.toolUp, this.toolDrag, this.toolMove].forEach((e$) => {
+      e$.subscribe();
+    });
     this.updateViewSize();
   }
 
@@ -100,5 +136,19 @@ export class PaperDirective implements OnInit {
   @HostListener('window:resize', ['$event'])
   onHostResize(event?: any) {
     this.updateViewSize();
+  }
+
+  @HostListener('mouseenter')
+  onHostMouseEnter(event?: any) {
+    this.scope.activate();
+    this.project.activate();
+    this.tool.activate();
+  }
+
+  @HostListener('mousewheel', ['$event'])
+  onMouseWheel(event: WheelEvent) {
+    console.log(event);
+    this.tool.emit('mousewheel', new PaperToolWheelEvent(event));
+    event.preventDefault();
   }
 }

@@ -15,7 +15,7 @@ import { distinct } from 'rxjs/operators';
 const quit = Symbol('unmatched');
 const SOUL_KEY = 'soul';
 const CLASS_KEY = 'className';
-const ARRAY_PREFIX = '&';
+const ARRAY_PREFIX = '__';
 const ARRAY_PRIMITIVE_PREFIX = '&%';
 
 function setItemSoul(item: any, soul: string) {
@@ -52,14 +52,16 @@ function isPaperObject(data: any) {
 }
 
 function paperExportToObject(data: any) {
+  const soul = getItemSoul(data[1]);
   const obj = {
     className: data[0],
     ...data[1],
   };
-  const soul = getItemSoul(data[1]);
-  if (soul) {
-    obj._['#'] = soul;
-  }
+  // if (soul) {
+  //   obj._ = {
+  //     '#': soul,
+  //   };
+  // }
   return obj;
 }
 
@@ -80,8 +82,7 @@ export function bindArray(data: any[], parent: GunChain) {
     case 'object':
     case 'array':
       const boundValues = data.reduce((obj, value, index) => {
-        const soul =
-          getItemSoul(value) || (parent.gun as any)._.root.opt.uuid();
+        const soul = getItemSoul(value) || getUUID(parent);
         setItemSoul(value, soul);
         obj[soul] = { ...value, index };
         return obj;
@@ -123,16 +124,29 @@ export function bindPaperJSON(data: any, parent: GunChain): any {
   return data;
 }
 
+function getUUID(parent: GunChain) {
+  return (parent.gun as any)._.root.opt.uuid();
+}
+
 export function gunifyProject(node: GunChain, project: paper.Project) {
+  // TODO find a way to uniquely identify exported items. This is a chicken and egg problem?
+  // TODO like, we need to assign souls to paper items recursively?
+  // TODO like... exporting should be done after we've assigned souls (or tentative souls?) to every item we want to export
+  const soulless = project.getItems({
+    match: (item: any) => {
+      // console.log('considering', item);
+      return item.data.soul === undefined || item.data.soul === null;
+    },
+  });
+  console.log('found soulless items', soulless);
+  soulless.forEach((item) => setItemSoul(item, getUUID(node)));
+
   const projectData = project.exportJSON({ asString: false });
   const gunified = bindPaperJSON(projectData, node);
   console.log('gunified', gunified);
-  // node.put(null as never);
   // TODO Uncomment this when you're ready for actually putting paper data in graph
   // node.put(gunified);
-  // project.layers.map((layer) => {
-  //   bindItem(node, layer);
-  // });
+  return gunified;
 }
 
 function loadNode(node: GunChain, ctx?: any): Observable<any> {
@@ -189,7 +203,7 @@ export function deGunifyLoaded(loaded: any, asArray = false): any {
       const toArray = key.startsWith(ARRAY_PREFIX);
       const value = loaded[key];
       if (toArray) {
-        const arrkey = key.replace(/^&/, '');
+        const arrkey = key.replace(ARRAY_PREFIX, '');
         if (typeof value === 'string') {
           // console.log('should unpack to child array: ', key, value);
           obj[arrkey] = JSON.parse(value);
@@ -222,13 +236,17 @@ export function deGunifyProject(node: GunChain, project: paper.Project) {
       try {
         const degunned = deGunifyLoaded(loaded, true);
         const stringed = JSON.stringify(degunned, null, 2);
-        // console.log('should import', {
-        //   degunned,
-        //   stringed,
-        //   length: stringed.length,
-        // });
-        project.clear();
-        project.importJSON(stringed);
+        console.log(
+          'should import %o \n%s',
+          {
+            degunned,
+            length: stringed.length,
+          },
+          stringed
+        );
+        console.log(stringed);
+        // project.clear();
+        // project.importJSON(stringed);
       } catch (e) {
         console.warn(e.message);
       }

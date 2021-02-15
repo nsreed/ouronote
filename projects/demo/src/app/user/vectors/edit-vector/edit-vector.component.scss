@@ -1,4 +1,8 @@
 canvas {
-  display: block;
+  display: inline-block;
   height: 100%;
+  flex-grow: 1;
+  align-self: stretch;
+
+  outline: solid 1px gray;
 }

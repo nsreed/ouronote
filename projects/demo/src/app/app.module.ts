@@ -14,7 +14,7 @@ import { Message } from './model';
       provide: 'gun-options',
       useValue: {
         localStorage: true,
-        peers: ['http://localhost:8765/gun'],
+        peers: [],
       },
     },
   ],
