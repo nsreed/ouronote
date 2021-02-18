@@ -21,6 +21,7 @@
     "@angular/platform-browser-dynamic": "~11.1.0",
     "@angular/router": "~11.1.0",
     "@types/gun": "^0.9.2",
+    "aspect-ts": "^1.0.6",
     "paper": "^0.12.11",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",

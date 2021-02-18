@@ -3,9 +3,11 @@
   <aside>
     <h3>Style</h3>
     <hr>
+    <h3>Layers</h3>
+    <button (click)="addLayer()">Add Layer</button>
   </aside>
   <canvas appPaper #paper="appPaper"></canvas>
   <!-- <canvas appPaper #output="appPaper"></canvas> -->
 
 </div>
-<div>Paper: {{(paper.toolMove$|async)?.point | json}}</div>
+<!-- <div>Paper: {{(paper.toolMove$|async)?['point'] | json}}</div> -->

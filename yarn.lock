@@ -1798,6 +1798,11 @@ asn1@~0.2.3:
   dependencies:
     safer-buffer "~2.1.0"
 
+aspect-ts@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/aspect-ts/-/aspect-ts-1.0.6.tgz#eb0a800e1075e2dea02954d7eeb7d48c5f2583ca"
+  integrity sha512-YO4LTlQzd9jsM3hjw3Aa4/YjpZ9MPIPOS+aOyTAL23BGSB208JnoE7n/AON7osIcDDUr4iScLEwg7ZZp5kV6Hg==
+
 assert-plus@1.0.0, assert-plus@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/assert-plus/-/assert-plus-1.0.0.tgz#f12e0f3c5d77b0b1cdd9146942e4e96c1e4dd525"

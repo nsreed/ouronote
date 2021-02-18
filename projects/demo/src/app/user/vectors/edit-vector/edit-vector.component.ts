@@ -1,23 +1,20 @@
 import {
-  AfterContentInit,
   AfterViewInit,
   Component,
+  NgZone,
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { RouteVectorDirective } from '../route-vector.directive';
-import { PaperDirective } from '../paper.directive';
-import { Vector } from '../../../model';
-import { take } from 'rxjs/operators';
+import { ActivatedRoute } from '@angular/router';
 import * as paper from 'paper';
-import { Point, Shape, ToolEvent, MouseEvent } from 'paper';
+import { take } from 'rxjs/operators';
 import { GunChain } from '../../../../../../ng-gun/src/lib/classes/GunChain';
-import { deGunifyLoaded } from './converter-functions';
-import { Observable } from 'rxjs';
-import {
-  gunifyProject as gunifyProject,
-  deGunifyProject,
-} from './converter-functions';
+import { Vector } from '../../../model';
+import { ProjectPair } from '../classes/paper-chain';
+import { PaperDirective } from '../paper.directive';
+import { RouteVectorDirective } from '../route-vector.directive';
+import { VectorService } from '../vector.service';
+import { gunifyProject as gunifyProject } from './converter-functions';
 
 const VECTOR_PAPER_JSON_KEY = 'graph';
 
@@ -30,20 +27,20 @@ export class EditVectorComponent
   implements OnInit, AfterViewInit {
   @ViewChild('paper')
   private paperDirective!: PaperDirective;
-
   private isLoaded = false;
-
   paperGraph!: GunChain;
+
+  constructor(
+    vectorService: VectorService,
+    route: ActivatedRoute,
+    private ngZone: NgZone
+  ) {
+    super(vectorService, route);
+  }
 
   ngAfterViewInit(): void {
     this.vectorNode$.subscribe((node) => {
       this.onProjectDataChange(this.paperDirective.project as any, node as any);
-      // this.paperDirective.toolUp$.subscribe((e: paper.ToolEvent) => {
-      //   this.onProjectDataChange(
-      //     this.paperDirective.project as any,
-      //     node as any
-      //   );
-      // });
     });
     this.vector$.subscribe((vector: Vector) => {
       // console.log('vector change', vector, this.paperDirective);
@@ -100,7 +97,11 @@ export class EditVectorComponent
     const paperGraph = gun.get(VECTOR_PAPER_JSON_KEY);
     const graphLayerMap$ = paperGraph.map().on({
       includeKeys: true,
-    }) as Observable<any>;
+    });
+    const paperChain: ProjectPair = new ProjectPair(
+      gun as any,
+      this.paperDirective.project as any
+    );
     // paperGraph.open().subscribe((graph) => {
     //   console.log('paper graph', graph);
     // });
@@ -109,32 +110,23 @@ export class EditVectorComponent
       const key = data[1];
       const value = data[0];
       const item = this.paperDirective.project.getItem({ data: { soul: key } });
+      if (!value && item) {
+        // we have a local item that's been deleted from the graph
+      } else if (value && !item) {
+        // an item has been added to the graph which we need to import
+        // consider a "smart" way to create the new item, such as intercepting
+        // the insertChild/removeChild/remove methods to trigger updates from local data
+      } else if (value && item) {
+        // we should update the existing item
+      }
+
       console.log({ key, value, item });
     });
-    // From paper to gun
-    // get project JSON object from paper
-    // unpack all the data.# objects to their parent
-    // if an object doesn't have a data.#, node.set() it on its parent.children
-    // ^^ is this redundant? the step of set() ing the data then updating
-    //// ^^ No, not redundant. How do we find the original object in paper to update its data?
-    //// ^^ THIS MEANS WE CAN'T USE THE exportJSON()!!!
-    // ^^ YES it is redundant since we're just going to re-import the data anyway, giving any created paper objects their data.# anyway
-    // then, set the node's data.# to the resulting soul
-    // OK, we'll have to recurse through the project
-    // First, before we've loaded the gun node, we'll need to recurse through it and populate the project
-    // If gun node is empty, goto export
-    // export:
-    // gun
-    //   .get('data')
-    //   .once()
-    //   .subscribe((node: any) => {
-    //     const unsynced = project.getItems((item: any) => !item.data['#']);
-    //     project.clear();
-    //     project.importJSON(node);
-    //     // bindProject(gun.get('project'), project as any);
-    //     // console.log({ unsynced, node });
-    //   });
-    // gunifyProject(gun.get(VECTOR_PAPER_JSON_KEY), project as any);
-    // deGunifyProject(gun.get(VECTOR_PAPER_JSON_KEY), project as any);
+  }
+
+  addLayer() {
+    console.log('adding layer');
+    const l = new paper.Layer();
+    // console.log(this.paperDirective.project.layers);
   }
 }
