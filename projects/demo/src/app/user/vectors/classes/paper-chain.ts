@@ -1,7 +1,13 @@
 import { after } from 'aspect-ts';
 import { GunChain } from 'ng-gun';
-import { shareReplay } from 'rxjs/operators';
+import { shareReplay, map, take, switchMap } from 'rxjs/operators';
+import { after$, before$, returned } from '../../../functions/aspect-rx';
 import { ItemGraph, Vector } from '../../../model';
+import { of } from 'rxjs';
+
+const HIDDEN_DATA_KEYS = ['soul'];
+
+const IGNORED_DATA_KEYS = ['ignore'];
 
 export class PaperPair {}
 
@@ -22,23 +28,65 @@ export class ProjectPair {
   }
 
   setupProject() {
-    const addLayerFn = this.project.addLayer;
     after(this.project, 'addLayer', (...args: any) => {
       console.log('after add layer');
     });
-    after(this.project, 'insertLayer', (...args: any[]) => {
-      // console.log('after insert layer', args);
-      if (args?.length > 0) {
-        const inserted = args[args.length - 1]; // after() puts return in last arg, prior args are arguments passed to the function
-        // console.log('inserted', inserted);
-        if (!inserted.data.soul) {
-          console.log(
-            'inserted soulless! creating new child?',
-            inserted.data.soul
-          );
-        }
-      }
+    let importing = false;
+    const beforeImport$ = before$(this.project, 'importJSON');
+    beforeImport$.subscribe((args: any) => {
+      importing = true;
+      console.log('before import', args[0]);
     });
+    const afterImport$ = after$(this.project, 'importJSON');
+    afterImport$.pipe(map(returned)).subscribe((item: paper.Item) => {
+      importing = false;
+      console.log(
+        'after import',
+        item.data?.soul,
+        item.exportJSON({ asString: false })
+      );
+    });
+
+    // TODO? importJSON() insert()s the item before importing its JSON
+    const insert$ = after$(this.project, 'insertLayer');
+    // insert$.subscribe((...args: any) => {
+    //   console.log('raw insert', args);
+    // });
+    insert$
+      .pipe(
+        map(returned),
+        switchMap((value) =>
+          importing ? afterImport$.pipe(map((v) => value)) : of(value)
+        )
+      )
+      .subscribe((inserted: paper.Layer) => {
+        if (!inserted) {
+          console.warn('ignoring uninserted');
+          return;
+        }
+        if (importing) {
+          console.warn('ignoring insert, as an import is in progress');
+          return;
+        }
+        console.log('inserted$', inserted);
+        const props = Object.getOwnPropertyDescriptors(inserted);
+        // // a way to await setting of properties
+        // Object.defineProperty(inserted, 'data', {
+        //   set: (data) => {
+        //     console.log('setting data', data);
+        //     (inserted as any)._data = data;
+        //   },
+        //   get: () => {
+        //     return (inserted as any)._data;
+        //   },
+        // });
+        const keys = Object.keys(inserted);
+        console.log('  properties', props);
+        console.log('  keys', keys);
+
+        const insertedJSON = inserted.exportJSON({ asString: false });
+        console.log('json', insertedJSON);
+      });
   }
 }
 

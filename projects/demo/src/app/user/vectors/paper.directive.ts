@@ -11,7 +11,7 @@ import {
   OnInit,
 } from '@angular/core';
 import * as paper from 'paper';
-import { Color, Project } from 'paper';
+import { Color, Project, PaperScope } from 'paper';
 import { fromEvent, from, Observable } from 'rxjs';
 import { mergeAll, tap, map, distinct } from 'rxjs/operators';
 @Directive({
@@ -23,6 +23,7 @@ export class PaperDirective implements OnInit {
   appPaperChange = new EventEmitter();
   project!: paper.Project;
   scope = new paper.PaperScope();
+  // paperScope: any = {} as any;
 
   private tool = new paper.Tool();
 
@@ -77,6 +78,8 @@ export class PaperDirective implements OnInit {
 
   constructor(private el: ElementRef<HTMLCanvasElement>) {
     // (this.tool as any).exportJSON = () => '';
+    // this.scope.install(this.scope);
+    console.log('paper.directive', this);
 
     this.toolWheel.subscribe(console.log);
   }
@@ -100,8 +103,9 @@ export class PaperDirective implements OnInit {
 
   ngOnInit(): void {
     // this.scope.install(this.el.nativeElement);
-    this.project = new paper.Project(this.el.nativeElement) as any;
-    // this.project = this.scope.setup(this.el.nativeElement) as any;
+    // this.project = new this.scope.Project(this.el.nativeElement) as any;
+    this.scope.setup(this.el.nativeElement);
+    this.project = this.scope.project as any;
     // this.project.exportJSON = () => {
     //   return '';
     // };
