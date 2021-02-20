@@ -52,10 +52,10 @@ export class ProjectPair extends PaperPair {
       console.log('  child was deleted');
       return;
     }
-    const child = this.getChild(soul);
+    let child = this.getChild(soul);
     if (!child) {
       console.log('  child was added');
-      this.constructChild(json, soul);
+      child = this.constructChild(json, soul);
     }
   }
 

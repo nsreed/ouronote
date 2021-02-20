@@ -1,4 +1,5 @@
 import { GunChain } from '../../../../../../ng-gun/src/lib/classes/GunChain';
+import { EXPECT_ARRAY } from './constants';
 
 export class PaperPair {
   // get project(): paper.Project {
@@ -41,14 +42,17 @@ export class PaperPair {
     scrubbed.data = {
       soul: key,
     };
+    Object.keys(scrubbed).forEach((k) => {
+      if (EXPECT_ARRAY.includes(k)) {
+        scrubbed[k] = JSON.parse(scrubbed[k]);
+      }
+    });
     // scrubbed.data.soul = key;
     const child = this.project.importJSON([
       childJSON.className,
       scrubbed,
     ] as any);
     console.log('created', child);
-    // const child = this.project.importJSON(childJSON);
-    // this.item.insertChild(childJSON.index, child);
-    // return child;
+    return child;
   }
 }

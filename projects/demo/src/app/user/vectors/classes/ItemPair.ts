@@ -6,8 +6,7 @@ import { PaperPair } from './PaperPair';
 import { after$, before$, returned } from '../../../functions/aspect-rx';
 import { getUUID } from '../edit-vector/converter-functions';
 import { GunChainCallbackOptions } from '../../../../../../ng-gun/src/lib/classes/GunChain';
-
-const EXPECT_ARRAY = ['matrix', 'size', 'strokeColor'];
+import { EXPECT_ARRAY } from './constants';
 
 export class ItemPair extends PaperPair {
   // Graph Methods
@@ -75,14 +74,14 @@ export class ItemPair extends PaperPair {
     });
 
     console.log('saving %o', shallow);
-    // this.chain.put(shallow);
+    // this.chain.put(shallow); // TODO NOT READY FOR SAVE YET
   }
 
   setup() {
     console.log('setup()');
     this.onLocalChildren();
     this.afterInsertChild$.subscribe((child) => this.onLocalChild(child));
-    this.children$.subscribe((data) => this.onGraphChild(data[1] as any));
+    this.children$.subscribe((data) => this.onGraphChild(data));
     this.data$.subscribe((data) => this.onGraphData(data));
     this.json$.subscribe((json) => this.onGraph(json));
   }
@@ -118,11 +117,27 @@ export class ItemPair extends PaperPair {
   }
 
   onGraph(json: any) {
-    console.log('onGraph', json);
+    console.log('onGraph');
+    console.dir(json);
   }
 
-  onGraphChild(item: any) {
-    console.log('on graph child', item);
+  onGraphChild(data: any) {
+    console.log('onGraphChild');
+    const soul = data[1];
+    const json = data[0];
+    console.log('on graph child', soul, json);
+    if (!json) {
+      console.log('  child was deleted');
+      return;
+    }
+    let child = this.getChild(soul);
+    if (!child) {
+      console.log('  child was added');
+      child = this.constructChild(json, soul);
+      this.item.insertChild(0, child);
+    } else {
+      console.log('  child exists');
+    }
   }
 
   onGraphData(data: any) {}
