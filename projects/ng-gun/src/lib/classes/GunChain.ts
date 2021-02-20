@@ -31,6 +31,7 @@ export const GUN_NODE = Symbol('GUN_NODE');
 export interface GunChainCallbackOptions {
   includeKeys?: boolean;
   includeNulls?: boolean;
+  changes?: boolean;
 }
 
 export interface GunChainFunctions {

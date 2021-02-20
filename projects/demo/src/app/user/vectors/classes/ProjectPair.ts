@@ -62,6 +62,7 @@ export class ProjectPair extends PaperPair {
           console.log('    this has a soul');
           const layerGun = this.layers.get(l.data.soul);
           const layerPair = new ItemPair(layerGun, layer, this.project);
+          layerPair.save();
         }
         // this is local create
         // but it could be for a parent's importJSON?????
