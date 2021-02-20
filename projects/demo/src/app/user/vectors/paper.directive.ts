@@ -14,18 +14,52 @@ import * as paper from 'paper';
 import { Color, Project, PaperScope } from 'paper';
 import { fromEvent, from, Observable } from 'rxjs';
 import { mergeAll, tap, map, distinct } from 'rxjs/operators';
+import { after } from 'aspect-ts';
 @Directive({
   selector: '[appPaper]',
   exportAs: 'appPaper',
 })
 export class PaperDirective implements OnInit {
+  constructor(private el: ElementRef<HTMLCanvasElement>) {
+    // (this.tool as any).exportJSON = () => '';
+    // paper.settings.insertItems = false;
+    // this.ignored.settings.insertItems = false;
+    // this.scope.install(this.scopeObject);
+
+    // this.ignored.install(this.ignoredScopeObject);
+    // const ignoredProps = Object.getOwnPropertyDescriptors(
+    //   this.ignoredScopeObject
+    // );
+    // Object.keys(ignoredProps)
+    //   .map((k) => ({
+    //     key: k,
+    //     descriptor: ignoredProps[k],
+    //   }))
+    //   .filter(
+    //     (kd) =>
+    //       typeof kd.descriptor.value === 'function' &&
+    //       /^[A-Z]/.test(kd.descriptor.value.name) &&
+    //       /^[A-Z]/.test(kd.key)
+    //   )
+    //   .forEach((kd) => {
+    //     console.log('  descriptor %s', kd.key, kd.descriptor);
+    //     const c = kd.descriptor.value as any;
+    //     // TODO this interferes with some kind of paper internals....
+    //     // after(this.ignoredScopeObject, kd.key, (...args: any) => {
+    //     //   console.log('  after construct', kd.key, args);
+    //     // });
+    //   });
+
+    console.log('paper.directive', this);
+
+    this.toolWheel.subscribe(console.log);
+  }
   @Output()
   appPaperChange = new EventEmitter();
   project!: paper.Project;
   scope = new paper.PaperScope();
-  // paperScope: any = {} as any;
 
-  private tool = new paper.Tool();
+  public tool = new paper.Tool();
 
   @Output()
   toolDown$ = new EventEmitter<paper.ToolEvent>();
@@ -75,13 +109,23 @@ export class PaperDirective implements OnInit {
     map(() => this.project.exportJSON()),
     distinct()
   );
-
-  constructor(private el: ElementRef<HTMLCanvasElement>) {
-    // (this.tool as any).exportJSON = () => '';
-    // this.scope.install(this.scope);
-    console.log('paper.directive', this);
-
-    this.toolWheel.subscribe(console.log);
+  ignore(fn: any, ...args: any[]) {
+    let item: any;
+    try {
+      // this.scope.settings.insertItems = false;
+      item = new fn(...args);
+      item.data.ignore = true;
+      // this.scope.settings.insertItems = true;
+      return item;
+    } finally {
+      if (item) {
+        if (fn.name === 'Layer') {
+          (item as paper.Layer).insertAbove(this.project.activeLayer);
+        } else {
+          this.project.activeLayer.insertChild(0, item);
+        }
+      }
+    }
   }
 
   beforeTool(event: paper.ToolEvent) {
@@ -105,6 +149,7 @@ export class PaperDirective implements OnInit {
     // this.scope.install(this.el.nativeElement);
     // this.project = new this.scope.Project(this.el.nativeElement) as any;
     this.scope.setup(this.el.nativeElement);
+    // this.ignore.setup(new this.ignore.Size(10, 10));
     this.project = this.scope.project as any;
     // this.project.exportJSON = () => {
     //   return '';

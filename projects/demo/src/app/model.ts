@@ -4,13 +4,14 @@ export interface ItemGraph {
   className: string;
   data?: any;
   children?: ItemGraph[];
+  [key: string]: any;
 }
 
 export interface LayerGraph extends ItemGraph {
-  applyMatrix: boolean;
+  applyMatrix?: boolean;
   className: 'Layer';
-  index: number;
-  __children: ItemGraph[];
+  index?: number;
+  __children?: ItemGraph[];
 }
 
 export interface Vector {
@@ -18,6 +19,7 @@ export interface Vector {
   data?: string;
   project?: any;
   graph?: LayerGraph[];
+  layers?: LayerGraph[];
   [key: string]: any;
 }
 

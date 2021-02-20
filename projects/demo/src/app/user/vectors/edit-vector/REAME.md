@@ -108,3 +108,72 @@ As opposed to `project.importJSON(data)`, an `item`'s `importJSON(data)` will im
 - if it's a primitive or array of primitives, JSONify
 
 Need caching of bound nodes
+
+## Indexing Beaks **EVERYTHING**
+
+_... and the dangers of trying to store arrays in graphs_
+
+_... and yes, it's more difficult than just storing the index on the element_
+
+Approaches:
+
+- Linked List
+  - Each node has a next and previous (unless they are the last or first sibling)
+
+How to deal with conflicts?
+
+client A has no peers but makes changes to known graph
+
+peer 1 now has stale data
+
+client B (connected to peer 1) moves an item
+
+peer 1 = client B
+
+client A makes more changes
+
+client A connects to peer 1
+
+how does the linked list graph handle this?
+
+dotted version vectors? oh not this again...
+
+### "lazy" linked list - "relatives" in excess
+
+- Each node has "constraint" properties
+- a "constraint" is like "next" or "previous" except to be read as "as long as I appear before/after this node, we're good"
+  - These could be **sets**, allowing the item to enumerate **all** items before it.
+    - Not having an item locally just means you ignore it
+    - This means, as new constraints are updated by a peer, your removals may still count
+- if a constraint can't be met locally, it will still be inserted, but at _any_ index
+- Circular references may still be possible in asynchronous use
+  - if a local item "violates" the known constraint _after_ it has been satisfied... update the constraint?
+    - This would break the circle... wouldn't it?
+
+Alice
+[
+a,
+c,
+e
+]
+
+Bob
+[
+b,
+c,
+d
+]
+
+Server
+[
+a,
+b,
+c,
+d,
+e
+]
+
+Bob moves d behind b
+
+Alice [a, c, e]
+Bob [d, b, c]

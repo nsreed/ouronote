@@ -124,7 +124,7 @@ export function bindPaperJSON(data: any, parent: GunChain): any {
   return data;
 }
 
-function getUUID(parent: GunChain) {
+export function getUUID(parent: GunChain) {
   return (parent.gun as any)._.root.opt.uuid();
 }
 

@@ -1,126 +1,78 @@
-import { after } from 'aspect-ts';
+import { EventEmitter } from '@angular/core';
 import { GunChain } from 'ng-gun';
-import { shareReplay, map, take, switchMap } from 'rxjs/operators';
-import { after$, before$, returned } from '../../../functions/aspect-rx';
-import { ItemGraph, Vector } from '../../../model';
-import { of } from 'rxjs';
+import { take, map, shareReplay } from 'rxjs/operators';
+import { after$ } from '../../../functions/aspect-rx';
+import { bindPaperJSON } from '../edit-vector/converter-functions';
+import { Observable, fromEventPattern } from 'rxjs';
 
 const HIDDEN_DATA_KEYS = ['soul'];
 
 const IGNORED_DATA_KEYS = ['ignore'];
 
-export class PaperPair {}
+// type PaperGun<T extends paper.Item | paper.Project> = T & {
+//   gun: PaperChain<T>;
+// };
 
-export class ProjectPair {
-  layers = this.chain.get('layers');
-  layerMap = this.layers.map();
-  layers$ = this.layerMap.on({ includeKeys: true });
-
-  constructor(public chain: GunChain<Vector>, public project: paper.Project) {
-    console.log('new ProjectPair');
-    this.layers$.subscribe((data) => this.onLayer(data));
-    this.setupProject();
-    // project.layers
+export const propertyChange$ = <T, K extends keyof T>(
+  item: T,
+  property: K
+): Observable<T[K]> => {
+  const propName = `${property}$`;
+  if ((item as any)[propName]) {
+    return (item as any)[propName] as EventEmitter<T[K]>;
   }
+  const emitter = new EventEmitter<T[K]>();
+  (item as any)[propName] = emitter;
 
-  onLayer(data: any) {
-    console.log('project layer data', data);
+  // fromEventPattern((handler))
+  Object.defineProperty(item, property, {
+    set: (value) => {
+      (item as any)[`_${property}`] = value;
+      emitter.emit(value);
+    },
+    get: () => {
+      return (item as any)[`_${property}`];
+    },
+  });
+
+  return emitter;
+};
+
+const install = <T extends paper.Project | paper.Item>(item: T) => {
+  // TODO this should wait for the item to have a project/parent (or wait for gun$ via propertyChange$),
+  // ... since we can't construct a node until the object has some kind of parent
+  const itemOrProject = item as any;
+  if (itemOrProject.gun) {
+    return itemOrProject.gun;
   }
+  if (itemOrProject instanceof paper.Project) {
+    const chain = new ProjectChain(itemOrProject);
+    (itemOrProject as any).gun = chain;
+  } else {
+    const chain = new ItemChain(itemOrProject);
+    (itemOrProject as any).gun = chain;
+  }
+  return itemOrProject.gun;
+};
 
-  setupProject() {
-    after(this.project, 'addLayer', (...args: any) => {
-      console.log('after add layer');
-    });
-    let importing = false;
-    const beforeImport$ = before$(this.project, 'importJSON');
-    beforeImport$.subscribe((args: any) => {
-      importing = true;
-      console.log('before import', args[0]);
-    });
-    const afterImport$ = after$(this.project, 'importJSON');
-    afterImport$.pipe(map(returned)).subscribe((item: paper.Item) => {
-      importing = false;
-      console.log(
-        'after import',
-        item.data?.soul,
-        item.exportJSON({ asString: false })
-      );
-    });
-
-    // TODO? importJSON() insert()s the item before importing its JSON
-    const insert$ = after$(this.project, 'insertLayer');
-    // insert$.subscribe((...args: any) => {
-    //   console.log('raw insert', args);
-    // });
-    insert$
-      .pipe(
-        map(returned),
-        switchMap((value) =>
-          importing ? afterImport$.pipe(map((v) => value)) : of(value)
-        )
-      )
-      .subscribe((inserted: paper.Layer) => {
-        if (!inserted) {
-          console.warn('ignoring uninserted');
-          return;
-        }
-        if (importing) {
-          console.warn('ignoring insert, as an import is in progress');
-          return;
-        }
-        console.log('inserted$', inserted);
-        const props = Object.getOwnPropertyDescriptors(inserted);
-        // // a way to await setting of properties
-        // Object.defineProperty(inserted, 'data', {
-        //   set: (data) => {
-        //     console.log('setting data', data);
-        //     (inserted as any)._data = data;
-        //   },
-        //   get: () => {
-        //     return (inserted as any)._data;
-        //   },
-        // });
-        const keys = Object.keys(inserted);
-        console.log('  properties', props);
-        console.log('  keys', keys);
-
-        const insertedJSON = inserted.exportJSON({ asString: false });
-        console.log('json', insertedJSON);
-      });
+class ProjectChain<T extends paper.Project> extends GunChain<any> {
+  constructor(private scope: T) {
+    super(null as any, null as any);
+    // propertyChange$(scope, 'parent').subscribe();
+    // propertyChange$(scope, 'data').subscribe(data=>)
   }
 }
 
-export class ItemPair {
-  children = this.chain.get('children');
-  childMap = this.children.map();
-  children$ = this.childMap.on({ includeKeys: true });
-
-  json$ = this.chain.on().pipe(shareReplay());
-
-  constructor(
-    private chain: GunChain<ItemGraph>,
-    private item: paper.Item,
-    private project: paper.Project // Do we need the project? The item's `project` property should be able to get it...
-  ) {
-    this.children$.subscribe((data) => this.onChild(data as any));
-  }
-
-  onChange(data: any) {
-    console.log('on change', data);
-    // this.item.importJSON(data);
-  }
-
-  onChild(entry: [any, string]) {
-    console.log('on child', entry);
-  }
-
-  constructChild(childJSON: any) {
-    if (!childJSON.className) {
-      console.warn('child has no class name');
-      return;
-    }
-    const child = this.project.importJSON(childJSON);
-    this.item.insertChild(childJSON.index, child);
-    return child;
+class ItemChain<T extends paper.Item> extends GunChain<any> {
+  project$ = propertyChange$(this.scope, 'project').pipe(shareReplay(1));
+  parent$ = propertyChange$(this.scope, 'parent').pipe(shareReplay(1));
+  parentChain$ = this.parent$.pipe(
+    map((parent) => install(parent)),
+    shareReplay(1)
+  );
+  constructor(private scope: T) {
+    super(null as any, null as any);
+    // propertyChange$(scope, 'parent').subscribe();
+    // propertyChange$(scope, 'data').subscribe(data=>)
   }
 }
