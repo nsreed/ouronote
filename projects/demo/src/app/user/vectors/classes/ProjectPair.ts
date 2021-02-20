@@ -8,6 +8,7 @@ import { ItemPair } from './ItemPair';
 import { PaperPair } from './PaperPair';
 import * as Gun from 'gun';
 import { getUUID } from '../edit-vector/converter-functions';
+import { GunChainCallbackOptions } from '../../../../../../ng-gun/src/lib/classes/GunChain';
 
 export class ProjectPair extends PaperPair {
   /* STATE */
@@ -16,7 +17,10 @@ export class ProjectPair extends PaperPair {
   /* GRAPH EVENTS */
   layers = this.chain.get('layers');
   layerMap = this.layers.map();
-  layers$ = this.layerMap.on({ includeKeys: true });
+  layers$ = this.layerMap.on({
+    includeKeys: true,
+    changes: true,
+  } as GunChainCallbackOptions);
   layerCache = {} as any;
 
   /* PROJECT EVENTS */
@@ -76,7 +80,6 @@ export class ProjectPair extends PaperPair {
           console.log('    this has a soul');
           const layerGun = this.layers.get(l.data.soul);
           const layerPair = new ItemPair(layerGun, layer, this.project);
-          layerPair.save();
         }
         // this is local create
         // but it could be for a parent's importJSON?????

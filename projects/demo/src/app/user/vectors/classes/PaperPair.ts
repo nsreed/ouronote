@@ -19,7 +19,7 @@ export class PaperPair {
   }
 
   getChild(jsonOrKey: any) {
-    console.log('finding child', jsonOrKey);
+    // console.log('finding child', jsonOrKey);
     const child = this.scope.children?.find(
       (i: paper.Item) => i.data.soul === jsonOrKey
     );

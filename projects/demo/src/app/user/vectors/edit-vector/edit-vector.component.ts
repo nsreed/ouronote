@@ -74,7 +74,11 @@ export class EditVectorComponent
     // this.paperDirective.too
     this.paperDirective.toolDown$.subscribe((e: paper.ToolEvent) => {
       const c = new paper.Shape.Circle(e.point as any, 20);
-      c.strokeColor = new paper.Color(1, 0, 0);
+      c.strokeColor = new paper.Color(
+        Math.random(),
+        Math.random(),
+        Math.random()
+      );
       // this.paperDirective.project.activeLayer.insertChild(0, c);
     });
     // this.paperDirective.data$.subscribe((data) => {
@@ -100,9 +104,9 @@ export class EditVectorComponent
   onProjectDataChange(project: paper.Project, gun: GunChain<Vector>) {
     console.log('setting up project graph');
     const paperGraph = gun.get(VECTOR_PAPER_JSON_KEY);
-    const graphLayerMap$ = paperGraph.map().on({
-      includeKeys: true,
-    });
+    // const graphLayerMap$ = paperGraph.map().on({
+    //   includeKeys: true,
+    // });
     this.paperDirective.tool.activate();
     const paperChain: ProjectPair = new ProjectPair(
       gun as any,

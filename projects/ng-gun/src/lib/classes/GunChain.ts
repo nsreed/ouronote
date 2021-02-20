@@ -214,7 +214,8 @@ export class GunChain<
             };
             // FIXME: this is causing an infinite recursion?
             this.ngZone.run(dispatchHandler);
-          }
+          },
+          options as any
         );
         return signal;
       },
