@@ -1,6 +1,6 @@
 import { after } from 'aspect-ts';
 import { GunChain } from 'ng-gun';
-import { map, mapTo, switchMap, filter } from 'rxjs/operators';
+import { map, mapTo, switchMap, filter, tap } from 'rxjs/operators';
 import { after$, before$, returned } from '../../../functions/aspect-rx';
 import { Vector } from '../../../model';
 import { of } from 'rxjs';
@@ -21,8 +21,11 @@ export class ProjectPair extends PaperPair {
 
   /* PROJECT EVENTS */
   beforeProjectImportJSON$ = before$(this.project, 'importJSON');
-  afterProjectImportJSON$ = after$(this.project, 'importJSON');
+  afterProjectImportJSON$ = after$(this.project, 'importJSON').pipe(
+    tap((inserted: any) => console.log('.afterImportJSON', inserted))
+  );
   afterProjectInsertLayer$ = after$(this.project, 'insertLayer').pipe(
+    tap((inserted: any) => console.log('.afterInsertLayer', inserted)),
     map(returned),
     filter((layer) => layer !== null && layer !== undefined),
     switchMap((value) =>
@@ -33,16 +36,27 @@ export class ProjectPair extends PaperPair {
   );
 
   constructor(public chain: GunChain<Vector>, public project: paper.Project) {
-    super(project);
+    super(project, project); // UGN
+    this.setupProject();
     console.log('new ProjectPair');
     (project as any).pair = this;
     this.layers$.subscribe((data) => this.onGraphLayer(data));
-    this.setupProject();
     // project.layers
   }
 
   onGraphLayer(data: any) {
-    console.log('project layer data', data);
+    const soul = data[1];
+    const json = data[0];
+    console.log('onGraphLayer %s %o', soul, json);
+    if (!json) {
+      console.log('  child was deleted');
+      return;
+    }
+    const child = this.getChild(soul);
+    if (!child) {
+      console.log('  child was added');
+      this.constructChild(json, soul);
+    }
   }
 
   setupProject() {

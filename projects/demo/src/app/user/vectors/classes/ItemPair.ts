@@ -42,11 +42,11 @@ export class ItemPair extends PaperPair {
   constructor(
     private chain: GunChain<ItemGraph>,
     private item: paper.Item,
-    private project: paper.Project // Do we need the project? The item's `project` property should be able to get it...
+    project: paper.Project // Do we need the project? The item's `project` property should be able to get it...
   ) {
-    super(item);
-    this.setup();
+    super(item, project);
     console.log('constructing ItemPair', item.toString());
+    this.setup();
   }
 
   save() {
@@ -75,6 +75,7 @@ export class ItemPair extends PaperPair {
     });
 
     console.log('saving %o', shallow);
+    // this.chain.put(shallow);
   }
 
   setup() {
@@ -125,14 +126,4 @@ export class ItemPair extends PaperPair {
   }
 
   onGraphData(data: any) {}
-
-  constructChild(childJSON: any) {
-    if (!childJSON.className) {
-      console.warn('child has no class name');
-      return;
-    }
-    const child = this.project.importJSON(childJSON);
-    this.item.insertChild(childJSON.index, child);
-    return child;
-  }
 }
