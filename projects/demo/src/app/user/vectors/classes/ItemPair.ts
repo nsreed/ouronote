@@ -1,5 +1,12 @@
 import { GunChain } from 'ng-gun';
-import { shareReplay, map, switchMap, mapTo, filter } from 'rxjs/operators';
+import {
+  shareReplay,
+  map,
+  switchMap,
+  mapTo,
+  filter,
+  distinct,
+} from 'rxjs/operators';
 import { ItemGraph } from '../../../model';
 import { Observable, of } from 'rxjs';
 import { PaperPair } from './PaperPair';
@@ -7,6 +14,7 @@ import { after$, before$, returned } from '../../../functions/aspect-rx';
 import { getUUID } from '../edit-vector/converter-functions';
 import { GunChainCallbackOptions } from '../../../../../../ng-gun/src/lib/classes/GunChain';
 import { EXPECT_ARRAY } from './constants';
+import { propertyChange$ } from './paper-chain';
 
 export class ItemPair extends PaperPair {
   // Graph Methods
@@ -21,7 +29,7 @@ export class ItemPair extends PaperPair {
   data$ = (this.data as any).open() as Observable<any>;
   json$ = this.chain
     .on({ changes: true } as GunChainCallbackOptions)
-    .pipe(shareReplay());
+    .pipe(distinct(), shareReplay(1));
 
   // Local Methods
   ignoreInsert = false;
@@ -41,6 +49,9 @@ export class ItemPair extends PaperPair {
       this.importing ? this.afterImportJSON$.pipe(mapTo(item)) : of(item)
     )
   );
+
+  itemStrokeColor = this.chain.get('color');
+  itemStrokeColor$ = propertyChange$(this.item, 'strokeColor').pipe(distinct());
 
   constructor(
     private chain: GunChain<ItemGraph>,
@@ -87,12 +98,23 @@ export class ItemPair extends PaperPair {
   }
 
   setup() {
-    console.log('setup()');
+    // console.log('setup()');
     this.onLocalChildren();
     this.afterInsertChild$.subscribe((child) => this.onLocalChild(child));
     this.children$.subscribe((data) => this.onGraphChild(data));
+    this.itemStrokeColor$.subscribe((color) => this.onItemStrokeColor(color));
     this.data$.subscribe((data) => this.onGraphData(data));
     this.json$.subscribe((json) => this.onGraph(json));
+  }
+
+  onItemStrokeColor(color: any) {
+    console.log(
+      '  on local stroke color',
+      color,
+      this.item.strokeColor,
+      (this.item.exportJSON({ asString: false })[1] as any).strokeColor
+    );
+    this.save();
   }
 
   onLocalChildren() {
@@ -106,16 +128,16 @@ export class ItemPair extends PaperPair {
       console.warn('null child');
       return;
     }
-    console.log('on child', item.toString());
+    // console.log('on child', item.toString());
     const l = item as any;
     if (!l.pair) {
-      console.log('  no gun');
+      // console.log('  no gun');
       if (!l.data.soul) {
-        console.log('  no soul');
+        // console.log('  no soul');
         const soul = getUUID(this.chain as any);
         l.data.soul = soul;
       }
-      console.log('  this has a soul ', l.data.soul);
+      // console.log('  this has a soul ', l.data.soul);
       const layerGun = this.children.get(l.data.soul);
       const layerPair = new ItemPair(layerGun, item, this.project);
       l.pair = layerPair;
@@ -124,8 +146,8 @@ export class ItemPair extends PaperPair {
   }
 
   onGraph(json: any) {
-    console.log('onGraph');
-    console.dir(json);
+    // console.log('onGraph');
+    // console.dir(json);
   }
 
   onGraphChild(data: any) {
@@ -134,12 +156,12 @@ export class ItemPair extends PaperPair {
     const json = data[0];
     // console.log('on graph child', soul, json);
     if (!json) {
-      console.log('  child was deleted');
+      // console.log('  child was deleted');
       return;
     }
     let child = this.getChild(soul);
     if (!child) {
-      console.log('  child was added');
+      // console.log('  child was added');
       child = this.constructChild(json, soul);
       this.ignoreInsert = true;
       this.item.insertChild(0, child); // Cause of save loop is here

@@ -3,7 +3,7 @@ import { GunChain } from 'ng-gun';
 import { take, map, shareReplay } from 'rxjs/operators';
 import { after$ } from '../../../functions/aspect-rx';
 import { bindPaperJSON } from '../edit-vector/converter-functions';
-import { Observable, fromEventPattern } from 'rxjs';
+import { Observable, fromEventPattern, from, fromEvent } from 'rxjs';
 
 const HIDDEN_DATA_KEYS = ['soul'];
 
@@ -13,29 +13,66 @@ const IGNORED_DATA_KEYS = ['ignore'];
 //   gun: PaperChain<T>;
 // };
 
-export const propertyChange$ = <T, K extends keyof T>(
+export const propertyChange$ = <T = any, K extends keyof T = any>(
   item: T,
   property: K
 ): Observable<T[K]> => {
-  const propName = `${property}$`;
-  if ((item as any)[propName]) {
-    return (item as any)[propName] as EventEmitter<T[K]>;
+  if (typeof property !== 'string') {
+    throw new Error('BAD PROP');
   }
-  const emitter = new EventEmitter<T[K]>();
-  (item as any)[propName] = emitter;
+  const propertyName = `_${property}`;
+  const underlyingKey = `__${property}`;
+  const emitterName = `${property}$`;
 
-  // fromEventPattern((handler))
+  const priorValue = item[property];
+
+  if ((item as any)[emitterName]) {
+    return (item as any)[emitterName] as EventEmitter<T[K]>;
+  }
+  const emitter = new EventEmitter();
+  // (item as any)[emitterName] = fromEventPattern(
+  //   (handler) => {
+  //     const signal = {
+  //       stop: false,
+  //     };
+
+  //     (item as any).on(`${property}Change`, (value: any) => {
+  //       handler(value);
+  //     });
+
+  //     return signal;
+  //   },
+  //   (handler, signal) => {
+  //     signal.stop = true;
+  //   }
+  // );
+  (item as any)[emitterName] = emitter;
+  const cap = property.charAt(0).toUpperCase() + property.slice(1);
+  const setter = `set${cap}`;
+  const getter = `get${cap}`;
   Object.defineProperty(item, property, {
     set: (value) => {
-      (item as any)[`_${property}`] = value;
+      (item as any)[setter](value);
       emitter.emit(value);
+      // (item as any).emit(`${property}Change`, {
+      //   type: `${property}Change`,
+      //   value,
+      // });
     },
     get: () => {
-      return (item as any)[`_${property}`];
+      if (item === undefined) {
+        console.warn('no this');
+        return undefined;
+      }
+      return (item as any)[getter]();
     },
   });
 
-  return emitter;
+  if (priorValue) {
+    (item as any)[property] = priorValue as any;
+  }
+
+  return (item as any)[emitterName];
 };
 
 const install = <T extends paper.Project | paper.Item>(item: T) => {

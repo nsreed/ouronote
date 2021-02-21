@@ -27,7 +27,7 @@ export class PaperPair {
   }
 
   constructChild(childJSON: any, key: string) {
-    console.log('constructing child: %o', childJSON);
+    // console.log('constructing child: %o', childJSON);
     if (!childJSON.className) {
       console.warn('child has no class name');
       return;
@@ -52,7 +52,7 @@ export class PaperPair {
       childJSON.className,
       scrubbed,
     ] as any);
-    console.log('created', child);
+    // console.log('created', child);
     return child;
   }
 }

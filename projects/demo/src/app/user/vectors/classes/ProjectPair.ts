@@ -25,11 +25,12 @@ export class ProjectPair extends PaperPair {
 
   /* PROJECT EVENTS */
   beforeProjectImportJSON$ = before$(this.project, 'importJSON');
-  afterProjectImportJSON$ = after$(this.project, 'importJSON').pipe(
-    tap((inserted: any) => console.log('.afterImportJSON', inserted))
-  );
+  afterProjectImportJSON$ = after$(this.project, 'importJSON')
+    .pipe
+    // tap((inserted: any) => console.log('.afterImportJSON', inserted))
+    ();
   afterProjectInsertLayer$ = after$(this.project, 'insertLayer').pipe(
-    tap((inserted: any) => console.log('.afterInsertLayer', inserted)),
+    // tap((inserted: any) => console.log('.afterInsertLayer', inserted)),
     map(returned),
     filter((layer) => layer !== null && layer !== undefined),
     switchMap((value) =>
@@ -51,14 +52,14 @@ export class ProjectPair extends PaperPair {
   onGraphLayer(data: any) {
     const soul = data[1];
     const json = data[0];
-    console.log('onGraphLayer %s %o', soul, json);
+    // console.log('onGraphLayer %s %o', soul, json);
     if (!json) {
       console.log('  child was deleted');
       return;
     }
     let child = this.getChild(soul);
     if (!child) {
-      console.log('  child was added');
+      // console.log('  child was added');
       child = this.constructChild(json, soul);
     }
   }
@@ -67,17 +68,17 @@ export class ProjectPair extends PaperPair {
     this.beforeProjectImportJSON$.subscribe(() => (this.importing = true));
     this.afterProjectImportJSON$.subscribe(() => (this.importing = false));
     this.afterProjectInsertLayer$.subscribe((layer: paper.Layer) => {
-      console.log('inserted layer', layer.toString(), layer.data);
+      // console.log('inserted layer', layer.toString(), layer.data);
       const l = layer as any;
       if (!l.pair) {
-        console.log('  no gun');
+        // console.log('  no gun');
         if (!l.data.soul) {
-          console.log('    no soul');
+          // console.log('    no soul');
           const soul = getUUID(this.chain as any);
           l.data.soul = soul;
         }
         if (l.data.soul) {
-          console.log('    this has a soul');
+          // console.log('    this has a soul');
           const layerGun = this.layers.get(l.data.soul);
           const layerPair = new ItemPair(layerGun, layer, this.project);
         }
