@@ -189,6 +189,17 @@ export class GunChain<
     );
   }
 
+  not() {
+    return fromEventPattern((handler) => {
+      const signal = { stopped: false };
+      if (this.gun.not) {
+        this.gun.not((key: ReferenceKey) => {
+          handler(key);
+        });
+      }
+    });
+  }
+
   on(
     options?: GunChainCallbackOptions
   ): Observable<AlwaysDisallowedType<ArrayAsRecord<DataType>>> {
