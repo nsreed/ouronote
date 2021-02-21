@@ -14,7 +14,11 @@ import { after$, before$, returned } from '../../../functions/aspect-rx';
 import { getUUID } from '../edit-vector/converter-functions';
 import { GunChainCallbackOptions } from '../../../../../../ng-gun/src/lib/classes/GunChain';
 import { EXPECT_ARRAY } from './constants';
-import { propertyChange$ } from './paper-chain';
+import {
+  propertyChange$,
+  setupAllEmitters,
+  getAllSettable,
+} from './paper-chain';
 
 export class ItemPair extends PaperPair {
   // Graph Methods
@@ -50,7 +54,7 @@ export class ItemPair extends PaperPair {
     )
   );
 
-  itemStrokeColor = this.chain.get('color');
+  itemStrokeColor = this.chain.get('strokeColor');
   itemStrokeColor$ = propertyChange$(this.item, 'strokeColor').pipe(distinct());
 
   constructor(
@@ -59,7 +63,7 @@ export class ItemPair extends PaperPair {
     project: paper.Project // Do we need the project? The item's `project` property should be able to get it...
   ) {
     super(item, project);
-    console.log('constructing ItemPair', item.toString());
+    // console.log('constructing ItemPair', item.toString());
     this.setup();
   }
 
@@ -92,28 +96,36 @@ export class ItemPair extends PaperPair {
 
   save() {
     const shallow = this.getShallow();
-    console.log('saving');
-    console.log(shallow);
+    // console.log('saving');
+    // console.log(shallow);
     this.chain.put(shallow); // TODO NOT READY FOR SAVE YET
   }
 
   setup() {
     // console.log('setup()');
+    // setupAllEmitters(this.item);
+    const allSettable = getAllSettable(this.item);
+    console.log('all settable:', allSettable);
+    allSettable
+      .map((pdk) => pdk[1])
+      .forEach((k) => {
+        propertyChange$(this.item, k as any).subscribe((v) => {
+          console.log('property %s change', k);
+          this.save();
+        });
+      });
     this.onLocalChildren();
     this.afterInsertChild$.subscribe((child) => this.onLocalChild(child));
     this.children$.subscribe((data) => this.onGraphChild(data));
-    this.itemStrokeColor$.subscribe((color) => this.onItemStrokeColor(color));
+    // this.itemStrokeColor$.subscribe((color) => this.onItemStrokeColor(color));
     this.data$.subscribe((data) => this.onGraphData(data));
     this.json$.subscribe((json) => this.onGraph(json));
   }
 
   onItemStrokeColor(color: any) {
-    console.log(
-      '  on local stroke color',
-      color,
-      this.item.strokeColor,
-      (this.item.exportJSON({ asString: false })[1] as any).strokeColor
-    );
+    // const serialized = (color as any)._serialize();
+    // const stringed = JSON.stringify(serialized);
+    // this.itemStrokeColor.put(stringed as never);
     this.save();
   }
 
@@ -146,8 +158,8 @@ export class ItemPair extends PaperPair {
   }
 
   onGraph(json: any) {
-    // console.log('onGraph');
-    // console.dir(json);
+    console.log('onGraph');
+    console.dir(json);
   }
 
   onGraphChild(data: any) {

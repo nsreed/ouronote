@@ -12,6 +12,7 @@ const IGNORED_DATA_KEYS = ['ignore'];
 // type PaperGun<T extends paper.Item | paper.Project> = T & {
 //   gun: PaperChain<T>;
 // };
+const IGNORED_PROPS = ['selected'];
 
 export const propertyChange$ = <T = any, K extends keyof T = any>(
   item: T,
@@ -30,41 +31,24 @@ export const propertyChange$ = <T = any, K extends keyof T = any>(
     return (item as any)[emitterName] as EventEmitter<T[K]>;
   }
   const emitter = new EventEmitter();
-  // (item as any)[emitterName] = fromEventPattern(
-  //   (handler) => {
-  //     const signal = {
-  //       stop: false,
-  //     };
-
-  //     (item as any).on(`${property}Change`, (value: any) => {
-  //       handler(value);
-  //     });
-
-  //     return signal;
-  //   },
-  //   (handler, signal) => {
-  //     signal.stop = true;
-  //   }
-  // );
   (item as any)[emitterName] = emitter;
   const cap = property.charAt(0).toUpperCase() + property.slice(1);
-  const setter = `set${cap}`;
+  const setFn = `set${cap}`;
   const getter = `get${cap}`;
   Object.defineProperty(item, property, {
     set: (value) => {
-      (item as any)[setter](value);
+      (item as any)[setFn](value);
       emitter.emit(value);
-      // (item as any).emit(`${property}Change`, {
-      //   type: `${property}Change`,
-      //   value,
-      // });
     },
     get: () => {
       if (item === undefined) {
         console.warn('no this');
         return undefined;
       }
-      return (item as any)[getter]();
+      if ((item as any)[getter]) {
+        return (item as any)[getter]();
+      }
+      return (item as any)[propertyName] || null;
     },
   });
 
@@ -74,6 +58,54 @@ export const propertyChange$ = <T = any, K extends keyof T = any>(
 
   return (item as any)[emitterName];
 };
+const settable: any = {};
+export function getAllSettable(item: any) {
+  if (!item.className) {
+    console.error('cannot get settable for a non-item', item);
+    return [];
+  }
+  if (!settable[item.className]) {
+    let proto = Object.getPrototypeOf(item);
+    let properties: any[] = [];
+    while (proto) {
+      const likelyProperties = Object.getOwnPropertyDescriptors(proto);
+      const props = Object.keys(likelyProperties)
+        .map((k) => [likelyProperties[k], k])
+        .filter((prop) => {
+          const d = prop[0] as PropertyDescriptor;
+          return (
+            d.enumerable &&
+            d.set &&
+            !(prop[1] as any).startsWith('on') &&
+            !IGNORED_PROPS.includes(prop[1] as any)
+          );
+        });
+      properties = [...properties, ...props];
+
+      // console.log('property descriptors', props);
+      // console.log('emitting all from', Object.getOwnPropertyNames(proto));
+      proto = Object.getPrototypeOf(proto);
+    }
+    settable[item.className] = properties;
+  }
+  return settable[item.className] as [any, string][];
+}
+export function setupAllEmitters(item: any) {
+  let proto = Object.getPrototypeOf(item);
+  while (proto) {
+    const likelyProperties = Object.getOwnPropertyDescriptors(proto);
+    const props = Object.keys(likelyProperties)
+      .map((k) => [likelyProperties[k], k])
+      .filter((prop) => {
+        const d = prop[0] as PropertyDescriptor;
+        return d.enumerable && d.set;
+      });
+
+    console.log('property descriptors', props);
+    // console.log('emitting all from', Object.getOwnPropertyNames(proto));
+    proto = Object.getPrototypeOf(proto);
+  }
+}
 
 const install = <T extends paper.Project | paper.Item>(item: T) => {
   // TODO this should wait for the item to have a project/parent (or wait for gun$ via propertyChange$),
