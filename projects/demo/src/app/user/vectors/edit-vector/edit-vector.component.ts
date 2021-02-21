@@ -41,6 +41,10 @@ export class EditVectorComponent
 
   ngAfterViewInit(): void {
     this.vectorNode$.subscribe((node) => {
+      if (!this.paperDirective.project) {
+        console.warn('NO PAPER PROJECT');
+        return;
+      }
       this.onProjectDataChange(this.paperDirective.project as any, node as any);
     });
     this.vector$.subscribe((vector: Vector) => {
@@ -49,27 +53,6 @@ export class EditVectorComponent
         return;
       }
       this.project = this.paperDirective.project;
-      // const data = this.paperDirective.project.exportJSON();
-
-      // if (!vector.data) {
-      //   // This is a newly imported project
-      //   console.log('vector is probably a new project');
-      //   this.vectorService.vectors.get(vector).put({
-      //     title: vector.title,
-      //     data,
-      //   });
-      // } else if (data !== vector.data) {
-      //   // TODO replace with calls to new deGunifyProject and gunifyProject methods
-      //   // TODO not so fast, the new methods only support load() and do not attempt to find/update items in the project
-      //   // console.log('importing vector data\n%s\n%s', data, vector.data);
-      //   if (this.isLoaded) {
-      //     // TODO remove me
-      //     return;
-      //   }
-      //   // this.paperDirective.project.clear();
-      //   // this.paperDirective.project.importJSON(vector.data);
-      //   // this.isLoaded = true;
-      // }
     });
     // this.paperDirective.too
     this.paperDirective.toolDown$.subscribe((e: paper.ToolEvent) => {
@@ -103,35 +86,11 @@ export class EditVectorComponent
 
   onProjectDataChange(project: paper.Project, gun: GunChain<Vector>) {
     console.log('setting up project graph');
-    const paperGraph = gun.get(VECTOR_PAPER_JSON_KEY);
-    // const graphLayerMap$ = paperGraph.map().on({
-    //   includeKeys: true,
-    // });
     this.paperDirective.tool.activate();
     const paperChain: ProjectPair = new ProjectPair(
       gun as any,
       this.paperDirective.project as any
     );
-    // paperGraph.open().subscribe((graph) => {
-    //   console.log('paper graph', graph);
-    // });
-    // graphLayerMap$.subscribe((data: any) => {
-    //   console.log('graph map', data);
-    //   const key = data[1];
-    //   const value = data[0];
-    //   const item = this.paperDirective.project.getItem({ data: { soul: key } });
-    //   if (!value && item) {
-    //     // we have a local item that's been deleted from the graph
-    //   } else if (value && !item) {
-    //     // an item has been added to the graph which we need to import
-    //     // consider a "smart" way to create the new item, such as intercepting
-    //     // the insertChild/removeChild/remove methods to trigger updates from local data
-    //   } else if (value && item) {
-    //     // we should update the existing item
-    //   }
-
-    //   console.log({ key, value, item });
-    // });
   }
 
   addLayer() {
