@@ -1,5 +1,4 @@
 import { after } from 'aspect-ts';
-import { GunChain } from 'ng-gun';
 import { map, mapTo, switchMap, filter, tap } from 'rxjs/operators';
 import { after$, before$, returned } from '../../../functions/aspect-rx';
 import { Vector } from '../../../model';
@@ -8,7 +7,10 @@ import { ItemPair } from './ItemPair';
 import { PaperPair } from './PaperPair';
 import * as Gun from 'gun';
 import { getUUID } from '../edit-vector/converter-functions';
-import { GunChainCallbackOptions } from '../../../../../../ng-gun/src/lib/classes/GunChain';
+import {
+  GunChain,
+  GunChainCallbackOptions,
+} from '../../../../../../ng-gun/src/lib/classes/GunChain';
 
 export class ProjectPair extends PaperPair {
   /* STATE */

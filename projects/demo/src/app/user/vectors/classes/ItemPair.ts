@@ -1,4 +1,3 @@
-import { GunChain } from 'ng-gun';
 import {
   shareReplay,
   map,
@@ -12,7 +11,10 @@ import { Observable, of } from 'rxjs';
 import { PaperPair } from './PaperPair';
 import { after$, before$, returned } from '../../../functions/aspect-rx';
 import { getUUID } from '../edit-vector/converter-functions';
-import { GunChainCallbackOptions } from '../../../../../../ng-gun/src/lib/classes/GunChain';
+import {
+  GunChain,
+  GunChainCallbackOptions,
+} from '../../../../../../ng-gun/src/lib/classes/GunChain';
 import { EXPECT_ARRAY } from './constants';
 import {
   propertyChange$,

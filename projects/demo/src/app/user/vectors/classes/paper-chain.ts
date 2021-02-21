@@ -1,9 +1,9 @@
 import { EventEmitter } from '@angular/core';
-import { GunChain } from 'ng-gun';
 import { take, map, shareReplay } from 'rxjs/operators';
 import { after$ } from '../../../functions/aspect-rx';
 import { bindPaperJSON } from '../edit-vector/converter-functions';
 import { Observable, fromEventPattern, from, fromEvent } from 'rxjs';
+import { GunChain } from 'projects/ng-gun/src/lib/classes/GunChain';
 
 const HIDDEN_DATA_KEYS = ['soul'];
 
