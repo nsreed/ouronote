@@ -1,1 +1,1 @@
-export const EXPECT_ARRAY = ['matrix', 'size', 'strokeColor'];
+export const EXPECT_ARRAY = ['matrix', 'size', 'strokeColor', 'radius'];

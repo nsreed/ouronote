@@ -11,6 +11,8 @@ import {
   GunChain,
   GunChainCallbackOptions,
 } from '../../../../../../ng-gun/src/lib/classes/GunChain';
+import * as paper from 'paper';
+import { leadingComment } from '@angular/compiler';
 
 export class ProjectPair extends PaperPair {
   /* STATE */
@@ -51,42 +53,61 @@ export class ProjectPair extends PaperPair {
     // project.layers
   }
 
+  getChild(jsonOrKey: any): any {
+    const child = this.project.layers.find((l) => l.data.soul === jsonOrKey);
+    return child;
+  }
+
   onGraphLayer(data: any) {
     const soul = data[1];
     const json = data[0];
-    // console.log('onGraphLayer %s %o', soul, json);
+    console.log('onGraphLayer %s', soul);
     if (!json) {
       console.log('  child was deleted');
       return;
     }
     let child = this.getChild(soul);
     if (!child) {
-      // console.log('  child was added');
+      console.log('  child was added');
+      if (!json.className) {
+        console.warn('Child has no className, setting as Layer');
+        json.className = 'Layer';
+      }
       child = this.constructChild(json, soul);
+    }
+  }
+
+  onLocalLayer(layer: paper.Layer) {
+    const l = layer as any;
+    console.log('onLocalLayer %s', l.toString());
+    if (!l.pair) {
+      console.log('  no gun');
+      let save = false;
+      if (!l.data.soul) {
+        console.log('    no soul');
+        const soul = getUUID(this.chain as any);
+        l.data.soul = soul;
+        save = true;
+      }
+      if (l.data.soul) {
+        // console.log('    this has a soul');
+        const layerGun = this.layers.get(l.data.soul);
+        const layerPair = new ItemPair(layerGun, layer, this.project);
+        if (save) {
+          // layerPair.save();
+        }
+      }
+
+      // this is local create
+      // but it could be for a parent's importJSON?????
     }
   }
 
   setupProject() {
     this.beforeProjectImportJSON$.subscribe(() => (this.importing = true));
     this.afterProjectImportJSON$.subscribe(() => (this.importing = false));
-    this.afterProjectInsertLayer$.subscribe((layer: paper.Layer) => {
-      // console.log('inserted layer', layer.toString(), layer.data);
-      const l = layer as any;
-      if (!l.pair) {
-        // console.log('  no gun');
-        if (!l.data.soul) {
-          // console.log('    no soul');
-          const soul = getUUID(this.chain as any);
-          l.data.soul = soul;
-        }
-        if (l.data.soul) {
-          // console.log('    this has a soul');
-          const layerGun = this.layers.get(l.data.soul);
-          const layerPair = new ItemPair(layerGun, layer, this.project);
-        }
-        // this is local create
-        // but it could be for a parent's importJSON?????
-      }
-    });
+    this.afterProjectInsertLayer$.subscribe((layer) =>
+      this.onLocalLayer(layer)
+    );
   }
 }

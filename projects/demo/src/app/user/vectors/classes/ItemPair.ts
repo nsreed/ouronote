@@ -21,6 +21,7 @@ import {
   setupAllEmitters,
   getAllSettable,
 } from './paper-chain';
+import * as paper from 'paper';
 
 export class ItemPair extends PaperPair {
   // Graph Methods
@@ -43,7 +44,7 @@ export class ItemPair extends PaperPair {
   afterImportJSON$ = after$(this.item, 'importJSON');
   afterInsertChild$ = after$(this.item, 'insertChild').pipe(
     map(returned),
-    filter((item) => item !== null && item !== undefined),
+    filter((item) => !this.ignoreInsert && item !== null && item !== undefined),
     switchMap((item) =>
       this.importing ? this.afterImportJSON$.pipe(mapTo(item)) : of(item)
     )
@@ -56,8 +57,8 @@ export class ItemPair extends PaperPair {
     )
   );
 
-  itemStrokeColor = this.chain.get('strokeColor');
-  itemStrokeColor$ = propertyChange$(this.item, 'strokeColor').pipe(distinct());
+  // itemStrokeColor = this.chain.get('strokeColor');
+  // itemStrokeColor$ = propertyChange$(this.item, 'strokeColor').pipe(distinct());
 
   constructor(
     private chain: GunChain<ItemGraph>,
@@ -86,11 +87,13 @@ export class ItemPair extends PaperPair {
       const value = shallow[k];
       if (Array.isArray(value)) {
         if (!EXPECT_ARRAY.includes(k)) {
-          console.warn('UNEXPECTED ARRAY %s, NOT SERIALIZING!!!');
+          console.warn('UNEXPECTED ARRAY %s, NOT SERIALIZING!!!', k);
+          console.warn('  value', value);
           // continue;
           delete shallow[k];
+        } else {
+          shallow[k] = JSON.stringify(value);
         }
-        shallow[k] = JSON.stringify(value);
       }
     });
     return shallow;
@@ -98,30 +101,42 @@ export class ItemPair extends PaperPair {
 
   save() {
     const shallow = this.getShallow();
-    // console.log('saving');
-    // console.log(shallow);
+    if (this.importing) {
+      console.warn('tried to save while importing');
+      return;
+    }
+    console.log('%s saving', this.item.toString());
+    console.log(shallow);
     this.chain.put(shallow); // TODO NOT READY FOR SAVE YET
+    console.log('%s done saving', this.item.toString());
   }
 
   setup() {
     // console.log('setup()');
     // setupAllEmitters(this.item);
+    this.beforeImportJSON$.subscribe(() => (this.importing = true));
+    this.afterImportJSON$.subscribe(() => (this.importing = false));
     const allSettable = getAllSettable(this.item);
     console.log('all settable:', allSettable);
     allSettable
       .map((pdk) => pdk[1])
       .forEach((k) => {
         propertyChange$(this.item, k as any).subscribe((v) => {
-          console.log('property %s change', k);
+          if (this.importing) {
+            console.log('%s ignored save durimg import', this.item.toString());
+            return;
+          }
+          console.log('%s property %s change', this.item.toString(), k, v);
+          // this.chain.get(k)
           this.save();
         });
       });
-    this.onLocalChildren();
-    this.afterInsertChild$.subscribe((child) => this.onLocalChild(child));
     this.children$.subscribe((data) => this.onGraphChild(data));
+    this.afterInsertChild$.subscribe((child) => this.onLocalChild(child));
     // this.itemStrokeColor$.subscribe((color) => this.onItemStrokeColor(color));
     this.data$.subscribe((data) => this.onGraphData(data));
     this.json$.subscribe((json) => this.onGraph(json));
+    this.onLocalChildren();
   }
 
   onItemStrokeColor(color: any) {
@@ -142,7 +157,7 @@ export class ItemPair extends PaperPair {
       console.warn('null child');
       return;
     }
-    // console.log('on child', item.toString());
+    console.log('%s onLocalChild', this.item.toString(), item.toString());
     const l = item as any;
     if (!l.pair) {
       // console.log('  no gun');
@@ -152,34 +167,42 @@ export class ItemPair extends PaperPair {
         l.data.soul = soul;
       }
       // console.log('  this has a soul ', l.data.soul);
-      const layerGun = this.children.get(l.data.soul);
-      const layerPair = new ItemPair(layerGun, item, this.project);
-      l.pair = layerPair;
+      const childGun = this.children.get(l.data.soul);
+      const childPair = new ItemPair(childGun, item, this.project);
+      l.pair = childPair;
       l.pair.save();
     }
   }
 
   onGraph(json: any) {
-    console.log('onGraph');
-    console.dir(json);
+    console.log('%s onGraph', this.item.toString());
+    const scrubbed = this.scrubJSON(json, this.item.data.soul);
+    delete scrubbed.className;
+    console.log(json);
+    console.log(scrubbed);
+    this.item.importJSON([this.item.className, scrubbed] as any);
+    console.log('  applied changes');
+    console.log(this.item);
+    // console.dir(json);
   }
 
   onGraphChild(data: any) {
-    // console.log('onGraphChild');
+    // console.log('%s onGraphChild', this.item.toString());
     const soul = data[1];
     const json = data[0];
-    // console.log('on graph child', soul, json);
     if (!json) {
       // console.log('  child was deleted');
       return;
     }
     let child = this.getChild(soul);
     if (!child) {
-      // console.log('  child was added');
+      console.log('%s onGraphChild', this.item.toString(), soul);
       child = this.constructChild(json, soul);
+      console.log('  child was added', child.toString());
       this.ignoreInsert = true;
       this.item.insertChild(0, child); // Cause of save loop is here
       this.ignoreInsert = false;
+      this.onLocalChild(child);
     } else {
       // console.log('  child exists');
     }

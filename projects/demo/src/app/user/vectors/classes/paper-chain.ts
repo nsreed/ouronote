@@ -37,18 +37,20 @@ export const propertyChange$ = <T = any, K extends keyof T = any>(
   const getter = `get${cap}`;
   Object.defineProperty(item, property, {
     set: (value) => {
-      (item as any)[setFn](value);
+      if (!(item as any)[setFn]) {
+        console.warn('no setter for', property);
+        (item as any)[propertyName] = value;
+      } else {
+        (item as any)[setFn](value);
+      }
       emitter.emit(value);
     },
     get: () => {
-      if (item === undefined) {
-        console.warn('no this');
-        return undefined;
-      }
       if ((item as any)[getter]) {
         return (item as any)[getter]();
       }
-      return (item as any)[propertyName] || null;
+      // console.warn('no getter for %s', property);
+      return (item as any)[propertyName];
     },
   });
 

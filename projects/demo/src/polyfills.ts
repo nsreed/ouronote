@@ -66,7 +66,7 @@ import 'zone.js/dist/zone'; // Included with Angular CLI.
 import 'gun';
 import 'gun/lib/radix';
 import 'gun/lib/radisk';
-// import 'gun/lib/store';
+import 'gun/lib/store';
 import 'gun/lib/rindexed';
 import 'gun/sea';
 
