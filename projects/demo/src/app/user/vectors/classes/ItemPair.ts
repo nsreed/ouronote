@@ -168,7 +168,7 @@ export class ItemPair extends PaperPair {
       const childGun = this.children.get(l.data.soul);
       const childPair = new ItemPair(childGun, item, this.project);
       l.pair = childPair;
-      l.pair.save();
+      // l.pair.save();
     }
   }
 
