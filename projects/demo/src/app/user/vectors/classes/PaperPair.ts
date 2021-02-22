@@ -42,6 +42,7 @@ export class PaperPair {
     };
     Object.keys(scrubbed).forEach((k) => {
       if (EXPECT_ARRAY.includes(k)) {
+        console.log('  deserializing %s', k, scrubbed[k]);
         scrubbed[k] = JSON.parse(scrubbed[k]);
       }
     });

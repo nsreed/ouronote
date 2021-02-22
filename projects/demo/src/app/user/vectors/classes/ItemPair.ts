@@ -34,9 +34,7 @@ export class ItemPair extends PaperPair {
 
   data: GunChain = this.chain.get('data');
   data$ = (this.data as any).open() as Observable<any>;
-  json$ = this.chain
-    .on({ changes: true } as GunChainCallbackOptions)
-    .pipe(distinct(), shareReplay(1));
+  json$ = this.chain.on({ changes: true } as GunChainCallbackOptions).pipe();
 
   // Local Methods
   ignoreInsert = false;
@@ -178,9 +176,11 @@ export class ItemPair extends PaperPair {
     console.log('%s onGraph', this.item.toString());
     const scrubbed = this.scrubJSON(json, this.item.data.soul);
     delete scrubbed.className;
-    console.log(json);
-    console.log(scrubbed);
-    this.item.importJSON([this.item.className, scrubbed] as any);
+    console.log({ json, scrubbed });
+    // console.log(scrubbed);
+    this.item.importJSON(
+      JSON.stringify([this.item.className, scrubbed]) as any
+    );
     console.log('  applied changes');
     console.log(this.item);
     // console.dir(json);
