@@ -79,12 +79,12 @@ export class ProjectPair extends PaperPair {
 
   onLocalLayer(layer: paper.Layer) {
     const l = layer as any;
-    console.log('onLocalLayer %s', l.toString());
+    // console.log('onLocalLayer %s', l.toString());
     if (!l.pair) {
-      console.log('  no gun');
+      // console.log('  no gun');
       let save = false;
       if (!l.data.soul) {
-        console.log('    no soul');
+        // console.log('    no soul');
         const soul = getUUID(this.chain as any);
         l.data.soul = soul;
         save = true;

@@ -18,6 +18,9 @@ export const propertyChange$ = <T = any, K extends keyof T = any>(
   item: T,
   property: K
 ): Observable<T[K]> => {
+  if (!item) {
+    throw new Error('No item provided!');
+  }
   if (typeof property !== 'string') {
     throw new Error('BAD PROP');
   }
@@ -25,16 +28,29 @@ export const propertyChange$ = <T = any, K extends keyof T = any>(
   const underlyingKey = `__${property}`;
   const emitterName = `${property}$`;
 
-  const priorValue = item[property];
-
   if ((item as any)[emitterName]) {
     return (item as any)[emitterName] as EventEmitter<T[K]>;
   }
-  const emitter = new EventEmitter();
-  (item as any)[emitterName] = emitter;
   const cap = property.charAt(0).toUpperCase() + property.slice(1);
   const setFn = `set${cap}`;
   const getter = `get${cap}`;
+
+  let priorValue: any;
+
+  try {
+    priorValue = (item as any)[property];
+  } catch (e: any) {
+    priorValue = (item as any)[propertyName];
+    console.warn(
+      '%s error trying to get initial value %s',
+      (item as any).toString(),
+      property,
+      priorValue
+    );
+    throw e;
+  }
+  const emitter = new EventEmitter();
+  (item as any)[emitterName] = emitter;
   Object.defineProperty(item, property, {
     set: (value) => {
       if (!(item as any)[setFn]) {
@@ -49,8 +65,8 @@ export const propertyChange$ = <T = any, K extends keyof T = any>(
       if ((item as any)[getter]) {
         return (item as any)[getter]();
       }
-      // console.warn('no getter for %s', property);
-      return (item as any)[propertyName];
+      console.warn('no getter for %s', property);
+      return (item as any)[propertyName] || null;
     },
   });
 

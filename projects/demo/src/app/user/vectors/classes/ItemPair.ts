@@ -15,26 +15,32 @@ import {
   GunChain,
   GunChainCallbackOptions,
 } from '../../../../../../ng-gun/src/lib/classes/GunChain';
-import { EXPECT_ARRAY } from './constants';
+import { EXPECT_ARRAY, hasRequired } from './constants';
 import {
   propertyChange$,
   setupAllEmitters,
   getAllSettable,
 } from './paper-chain';
 import * as paper from 'paper';
+import { tap } from 'rxjs/operators';
 
 export class ItemPair extends PaperPair {
   // Graph Methods
   children = this.chain.get('children');
   childMap = this.children.map();
-  children$ = this.childMap.on({
-    includeKeys: true,
-    changes: true,
-  } as GunChainCallbackOptions);
+  children$ = this.childMap
+    .on({
+      includeKeys: true,
+      changes: true,
+    } as GunChainCallbackOptions)
+    .pipe(filter((ckv) => hasRequired(ckv[0])));
 
   data: GunChain = this.chain.get('data');
   data$ = (this.data as any).open() as Observable<any>;
-  json$ = this.chain.on({ changes: true } as GunChainCallbackOptions).pipe();
+  json$ = this.chain.on({ changes: true } as GunChainCallbackOptions).pipe(
+    tap((json) => console.log('graph JSON', json)),
+    filter((json) => hasRequired(json))
+  );
 
   // Local Methods
   ignoreInsert = false;
@@ -114,27 +120,27 @@ export class ItemPair extends PaperPair {
     // setupAllEmitters(this.item);
     this.beforeImportJSON$.subscribe(() => (this.importing = true));
     this.afterImportJSON$.subscribe(() => (this.importing = false));
-    const allSettable = getAllSettable(this.item);
-    console.log('all settable:', allSettable);
-    allSettable
-      .map((pdk) => pdk[1])
-      .forEach((k) => {
-        propertyChange$(this.item, k as any).subscribe((v) => {
-          if (this.importing) {
-            console.log('%s ignored save durimg import', this.item.toString());
-            return;
-          }
-          console.log('%s property %s change', this.item.toString(), k, v);
-          // this.chain.get(k)
-          this.save();
-        });
-      });
+    // console.log('all settable:', allSettable);
     this.children$.subscribe((data) => this.onGraphChild(data));
     this.afterInsertChild$.subscribe((child) => this.onLocalChild(child));
     // this.itemStrokeColor$.subscribe((color) => this.onItemStrokeColor(color));
     this.data$.subscribe((data) => this.onGraphData(data));
     this.json$.subscribe((json) => this.onGraph(json));
     this.onLocalChildren();
+    const allSettable = getAllSettable(this.item);
+    allSettable
+      .map((pdk) => pdk[1])
+      .forEach((k) => {
+        propertyChange$(this.item, k as any).subscribe((v) => {
+          if (this.importing) {
+            // console.log('%s ignored save durimg import', this.item.toString());
+            return;
+          }
+          // console.log('%s property %s change', this.item.toString(), k, v);
+          // this.chain.get(k)
+          this.save();
+        });
+      });
   }
 
   onItemStrokeColor(color: any) {
@@ -155,7 +161,7 @@ export class ItemPair extends PaperPair {
       console.warn('null child');
       return;
     }
-    console.log('%s onLocalChild', this.item.toString(), item.toString());
+    // console.log('%s onLocalChild', this.item.toString(), item.toString());
     const l = item as any;
     if (!l.pair) {
       // console.log('  no gun');
@@ -182,7 +188,7 @@ export class ItemPair extends PaperPair {
       JSON.stringify([this.item.className, scrubbed]) as any
     );
     console.log('  applied changes');
-    console.log(this.item);
+    // console.log(this.item);
     // console.dir(json);
   }
 
@@ -196,9 +202,9 @@ export class ItemPair extends PaperPair {
     }
     let child = this.getChild(soul);
     if (!child) {
-      console.log('%s onGraphChild', this.item.toString(), soul);
+      // console.log('%s onGraphChild', this.item.toString(), soul);
       child = this.constructChild(json, soul);
-      console.log('  child was added', child.toString());
+      // console.log('  child was added', child.toString());
       this.ignoreInsert = true;
       this.item.insertChild(0, child); // Cause of save loop is here
       this.ignoreInsert = false;
