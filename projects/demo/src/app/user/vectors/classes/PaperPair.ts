@@ -2,6 +2,7 @@ import { GunChain } from '../../../../../../ng-gun/src/lib/classes/GunChain';
 import { EXPECT_ARRAY } from './constants';
 import * as paper from 'paper';
 import { EventEmitter } from '@angular/core';
+import { debounceTime } from 'rxjs/operators';
 
 export class PaperPair {
   // get project(): paper.Project {
@@ -12,6 +13,7 @@ export class PaperPair {
   protected importing = false;
 
   save$ = new EventEmitter();
+  debouncedSave$ = this.save$.pipe(debounceTime(100));
 
   constructor(
     private scope: any,
@@ -21,6 +23,7 @@ export class PaperPair {
       console.error('CREATING A DUPLICATE PAIR FOR SCOPE', scope);
     }
     scope.pair = this;
+    this.debouncedSave$.subscribe(() => this.doSave());
   }
 
   getChild(jsonOrKey: any) {
@@ -80,5 +83,13 @@ export class PaperPair {
     ] as any);
     // console.log('created', child);
     return child;
+  }
+
+  save() {
+    this.save$.emit();
+  }
+
+  doSave() {
+    // ...
   }
 }

@@ -112,13 +112,13 @@ export class ItemPair extends PaperPair {
     return shallow;
   }
 
-  save() {
+  doSave() {
     const shallow = this.getShallow();
     if (this.importing) {
       console.warn('tried to save while importing');
       return;
     }
-    console.log('%s saving', this.item.toString());
+    // console.log('%s saving', this.item.toString());
     // console.log(shallow);
     this.chain.put(shallow); // TODO NOT READY FOR SAVE YET
     // console.log('%s done saving', this.item.toString());
@@ -145,22 +145,15 @@ export class ItemPair extends PaperPair {
             // console.log('%s ignored save durimg import', this.item.toString());
             return;
           }
-          console.log('%s property %s change', this.item.toString(), k, v);
+          // console.log('%s property %s change', this.item.toString(), k, v);
           // this.chain.get(k)
           this.save();
         });
       });
     this.localChange$.subscribe((data) => {
-      console.log('localChange$', data);
+      // console.log('localChange$', data);
       // this.save();
     });
-  }
-
-  onItemStrokeColor(color: any) {
-    // const serialized = (color as any)._serialize();
-    // const stringed = JSON.stringify(serialized);
-    // this.itemStrokeColor.put(stringed as never);
-    this.save();
   }
 
   onLocalChildren() {

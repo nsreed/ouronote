@@ -85,7 +85,7 @@ export class EditVectorComponent
       );
       path.lineTo(e.point);
       // (path as any).pair.save();
-      // path.strokeColor = color;
+      path.strokeColor = color;
     });
     this.paperDirective.toolUp$.subscribe((e: paper.ToolEvent) => {
       path.smooth();

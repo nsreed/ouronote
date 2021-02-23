@@ -66,7 +66,7 @@ export const propertyChange$ = <T = any, K extends keyof T = any>(
         return (item as any)[getter]();
       }
       // console.warn('no getter for %s', property);
-      return (item as any)[propertyName] || null;
+      return (item as any)[propertyName];
     },
   });
 
