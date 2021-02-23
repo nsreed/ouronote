@@ -56,12 +56,16 @@ export class EditVectorComponent
     });
     // this.paperDirective.too
     this.paperDirective.toolDown$.subscribe((e: paper.ToolEvent) => {
-      const c = new paper.Shape.Circle(e.point as any, 20);
-      c.strokeColor = new paper.Color(
+      const color = new paper.Color(
         Math.random(),
         Math.random(),
         Math.random()
       );
+      const c = new paper.Shape.Circle(e.point as any, 20);
+      c.strokeColor = color;
+      const p = new paper.Path();
+      p.add(e.point as any, new paper.Point(10, 0).add(e.point as any));
+      p.strokeColor = color;
       // this.paperDirective.project.activeLayer.insertChild(0, c);
     });
     // this.paperDirective.data$.subscribe((data) => {

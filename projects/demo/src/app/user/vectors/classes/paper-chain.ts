@@ -12,7 +12,7 @@ const IGNORED_DATA_KEYS = ['ignore'];
 // type PaperGun<T extends paper.Item | paper.Project> = T & {
 //   gun: PaperChain<T>;
 // };
-const IGNORED_PROPS = ['selected'];
+const IGNORED_PROPS = ['selected', 'segments'];
 
 export const propertyChange$ = <T = any, K extends keyof T = any>(
   item: T,

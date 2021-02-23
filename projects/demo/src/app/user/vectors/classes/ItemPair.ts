@@ -7,7 +7,7 @@ import {
   distinct,
 } from 'rxjs/operators';
 import { ItemGraph } from '../../../model';
-import { Observable, of } from 'rxjs';
+import { Observable, of, from } from 'rxjs';
 import { PaperPair } from './PaperPair';
 import { after$, before$, returned } from '../../../functions/aspect-rx';
 import { getUUID } from '../edit-vector/converter-functions';
@@ -15,7 +15,7 @@ import {
   GunChain,
   GunChainCallbackOptions,
 } from '../../../../../../ng-gun/src/lib/classes/GunChain';
-import { EXPECT_ARRAY, hasRequired } from './constants';
+import { EXPECT_ARRAY, hasRequired, MUTATIONS } from './constants';
 import {
   propertyChange$,
   setupAllEmitters,
@@ -38,7 +38,7 @@ export class ItemPair extends PaperPair {
   data: GunChain = this.chain.get('data');
   data$ = (this.data as any).open() as Observable<any>;
   json$ = this.chain.on({ changes: true } as GunChainCallbackOptions).pipe(
-    tap((json) => console.log('graph JSON', json)),
+    // tap((json) => console.log('graph JSON', json)),
     filter((json) => hasRequired(json))
   );
 
@@ -59,6 +59,10 @@ export class ItemPair extends PaperPair {
     switchMap((item) =>
       this.importing ? this.afterImportJSON$.pipe(mapTo(item)) : of(item)
     )
+  );
+
+  localChange$ = from(MUTATIONS[this.item.className as any] || []).pipe(
+    switchMap((method: any) => after$(this.item, method))
   );
 
   // itemStrokeColor = this.chain.get('strokeColor');
@@ -120,14 +124,18 @@ export class ItemPair extends PaperPair {
     // setupAllEmitters(this.item);
     this.beforeImportJSON$.subscribe(() => (this.importing = true));
     this.afterImportJSON$.subscribe(() => (this.importing = false));
-    // console.log('all settable:', allSettable);
     this.children$.subscribe((data) => this.onGraphChild(data));
     this.afterInsertChild$.subscribe((child) => this.onLocalChild(child));
     // this.itemStrokeColor$.subscribe((color) => this.onItemStrokeColor(color));
     this.data$.subscribe((data) => this.onGraphData(data));
     this.json$.subscribe((json) => this.onGraph(json));
     this.onLocalChildren();
+    this.localChange$.subscribe((data) => {
+      console.log('localChange$', data);
+      this.save();
+    });
     const allSettable = getAllSettable(this.item);
+    console.log('all settable:', allSettable);
     allSettable
       .map((pdk) => pdk[1])
       .forEach((k) => {
@@ -136,7 +144,7 @@ export class ItemPair extends PaperPair {
             // console.log('%s ignored save durimg import', this.item.toString());
             return;
           }
-          // console.log('%s property %s change', this.item.toString(), k, v);
+          console.log('%s property %s change', this.item.toString(), k, v);
           // this.chain.get(k)
           this.save();
         });
@@ -188,12 +196,17 @@ export class ItemPair extends PaperPair {
       JSON.stringify([this.item.className, scrubbed]) as any
     );
     console.log('  applied changes');
-    // console.log(this.item);
+    console.log(this.item);
+    try {
+      (this.item as any).project.view.update();
+    } catch (e: any) {
+      console.error('error drawing item', e);
+    }
     // console.dir(json);
   }
 
   onGraphChild(data: any) {
-    // console.log('%s onGraphChild', this.item.toString());
+    console.log('%s onGraphChild', this.item.toString());
     const soul = data[1];
     const json = data[0];
     if (!json) {

@@ -1,4 +1,10 @@
-export const EXPECT_ARRAY = ['matrix', 'size', 'strokeColor', 'radius'];
+export const EXPECT_ARRAY = [
+  'matrix',
+  'size',
+  'strokeColor',
+  'radius',
+  'segments',
+];
 export const REQUIRED_BY = {
   size: ['Shape'],
 };
@@ -11,7 +17,7 @@ export function hasRequired(json: any) {
   if (!json.className) {
     return true;
   }
-  const required = REQUIRES[json.className] as string[];
+  const required = (REQUIRES[json.className] as string[]) || [];
   const missing = required.filter((r) => !Object.keys(json).includes(r));
   if (missing.length > 0) {
     console.warn('item lacks required fields', missing);
@@ -19,3 +25,9 @@ export function hasRequired(json: any) {
   }
   return true;
 }
+
+export const MUTATION_METHODS = ['add'];
+
+export const MUTATIONS = {
+  Path: ['add'],
+} as any;
