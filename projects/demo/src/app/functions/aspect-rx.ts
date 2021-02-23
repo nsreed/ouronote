@@ -8,6 +8,7 @@ export function returned(...args: any[]) {
 export function after$(context: any, method: string) {
   return fromEventPattern(
     (handler) => {
+      // console.log('setting up listener %s on', method, context);
       const listener = after(context, method, (...args: any[]) => {
         handler(...args);
       });
@@ -19,6 +20,7 @@ export function after$(context: any, method: string) {
     },
     (handler, signal) => {
       if (signal.stop) {
+        console.log('tearing down listener %s on', method, context);
         signal.listener();
       }
     }

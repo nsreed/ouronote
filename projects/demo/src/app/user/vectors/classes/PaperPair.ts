@@ -78,7 +78,7 @@ export class PaperPair {
       childJSON.className,
       scrubbed,
     ] as any);
-    console.log('created', child);
+    // console.log('created', child);
     return child;
   }
 }

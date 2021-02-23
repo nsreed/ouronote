@@ -5,6 +5,8 @@ import {
   mapTo,
   filter,
   distinct,
+  concatMap,
+  mergeMap,
 } from 'rxjs/operators';
 import { ItemGraph } from '../../../model';
 import { Observable, of, from } from 'rxjs';
@@ -61,8 +63,11 @@ export class ItemPair extends PaperPair {
     )
   );
 
-  localChange$ = from(MUTATIONS[this.item.className as any] || []).pipe(
-    switchMap((method: any) => after$(this.item, method))
+  localMutators = MUTATIONS[this.item.className] || [];
+  localChange$ = from(this.localMutators).pipe(
+    // tap((methodName) => console.log('  mutation method', methodName)),
+    mergeMap((method: any) => after$(this.item, method))
+    // tap((mutation) => console.log('%s mutation', mutation))
   );
 
   // itemStrokeColor = this.chain.get('strokeColor');
@@ -114,9 +119,9 @@ export class ItemPair extends PaperPair {
       return;
     }
     console.log('%s saving', this.item.toString());
-    console.log(shallow);
+    // console.log(shallow);
     this.chain.put(shallow); // TODO NOT READY FOR SAVE YET
-    console.log('%s done saving', this.item.toString());
+    // console.log('%s done saving', this.item.toString());
   }
 
   setup() {
@@ -130,12 +135,8 @@ export class ItemPair extends PaperPair {
     this.data$.subscribe((data) => this.onGraphData(data));
     this.json$.subscribe((json) => this.onGraph(json));
     this.onLocalChildren();
-    this.localChange$.subscribe((data) => {
-      console.log('localChange$', data);
-      this.save();
-    });
     const allSettable = getAllSettable(this.item);
-    console.log('all settable:', allSettable);
+    // console.log('all settable:', allSettable);
     allSettable
       .map((pdk) => pdk[1])
       .forEach((k) => {
@@ -149,6 +150,10 @@ export class ItemPair extends PaperPair {
           this.save();
         });
       });
+    this.localChange$.subscribe((data) => {
+      console.log('localChange$', data);
+      // this.save();
+    });
   }
 
   onItemStrokeColor(color: any) {
@@ -187,16 +192,16 @@ export class ItemPair extends PaperPair {
   }
 
   onGraph(json: any) {
-    console.log('%s onGraph', this.item.toString());
+    // console.log('%s onGraph', this.item.toString());
     const scrubbed = this.scrubJSON(json, this.item.data.soul);
     delete scrubbed.className;
-    console.log({ json, scrubbed });
+    // console.log({ json, scrubbed });
     // console.log(scrubbed);
     this.item.importJSON(
       JSON.stringify([this.item.className, scrubbed]) as any
     );
-    console.log('  applied changes');
-    console.log(this.item);
+    // console.log('  applied changes');
+    // console.log(this.item);
     try {
       (this.item as any).project.view.update();
     } catch (e: any) {
@@ -206,7 +211,7 @@ export class ItemPair extends PaperPair {
   }
 
   onGraphChild(data: any) {
-    console.log('%s onGraphChild', this.item.toString());
+    // console.log('%s onGraphChild', this.item.toString());
     const soul = data[1];
     const json = data[0];
     if (!json) {

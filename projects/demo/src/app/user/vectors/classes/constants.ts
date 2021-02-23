@@ -26,8 +26,14 @@ export function hasRequired(json: any) {
   return true;
 }
 
-export const MUTATION_METHODS = ['add'];
+export const MUTATION_METHODS = [
+  'add',
+  'lineTo',
+  'lineBy',
+  'curveTo',
+  'curveBy',
+];
 
 export const MUTATIONS = {
-  Path: ['add'],
+  Path: MUTATION_METHODS,
 } as any;
