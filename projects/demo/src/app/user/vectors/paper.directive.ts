@@ -15,41 +15,14 @@ import { Color, Project, PaperScope } from 'paper';
 import { fromEvent, from, Observable } from 'rxjs';
 import { mergeAll, tap, map, distinct } from 'rxjs/operators';
 import { after } from 'aspect-ts';
+import { PenTool } from './tools/pen';
+import { EraserTool } from './tools/eraser';
 @Directive({
   selector: '[appPaper]',
   exportAs: 'appPaper',
 })
 export class PaperDirective implements OnInit {
   constructor(private el: ElementRef<HTMLCanvasElement>) {
-    // (this.tool as any).exportJSON = () => '';
-    // paper.settings.insertItems = false;
-    // this.ignored.settings.insertItems = false;
-    // this.scope.install(this.scopeObject);
-
-    // this.ignored.install(this.ignoredScopeObject);
-    // const ignoredProps = Object.getOwnPropertyDescriptors(
-    //   this.ignoredScopeObject
-    // );
-    // Object.keys(ignoredProps)
-    //   .map((k) => ({
-    //     key: k,
-    //     descriptor: ignoredProps[k],
-    //   }))
-    //   .filter(
-    //     (kd) =>
-    //       typeof kd.descriptor.value === 'function' &&
-    //       /^[A-Z]/.test(kd.descriptor.value.name) &&
-    //       /^[A-Z]/.test(kd.key)
-    //   )
-    //   .forEach((kd) => {
-    //     console.log('  descriptor %s', kd.key, kd.descriptor);
-    //     const c = kd.descriptor.value as any;
-    //     // TODO this interferes with some kind of paper internals....
-    //     // after(this.ignoredScopeObject, kd.key, (...args: any) => {
-    //     //   console.log('  after construct', kd.key, args);
-    //     // });
-    //   });
-
     console.log('paper.directive', this);
 
     this.toolWheel.subscribe(console.log);
@@ -60,6 +33,8 @@ export class PaperDirective implements OnInit {
   scope = new paper.PaperScope();
 
   public tool = new paper.Tool();
+  public pen = new PenTool(this.scope);
+  public eraser = new EraserTool(this.scope);
 
   @Output()
   toolDown$ = new EventEmitter<paper.ToolEvent>();
@@ -191,7 +166,7 @@ export class PaperDirective implements OnInit {
   onHostMouseEnter(event?: any) {
     this.scope.activate();
     this.project.activate();
-    this.tool.activate();
+    // this.pen.activate();
   }
 
   @HostListener('mousewheel', ['$event'])

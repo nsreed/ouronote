@@ -7,11 +7,16 @@
     <button (click)="addLayer()">Add Layer</button>
     <div *ngFor="let layer of project?.layers">
       {{layer.toString()}}
-      <!-- <div *ngFor="let item of layer.children">
-        {{item.toString()}}
-      </div> -->
     </div>
-    <!-- <app-layer-list [layers]="project.layers"></app-layer-list> -->
+    <hr>
+    <h3>Tools</h3>
+    <div [appTool]="tool" *ngFor="let tool of paper.scope.tools" (click)="tool.activate()">
+      {{tool.name}}
+    </div>
+
+    <div [appTool]="paper.scope.tool" *ngIf="paper.scope.tool">
+      {{paper.scope.tool.name}}
+    </div>
   </aside>
   <canvas appPaper #paper="appPaper"></canvas>
   <!-- <canvas appPaper #output="appPaper"></canvas> -->

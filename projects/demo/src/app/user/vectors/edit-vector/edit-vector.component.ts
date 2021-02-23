@@ -54,43 +54,43 @@ export class EditVectorComponent
       }
       this.project = this.paperDirective.project;
     });
-    let path: paper.Path & any;
+    // let path: paper.Path & any;
     // this.paperDirective.too
-    this.paperDirective.toolDown$.subscribe((e: paper.ToolEvent) => {
-      const color = new paper.Color(
-        Math.random(),
-        Math.random(),
-        Math.random()
-      );
-      const c = new paper.Shape.Circle(e.point as any, 20);
-      c.strokeColor = color;
-      path = new paper.Path() as any;
-      path.add(e.point as any);
-      // path.lineBy(new paper.Point(0, 10));
-      // path.curveBy(
-      //   new paper.Point(Math.random() * 25, Math.random() * -25),
-      //   new paper.Point(-10, -10)
-      // );
-      path.strokeColor = color;
-      // this.paperDirective.project.activeLayer.insertChild(0, c);
-    });
-    this.paperDirective.toolDrag$.subscribe((e: paper.ToolEvent) => {
-      if (!path) {
-        return;
-      }
-      const color = new paper.Color(
-        Math.random(),
-        Math.random(),
-        Math.random()
-      );
-      path.lineTo(e.point);
-      // (path as any).pair.save();
-      path.strokeColor = color;
-    });
-    this.paperDirective.toolUp$.subscribe((e: paper.ToolEvent) => {
-      path.smooth();
-      (path as any).pair.save();
-    });
+    // this.paperDirective.toolDown$.subscribe((e: paper.ToolEvent) => {
+    //   const color = new paper.Color(
+    //     Math.random(),
+    //     Math.random(),
+    //     Math.random()
+    //   );
+    //   const c = new paper.Shape.Circle(e.point as any, 20);
+    //   c.strokeColor = color;
+    //   path = new paper.Path() as any;
+    //   path.add(e.point as any);
+    //   // path.lineBy(new paper.Point(0, 10));
+    //   // path.curveBy(
+    //   //   new paper.Point(Math.random() * 25, Math.random() * -25),
+    //   //   new paper.Point(-10, -10)
+    //   // );
+    //   path.strokeColor = color;
+    //   // this.paperDirective.project.activeLayer.insertChild(0, c);
+    // });
+    // this.paperDirective.toolDrag$.subscribe((e: paper.ToolEvent) => {
+    //   if (!path) {
+    //     return;
+    //   }
+    //   const color = new paper.Color(
+    //     Math.random(),
+    //     Math.random(),
+    //     Math.random()
+    //   );
+    //   path.lineTo(e.point);
+    //   // (path as any).pair.save();
+    //   path.strokeColor = color;
+    // });
+    // this.paperDirective.toolUp$.subscribe((e: paper.ToolEvent) => {
+    //   path.smooth();
+    //   (path as any).pair.save();
+    // });
     // this.paperDirective.data$.subscribe((data) => {
     //   this.vector$.pipe(take(1)).subscribe((v) => {
     //     const vectorNode = this.vectorService.vectors.get(v);

@@ -256,7 +256,7 @@ export class ItemPair extends PaperPair {
     const soul = data[1];
     const json = data[0];
     if (!json) {
-      // console.log('  child was deleted');
+      console.log('  child was deleted');
       return;
     }
     let child = this.getChild(soul);

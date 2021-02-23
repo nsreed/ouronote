@@ -6,3 +6,7 @@ canvas {
 
   outline: solid 1px gray;
 }
+
+aside {
+  flex-shrink: 0;
+}
