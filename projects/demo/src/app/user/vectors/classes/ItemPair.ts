@@ -7,6 +7,12 @@ import {
   distinct,
   concatMap,
   mergeMap,
+  delay,
+  skipUntil,
+  buffer,
+  bufferWhen,
+  delayWhen,
+  switchMapTo,
 } from 'rxjs/operators';
 import { ItemGraph } from '../../../model';
 import { Observable, of, from } from 'rxjs';
@@ -24,25 +30,47 @@ import {
   getAllSettable,
 } from './paper-chain';
 import * as paper from 'paper';
-import { tap } from 'rxjs/operators';
+import { tap, debounceTime, take } from 'rxjs/operators';
+import { unpack } from './packaging';
+import { waitForAsync } from '@angular/core/testing';
 
 export class ItemPair extends PaperPair {
-  // Graph Methods
-  children = this.chain.get('children');
-  childMap = this.children.map();
-  children$ = this.childMap
-    .on({
-      includeKeys: true,
-      changes: true,
-    } as GunChainCallbackOptions)
-    .pipe(filter((ckv) => hasRequired(ckv[0])));
-
-  data: GunChain = this.chain.get('data');
-  data$ = (this.data as any).open() as Observable<any>;
   json$ = this.chain.on({ changes: true } as GunChainCallbackOptions).pipe(
     // tap((json) => console.log('graph JSON', json)),
     filter((json) => hasRequired(json))
   );
+  // Graph Methods
+  children = this.chain.get('children');
+  ready$ = this.json$.pipe(take(1), shareReplay(1));
+  private readonly graphLoad$ = this.children.open().pipe(
+    distinct((v) => JSON.stringify(v)),
+    take(1),
+    delay(250),
+    map((c) => unpack(c))
+  );
+
+  private readonly childrenLoad$ = this.ready$
+    .pipe
+    // switchMapTo(
+    //   this.graphLoad$
+    // )
+    ();
+
+  childMap = this.children.map();
+  children$ = this.childrenLoad$.pipe(
+    switchMapTo(
+      this.childMap
+        .on({
+          includeKeys: true,
+          changes: true,
+        } as GunChainCallbackOptions)
+        .pipe(filter((ckv) => hasRequired(ckv[0])))
+    )
+  );
+  newChildren$ = this.children$.pipe(filter((kvp) => !this.getChild(kvp[1])));
+
+  data: GunChain = this.chain.get('data');
+  data$ = (this.data as any).open() as Observable<any>;
 
   // Local Methods
   ignoreInsert = false;
@@ -79,7 +107,27 @@ export class ItemPair extends PaperPair {
     project: paper.Project // Do we need the project? The item's `project` property should be able to get it...
   ) {
     super(item, project);
-    // console.log('constructing ItemPair', item.toString());
+    this.childrenLoad$
+      .pipe(filter((children) => children.length > 0))
+      .subscribe((children: any) => {
+        // console.dir(json);
+        // const unpacked = unpack(json, this.item.data.soul);
+        console.log('%s children', this.item.toString());
+        const newChildren = children.filter(
+          (c: any) => !this.getChild(c[1].data.soul)
+        );
+        const toImport = [
+          this.item.className,
+          {
+            children: newChildren,
+            data: {
+              soul: this.item.data.soul,
+            },
+          },
+        ];
+        // console.dir(toImport);
+        // this.item.importJSON(JSON.stringify(toImport));
+      });
     this.setup();
   }
 

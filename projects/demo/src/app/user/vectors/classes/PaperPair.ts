@@ -19,6 +19,7 @@ export class PaperPair {
     private scope: any,
     protected project: paper.Project // Do we need the project? The item's `project` property should be able to get it...
   ) {
+    // console.log('%s Pair', scope.toString());
     if (scope.pair) {
       console.error('CREATING A DUPLICATE PAIR FOR SCOPE', scope);
     }
