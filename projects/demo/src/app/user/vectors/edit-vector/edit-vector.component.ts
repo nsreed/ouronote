@@ -123,30 +123,31 @@ export class EditVectorComponent
 
   addLayer() {
     console.log('adding layer');
+    const layer = new paper.Layer();
 
-    // this.paperDirective.scope.settings.insertItems = true;
-    const nestedLayerJSON = [
-      'Layer',
-      {
-        name: 'New Layer' + Math.random(),
-        data: {
-          soul: 'some random string',
-        },
-        children: [
-          [
-            'Layer',
-            {
-              data: {
-                soul: 'some random other string',
-              },
-            },
-          ],
-        ],
-      },
-    ];
-    const l: any = this.paperDirective.project.importJSON(
-      JSON.stringify(nestedLayerJSON)
-    );
+    // // this.paperDirective.scope.settings.insertItems = true;
+    // const nestedLayerJSON = [
+    //   'Layer',
+    //   {
+    //     name: 'New Layer' + Math.random(),
+    //     data: {
+    //       soul: 'some random string',
+    //     },
+    //     children: [
+    //       [
+    //         'Layer',
+    //         {
+    //           data: {
+    //             soul: 'some random other string',
+    //           },
+    //         },
+    //       ],
+    //     ],
+    //   },
+    // ];
+    // const l: any = this.paperDirective.project.importJSON(
+    //   JSON.stringify(nestedLayerJSON)
+    // );
     // this.paperDirective.project.importJSON(JSON.stringify(nestedLayerJSON)); // SHOWS THAT PAPER CANNOT UPDATE EXISTING BY NAME
 
     // this.paperDirective.scope.settings.insertItems = false;
@@ -155,21 +156,21 @@ export class EditVectorComponent
     // this.paperDirective.scope.settings.insertItems = true;
     // // this.paperDirective.scope.project.activeLayer.addChild(l2);
     // // (this.paperDirective.project as any).insertLayer(l2);
-    // l2.insertAbove(l);
+    // // l2.insertAbove(l);
 
-    const l3 = this.paperDirective.ignore(paper.Layer);
+    // const l3 = this.paperDirective.ignore(paper.Layer);
 
-    // TODO? maybe implement a "ignored" PaperScope for creating ignored/unimported elements
-    // This way, the default for a new Item is to import it to the graph
-    // Items coming from the graph will be intercepted once they are load()ed
-    // nope... seems objects created from "ignored" scope just get inserted into the regular scope's project anyway (what the actual F)
+    // // TODO? maybe implement a "ignored" PaperScope for creating ignored/unimported elements
+    // // This way, the default for a new Item is to import it to the graph
+    // // Items coming from the graph will be intercepted once they are load()ed
+    // // nope... seems objects created from "ignored" scope just get inserted into the regular scope's project anyway (what the actual F)
 
-    // const l = new this.paperDirective.scope.Layer();
-    // l.name = 'New Layer';
-    const p = this.paperDirective.ignore(paper.Path);
-    l.activate();
-    p.name = 'New Path';
-    const p2 = new paper.Path();
+    // // const l = new this.paperDirective.scope.Layer();
+    // // l.name = 'New Layer';
+    // const p = this.paperDirective.ignore(paper.Path);
+    // l.activate();
+    // p.name = 'New Path';
+    // const p2 = new paper.Path();
 
     // l.addChild(p);
     // this.paperDirective.scope.settings.insertItems = true;
