@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as paper from 'paper';
-import { take } from 'rxjs/operators';
+import { take, distinct } from 'rxjs/operators';
 import { GunChain } from '../../../../../../ng-gun/src/lib/classes/GunChain';
 import { Vector } from '../../../model';
 import { ProjectPair } from '../classes/ProjectPair';
@@ -15,6 +15,7 @@ import { PaperDirective } from '../paper.directive';
 import { RouteVectorDirective } from '../route-vector.directive';
 import { VectorService } from '../vector.service';
 import { gunifyProject as gunifyProject } from './converter-functions';
+import { FormBuilder, Validators } from '@angular/forms';
 
 const VECTOR_PAPER_JSON_KEY = 'graph';
 
@@ -31,10 +32,15 @@ export class EditVectorComponent
   paperGraph!: GunChain;
   project!: paper.Project;
 
+  vectorForm = this.fb.group({
+    title: [null, Validators.required],
+  });
+
   constructor(
     vectorService: VectorService,
     route: ActivatedRoute,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private fb: FormBuilder
   ) {
     super(vectorService, route);
   }
@@ -46,6 +52,20 @@ export class EditVectorComponent
         return;
       }
       this.onProjectDataChange(this.paperDirective.project as any, node as any);
+      node
+        .get('title')
+        .on()
+        .subscribe((title: any) => {
+          console.log('title change', title);
+          this.vectorForm.get('title')?.patchValue(title, { emitEvent: false });
+        });
+      this.vectorForm
+        .get('title')
+        ?.valueChanges.pipe(distinct())
+        .subscribe((title) => {
+          console.log('local title change', title);
+          node.get('title').put(title);
+        });
     });
     this.vector$.subscribe((vector: Vector) => {
       // console.log('vector change', vector, this.paperDirective);
@@ -55,59 +75,6 @@ export class EditVectorComponent
       this.project = this.paperDirective.project;
       this.paperDirective.pen.activate();
     });
-    // let path: paper.Path & any;
-    // this.paperDirective.too
-    // this.paperDirective.toolDown$.subscribe((e: paper.ToolEvent) => {
-    //   const color = new paper.Color(
-    //     Math.random(),
-    //     Math.random(),
-    //     Math.random()
-    //   );
-    //   const c = new paper.Shape.Circle(e.point as any, 20);
-    //   c.strokeColor = color;
-    //   path = new paper.Path() as any;
-    //   path.add(e.point as any);
-    //   // path.lineBy(new paper.Point(0, 10));
-    //   // path.curveBy(
-    //   //   new paper.Point(Math.random() * 25, Math.random() * -25),
-    //   //   new paper.Point(-10, -10)
-    //   // );
-    //   path.strokeColor = color;
-    //   // this.paperDirective.project.activeLayer.insertChild(0, c);
-    // });
-    // this.paperDirective.toolDrag$.subscribe((e: paper.ToolEvent) => {
-    //   if (!path) {
-    //     return;
-    //   }
-    //   const color = new paper.Color(
-    //     Math.random(),
-    //     Math.random(),
-    //     Math.random()
-    //   );
-    //   path.lineTo(e.point);
-    //   // (path as any).pair.save();
-    //   path.strokeColor = color;
-    // });
-    // this.paperDirective.toolUp$.subscribe((e: paper.ToolEvent) => {
-    //   path.smooth();
-    //   (path as any).pair.save();
-    // });
-    // this.paperDirective.data$.subscribe((data) => {
-    //   this.vector$.pipe(take(1)).subscribe((v) => {
-    //     const vectorNode = this.vectorService.vectors.get(v);
-    //     const paperGraph = vectorNode.get(VECTOR_PAPER_JSON_KEY as never);
-    //     const gunified = gunifyProject(
-    //       paperGraph,
-    //       this.paperDirective.project as any
-    //     );
-    //     console.log({ ...gunified });
-    //     paperGraph.put(gunified as never);
-    //     this.vectorService.vectors.get(v).put({
-    //       title: v.title,
-    //       data,
-    //     });
-    //   });
-    // });
   }
 
   ngOnInit(): void {}
@@ -117,65 +84,15 @@ export class EditVectorComponent
     this.paperDirective.tool.activate();
     const paperChain: ProjectPair = new ProjectPair(
       gun as any,
-      this.paperDirective.project as any
+      this.paperDirective.project as any,
+      this.paperDirective.scope as any
     );
   }
 
   addLayer() {
     console.log('adding layer');
     const layer = new paper.Layer();
-
-    // // this.paperDirective.scope.settings.insertItems = true;
-    // const nestedLayerJSON = [
-    //   'Layer',
-    //   {
-    //     name: 'New Layer' + Math.random(),
-    //     data: {
-    //       soul: 'some random string',
-    //     },
-    //     children: [
-    //       [
-    //         'Layer',
-    //         {
-    //           data: {
-    //             soul: 'some random other string',
-    //           },
-    //         },
-    //       ],
-    //     ],
-    //   },
-    // ];
-    // const l: any = this.paperDirective.project.importJSON(
-    //   JSON.stringify(nestedLayerJSON)
-    // );
-    // this.paperDirective.project.importJSON(JSON.stringify(nestedLayerJSON)); // SHOWS THAT PAPER CANNOT UPDATE EXISTING BY NAME
-
-    // this.paperDirective.scope.settings.insertItems = false;
-    // const l2 = new this.paperDirective.ignore.Layer();
-    // l2.data.ignore = true; // TODO the insert intercept doesn't catch this in time (unsurprisingly)
-    // this.paperDirective.scope.settings.insertItems = true;
-    // // this.paperDirective.scope.project.activeLayer.addChild(l2);
-    // // (this.paperDirective.project as any).insertLayer(l2);
-    // // l2.insertAbove(l);
-
-    // const l3 = this.paperDirective.ignore(paper.Layer);
-
-    // // TODO? maybe implement a "ignored" PaperScope for creating ignored/unimported elements
-    // // This way, the default for a new Item is to import it to the graph
-    // // Items coming from the graph will be intercepted once they are load()ed
-    // // nope... seems objects created from "ignored" scope just get inserted into the regular scope's project anyway (what the actual F)
-
-    // // const l = new this.paperDirective.scope.Layer();
-    // // l.name = 'New Layer';
-    // const p = this.paperDirective.ignore(paper.Path);
-    // l.activate();
-    // p.name = 'New Path';
-    // const p2 = new paper.Path();
-
-    // l.addChild(p);
-    // this.paperDirective.scope.settings.insertItems = true;
-    // const proj = this.paperDirective.project as any;
-    // proj.insertLayer(l);
     console.log(this.paperDirective.project.layers);
+    (layer as any).pair.save();
   }
 }

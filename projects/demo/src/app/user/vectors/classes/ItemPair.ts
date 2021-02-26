@@ -50,12 +50,12 @@ export class ItemPair extends PaperPair {
     shareReplay()
   );
 
-  private readonly childrenLoad$ = this.ready$
-    .pipe
+  private readonly childrenLoad$ = this.ready$.pipe(
     // switchMapTo(
     //   this.graphLoad$
     // )
-    ();
+    shareReplay()
+  );
 
   childMap = this.children.map();
   children$ = this.childrenLoad$.pipe(
@@ -108,9 +108,10 @@ export class ItemPair extends PaperPair {
   constructor(
     private chain: GunChain<ItemGraph>,
     private item: paper.Item,
-    project: paper.Project // Do we need the project? The item's `project` property should be able to get it...
+    project: paper.Project, // Do we need the project? The item's `project` property should be able to get it...,
+    scope: paper.PaperScope
   ) {
-    super(item, project);
+    super(item, project, scope);
     this.childrenLoad$
       .pipe(filter((children) => children.length > 0))
       .subscribe((children: any) => {
@@ -223,18 +224,18 @@ export class ItemPair extends PaperPair {
       console.warn('null child');
       return;
     }
-    console.log('%s onLocalChild', this.item.toString(), item.toString());
     const l = item as any;
     if (!l.pair) {
+      console.log('%s onLocalChild', this.item.toString(), item.toString());
       // console.log('  no gun');
       if (!l.data.soul) {
         // console.log('  no soul');
         const soul = getUUID(this.chain as any);
         l.data.soul = soul;
       }
-      // console.log('  this has a soul ', l.data.soul);
+      console.log('  soul ', l.data.soul);
       const childGun = this.children.get(l.data.soul);
-      const childPair = new ItemPair(childGun, item, this.project);
+      const childPair = new ItemPair(childGun, item, this.project, this.scope);
       l.pair = childPair;
       // l.pair.save();
     }
@@ -246,9 +247,12 @@ export class ItemPair extends PaperPair {
     delete scrubbed.className;
     // console.log({ json, scrubbed });
     // console.log(scrubbed);
-    this.item.importJSON(
+    const imported = this.item.importJSON(
       JSON.stringify([this.item.className, scrubbed]) as any
-    );
+    ) as any;
+    if (imported !== this.item) {
+      console.error('unexpected new item!!!');
+    }
     // console.log('  applied changes');
     // console.log(this.item);
     try {

@@ -16,20 +16,21 @@ export class PaperPair {
   debouncedSave$ = this.save$.pipe(debounceTime(100));
 
   constructor(
-    private scope: any,
-    protected project: paper.Project // Do we need the project? The item's `project` property should be able to get it...
+    private ctx: any,
+    protected project: paper.Project, // Do we need the project? The item's `project` property should be able to get it...
+    protected scope: paper.PaperScope
   ) {
-    // console.log('%s Pair', scope.toString());
-    if (scope.pair) {
-      console.error('CREATING A DUPLICATE PAIR FOR SCOPE', scope);
+    console.log('%s Pair', ctx.toString());
+    if (ctx.pair) {
+      console.error('CREATING A DUPLICATE PAIR FOR SCOPE', ctx);
     }
-    scope.pair = this;
+    ctx.pair = this;
     this.debouncedSave$.subscribe(() => this.doSave());
   }
 
   getChild(jsonOrKey: any) {
     // console.log('finding child', jsonOrKey);
-    const child = this.scope.children?.find(
+    const child = this.ctx.children?.find(
       (i: paper.Item) => i.data.soul === jsonOrKey
     );
     return child;
@@ -57,11 +58,12 @@ export class PaperPair {
     // console.log('constructing child: %o', childJSON);
     if (!childJSON.className) {
       console.warn('child has no class name', childJSON);
-      if (this.scope instanceof paper.Project) {
+      if (this.ctx instanceof paper.Project) {
         childJSON.className = 'Layer';
       }
       return;
     }
+    (this.scope.settings as any).insertItems = false;
     const scrubbed = {
       ...childJSON,
     };
@@ -78,11 +80,18 @@ export class PaperPair {
       }
     });
     // scrubbed.data.soul = key;
-    const child = this.project.importJSON([
-      childJSON.className,
-      scrubbed,
-    ] as any);
+    // scrubbed.name = scrubbed.name || key;
+    const stringed = JSON.stringify([childJSON.className, scrubbed]);
+    let child: any;
+    if (childJSON.className === 'Layer') {
+      console.log('child is layer, forcing new Layer()');
+      child = new paper.Layer();
+      child.importJSON(stringed);
+    } else {
+      child = this.project.importJSON(stringed);
+    }
     // console.log('created', child);
+    (this.scope.settings as any).insertItems = true;
     return child;
   }
 

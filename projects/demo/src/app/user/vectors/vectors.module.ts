@@ -8,10 +8,22 @@ import { EditVectorComponent } from './edit-vector/edit-vector.component';
 import { NgGunModule } from '../../../../../ng-gun/src/lib/ng-gun.module';
 import { RouteVectorDirective } from './route-vector.directive';
 import { LayerListComponent } from './components/layer-list/layer-list.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [VectorsComponent, PaperDirective, EditVectorComponent, RouteVectorDirective, LayerListComponent],
-  imports: [CommonModule, VectorsRoutingModule, NgGunModule],
+  declarations: [
+    VectorsComponent,
+    PaperDirective,
+    EditVectorComponent,
+    RouteVectorDirective,
+    LayerListComponent,
+  ],
+  imports: [
+    CommonModule,
+    VectorsRoutingModule,
+    NgGunModule,
+    ReactiveFormsModule,
+  ],
   exports: [PaperDirective],
 })
 export class VectorsModule {}

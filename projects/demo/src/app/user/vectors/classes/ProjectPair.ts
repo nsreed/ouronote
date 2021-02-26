@@ -44,12 +44,15 @@ export class ProjectPair extends PaperPair {
     )
   );
 
-  constructor(public chain: GunChain<Vector>, public project: paper.Project) {
-    super(project, project); // UGN
+  constructor(
+    public chain: GunChain<Vector>,
+    public project: paper.Project,
+    scope: paper.PaperScope
+  ) {
+    super(project, project, scope); // UGN
     this.setupProject();
     console.log('new ProjectPair');
     (project as any).pair = this;
-    this.layers$.subscribe((data) => this.onGraphLayer(data));
     // project.layers
   }
 
@@ -73,14 +76,21 @@ export class ProjectPair extends PaperPair {
         console.warn('Child has no className, setting as Layer');
         json.className = 'Layer';
       }
+      // child = new paper.Layer();
+      // child.data.soul = soul;
+      // this.importing = true;
       child = this.constructChild(json, soul);
+      (this.project as any).insertLayer(0, child);
+      console.log('  created', child.toString());
+      // this.importing = false;
+      // this.onLocalLayer(child);
     }
   }
 
   onLocalLayer(layer: paper.Layer) {
     const l = layer as any;
-    // console.log('onLocalLayer %s', l.toString());
     if (!l.pair) {
+      console.log('onLocalLayer %s', l.toString());
       // console.log('  no gun');
       let save = false;
       if (!l.data.soul) {
@@ -92,7 +102,12 @@ export class ProjectPair extends PaperPair {
       if (l.data.soul) {
         // console.log('    this has a soul');
         const layerGun = this.layers.get(l.data.soul);
-        const layerPair = new ItemPair(layerGun, layer, this.project);
+        const layerPair = new ItemPair(
+          layerGun,
+          layer,
+          this.project,
+          this.scope
+        );
         if (save) {
           // layerPair.save();
         }
@@ -109,5 +124,6 @@ export class ProjectPair extends PaperPair {
     this.afterProjectInsertLayer$.subscribe((layer) =>
       this.onLocalLayer(layer)
     );
+    this.layers$.subscribe((data) => this.onGraphLayer(data));
   }
 }
