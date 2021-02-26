@@ -110,3 +110,6 @@ router-outlet + * {
 .row {
   flex-direction: row;
 }
+.grow {
+  flex-grow: 1;
+}
