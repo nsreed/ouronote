@@ -8,7 +8,8 @@ export class EraserTool extends VectorTool {
     this.drag.subscribe((e: paper.ToolEvent) => {
       // console.log('eraser drag');
       const hits = this.project.hitTestAll(e.point as any);
-      console.log('would erase', hits);
+      hits.forEach((hitResult: paper.HitResult) => hitResult.item.remove());
+      // console.log('would erase', hits);
     });
     this.up.subscribe((e) => (this.path = null));
   }
