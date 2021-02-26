@@ -14,8 +14,11 @@ export const REQUIRES = {
 } as any;
 
 export function hasRequired(json: any) {
+  if (!json) {
+    return false;
+  }
   if (!json.className) {
-    return true;
+    return false; // TODO? is this right?
   }
   const required = (REQUIRES[json.className] as string[]) || [];
   const missing = required.filter((r) => !Object.keys(json).includes(r));

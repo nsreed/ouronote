@@ -46,7 +46,8 @@ export class ItemPair extends PaperPair {
     distinct((v) => JSON.stringify(v)),
     take(1),
     delay(250),
-    map((c) => unpack(c))
+    map((c) => unpack(c)),
+    shareReplay()
   );
 
   private readonly childrenLoad$ = this.ready$
@@ -59,18 +60,21 @@ export class ItemPair extends PaperPair {
   childMap = this.children.map();
   children$ = this.childrenLoad$.pipe(
     switchMapTo(
-      this.childMap
-        .on({
-          includeKeys: true,
-          changes: true,
-        } as GunChainCallbackOptions)
-        .pipe(filter((ckv) => hasRequired(ckv[0])))
-    )
+      this.childMap.on({
+        includeKeys: true,
+        changes: true,
+      } as GunChainCallbackOptions)
+    ),
+    shareReplay()
   );
+  childrenExtant$ = this.children$.pipe(filter((ckv) => hasRequired(ckv[0])));
   newChildren$ = this.children$.pipe(filter((kvp) => !this.getChild(kvp[1])));
+  removedChildren$ = this.children$.pipe(filter((kvp) => kvp[0] === null));
 
   data: GunChain = this.chain.get('data');
   data$ = (this.data as any).open() as Observable<any>;
+
+  afterRemove$ = after$(this.item, 'remove');
 
   // Local Methods
   ignoreInsert = false;
@@ -112,19 +116,19 @@ export class ItemPair extends PaperPair {
       .subscribe((children: any) => {
         // console.dir(json);
         // const unpacked = unpack(json, this.item.data.soul);
-        console.log('%s children', this.item.toString());
-        const newChildren = children.filter(
-          (c: any) => !this.getChild(c[1].data.soul)
-        );
-        const toImport = [
-          this.item.className,
-          {
-            children: newChildren,
-            data: {
-              soul: this.item.data.soul,
-            },
-          },
-        ];
+        // console.log('%s children', this.item.toString());
+        // const newChildren = children.filter(
+        //   (c: any) => !this.getChild(c[1].data.soul)
+        // );
+        // const toImport = [
+        //   this.item.className,
+        //   {
+        //     children: newChildren,
+        //     data: {
+        //       soul: this.item.data.soul,
+        //     },
+        //   },
+        // ];
         // console.dir(toImport);
         // this.item.importJSON(JSON.stringify(toImport));
       });
@@ -175,9 +179,13 @@ export class ItemPair extends PaperPair {
   setup() {
     // console.log('setup()');
     // setupAllEmitters(this.item);
+    this.afterRemove$.subscribe(() => this.onLocalRemove());
     this.beforeImportJSON$.subscribe(() => (this.importing = true));
     this.afterImportJSON$.subscribe(() => (this.importing = false));
     this.children$.subscribe((data) => this.onGraphChild(data));
+    // this.children$.subscribe((data) => {
+    //   console.log('raw child', data);
+    // });
     this.afterInsertChild$.subscribe((child) => this.onLocalChild(child));
     // this.itemStrokeColor$.subscribe((color) => this.onItemStrokeColor(color));
     this.data$.subscribe((data) => this.onGraphData(data));
@@ -215,7 +223,7 @@ export class ItemPair extends PaperPair {
       console.warn('null child');
       return;
     }
-    // console.log('%s onLocalChild', this.item.toString(), item.toString());
+    console.log('%s onLocalChild', this.item.toString(), item.toString());
     const l = item as any;
     if (!l.pair) {
       // console.log('  no gun');
@@ -233,7 +241,7 @@ export class ItemPair extends PaperPair {
   }
 
   onGraph(json: any) {
-    // console.log('%s onGraph', this.item.toString());
+    console.log('%s onGraph', this.item.toString());
     const scrubbed = this.scrubJSON(json, this.item.data.soul);
     delete scrubbed.className;
     // console.log({ json, scrubbed });
@@ -255,23 +263,39 @@ export class ItemPair extends PaperPair {
     // console.log('%s onGraphChild', this.item.toString());
     const soul = data[1];
     const json = data[0];
-    if (!json) {
-      console.log('  child was deleted');
-      return;
-    }
     let child = this.getChild(soul);
-    if (!child) {
-      // console.log('%s onGraphChild', this.item.toString(), soul);
-      child = this.constructChild(json, soul);
-      // console.log('  child was added', child.toString());
-      this.ignoreInsert = true;
-      this.item.insertChild(0, child); // Cause of save loop is here
-      this.ignoreInsert = false;
-      this.onLocalChild(child);
+    if (!json) {
+      if (child) {
+        console.log('child was deleted');
+        child.remove();
+      }
     } else {
-      // console.log('  child exists');
+      if (!child) {
+        // console.log('%s onGraphChild', this.item.toString(), soul);
+        child = this.constructChild(json, soul);
+        // console.log('  child was added', child.toString());
+        this.ignoreInsert = true;
+        this.item.insertChild(0, child); // Cause of save loop is here
+        this.ignoreInsert = false;
+        this.onLocalChild(child);
+      } else {
+        // console.log('  child exists');
+      }
     }
   }
 
+  onGraphChildRemoved(key: string) {}
+
   onGraphData(data: any) {}
+
+  onLocalRemove() {
+    console.log('%s local remove()', this.item.toString());
+    // delete item's data.soul
+
+    // un-link this pair
+
+    // remove chain from its parent?????
+    // or just put(null)?
+    this.chain.put(null as never);
+  }
 }

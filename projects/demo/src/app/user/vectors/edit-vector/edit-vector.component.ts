@@ -53,6 +53,7 @@ export class EditVectorComponent
         return;
       }
       this.project = this.paperDirective.project;
+      this.paperDirective.pen.activate();
     });
     // let path: paper.Path & any;
     // this.paperDirective.too
