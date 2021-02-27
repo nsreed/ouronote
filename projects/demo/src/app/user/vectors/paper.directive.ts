@@ -139,6 +139,7 @@ export class PaperDirective implements OnInit {
       0,
       0
     ) as any;
+    this.project.currentStyle.strokeWidth = 5;
     [this.toolDown, this.toolUp, this.toolDrag, this.toolMove].forEach((e$) => {
       e$.subscribe();
     });
@@ -152,6 +153,7 @@ export class PaperDirective implements OnInit {
     }
     // If we don't change the view size at all, paper.js doesn't seem to update
     // This solves an issue that occurs on first loading a default size canvas
+    // FIXME cursor offset
     this.project.view.viewSize.width += 0.0001;
     this.project.view.viewSize.width = this.project.view.element.scrollWidth;
     this.project.view.viewSize.height = this.project.view.element.scrollHeight;
