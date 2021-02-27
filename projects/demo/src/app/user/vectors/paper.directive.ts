@@ -13,7 +13,14 @@ import {
 import * as paper from 'paper';
 import { Color, Project, PaperScope } from 'paper';
 import { fromEvent, from, Observable } from 'rxjs';
-import { mergeAll, tap, map, distinct } from 'rxjs/operators';
+import {
+  mergeAll,
+  tap,
+  map,
+  distinct,
+  switchMapTo,
+  switchMap,
+} from 'rxjs/operators';
 import { after } from 'aspect-ts';
 import { PenTool } from './tools/pen';
 import { EraserTool } from './tools/eraser';
@@ -29,7 +36,24 @@ export class PaperDirective implements OnInit {
   }
   @Output()
   appPaperChange = new EventEmitter();
-  project!: paper.Project;
+
+  projectChange = new EventEmitter<paper.Project>();
+
+  private _project!: paper.Project;
+  public get project(): paper.Project {
+    return this._project;
+  }
+  public set project(value: paper.Project) {
+    if (value !== this._project) {
+      this._project = value;
+      this.projectChange.emit(value);
+    }
+  }
+
+  resize$ = this.projectChange.pipe(
+    switchMap((project) => fromEvent(project.view, 'resize'))
+  );
+
   scope = new paper.PaperScope();
 
   public tool = new paper.Tool();
@@ -144,6 +168,9 @@ export class PaperDirective implements OnInit {
       e$.subscribe();
     });
     this.updateViewSize();
+    this.resize$.subscribe(() => {
+      console.log('PROJECT CANVAS RESIZE');
+    });
   }
 
   updateViewSize() {

@@ -18,6 +18,7 @@ export class VectorTool extends Tool {
   constructor(public readonly scope: paper.PaperScope) {
     super();
     this.setup();
+    // TODO touch events should be filterable/reduce()ed in such a way as to allow gesture integration
   }
   protected setup() {}
 }

@@ -185,6 +185,7 @@ export class ItemPair extends PaperPair {
     this.beforeImportJSON$.subscribe(() => (this.importing = true));
     this.afterImportJSON$.subscribe(() => (this.importing = false));
     this.children$.subscribe((data) => this.onGraphChild(data));
+    // TODO? ignoreInsert causing multiple local child adds to be ignored???
     this.afterInsertChild$.subscribe((child) => this.onLocalChild(child));
     this.data$.subscribe((data) => this.onGraphData(data));
     this.graphValue$.subscribe((json) => this.onGraph(json));
@@ -243,6 +244,7 @@ export class ItemPair extends PaperPair {
   }
 
   onGraph(json: any) {
+    // FIXME path segments getting overwritten by previous saves
     console.log('%s onGraph', this.item.toString());
     if (!json) {
       console.warn('  NO JSON! SHOULD REMOVE???');

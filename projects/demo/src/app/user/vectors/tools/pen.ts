@@ -5,6 +5,7 @@ export class PenTool extends VectorTool {
   path!: paper.Path;
   name = 'pen';
   style = new Style({});
+  color = new paper.Color(1, 0, 0);
   setup() {
     this.down.subscribe((e) => {
       this.path = new paper.Path(e.point) as any;
@@ -13,11 +14,8 @@ export class PenTool extends VectorTool {
     });
     this.drag.subscribe((e) => {
       this.path.add(e.point);
-      this.path.strokeColor = new paper.Color(
-        Math.random(),
-        Math.random(),
-        Math.random()
-      ) as any;
+      this.color.hue++;
+      this.path.strokeColor = this.color as any;
     });
     this.up.subscribe((e) => {
       (this.path as any).pair.save();

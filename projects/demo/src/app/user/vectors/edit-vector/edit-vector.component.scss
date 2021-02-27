@@ -3,10 +3,16 @@ canvas {
   height: 100%;
   flex-grow: 1;
   align-self: stretch;
+  overflow: hidden;
 
   outline: solid 1px gray;
 }
 
 aside {
   flex-shrink: 0;
+}
+
+form {
+  padding: 0;
+  margin: 0;
 }
