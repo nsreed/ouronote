@@ -15,10 +15,11 @@ export const REQUIRES = {
 
 export function hasRequired(json: any) {
   if (!json) {
+    console.warn('hasRequired() NULL VALUE');
     return false;
   }
   if (!json.className) {
-    return false; // TODO? is this right?
+    return false;
   }
   const required = (REQUIRES[json.className] as string[]) || [];
   const missing = required.filter((r) => !Object.keys(json).includes(r));

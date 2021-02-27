@@ -80,7 +80,8 @@ export class ProjectPair extends PaperPair {
       // child.data.soul = soul;
       // this.importing = true;
       child = this.constructChild(json, soul);
-      (this.project as any).insertLayer(0, child);
+      // TODO insert at appropriate z-order
+      (this.project as any).insertLayer(this.project.layers.length, child);
       console.log('  created', child.toString());
       // this.importing = false;
       // this.onLocalLayer(child);
@@ -91,30 +92,13 @@ export class ProjectPair extends PaperPair {
     const l = layer as any;
     if (!l.pair) {
       console.log('onLocalLayer %s', l.toString());
-      // console.log('  no gun');
-      let save = false;
       if (!l.data.soul) {
         // console.log('    no soul');
         const soul = getUUID(this.chain as any);
         l.data.soul = soul;
-        save = true;
       }
-      if (l.data.soul) {
-        // console.log('    this has a soul');
-        const layerGun = this.layers.get(l.data.soul);
-        const layerPair = new ItemPair(
-          layerGun,
-          layer,
-          this.project,
-          this.scope
-        );
-        if (save) {
-          // layerPair.save();
-        }
-      }
-
-      // this is local create
-      // but it could be for a parent's importJSON?????
+      const layerGun = this.layers.get(l.data.soul);
+      const layerPair = new ItemPair(layerGun, layer, this.project, this.scope);
     }
   }
 

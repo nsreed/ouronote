@@ -129,9 +129,6 @@ export function getUUID(parent: GunChain) {
 }
 
 export function gunifyProject(node: GunChain, project: paper.Project) {
-  // TODO find a way to uniquely identify exported items. This is a chicken and egg problem?
-  // TODO like, we need to assign souls to paper items recursively?
-  // TODO like... exporting should be done after we've assigned souls (or tentative souls?) to every item we want to export
   const soulless = project.getItems({
     match: (item: any) => {
       // console.log('considering', item);
@@ -144,7 +141,7 @@ export function gunifyProject(node: GunChain, project: paper.Project) {
   const projectData = project.exportJSON({ asString: false });
   const gunified = bindPaperJSON(projectData, node);
   console.log('gunified', gunified);
-  // TODO Uncomment this when you're ready for actually putting paper data in graph
+  // Uncomment this when you're ready for actually putting paper data in graph
   // node.put(gunified);
   return gunified;
 }

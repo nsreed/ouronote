@@ -10,9 +10,9 @@
     <button (click)="addLayer()">Add Layer</button>
     <div *ngFor="let layer of project?.layers" (click)="layer.activate()">
       {{layer.toString()}} {{layer===project.activeLayer?'*':''}}
-      <div *ngFor="let child of layer.children">
+      <!-- <div *ngFor="let child of layer.children">
         {{child.toString()}}
-      </div>
+      </div> -->
     </div>
     <hr>
     <h3>Tools</h3>

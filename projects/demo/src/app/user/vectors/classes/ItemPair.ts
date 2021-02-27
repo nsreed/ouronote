@@ -35,13 +35,16 @@ import { unpack } from './packaging';
 import { waitForAsync } from '@angular/core/testing';
 
 export class ItemPair extends PaperPair {
-  json$ = this.chain.on({ changes: true } as GunChainCallbackOptions).pipe(
+  graph$ = this.chain.on({ changes: true } as GunChainCallbackOptions).pipe(
     // tap((json) => console.log('graph JSON', json)),
-    filter((json) => hasRequired(json))
+    // filter((json) => hasRequired(json))
+    shareReplay()
   );
+  graphValue$ = this.graph$.pipe(filter((json) => hasRequired(json)));
+  graphRemove$ = this.graph$.pipe(filter((json) => json === null));
   // Graph Methods
   children = this.chain.get('children');
-  ready$ = this.json$.pipe(take(1), shareReplay(1));
+  ready$ = this.graphValue$.pipe(take(1), shareReplay(1));
   private readonly graphLoad$ = this.children.open().pipe(
     distinct((v) => JSON.stringify(v)),
     take(1),
@@ -115,6 +118,7 @@ export class ItemPair extends PaperPair {
     this.childrenLoad$
       .pipe(filter((children) => children.length > 0))
       .subscribe((children: any) => {
+        // TODO Performance: bulk-load children before setting up this item
         // console.dir(json);
         // const unpacked = unpack(json, this.item.data.soul);
         // console.log('%s children', this.item.toString());
@@ -167,39 +171,38 @@ export class ItemPair extends PaperPair {
 
   doSave() {
     const shallow = this.getShallow();
+    // TODO only put() changed fields
     if (this.importing) {
       console.warn('tried to save while importing');
       return;
     }
     // console.log('%s saving', this.item.toString());
     // console.log(shallow);
-    this.chain.put(shallow); // TODO NOT READY FOR SAVE YET
+    this.chain.put(shallow);
     // console.log('%s done saving', this.item.toString());
   }
 
   setup() {
-    // console.log('setup()');
-    // setupAllEmitters(this.item);
     this.afterRemove$.subscribe(() => this.onLocalRemove());
     this.beforeImportJSON$.subscribe(() => (this.importing = true));
     this.afterImportJSON$.subscribe(() => (this.importing = false));
     this.children$.subscribe((data) => this.onGraphChild(data));
-    // this.children$.subscribe((data) => {
-    //   console.log('raw child', data);
-    // });
     this.afterInsertChild$.subscribe((child) => this.onLocalChild(child));
-    // this.itemStrokeColor$.subscribe((color) => this.onItemStrokeColor(color));
     this.data$.subscribe((data) => this.onGraphData(data));
-    this.json$.subscribe((json) => this.onGraph(json));
+    this.graphValue$.subscribe((json) => this.onGraph(json));
+    this.graphRemove$.subscribe((json) => {
+      console.log('%s should remove this', this.item.toString());
+    });
     this.onLocalChildren();
     const allSettable = getAllSettable(this.item);
     // console.log('all settable:', allSettable);
+
+    // TODO? move propertyChange$ interception to prototype
     allSettable
       .map((pdk) => pdk[1])
       .forEach((k) => {
         propertyChange$(this.item, k as any).subscribe((v) => {
           if (this.importing) {
-            // console.log('%s ignored save durimg import', this.item.toString());
             return;
           }
           // console.log('%s property %s change', this.item.toString(), k, v);
@@ -243,6 +246,9 @@ export class ItemPair extends PaperPair {
 
   onGraph(json: any) {
     console.log('%s onGraph', this.item.toString());
+    if (!json) {
+      console.warn('  NO JSON! SHOULD REMOVE???');
+    }
     const scrubbed = this.scrubJSON(json, this.item.data.soul);
     delete scrubbed.className;
     // console.log({ json, scrubbed });
@@ -272,6 +278,9 @@ export class ItemPair extends PaperPair {
       if (child) {
         console.log('child was deleted');
         child.remove();
+      } else {
+        // This is a null graph child that wasn't created locally (historic delete), don't do anything
+        // console.warn('incoming delete for unmatched child!');
       }
     } else {
       if (!child) {
@@ -283,6 +292,7 @@ export class ItemPair extends PaperPair {
         this.ignoreInsert = false;
         this.onLocalChild(child);
       } else {
+        // This is an update for an existing child
         // console.log('  child exists');
       }
     }
