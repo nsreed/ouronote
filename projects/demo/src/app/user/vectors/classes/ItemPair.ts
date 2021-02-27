@@ -85,6 +85,7 @@ export class ItemPair extends PaperPair {
   afterImportJSON$ = after$(this.item, 'importJSON');
   afterInsertChild$ = after$(this.item, 'insertChild').pipe(
     map(returned),
+    filter((item) => !this.item.data.ignored),
     filter((item) => !this.ignoreInsert && item !== null && item !== undefined),
     switchMap((item) =>
       this.importing ? this.afterImportJSON$.pipe(mapTo(item)) : of(item)

@@ -95,4 +95,9 @@ export class EditVectorComponent
     console.log(this.paperDirective.project.layers);
     (layer as any).pair.save();
   }
+
+  onIgnored() {
+    const layer = new paper.Layer();
+    layer.data.ignored = true;
+  }
 }

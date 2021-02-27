@@ -4,8 +4,11 @@
 </form>
 <div class="row grow">
   <aside>
+
     <h3>Style</h3>
+    <button (click)="onIgnored()">CREATE IGNORED</button>
     <hr>
+
     <h3>Layers</h3>
     <button (click)="addLayer()">Add Layer</button>
     <div *ngFor="let layer of project?.layers" (click)="layer.activate()">
@@ -15,6 +18,7 @@
       </div> -->
     </div>
     <hr>
+
     <h3>Tools</h3>
     <div [appTool]="tool" *ngFor="let tool of paper.scope.tools" (click)="tool.activate()">
       {{tool.name}}
