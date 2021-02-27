@@ -10,12 +10,7 @@ import { User } from './model';
 export class AppComponent {
   user: any;
   constructor(public ngGun: NgGunService<User>) {
-    // const ug = ngGun.gun.user(
-    //   'VrEQ5DzIHnVoWk0vzp7FFCVzjYwMhSrFxcHTZw8_IP4.X6Kt40eR5STMbUgO5mge19o_NxGezx6SMsJ6W0bHaec'
-    // );
-    // ug.once((ud) => {
-    //   console.log({ ug, ud });
-    // }); // TODO NOTE gun.user(pub) does *not* provide auth() method
+    // NOTE gun.user(pub) does *not* provide auth() method
     const a = ngGun.auth();
     const b = ngGun.auth();
 

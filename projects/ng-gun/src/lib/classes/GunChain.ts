@@ -223,7 +223,7 @@ export class GunChain<
                 handler(data);
               }
             };
-            // FIXME: this is causing an infinite recursion?
+            // FIXME: ngZone.run() causes infinite recursion
             this.ngZone.run(dispatchHandler);
           },
           options as any

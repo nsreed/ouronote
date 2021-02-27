@@ -106,13 +106,10 @@ export class ItemPair extends PaperPair {
     // tap((mutation) => console.log('%s mutation', mutation))
   );
 
-  // itemStrokeColor = this.chain.get('strokeColor');
-  // itemStrokeColor$ = propertyChange$(this.item, 'strokeColor').pipe(distinct());
-
   constructor(
     private chain: GunChain<ItemGraph>,
     private item: paper.Item,
-    project: paper.Project, // Do we need the project? The item's `project` property should be able to get it...,
+    project: paper.Project,
     scope: paper.PaperScope
   ) {
     super(item, project, scope);
