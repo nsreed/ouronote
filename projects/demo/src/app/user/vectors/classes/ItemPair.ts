@@ -1,38 +1,28 @@
+import * as paper from 'paper';
+import { from, Observable, of } from 'rxjs';
 import {
-  shareReplay,
-  map,
-  switchMap,
-  mapTo,
-  filter,
-  distinct,
-  concatMap,
-  mergeMap,
   delay,
-  skipUntil,
-  buffer,
-  bufferWhen,
-  delayWhen,
+  distinct,
+  filter,
+  map,
+  mapTo,
+  mergeMap,
+  shareReplay,
+  switchMap,
   switchMapTo,
+  take,
 } from 'rxjs/operators';
-import { ItemGraph } from '../../../model';
-import { Observable, of, from } from 'rxjs';
-import { PaperPair } from './PaperPair';
-import { after$, before$, returned } from '../../../functions/aspect-rx';
-import { getUUID } from '../edit-vector/converter-functions';
 import {
   GunChain,
   GunChainCallbackOptions,
 } from '../../../../../../ng-gun/src/lib/classes/GunChain';
+import { after$, before$, returned } from '../../../functions/aspect-rx';
+import { ItemGraph } from '../../../model';
+import { getUUID } from '../edit-vector/converter-functions';
 import { EXPECT_ARRAY, hasRequired, MUTATIONS } from './constants';
-import {
-  propertyChange$,
-  setupAllEmitters,
-  getAllSettable,
-} from './paper-chain';
-import * as paper from 'paper';
-import { tap, debounceTime, take } from 'rxjs/operators';
 import { unpack } from './packaging';
-import { waitForAsync } from '@angular/core/testing';
+import { getAllSettable, propertyChange$ } from './paper-chain';
+import { PaperPair } from './PaperPair';
 
 export class ItemPair extends PaperPair {
   graph$ = this.chain.on({ changes: true } as GunChainCallbackOptions).pipe(
@@ -40,7 +30,10 @@ export class ItemPair extends PaperPair {
     // filter((json) => hasRequired(json))
     shareReplay()
   );
-  graphValue$ = this.graph$.pipe(filter((json) => hasRequired(json)));
+  graphValue$ = this.graph$.pipe(
+    filter((json) => hasRequired(json)),
+    distinct((v) => JSON.stringify(v))
+  );
   graphRemove$ = this.graph$.pipe(filter((json) => json === null));
   // Graph Methods
   children = this.chain.get('children');
@@ -113,6 +106,10 @@ export class ItemPair extends PaperPair {
     scope: paper.PaperScope
   ) {
     super(item, project, scope);
+    this.graphLoad$.subscribe((loaded) => {
+      console.log('%s graph load', this.item.toString());
+      console.log(loaded);
+    });
     this.childrenLoad$
       .pipe(filter((children) => children.length > 0))
       .subscribe((children: any) => {

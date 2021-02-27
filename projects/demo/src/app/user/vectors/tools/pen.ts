@@ -5,7 +5,7 @@ export class PenTool extends VectorTool {
   path!: paper.Path;
   name = 'pen';
   style = new Style({});
-  color = new paper.Color(1, 0, 0);
+  color = new paper.Color(Math.random(), Math.random(), Math.random());
   setup() {
     this.down.subscribe((e) => {
       this.path = new paper.Path(e.point) as any;

@@ -6,6 +6,9 @@ export function unpack(value: any, soul: string | null = value.data?.soul) {
   return value.className ? unpackObject(value) : unpackArray(value);
 }
 function unpackObject(item: any, soul: string | null = item.data?.soul) {
+  if (!item) {
+    return null;
+  }
   const scrubbed = { ...item } as any;
   const className = item.className;
   scrubbed.data = {
