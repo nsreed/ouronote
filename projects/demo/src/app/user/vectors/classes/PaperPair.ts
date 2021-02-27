@@ -63,6 +63,7 @@ export class PaperPair {
       }
       return;
     }
+    const prevInsertItemsValue = (this.scope.settings as any).insertItems;
     (this.scope.settings as any).insertItems = false;
     const scrubbed = {
       ...childJSON,
@@ -84,6 +85,8 @@ export class PaperPair {
     const stringed = JSON.stringify([childJSON.className, scrubbed]);
     let child: any;
     if (childJSON.className === 'Layer') {
+      // If the Project already has a layer, using importJSON will merge the incoming layer with it,
+      // so we have to use its constructor instead
       console.log('child is layer, forcing new Layer()');
       child = new paper.Layer();
       child.importJSON(stringed);
@@ -91,11 +94,15 @@ export class PaperPair {
       child = this.project.importJSON(stringed);
     }
     // console.log('created', child);
-    (this.scope.settings as any).insertItems = true;
+    (this.scope.settings as any).insertItems = prevInsertItemsValue;
     return child;
   }
 
   save() {
+    if (this.ctx?.data?.ignore) {
+      console.warn('tried saving ignored item');
+      return;
+    }
     this.save$.emit();
   }
 
