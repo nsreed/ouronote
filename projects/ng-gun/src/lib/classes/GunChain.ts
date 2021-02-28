@@ -32,6 +32,7 @@ export interface GunChainCallbackOptions {
   includeKeys?: boolean;
   includeNulls?: boolean;
   changes?: boolean;
+  bypassZone?: boolean;
 }
 
 export interface GunChainFunctions {
@@ -224,7 +225,11 @@ export class GunChain<
               }
             };
             // FIXME: ngZone.run() causes infinite recursion
-            this.ngZone.run(dispatchHandler);
+            if (options?.bypassZone) {
+              dispatchHandler();
+            } else {
+              this.ngZone.run(dispatchHandler);
+            }
           },
           options as any
         );

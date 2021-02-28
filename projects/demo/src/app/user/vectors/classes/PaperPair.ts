@@ -14,6 +14,7 @@ export class PaperPair {
 
   save$ = new EventEmitter();
   debouncedSave$ = this.save$.pipe(debounceTime(100));
+  childCache = {} as any;
 
   constructor(
     private ctx: any,
@@ -28,12 +29,19 @@ export class PaperPair {
     this.debouncedSave$.subscribe(() => this.doSave());
   }
 
+  hasChild(key: string) {
+    return this.childCache[key] === undefined;
+  }
+
   getChild(jsonOrKey: any) {
     // console.log('finding child', jsonOrKey);
-    const child = this.ctx.children?.find(
-      (i: paper.Item) => i.data.soul === jsonOrKey
-    );
-    return child;
+    if (!this.childCache[jsonOrKey]) {
+      const child = this.ctx.children?.find(
+        (i: paper.Item) => i.data.soul === jsonOrKey
+      );
+      this.childCache[jsonOrKey] = child;
+    }
+    return this.childCache[jsonOrKey];
   }
 
   scrubJSON(json: any, key: string) {

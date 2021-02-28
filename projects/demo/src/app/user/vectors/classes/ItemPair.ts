@@ -1,5 +1,5 @@
 import * as paper from 'paper';
-import { from, Observable, of, timer } from 'rxjs';
+import { from, Observable, of, timer, fromEvent } from 'rxjs';
 import {
   buffer,
   bufferCount,
@@ -27,60 +27,39 @@ import { EXPECT_ARRAY, hasRequired, MUTATIONS } from './constants';
 import { unpack } from './packaging';
 import { getAllSettable, propertyChange$ } from './paper-chain';
 import { PaperPair } from './PaperPair';
-import { debounceTime } from 'rxjs/operators';
+import { debounceTime, tap } from 'rxjs/operators';
 
 export class ItemPair extends PaperPair {
-  graph$ = this.chain.on({ changes: true } as GunChainCallbackOptions).pipe(
-    // tap((json) => console.log('graph JSON', json)),
-    // filter((json) => hasRequired(json))
-    shareReplay()
-  );
+  graph$ = this.chain
+    .on({ changes: true, bypassZone: true } as GunChainCallbackOptions)
+    .pipe(shareReplay());
   graphValue$ = this.graph$.pipe(
     filter((json) => hasRequired(json)),
     distinct((v) => JSON.stringify(v))
   );
   graphRemove$ = this.graph$.pipe(filter((json) => json === null));
+
   // Graph Methods
+  childSouls = new Set<string>();
   children = this.chain.get('children');
   ready$ = this.graphValue$.pipe(take(1), shareReplay(1));
-  private readonly graphLoad$ = this.children.open().pipe(
-    delay(250),
-    map((c) => unpack(c)),
-    // distinct((v) => JSON.stringify(v)),
-    take(1),
-    shareReplay()
-  );
-
-  private readonly childrenLoad$ = this.graphLoad$.pipe(
-    // switchMapTo(
-    //   this.graphLoad$
-    // )
-    shareReplay()
-  );
 
   childMap = this.children.map();
-  // children$ = this.childrenLoad$.pipe(
-  //   switchMapTo(
-  //     this.childMap.on({
-  //       includeKeys: true,
-  //       changes: true,
-  //     } as GunChainCallbackOptions)
-  //   ),
-  //   shareReplay()
-  // );
   children$ = this.childMap
     .on({
       includeKeys: true,
       changes: true,
+      bypassZone: true,
     })
-    .pipe
-    // buffer(timer(100)),
-    // mergeMap((v) => from(v))
-    ();
+    .pipe(
+      tap((childVK) => {
+        this.childSouls.add(childVK[1]);
+      })
+    );
 
+  // FIXME find a better way to buffer by time window - bufferTime() continuously emits, causing expensive filtering for thousands of objects!
   childrenBuffer$ = this.children$.pipe(
-    distinct((v) => JSON.stringify(v[0])),
-    bufferTime(200),
+    bufferTime(100),
     filter((children) => children.length > 0)
   );
   childrenExtant$ = this.children$.pipe(filter((ckv) => hasRequired(ckv[0])));
@@ -181,9 +160,12 @@ export class ItemPair extends PaperPair {
     this.graphValue$.subscribe((json) => this.onGraph(json));
     this.graphRemove$.subscribe((json) => {
       console.log('%s should remove this', this.item.toString());
+      if (this.item.isInserted()) {
+        this.item.remove();
+      }
     });
     this.onLocalChildren();
-    const allSettable = getAllSettable(this.item);
+    // const allSettable = getAllSettable(this.item);
 
     // this.graphLoad$.subscribe((loaded) => {
     //   console.log('%s graph load', this.item.toString());
@@ -205,19 +187,28 @@ export class ItemPair extends PaperPair {
     //   .subscribe((data) => this.onGraphChild(data));
     this.childrenBuffer$.subscribe((data) => this.onGraphChildren(data));
 
+    // fromEvent(this.item, 'strokeColorChange').subscribe((change) => {
+    //   console.log('%s got native change', this.item.toString(), change);
+    // });
     // TODO? move propertyChange$ interception to prototype
-    allSettable
-      .map((pdk) => pdk[1])
-      .forEach((k) => {
-        propertyChange$(this.item, k as any).subscribe((v) => {
-          if (this.importing) {
-            return;
-          }
-          // console.log('%s property %s change', this.item.toString(), k, v);
-          // this.chain.get(k)
-          this.save();
-        });
+    (this.item as any).changes$
+      .pipe(filter((v) => !this.importing))
+      .subscribe((change: [string, any]) => {
+        // console.log('%s %s change', this.item.toString(), change[0], change[1]);
+        this.save();
       });
+    // allSettable
+    //   .map((pdk) => pdk[1])
+    //   .forEach((k) => {
+    //     propertyChange$(this.item, k as any).subscribe((v) => {
+    //       if (this.importing) {
+    //         return;
+    //       }
+    //       // console.log('%s property %s change', this.item.toString(), k, v);
+    //       // this.chain.get(k)
+    //       this.save();
+    //     });
+    //   });
     this.localChange$.subscribe((data) => {
       // console.log('localChange$', data);
       // this.save();
@@ -280,7 +271,7 @@ export class ItemPair extends PaperPair {
 
   onGraphChildren(data: any[]) {
     console.log('%s onGraphChildren', this.item.toString());
-    console.log(data);
+    // console.log(data);
     const toInsert = [] as paper.Item[];
     data.forEach((childVK) => {
       const soul = childVK[1];
@@ -291,6 +282,8 @@ export class ItemPair extends PaperPair {
       } else if (json && !child) {
         // child was added
         const newChild = this.constructChild(json, soul);
+        // TODO Performance: onLocalChild sets up **everything** on **every** child in this loop, can we suffice for deferred setups???
+        this.onLocalChild(newChild);
         toInsert.push(newChild);
       }
     });

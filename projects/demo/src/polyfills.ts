@@ -63,6 +63,7 @@ import 'zone.js/dist/zone'; // Included with Angular CLI.
  * APPLICATION IMPORTS
  */
 
+/* GUN IMPORT */
 import 'gun';
 import 'gun/lib/radix';
 import 'gun/lib/radisk';
@@ -75,3 +76,114 @@ import 'gun/lib/open';
 import 'gun/lib/then';
 import 'gun/lib/not';
 import 'gun/lib/unset';
+
+/* PAPER.JS OVERRIDES */
+
+import * as paper from 'paper';
+import { EventEmitter } from '@angular/core';
+
+const IGNORED_PROPS = ['selected', 'segments'];
+const prototypeProperties = {} as any;
+const prototypeOwnProperties = {} as any;
+
+function getOwnSettable(proto: any) {
+  if (!(proto.constructor.name in prototypeOwnProperties)) {
+    const likelyProperties = Object.getOwnPropertyDescriptors(proto);
+    const props = Object.keys(likelyProperties)
+      .map((k) => [likelyProperties[k], k, proto.constructor])
+      .filter((prop) => {
+        const d = prop[0] as PropertyDescriptor;
+        return (
+          d.enumerable &&
+          d.set &&
+          !(prop[1] as any).startsWith('on') &&
+          !IGNORED_PROPS.includes(prop[1] as any)
+        );
+      });
+    prototypeOwnProperties[proto.constructor.name] = props;
+  }
+  return prototypeOwnProperties[proto.constructor.name];
+}
+
+function getProtoSettable(prototype: any) {
+  if (!(prototype.constructor.name in prototypeProperties)) {
+    console.log('prototype', prototype);
+
+    let proto = prototype;
+    let properties: any[] = [];
+    while (proto) {
+      const props = getOwnSettable(proto);
+      properties = [...properties, ...props];
+      proto = Object.getPrototypeOf(proto);
+    }
+    prototypeProperties[prototype.constructor.name] = properties;
+  }
+  return prototypeProperties[prototype.constructor.name];
+}
+
+function interceptAll(prototype: any) {
+  console.log('intercepting', prototype.constructor.name);
+  addChangeEmitter(prototype);
+  const props = getOwnSettable(prototype);
+  props.forEach((prop: any[]) => {
+    const original = prop[0];
+    const name = prop[1];
+
+    console.log('%s.%s', prototype.constructor.name, name);
+    Object.defineProperty(prototype, name, {
+      get(...args) {
+        return original.get.call(this, ...args);
+      },
+      set(...args) {
+        // const oldValue = original.get.call(this);
+        // let serialized;
+        // try {
+        //   if (args.length === 1) {
+        //     serialized = args[0]._serialize
+        //       ? args[0]._serialize({ asString: false }, [])
+        //       : JSON.stringify(...args);
+        //     console.log(
+        //       '%s %s serialized %s',
+        //       prototype.constructor.name,
+        //       this.toString(),
+        //       name,
+        //       serialized
+        //     );
+        //   }
+        // } catch (e: any) {
+        //   // console.warn('error serializing:', e);
+        // }
+        original.set.call(this, ...args);
+        this.emit?.call(this, `${name}Change`, {
+          value: args,
+        });
+        this.changes$.emit([name, ...args]);
+      },
+    });
+  });
+}
+
+function addChangeEmitter(prototype: any) {
+  if (!Object.getOwnPropertyDescriptor(prototype, 'changes$')) {
+    Object.defineProperty(prototype, 'changes$', {
+      get() {
+        if (!this._changes$) {
+          this._changes$ = new EventEmitter();
+        }
+        return this._changes$;
+      },
+    });
+  }
+}
+
+// interceptAll(paper.Project.prototype);
+interceptAll(paper.Item.prototype);
+interceptAll(paper.Path.prototype);
+interceptAll(paper.Layer.prototype);
+interceptAll(paper.Shape.prototype);
+interceptAll(paper.Style.prototype);
+// console.log(Object.getOwnPropertyDescriptors(paper));
+
+// const itemProps = getProtoSettable(paper.Item.prototype);
+// const shapeProps = getProtoSettable(paper.Shape.prototype);
+// console.log({ itemProps, shapeProps });
