@@ -20,7 +20,7 @@ export class PaperPair {
     protected project: paper.Project, // Do we need the project? The item's `project` property should be able to get it...
     protected scope: paper.PaperScope
   ) {
-    console.log('%s Pair', ctx.toString());
+    // console.log('%s Pair', ctx.toString());
     if (ctx.pair) {
       console.error('CREATING A DUPLICATE PAIR FOR SCOPE', ctx);
     }
@@ -87,7 +87,7 @@ export class PaperPair {
     if (childJSON.className === 'Layer') {
       // If the Project already has a layer, using importJSON will merge the incoming layer with it,
       // so we have to use its constructor instead
-      console.log('child is layer, forcing new Layer()');
+      // console.log('child is layer, forcing new Layer()');
       child = new paper.Layer();
       child.importJSON(stringed);
     } else {

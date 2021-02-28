@@ -1,6 +1,10 @@
 import * as paper from 'paper';
-import { from, Observable, of } from 'rxjs';
+import { from, Observable, of, timer } from 'rxjs';
 import {
+  buffer,
+  bufferCount,
+  bufferTime,
+  bufferToggle,
   delay,
   distinct,
   filter,
@@ -23,6 +27,7 @@ import { EXPECT_ARRAY, hasRequired, MUTATIONS } from './constants';
 import { unpack } from './packaging';
 import { getAllSettable, propertyChange$ } from './paper-chain';
 import { PaperPair } from './PaperPair';
+import { debounceTime } from 'rxjs/operators';
 
 export class ItemPair extends PaperPair {
   graph$ = this.chain.on({ changes: true } as GunChainCallbackOptions).pipe(
@@ -39,14 +44,14 @@ export class ItemPair extends PaperPair {
   children = this.chain.get('children');
   ready$ = this.graphValue$.pipe(take(1), shareReplay(1));
   private readonly graphLoad$ = this.children.open().pipe(
-    distinct((v) => JSON.stringify(v)),
-    take(1),
     delay(250),
     map((c) => unpack(c)),
+    // distinct((v) => JSON.stringify(v)),
+    take(1),
     shareReplay()
   );
 
-  private readonly childrenLoad$ = this.ready$.pipe(
+  private readonly childrenLoad$ = this.graphLoad$.pipe(
     // switchMapTo(
     //   this.graphLoad$
     // )
@@ -54,14 +59,29 @@ export class ItemPair extends PaperPair {
   );
 
   childMap = this.children.map();
-  children$ = this.childrenLoad$.pipe(
-    switchMapTo(
-      this.childMap.on({
-        includeKeys: true,
-        changes: true,
-      } as GunChainCallbackOptions)
-    ),
-    shareReplay()
+  // children$ = this.childrenLoad$.pipe(
+  //   switchMapTo(
+  //     this.childMap.on({
+  //       includeKeys: true,
+  //       changes: true,
+  //     } as GunChainCallbackOptions)
+  //   ),
+  //   shareReplay()
+  // );
+  children$ = this.childMap
+    .on({
+      includeKeys: true,
+      changes: true,
+    })
+    .pipe
+    // buffer(timer(100)),
+    // mergeMap((v) => from(v))
+    ();
+
+  childrenBuffer$ = this.children$.pipe(
+    distinct((v) => JSON.stringify(v[0])),
+    bufferTime(200),
+    filter((children) => children.length > 0)
   );
   childrenExtant$ = this.children$.pipe(filter((ckv) => hasRequired(ckv[0])));
   newChildren$ = this.children$.pipe(filter((kvp) => !this.getChild(kvp[1])));
@@ -106,32 +126,6 @@ export class ItemPair extends PaperPair {
     scope: paper.PaperScope
   ) {
     super(item, project, scope);
-    this.graphLoad$.subscribe((loaded) => {
-      console.log('%s graph load', this.item.toString());
-      console.log(loaded);
-    });
-    this.childrenLoad$
-      .pipe(filter((children) => children.length > 0))
-      .subscribe((children: any) => {
-        // TODO Performance: bulk-load children before setting up this item
-        // console.dir(json);
-        // const unpacked = unpack(json, this.item.data.soul);
-        // console.log('%s children', this.item.toString());
-        // const newChildren = children.filter(
-        //   (c: any) => !this.getChild(c[1].data.soul)
-        // );
-        // const toImport = [
-        //   this.item.className,
-        //   {
-        //     children: newChildren,
-        //     data: {
-        //       soul: this.item.data.soul,
-        //     },
-        //   },
-        // ];
-        // console.dir(toImport);
-        // this.item.importJSON(JSON.stringify(toImport));
-      });
     this.setup();
   }
 
@@ -181,7 +175,6 @@ export class ItemPair extends PaperPair {
     this.afterRemove$.subscribe(() => this.onLocalRemove());
     this.beforeImportJSON$.subscribe(() => (this.importing = true));
     this.afterImportJSON$.subscribe(() => (this.importing = false));
-    this.children$.subscribe((data) => this.onGraphChild(data));
     // TODO? ignoreInsert causing multiple local child adds to be ignored???
     this.afterInsertChild$.subscribe((child) => this.onLocalChild(child));
     this.data$.subscribe((data) => this.onGraphData(data));
@@ -191,7 +184,26 @@ export class ItemPair extends PaperPair {
     });
     this.onLocalChildren();
     const allSettable = getAllSettable(this.item);
+
+    // this.graphLoad$.subscribe((loaded) => {
+    //   console.log('%s graph load', this.item.toString());
+    //   // console.log(loaded);
+    //   // this.item.importJSON([
+    //   //   this.item.className,
+    //   //   {
+    //   //     children: loaded,
+    //   //   },
+    //   // ] as any);
+    // });
     // console.log('all settable:', allSettable);
+    // TODO bulk load is close to working - broken for new layers
+    // TODO use buffer(time) on children to process in batches & maybe allow bulk load to interject
+    // TODO use once() then switchMap() to accept map() (unbuffered)
+    // TODO use reduce() (which is more like scan) (or re-create reduce() ... ?)
+    // this.graphLoad$
+    //   .pipe(switchMapTo(this.children$))
+    //   .subscribe((data) => this.onGraphChild(data));
+    this.childrenBuffer$.subscribe((data) => this.onGraphChildren(data));
 
     // TODO? move propertyChange$ interception to prototype
     allSettable
@@ -225,14 +237,14 @@ export class ItemPair extends PaperPair {
     }
     const l = item as any;
     if (!l.pair) {
-      console.log('%s onLocalChild', this.item.toString(), item.toString());
+      // console.log('%s onLocalChild', this.item.toString(), item.toString());
       // console.log('  no gun');
       if (!l.data.soul) {
         // console.log('  no soul');
         const soul = getUUID(this.chain as any);
         l.data.soul = soul;
       }
-      console.log('  soul ', l.data.soul);
+      // console.log('  soul ', l.data.soul);
       const childGun = this.children.get(l.data.soul);
       const childPair = new ItemPair(childGun, item, this.project, this.scope);
       l.pair = childPair;
@@ -242,7 +254,7 @@ export class ItemPair extends PaperPair {
 
   onGraph(json: any) {
     // FIXME path segments getting overwritten by previous saves
-    console.log('%s onGraph', this.item.toString());
+    // console.log('%s onGraph', this.item.toString());
     if (!json) {
       console.warn('  NO JSON! SHOULD REMOVE???');
     }
@@ -264,6 +276,27 @@ export class ItemPair extends PaperPair {
       console.error('error drawing item', e);
     }
     // console.dir(json);
+  }
+
+  onGraphChildren(data: any[]) {
+    console.log('%s onGraphChildren', this.item.toString());
+    console.log(data);
+    const toInsert = [] as paper.Item[];
+    data.forEach((childVK) => {
+      const soul = childVK[1];
+      const json = childVK[0];
+      const child = this.getChild(soul);
+      if (child && !json) {
+        // child was removed
+      } else if (json && !child) {
+        // child was added
+        const newChild = this.constructChild(json, soul);
+        toInsert.push(newChild);
+      }
+    });
+    this.ignoreInsert = true;
+    this.item.insertChildren(this.item.children.length, toInsert as any);
+    this.ignoreInsert = false;
   }
 
   onGraphChild(data: any) {

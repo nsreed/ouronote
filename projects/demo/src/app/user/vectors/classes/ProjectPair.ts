@@ -64,16 +64,16 @@ export class ProjectPair extends PaperPair {
   onGraphLayer(data: any) {
     const soul = data[1];
     const json = data[0];
-    console.log('onGraphLayer %s', soul);
+    // console.log('onGraphLayer %s', soul);
     if (!json) {
       console.log('  child was deleted');
       return;
     }
     let child = this.getChild(soul);
     if (!child) {
-      console.log('  child was added');
+      // console.log('  child was added');
       if (!json.className) {
-        console.warn('Child has no className, setting as Layer');
+        // console.warn('Child has no className, setting as Layer');
         json.className = 'Layer';
       }
       // child = new paper.Layer();
@@ -82,7 +82,7 @@ export class ProjectPair extends PaperPair {
       child = this.constructChild(json, soul);
       // TODO insert at appropriate z-order
       (this.project as any).insertLayer(this.project.layers.length, child);
-      console.log('  created', child.toString());
+      // console.log('  created', child.toString());
       // this.importing = false;
       // this.onLocalLayer(child);
     }
@@ -91,7 +91,7 @@ export class ProjectPair extends PaperPair {
   onLocalLayer(layer: paper.Layer) {
     const l = layer as any;
     if (!l.pair) {
-      console.log('onLocalLayer %s', l.toString());
+      // console.log('onLocalLayer %s', l.toString());
       if (!l.data.soul) {
         // console.log('    no soul');
         const soul = getUUID(this.chain as any);

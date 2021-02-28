@@ -5,6 +5,7 @@ export function unpack(value: any, soul: string | null = value.data?.soul) {
 
   return value.className ? unpackObject(value) : unpackArray(value);
 }
+
 function unpackObject(item: any, soul: string | null = item.data?.soul) {
   if (!item) {
     return null;
@@ -25,6 +26,7 @@ function unpackObject(item: any, soul: string | null = item.data?.soul) {
   const unpacked = [className, scrubbed];
   return unpacked;
 }
+
 function unpackArray(value: any) {
   const items = [];
   // tslint:disable-next-line: forin
@@ -34,6 +36,9 @@ function unpackArray(value: any) {
 
     // console.log('would unpack', unpacked);
     const unpacked = unpackObject(item, key);
+    if (!unpacked) {
+      continue;
+    }
     items.push(unpacked);
   }
   return items;
