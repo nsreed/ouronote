@@ -1,8 +1,20 @@
-import { GunChain } from '../../../../../../ng-gun/src/lib/classes/GunChain';
-import { EXPECT_ARRAY } from './constants';
+import {
+  GunChain,
+  GunChainCallbackOptions,
+} from '../../../../../../ng-gun/src/lib/classes/GunChain';
+import { EXPECT_ARRAY, hasRequired } from './constants';
 import * as paper from 'paper';
 import { EventEmitter } from '@angular/core';
-import { debounceTime } from 'rxjs/operators';
+import {
+  buffer,
+  debounceTime,
+  reduce,
+  scan,
+  map,
+  filter,
+  distinct,
+  shareReplay,
+} from 'rxjs/operators';
 
 export class PaperPair {
   // get project(): paper.Project {
@@ -13,7 +25,18 @@ export class PaperPair {
   protected importing = false;
 
   save$ = new EventEmitter();
-  debouncedSave$ = this.save$.pipe(debounceTime(100));
+  debouncedSave$ = this.save$.pipe(debounceTime(75));
+  saveProperty$ = new EventEmitter<[string, any]>();
+  saveBuffer$ = this.saveProperty$.pipe(
+    buffer(this.debouncedSave$),
+    filter((v) => v.length > 0),
+    map((v) =>
+      v.reduce((acc, val) => {
+        acc[val[0]] = Array.isArray(val[1]) ? JSON.stringify(val[1]) : val[1];
+        return acc;
+      }, {} as any)
+    )
+  );
   childCache = {} as any;
 
   constructor(
@@ -26,7 +49,16 @@ export class PaperPair {
       console.error('CREATING A DUPLICATE PAIR FOR SCOPE', ctx);
     }
     ctx.pair = this;
-    this.debouncedSave$.subscribe(() => this.doSave());
+    // this.debouncedSave$.subscribe(() => this.doSave());
+    this.saveBuffer$.subscribe((buf) => {
+      if (this.ctx?.data.ignore || this.importing) {
+        console.warn('cannot save');
+        return;
+      }
+      this.doSave(buf);
+      // console.log('save buffer');
+      // console.log(buf);
+    });
   }
 
   hasChild(key: string) {
@@ -114,7 +146,7 @@ export class PaperPair {
     this.save$.emit();
   }
 
-  doSave() {
+  doSave(json: any) {
     // ...
   }
 }

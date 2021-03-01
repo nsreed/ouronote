@@ -23,8 +23,13 @@ import {
 import { after$, before$, returned } from '../../../functions/aspect-rx';
 import { ItemGraph } from '../../../model';
 import { getUUID } from '../edit-vector/converter-functions';
-import { EXPECT_ARRAY, hasRequired, MUTATIONS } from './constants';
-import { unpack } from './packaging';
+import {
+  EXPECT_ARRAY,
+  hasRequired,
+  MUTATIONS,
+  MUTATION_PROPERTIES,
+} from './constants';
+import { unpack, serializeValue } from './packaging';
 import { getAllSettable, propertyChange$ } from './paper-chain';
 import { PaperPair } from './PaperPair';
 import { debounceTime, tap } from 'rxjs/operators';
@@ -51,15 +56,15 @@ export class ItemPair extends PaperPair {
       changes: true,
       bypassZone: true,
     })
-    .pipe(
-      tap((childVK) => {
-        this.childSouls.add(childVK[1]);
-      })
-    );
+    .pipe();
 
   // FIXME find a better way to buffer by time window - bufferTime() continuously emits, causing expensive filtering for thousands of objects!
   childrenBuffer$ = this.children$.pipe(
-    bufferTime(100),
+    filter((childVK) => !this.childSouls.has(childVK[1])),
+    tap((childVK) => {
+      this.childSouls.add(childVK[1]);
+    }),
+    bufferTime(1000),
     filter((children) => children.length > 0)
   );
   childrenExtant$ = this.children$.pipe(filter((ckv) => hasRequired(ckv[0])));
@@ -92,9 +97,13 @@ export class ItemPair extends PaperPair {
   );
 
   localMutators = MUTATIONS[this.item.className] || [];
-  localChange$ = from(this.localMutators).pipe(
+  localChange$ = from(this.localMutators as string[]).pipe(
     // tap((methodName) => console.log('  mutation method', methodName)),
-    mergeMap((method: any) => after$(this.item, method))
+    mergeMap((method: string) =>
+      after$(this.item, method).pipe(
+        map((v: any) => MUTATION_PROPERTIES[method])
+      )
+    )
     // tap((mutation) => console.log('%s mutation', mutation))
   );
 
@@ -137,16 +146,23 @@ export class ItemPair extends PaperPair {
     return shallow;
   }
 
-  doSave() {
-    const shallow = this.getShallow();
-    // TODO only put() changed fields
-    if (this.importing) {
-      console.warn('tried to save while importing');
-      return;
+  doSave(json: any) {
+    if (!json) {
+      const shallow = this.getShallow();
+      // TODO only put() changed fields
+      if (this.importing) {
+        console.warn('tried to save while importing');
+        return;
+      }
+      // console.log('%s saving', this.item.toString());
+      // console.log(shallow);
+      this.chain.put(shallow);
+    } else {
+      this.chain.put({
+        ...json,
+        className: this.item.className,
+      });
     }
-    // console.log('%s saving', this.item.toString());
-    // console.log(shallow);
-    this.chain.put(shallow);
     // console.log('%s done saving', this.item.toString());
   }
 
@@ -159,58 +175,35 @@ export class ItemPair extends PaperPair {
     this.data$.subscribe((data) => this.onGraphData(data));
     this.graphValue$.subscribe((json) => this.onGraph(json));
     this.graphRemove$.subscribe((json) => {
-      console.log('%s should remove this', this.item.toString());
+      // console.log('%s should remove this', this.item.toString());
       if (this.item.isInserted()) {
         this.item.remove();
       }
     });
     this.onLocalChildren();
-    // const allSettable = getAllSettable(this.item);
-
-    // this.graphLoad$.subscribe((loaded) => {
-    //   console.log('%s graph load', this.item.toString());
-    //   // console.log(loaded);
-    //   // this.item.importJSON([
-    //   //   this.item.className,
-    //   //   {
-    //   //     children: loaded,
-    //   //   },
-    //   // ] as any);
-    // });
-    // console.log('all settable:', allSettable);
-    // TODO bulk load is close to working - broken for new layers
-    // TODO use buffer(time) on children to process in batches & maybe allow bulk load to interject
-    // TODO use once() then switchMap() to accept map() (unbuffered)
-    // TODO use reduce() (which is more like scan) (or re-create reduce() ... ?)
-    // this.graphLoad$
-    //   .pipe(switchMapTo(this.children$))
-    //   .subscribe((data) => this.onGraphChild(data));
     this.childrenBuffer$.subscribe((data) => this.onGraphChildren(data));
 
     // fromEvent(this.item, 'strokeColorChange').subscribe((change) => {
     //   console.log('%s got native change', this.item.toString(), change);
     // });
-    // TODO? move propertyChange$ interception to prototype
     (this.item as any).changes$
       .pipe(filter((v) => !this.importing))
       .subscribe((change: [string, any]) => {
-        // console.log('%s %s change', this.item.toString(), change[0], change[1]);
+        // console.log('%s %s change', this.item.toString(), change[0]);
+        const value = change[1];
+        this.saveProperty$.emit([change[0], serializeValue(value)]);
         this.save();
       });
-    // allSettable
-    //   .map((pdk) => pdk[1])
-    //   .forEach((k) => {
-    //     propertyChange$(this.item, k as any).subscribe((v) => {
-    //       if (this.importing) {
-    //         return;
-    //       }
-    //       // console.log('%s property %s change', this.item.toString(), k, v);
-    //       // this.chain.get(k)
-    //       this.save();
-    //     });
-    //   });
     this.localChange$.subscribe((data) => {
       // console.log('localChange$', data);
+      if (Array.isArray(data)) {
+        data.forEach((propName: string) => {
+          this.saveProperty$.emit([
+            propName,
+            serializeValue((this.item as any)[propName]),
+          ]);
+        });
+      }
       // this.save();
     });
   }
@@ -326,7 +319,7 @@ export class ItemPair extends PaperPair {
   onGraphData(data: any) {}
 
   onLocalRemove() {
-    console.log('%s local remove()', this.item.toString());
+    // console.log('%s local remove()', this.item.toString());
     // delete item's data.soul
 
     // un-link this pair

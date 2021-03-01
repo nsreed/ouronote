@@ -1,4 +1,5 @@
 import { EXPECT_ARRAY } from './constants';
+import * as paper from 'paper';
 export function unpack(value: any, soul: string | null = value.data?.soul) {
   // console.log('unpacking value');
   // console.dir(value);
@@ -42,4 +43,19 @@ function unpackArray(value: any) {
     items.push(unpacked);
   }
   return items;
+}
+
+export function serializeValue(value: any): any {
+  if (Array.isArray(value)) {
+    return value.map((e) => serializeValue(e));
+  }
+  const serialized =
+    typeof value === 'object' && value._serialize
+      ? value._serialize.call(value)
+      : value;
+  if (Array.isArray(serialized) && serialized[0] === 'Point') {
+    serialized.shift();
+  }
+
+  return serialized;
 }

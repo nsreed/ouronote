@@ -41,3 +41,7 @@ export const MUTATION_METHODS = [
 export const MUTATIONS = {
   Path: MUTATION_METHODS,
 } as any;
+
+export const MUTATION_PROPERTIES = {
+  add: ['segments'],
+} as any;

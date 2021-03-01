@@ -82,7 +82,7 @@ import 'gun/lib/unset';
 import * as paper from 'paper';
 import { EventEmitter } from '@angular/core';
 
-const IGNORED_PROPS = ['selected', 'segments'];
+const IGNORED_PROPS = ['selected'];
 const prototypeProperties = {} as any;
 const prototypeOwnProperties = {} as any;
 
@@ -154,9 +154,9 @@ function interceptAll(prototype: any) {
         //   // console.warn('error serializing:', e);
         // }
         original.set.call(this, ...args);
-        this.emit?.call(this, `${name}Change`, {
-          value: args,
-        });
+        // this.emit?.call(this, `${name}Change`, {
+        //   value: args,
+        // });
         this.changes$.emit([name, ...args]);
       },
     });
@@ -176,12 +176,27 @@ function addChangeEmitter(prototype: any) {
   }
 }
 
+const toIntercept = [
+  paper.Item,
+  paper.Path,
+  paper.Layer,
+  paper.Shape,
+  paper.Shape.Circle,
+  paper.Shape.Ellipse,
+  paper.Shape.Rectangle,
+  paper.Style,
+  paper.Group,
+  paper.Gradient,
+].map((con) => con.prototype);
+
+toIntercept.forEach((proto) => interceptAll(proto));
+
 // interceptAll(paper.Project.prototype);
-interceptAll(paper.Item.prototype);
-interceptAll(paper.Path.prototype);
-interceptAll(paper.Layer.prototype);
-interceptAll(paper.Shape.prototype);
-interceptAll(paper.Style.prototype);
+// interceptAll(paper.Item.prototype);
+// interceptAll(paper.Path.prototype);
+// interceptAll(paper.Layer.prototype);
+// interceptAll(paper.Shape.prototype);
+// interceptAll(paper.Style.prototype);
 // console.log(Object.getOwnPropertyDescriptors(paper));
 
 // const itemProps = getProtoSettable(paper.Item.prototype);
