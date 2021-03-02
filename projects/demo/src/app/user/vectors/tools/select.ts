@@ -2,6 +2,7 @@ import { VectorTool } from '../paper-tool';
 import * as paper from 'paper';
 export class SelectTool extends VectorTool {
   path!: paper.Path;
+  name = 'lasso select';
   setup() {
     this.down.subscribe((e) => {});
     this.drag.subscribe((e) => {
