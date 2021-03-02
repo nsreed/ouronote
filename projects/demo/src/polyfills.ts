@@ -76,6 +76,7 @@ import 'gun/lib/open';
 import 'gun/lib/then';
 import 'gun/lib/not';
 import 'gun/lib/unset';
+import 'gun/lib/webrtc';
 
 /* PAPER.JS OVERRIDES */
 
@@ -116,7 +117,7 @@ function getProtoSettable(prototype: any) {
       properties = [...properties, ...props];
       proto = Object.getPrototypeOf(proto);
     }
-    prototypeProperties[prototype.constructor.name] = properties;
+    prototypeProperties[prototype.constructor.name] = properties.sort();
   }
   return prototypeProperties[prototype.constructor.name];
 }
@@ -129,12 +130,12 @@ function interceptAll(prototype: any) {
     const name = prop[1];
     console.log('%s.%s', prototype.constructor.name, name);
     Object.defineProperty(prototype, name, {
-      get(...args) {
-        return original.get.call(this, ...args);
-      },
+      get: original.get,
       set(...args) {
-        original.set.call(this, ...args);
-        this.changes$.emit([name, ...args]);
+        if (this[name] !== args[0]) {
+          original.set.call(this, ...args);
+          this.changes$.emit([name, ...args]);
+        }
       },
     });
   });
@@ -149,6 +150,7 @@ function addChangeEmitter(prototype: any) {
         }
         return this._changes$;
       },
+      enumerable: false,
     });
   }
 }
@@ -167,3 +169,13 @@ const toIntercept = [
 ].map((con) => con.prototype);
 
 toIntercept.forEach((proto) => interceptAll(proto));
+
+function addGunProperty(prototype: any) {
+  console.log('addGunProperty', prototype.constructor.name);
+  const allSettable = getProtoSettable(prototype);
+  allSettable.forEach((settable: any[]) => {
+    console.log(settable[1]);
+  });
+}
+
+toIntercept.forEach(addGunProperty);

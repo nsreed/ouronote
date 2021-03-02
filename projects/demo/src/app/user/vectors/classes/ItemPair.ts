@@ -35,12 +35,14 @@ import { PaperPair } from './PaperPair';
 import { debounceTime, tap } from 'rxjs/operators';
 
 export class ItemPair extends PaperPair {
+  graphValue: any;
   graph$ = this.chain
     .on({ changes: true, bypassZone: true } as GunChainCallbackOptions)
-    .pipe(debounceTime(25), shareReplay());
+    .pipe(debounceTime(25), shareReplay(1));
   graphValue$ = this.graph$.pipe(
     filter((json) => hasRequired(json)),
-    distinct((v) => JSON.stringify(v))
+    distinct((v) => JSON.stringify(v)),
+    tap((value) => (this.graphValue = value))
   );
   graphRemove$ = this.graph$.pipe(filter((json) => json === null));
 
@@ -89,8 +91,7 @@ export class ItemPair extends PaperPair {
     )
   );
 
-  localMutators = MUTATIONS[this.item.className] || [];
-  localChange$ = from(this.localMutators as string[]).pipe(
+  localChange$ = from((MUTATIONS[this.item.className] || []) as string[]).pipe(
     mergeMap((method: string) =>
       after$(this.item, method).pipe(
         map((v: any) => MUTATION_PROPERTIES[method])
@@ -229,6 +230,7 @@ export class ItemPair extends PaperPair {
   }
 
   onGraph(json: any) {
+    this.graphValue = json;
     // FIXME path segments getting overwritten by previous saves
     // console.log('%s onGraph', this.item.toString());
     if (!json) {
@@ -249,6 +251,8 @@ export class ItemPair extends PaperPair {
     // console.log('%s onGraphChildren', this.item.toString());
     // console.log(data);
     const toInsert = [] as paper.Item[];
+    // const prev = (this.scope.settings as any).autoUpdate;
+    // (this.scope.settings as any).autoUpdate = false;
     data.forEach((childVK) => {
       const soul = childVK[1];
       const json = childVK[0];
@@ -263,6 +267,8 @@ export class ItemPair extends PaperPair {
         toInsert.push(newChild);
       }
     });
+
+    // (this.scope.settings as any).autoUpdate = true;
     this.ignoreInsert = true;
     this.item.insertChildren(this.item.children.length, toInsert as any);
     this.ignoreInsert = false;
