@@ -25,7 +25,7 @@ export class PaperPair {
   protected importing = false;
 
   save$ = new EventEmitter();
-  debouncedSave$ = this.save$.pipe(debounceTime(75));
+  debouncedSave$ = this.save$.pipe(filter((v) => !this.ctx.data.ignored));
   saveProperty$ = new EventEmitter<[string, any]>();
   saveBuffer$ = this.saveProperty$.pipe(
     buffer(this.debouncedSave$),
@@ -38,6 +38,7 @@ export class PaperPair {
     )
   );
   childCache = {} as any;
+  lastSavedKeys: string[] = [];
 
   constructor(
     private ctx: any,
@@ -55,6 +56,8 @@ export class PaperPair {
         console.warn('cannot save');
         return;
       }
+      // TODO find a way to ignore the next incoming change for these keys
+      this.lastSavedKeys = Object.keys(buf);
       this.doSave(buf);
       // console.log('save buffer');
       // console.log(buf);

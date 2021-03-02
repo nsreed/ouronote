@@ -37,7 +37,7 @@ import { debounceTime, tap } from 'rxjs/operators';
 export class ItemPair extends PaperPair {
   graph$ = this.chain
     .on({ changes: true, bypassZone: true } as GunChainCallbackOptions)
-    .pipe(shareReplay());
+    .pipe(debounceTime(25), shareReplay());
   graphValue$ = this.graph$.pipe(
     filter((json) => hasRequired(json)),
     distinct((v) => JSON.stringify(v))
@@ -47,7 +47,6 @@ export class ItemPair extends PaperPair {
   // Graph Methods
   childSouls = new Set<string>();
   children = this.chain.get('children');
-  ready$ = this.graphValue$.pipe(take(1), shareReplay(1));
 
   childMap = this.children.map();
   children$ = this.childMap
@@ -67,12 +66,6 @@ export class ItemPair extends PaperPair {
     bufferTime(1000),
     filter((children) => children.length > 0)
   );
-  childrenExtant$ = this.children$.pipe(filter((ckv) => hasRequired(ckv[0])));
-  newChildren$ = this.children$.pipe(filter((kvp) => !this.getChild(kvp[1])));
-  removedChildren$ = this.children$.pipe(filter((kvp) => kvp[0] === null));
-
-  data: GunChain = this.chain.get('data');
-  data$ = (this.data as any).open() as Observable<any>;
 
   afterRemove$ = after$(this.item, 'remove');
 
@@ -98,13 +91,11 @@ export class ItemPair extends PaperPair {
 
   localMutators = MUTATIONS[this.item.className] || [];
   localChange$ = from(this.localMutators as string[]).pipe(
-    // tap((methodName) => console.log('  mutation method', methodName)),
     mergeMap((method: string) =>
       after$(this.item, method).pipe(
         map((v: any) => MUTATION_PROPERTIES[method])
       )
     )
-    // tap((mutation) => console.log('%s mutation', mutation))
   );
 
   constructor(
@@ -147,23 +138,24 @@ export class ItemPair extends PaperPair {
   }
 
   doSave(json: any) {
+    if (this.importing) {
+      console.warn('tried to save while importing');
+      return;
+    }
+    if (this.item.data.ignored) {
+      console.warn('tried saving ignored item');
+      return;
+    }
     if (!json) {
-      const shallow = this.getShallow();
-      // TODO only put() changed fields
-      if (this.importing) {
-        console.warn('tried to save while importing');
-        return;
-      }
-      // console.log('%s saving', this.item.toString());
-      // console.log(shallow);
-      this.chain.put(shallow);
+      // We are performing a "dumb" save
+      this.chain.put(this.getShallow());
     } else {
+      // We were provided the JSON to update
       this.chain.put({
         ...json,
         className: this.item.className,
       });
     }
-    // console.log('%s done saving', this.item.toString());
   }
 
   setup() {
@@ -172,10 +164,9 @@ export class ItemPair extends PaperPair {
     this.afterImportJSON$.subscribe(() => (this.importing = false));
     // TODO? ignoreInsert causing multiple local child adds to be ignored???
     this.afterInsertChild$.subscribe((child) => this.onLocalChild(child));
-    this.data$.subscribe((data) => this.onGraphData(data));
+
     this.graphValue$.subscribe((json) => this.onGraph(json));
     this.graphRemove$.subscribe((json) => {
-      // console.log('%s should remove this', this.item.toString());
       if (this.item.isInserted()) {
         this.item.remove();
       }
@@ -203,8 +194,10 @@ export class ItemPair extends PaperPair {
             serializeValue((this.item as any)[propName]),
           ]);
         });
+      } else {
+        // TODO handle this (will be necessary for supporting function interceptions that change non-array values)
+        console.warn('%s onLocalChange$ was not an array, not saving!!!');
       }
-      // this.save();
     });
   }
 
@@ -219,20 +212,19 @@ export class ItemPair extends PaperPair {
       console.warn('null child');
       return;
     }
+    if (item.data.ignored) {
+      console.warn('tried to pair an ignored child!');
+      return;
+    }
     const l = item as any;
     if (!l.pair) {
-      // console.log('%s onLocalChild', this.item.toString(), item.toString());
-      // console.log('  no gun');
       if (!l.data.soul) {
-        // console.log('  no soul');
         const soul = getUUID(this.chain as any);
         l.data.soul = soul;
       }
-      // console.log('  soul ', l.data.soul);
       const childGun = this.children.get(l.data.soul);
       const childPair = new ItemPair(childGun, item, this.project, this.scope);
       l.pair = childPair;
-      // l.pair.save();
     }
   }
 
@@ -244,26 +236,17 @@ export class ItemPair extends PaperPair {
     }
     const scrubbed = this.scrubJSON(json, this.item.data.soul);
     delete scrubbed.className;
-    // console.log({ json, scrubbed });
-    // console.log(scrubbed);
-    const imported = this.item.importJSON(
-      JSON.stringify([this.item.className, scrubbed]) as any
-    ) as any;
+    const imported = this.item.importJSON([
+      this.item.className,
+      scrubbed,
+    ] as any) as any;
     if (imported !== this.item) {
       console.error('unexpected new item!!!');
     }
-    // console.log('  applied changes');
-    // console.log(this.item);
-    try {
-      (this.item as any).project.view.update();
-    } catch (e: any) {
-      console.error('error drawing item', e);
-    }
-    // console.dir(json);
   }
 
   onGraphChildren(data: any[]) {
-    console.log('%s onGraphChildren', this.item.toString());
+    // console.log('%s onGraphChildren', this.item.toString());
     // console.log(data);
     const toInsert = [] as paper.Item[];
     data.forEach((childVK) => {
@@ -271,7 +254,7 @@ export class ItemPair extends PaperPair {
       const json = childVK[0];
       const child = this.getChild(soul);
       if (child && !json) {
-        // child was removed
+        // child was removed - this is handled by the child
       } else if (json && !child) {
         // child was added
         const newChild = this.constructChild(json, soul);
@@ -285,47 +268,10 @@ export class ItemPair extends PaperPair {
     this.ignoreInsert = false;
   }
 
-  onGraphChild(data: any) {
-    // console.log('%s onGraphChild', this.item.toString());
-    const soul = data[1];
-    const json = data[0];
-    let child = this.getChild(soul);
-    if (!json) {
-      if (child) {
-        console.log('child was deleted');
-        child.remove();
-      } else {
-        // This is a null graph child that wasn't created locally (historic delete), don't do anything
-        // console.warn('incoming delete for unmatched child!');
-      }
-    } else {
-      if (!child) {
-        // console.log('%s onGraphChild', this.item.toString(), soul);
-        child = this.constructChild(json, soul);
-        // console.log('  child was added', child.toString());
-        this.ignoreInsert = true;
-        this.item.insertChild(0, child); // Cause of save loop is here
-        this.ignoreInsert = false;
-        this.onLocalChild(child);
-      } else {
-        // This is an update for an existing child
-        // console.log('  child exists');
-      }
-    }
-  }
-
-  onGraphChildRemoved(key: string) {}
-
-  onGraphData(data: any) {}
-
   onLocalRemove() {
-    // console.log('%s local remove()', this.item.toString());
-    // delete item's data.soul
-
-    // un-link this pair
-
-    // remove chain from its parent?????
-    // or just put(null)?
+    if (this.item.data.ignored) {
+      return;
+    }
     this.chain.put(null as never);
   }
 }
