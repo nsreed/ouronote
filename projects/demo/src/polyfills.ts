@@ -82,7 +82,7 @@ import 'gun/lib/unset';
 import * as paper from 'paper';
 import { EventEmitter } from '@angular/core';
 
-const IGNORED_PROPS = ['selected'];
+const IGNORED_PROPS = ['selected', 'fullySelected', 'selection'];
 const prototypeProperties = {} as any;
 const prototypeOwnProperties = {} as any;
 
@@ -100,7 +100,7 @@ function getOwnSettable(proto: any) {
           !IGNORED_PROPS.includes(prop[1] as any)
         );
       });
-    prototypeOwnProperties[proto.constructor.name] = props;
+    prototypeOwnProperties[proto.constructor.name] = props.sort();
   }
   return prototypeOwnProperties[proto.constructor.name];
 }
@@ -122,41 +122,18 @@ function getProtoSettable(prototype: any) {
 }
 
 function interceptAll(prototype: any) {
-  console.log('intercepting', prototype.constructor.name);
+  // console.log('intercepting', prototype.constructor.name);
   addChangeEmitter(prototype);
-  const props = getOwnSettable(prototype);
-  props.forEach((prop: any[]) => {
+  getOwnSettable(prototype).forEach((prop: any[]) => {
     const original = prop[0];
     const name = prop[1];
-
     console.log('%s.%s', prototype.constructor.name, name);
     Object.defineProperty(prototype, name, {
       get(...args) {
         return original.get.call(this, ...args);
       },
       set(...args) {
-        // const oldValue = original.get.call(this);
-        // let serialized;
-        // try {
-        //   if (args.length === 1) {
-        //     serialized = args[0]._serialize
-        //       ? args[0]._serialize({ asString: false }, [])
-        //       : JSON.stringify(...args);
-        //     console.log(
-        //       '%s %s serialized %s',
-        //       prototype.constructor.name,
-        //       this.toString(),
-        //       name,
-        //       serialized
-        //     );
-        //   }
-        // } catch (e: any) {
-        //   // console.warn('error serializing:', e);
-        // }
         original.set.call(this, ...args);
-        // this.emit?.call(this, `${name}Change`, {
-        //   value: args,
-        // });
         this.changes$.emit([name, ...args]);
       },
     });
@@ -190,15 +167,3 @@ const toIntercept = [
 ].map((con) => con.prototype);
 
 toIntercept.forEach((proto) => interceptAll(proto));
-
-// interceptAll(paper.Project.prototype);
-// interceptAll(paper.Item.prototype);
-// interceptAll(paper.Path.prototype);
-// interceptAll(paper.Layer.prototype);
-// interceptAll(paper.Shape.prototype);
-// interceptAll(paper.Style.prototype);
-// console.log(Object.getOwnPropertyDescriptors(paper));
-
-// const itemProps = getProtoSettable(paper.Item.prototype);
-// const shapeProps = getProtoSettable(paper.Shape.prototype);
-// console.log({ itemProps, shapeProps });
