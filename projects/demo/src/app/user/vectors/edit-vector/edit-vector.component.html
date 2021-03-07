@@ -1,8 +1,8 @@
 <!-- <div>Output: {{(output.toolMove$|async)?.point | json}}</div> -->
-<form [formGroup]="vectorForm">
+<form [formGroup]="vectorForm" class="shrink">
   <input type="text" formControlName="title">
 </form>
-<div class="row grow">
+<div class="row grow stretch-items">
   <aside>
 
     <h3>Style</h3>
@@ -28,7 +28,10 @@
       {{paper.scope.tool.name}}
     </div>
   </aside>
-  <canvas appPaper #paper="appPaper"></canvas>
+  <div class="grow" id="CanvasContainer">
+
+    <canvas appPaper #paper="appPaper"></canvas>
+  </div>
   <!-- <canvas appPaper #output="appPaper"></canvas> -->
 
 </div>

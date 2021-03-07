@@ -18,7 +18,7 @@ body > app-root {
     rgba(255, 255, 255, 0.3659663694579395) 6%,
     rgba(0, 212, 255, 0) 43%
   );
-  padding-bottom: 6%;
+  // padding-bottom: 6%;
 }
 nav {
   display: flex;
@@ -84,7 +84,7 @@ form {
   flex-direction: column;
 
   align-items: stretch;
-  flex: 1 1 auto;
+  // flex: 1 1 auto;
   textarea {
     flex: 1 1 auto;
   }
@@ -112,4 +112,12 @@ router-outlet + * {
 }
 .grow {
   flex-grow: 1;
+}
+
+.shrink {
+  flex-shrink: 1;
+}
+
+.stretch-items {
+  align-items: stretch;
 }
