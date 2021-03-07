@@ -27,7 +27,6 @@ export class SelectTool extends VectorTool {
     tap((e) => (this.selecting = false))
   );
 
-  // SUBSCRIBERS
   keyEsc = this.keyup.pipe(filter((e) => e.key === 'escape'));
   keyDel = this.keyup.pipe(filter((e) => e.key === 'delete'));
   //#endregion

@@ -24,7 +24,11 @@ import {
 import { after } from 'aspect-ts';
 import { PenTool } from './tools/pen';
 import { EraserTool } from './tools/eraser';
-import { SelectTool } from './tools/select';
+import {
+  SelectTool,
+  RectangleSelectTool,
+  LassoSelectTool,
+} from './tools/select';
 @Directive({
   selector: '[appPaper]',
   exportAs: 'appPaper',
@@ -60,7 +64,8 @@ export class PaperDirective implements OnInit {
   public tool = new paper.Tool();
   public pen = new PenTool(this.scope);
   public eraser = new EraserTool(this.scope);
-  public select = new SelectTool(this.scope);
+  public select = new LassoSelectTool(this.scope);
+  public areaSelect = new RectangleSelectTool(this.scope);
 
   @Output()
   toolDown$ = new EventEmitter<paper.ToolEvent>();
