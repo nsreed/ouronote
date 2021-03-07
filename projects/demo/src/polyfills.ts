@@ -132,10 +132,10 @@ function interceptAll(prototype: any) {
     Object.defineProperty(prototype, name, {
       get: original.get,
       set(...args) {
-        if (this[name] !== args[0]) {
-          original.set.call(this, ...args);
-          this.changes$.emit([name, ...args]);
-        }
+        // if (this[name] !== args[0]) {
+        original.set.call(this, ...args);
+        this.changes$.emit([name, ...args]);
+        // }
       },
     });
   });
@@ -166,6 +166,7 @@ const toIntercept = [
   paper.Style,
   paper.Group,
   paper.Gradient,
+  paper.Color,
 ].map((con) => con.prototype);
 
 toIntercept.forEach((proto) => interceptAll(proto));
