@@ -1,5 +1,39 @@
 # Design Choices
 
+## Read-Only Generated Items
+
+Grid
+
+Guides
+
+## Performance
+
+### Input lag for large project (1000+ paths)
+
+This may be due to the heft of ItemPair. Each paper.Item in memory has a unique instance of ItemPair, which has its own event listeners & state, which means that on a project of thousands of items, there are thousands upon thousands of active observer pipes.
+
+May want to look at moving ItemPair's functionality into the underlying paper classes by way of prototype extension. This puts the gun chain closer to the properties it cares about.
+
+Using `item.change$` as a example.
+
+```typescript
+Item.prototype.gun = {
+  get() {},
+  set(gun) {
+    this._gun = gun;
+    this.gun$.emit(gun);
+  },
+};
+
+// later
+
+this.change$.pipe(switchMap((change) => this.gun$));
+
+this.gun$.pipe().subscribe((gun) => {});
+```
+
+## Graph Structure
+
 Flat
 
 ```typescript
