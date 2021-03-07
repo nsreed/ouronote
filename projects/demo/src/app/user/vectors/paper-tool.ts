@@ -2,13 +2,18 @@ import { Tool, ToolEvent } from 'paper';
 import { fromEvent } from 'rxjs';
 import { after$ } from '../../functions/aspect-rx';
 import * as paper from 'paper';
-import { filter } from 'rxjs/operators';
+import { filter, switchMapTo, takeUntil } from 'rxjs/operators';
 
 export class VectorTool extends Tool {
   drag = fromEvent<paper.ToolEvent>(this, 'mousedrag');
   down = fromEvent<paper.ToolEvent>(this, 'mousedown');
   up = fromEvent<paper.ToolEvent>(this, 'mouseup');
   move = fromEvent<paper.ToolEvent>(this, 'mousemove');
+
+  keydown = fromEvent<paper.KeyEvent>(this, 'keydown');
+  keyup = fromEvent<paper.KeyEvent>(this, 'keyup');
+
+  // click = this.down.pipe(switchMapTo(this.up.pipe(takeUntil(this.move))));
 
   name = 'unnamed tool';
 
@@ -24,6 +29,7 @@ export class VectorTool extends Tool {
       console.log('touch down');
     });
     this.setup();
+    // this.click.subscribe((e) => console.log('click', e));
     // TODO touch events should be filterable/reduce()ed in such a way as to allow gesture integration
   }
   protected setup() {}
