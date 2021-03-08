@@ -108,7 +108,7 @@ function getOwnSettable(proto: any) {
 
 function getProtoSettable(prototype: any) {
   if (!(prototype.constructor.name in prototypeProperties)) {
-    console.log('prototype', prototype);
+    // console.log('prototype', prototype);
 
     let proto = prototype;
     let properties: any[] = [];
@@ -128,7 +128,7 @@ function interceptAll(prototype: any) {
   getOwnSettable(prototype).forEach((prop: any[]) => {
     const original = prop[0];
     const name = prop[1];
-    console.log('%s.%s', prototype.constructor.name, name);
+    // console.log('%s.%s', prototype.constructor.name, name);
     Object.defineProperty(prototype, name, {
       get: original.get,
       set(...args) {
@@ -167,15 +167,17 @@ const toIntercept = [
   paper.Group,
   paper.Gradient,
   paper.Color,
+  paper.View,
+  paper.Size,
 ].map((con) => con.prototype);
 
 toIntercept.forEach((proto) => interceptAll(proto));
 
 function addGunProperty(prototype: any) {
-  console.log('addGunProperty', prototype.constructor.name);
+  // console.log('addGunProperty', prototype.constructor.name);
   const allSettable = getProtoSettable(prototype);
   allSettable.forEach((settable: any[]) => {
-    console.log(settable[1]);
+    // console.log(settable[1]);
   });
 }
 

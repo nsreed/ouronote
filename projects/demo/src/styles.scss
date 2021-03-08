@@ -1,3 +1,5 @@
+@import "@angular/material/prebuilt-themes/deeppurple-amber.css";
+
 /* You can add global styles to this file, and also import other style files */
 body,
 app-root {
@@ -69,16 +71,16 @@ input[type="button"] {
     outline-color: #b0c0c099;
   }
 }
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-header {
-  font-size: large;
-  line-height: 1.5rem;
-}
+// h1,
+// h2,
+// h3,
+// h4,
+// h5,
+// h6,
+// header {
+//   font-size: large;
+//   line-height: 1.5rem;
+// }
 form {
   display: flex;
   flex-direction: column;
@@ -120,4 +122,10 @@ router-outlet + * {
 
 .stretch-items {
   align-items: stretch;
+}
+
+body {
+  [dense] .mat-expansion-panel-body {
+    padding: 0;
+  }
 }

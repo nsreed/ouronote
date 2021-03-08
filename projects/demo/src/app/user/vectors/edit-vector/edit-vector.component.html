@@ -1,38 +1,67 @@
-<!-- <div>Output: {{(output.toolMove$|async)?.point | json}}</div> -->
 <form [formGroup]="vectorForm" class="shrink">
   <input type="text" formControlName="title">
 </form>
 <div class="row grow stretch-items">
-  <aside>
+  <mat-accordion multi dense displayMode="flat" *ngIf="project" class="column">
 
-    <h3>Style</h3>
-    <button (click)="onIgnored()">CREATE IGNORED</button>
-    <hr>
 
-    <h3>Layers</h3>
-    <button (click)="addLayer()">Add Layer</button>
-    <div *ngFor="let layer of project?.layers" (click)="layer.activate()">
-      {{layer.toString()}} {{layer===project.activeLayer?'*':''}} {{layer.children?.length}}
-      <!-- <div *ngFor="let child of layer.children">
-        {{child.toString()}}
-      </div> -->
-    </div>
-    <hr>
 
-    <h3>Tools</h3>
-    <div [appTool]="tool" *ngFor="let tool of paper.scope.tools" (click)="tool.activate()">
-      {{tool.name}}
-    </div>
+    <mat-expansion-panel expanded>
+      <mat-expansion-panel-header>Tools</mat-expansion-panel-header>
+      <ng-template matExpansionPanelContent>
+        <div matButtonToggleGroup class="column">
 
-    <div [appTool]="paper.scope.tool" *ngIf="paper.scope.tool">
-      {{paper.scope.tool.name}}
-    </div>
-  </aside>
+          <mat-button-toggle [checked]="tool === paper.scope.tool" [value]="tool" [appTool]="tool"
+            *ngFor="let tool of paper.scope.tools" (click)="tool.activate()">
+            {{tool.name}}
+          </mat-button-toggle>
+        </div>
+      </ng-template>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel expanded>
+      <mat-expansion-panel-header>{{paper.scope.tool.name}}</mat-expansion-panel-header>
+      <ng-template matExpansionPanelContent>
+
+        <div [appTool]="paper.scope.tool" *ngIf="paper.scope.tool">
+          {{paper.scope.tool.name}}
+        </div>
+      </ng-template>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>Style</mat-expansion-panel-header>
+
+      <ng-template matExpansionPanelContent>
+
+        <app-style-form [style]="project?.currentStyle"></app-style-form>
+      </ng-template>
+      <mat-action-row>
+        <a mat-icon-button>
+          <mat-icon>more_horiz</mat-icon>
+        </a>
+      </mat-action-row>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel expanded>
+      <mat-expansion-panel-header>Layers</mat-expansion-panel-header>
+      <ng-template matExpansionPanelContent>
+        <mat-list dense>
+          <mat-list-item *ngFor="let layer of project?.layers" (click)="layer.activate()">
+            {{layer.toString()}} {{layer===project.activeLayer?'*':''}} {{layer.children?.length}}
+          </mat-list-item>
+        </mat-list>
+      </ng-template>
+      <mat-action-row>
+
+        <a mat-icon-button (click)="addLayer()">
+          <mat-icon>add</mat-icon>
+        </a>
+      </mat-action-row>
+    </mat-expansion-panel>
+  </mat-accordion>
+
   <div class="grow" id="CanvasContainer">
-
     <canvas appPaper #paper="appPaper"></canvas>
   </div>
-  <!-- <canvas appPaper #output="appPaper"></canvas> -->
-
 </div>
-<!-- <div>Paper: {{(paper.toolMove$|async)?['point'] | json}}</div> -->

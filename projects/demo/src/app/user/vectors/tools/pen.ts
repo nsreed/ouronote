@@ -19,7 +19,7 @@ export class PenTool extends VectorTool {
       this.path.strokeWidth = 3 + Math.random() * 4;
     });
     this.up.subscribe((e) => {
-      (this.path as any).pair.save();
+      (this.path as any).pair?.save();
     });
     // this.up.subscribe((e) => (this.path = null));
   }

@@ -37,7 +37,7 @@ export class PaperDirective implements OnInit {
   constructor(private el: ElementRef<HTMLCanvasElement>) {
     console.log('paper.directive', this);
 
-    this.toolWheel.subscribe(console.log);
+    // this.toolWheel.subscribe(console.log);
   }
   @Output()
   appPaperChange = new EventEmitter();
@@ -55,66 +55,67 @@ export class PaperDirective implements OnInit {
     }
   }
 
+  backgroundLayer!: paper.Layer;
+
   resize$ = this.projectChange.pipe(
     switchMap((project) => fromEvent(project.view, 'resize'))
   );
 
   scope = new paper.PaperScope();
 
-  public tool = new paper.Tool();
   public pen = new PenTool(this.scope);
   public eraser = new EraserTool(this.scope);
   public select = new LassoSelectTool(this.scope);
   public areaSelect = new RectangleSelectTool(this.scope);
 
-  @Output()
-  toolDown$ = new EventEmitter<paper.ToolEvent>();
-  @Output()
-  toolUp$ = new EventEmitter<paper.ToolEvent>();
-  @Output()
-  toolDrag$ = new EventEmitter<paper.ToolEvent>();
-  @Output()
-  toolMove$ = new EventEmitter<paper.ToolEvent>();
-  @Output()
-  toolWheel$ = new EventEmitter<PaperToolWheelEvent>();
+  // @Output()
+  // toolDown$ = new EventEmitter<paper.ToolEvent>();
+  // @Output()
+  // toolUp$ = new EventEmitter<paper.ToolEvent>();
+  // @Output()
+  // toolDrag$ = new EventEmitter<paper.ToolEvent>();
+  // @Output()
+  // toolMove$ = new EventEmitter<paper.ToolEvent>();
+  // @Output()
+  // toolWheel$ = new EventEmitter<PaperToolWheelEvent>();
 
-  private toolMove = fromEvent<paper.ToolEvent>(this.tool, 'mousemove').pipe(
-    // tap((event) => this.beforeEach(event)),
-    tap((event) => this.toolMove$.emit(event))
-    // tap((event) => this.afterEach(event))
-  );
-  private toolDown = fromEvent<paper.ToolEvent>(this.tool, 'mousedown').pipe(
-    tap((event) => this.beforeTool(event)),
-    tap((event) => this.beforeEach(event)),
-    tap((event) => this.toolDown$.emit(event)),
-    tap((event) => this.afterEach(event))
-  );
-  private toolDrag = fromEvent<paper.ToolEvent>(this.tool, 'mousedrag').pipe(
-    tap((event) => this.beforeEach(event)),
-    tap((event) => this.toolDrag$.emit(event)),
-    tap((event) => this.afterEach(event))
-  );
-  private toolUp = fromEvent<paper.ToolEvent>(this.tool, 'mouseup').pipe(
-    tap((event) => this.beforeEach(event)),
-    tap((event) => this.toolUp$.emit(event)),
-    tap((event) => this.afterEach(event)),
-    tap((event) => this.afterTool(event))
-  );
+  // private toolMove = fromEvent<paper.ToolEvent>(this.tool, 'mousemove').pipe(
+  //   // tap((event) => this.beforeEach(event)),
+  //   tap((event) => this.toolMove$.emit(event))
+  //   // tap((event) => this.afterEach(event))
+  // );
+  // private toolDown = fromEvent<paper.ToolEvent>(this.tool, 'mousedown').pipe(
+  //   tap((event) => this.beforeTool(event)),
+  //   tap((event) => this.beforeEach(event)),
+  //   tap((event) => this.toolDown$.emit(event)),
+  //   tap((event) => this.afterEach(event))
+  // );
+  // private toolDrag = fromEvent<paper.ToolEvent>(this.tool, 'mousedrag').pipe(
+  //   tap((event) => this.beforeEach(event)),
+  //   tap((event) => this.toolDrag$.emit(event)),
+  //   tap((event) => this.afterEach(event))
+  // );
+  // private toolUp = fromEvent<paper.ToolEvent>(this.tool, 'mouseup').pipe(
+  //   tap((event) => this.beforeEach(event)),
+  //   tap((event) => this.toolUp$.emit(event)),
+  //   tap((event) => this.afterEach(event)),
+  //   tap((event) => this.afterTool(event))
+  // );
 
-  private toolWheel = fromEvent<PaperToolWheelEvent>(
-    this.tool,
-    'mousewheel'
-  ).pipe(
-    tap((event) => this.beforeEach(event as any)),
-    tap((event) => this.toolWheel$.emit(event as any)),
-    tap((event) => this.afterEach(event as any)),
-    tap((event) => this.afterTool(event as any))
-  );
+  // private toolWheel = fromEvent<PaperToolWheelEvent>(
+  //   this.tool,
+  //   'mousewheel'
+  // ).pipe(
+  //   tap((event) => this.beforeEach(event as any)),
+  //   tap((event) => this.toolWheel$.emit(event as any)),
+  //   tap((event) => this.afterEach(event as any)),
+  //   tap((event) => this.afterTool(event as any))
+  // );
 
-  data$ = this.toolUp.pipe(
-    map(() => this.project.exportJSON()),
-    distinct()
-  );
+  // data$ = this.toolUp.pipe(
+  //   map(() => this.project.exportJSON()),
+  //   distinct()
+  // );
   ignore(fn: any, ...args: any[]) {
     let item: any;
     try {
@@ -161,8 +162,8 @@ export class PaperDirective implements OnInit {
     //   return '';
     // };
     this.project.activate();
-    this.scope.tools.push(this.tool);
-    this.tool.activate();
+    // this.scope.tools.push(this.tool);
+    // this.tool.activate();
     this.scope.project = this.project as any;
     this.project.currentStyle = new this.scope.Style({}) as any;
     this.project.currentStyle.strokeColor = new this.scope.Color(
@@ -171,13 +172,24 @@ export class PaperDirective implements OnInit {
       0
     ) as any;
     this.project.currentStyle.strokeWidth = 5;
-    [this.toolDown, this.toolUp, this.toolDrag, this.toolMove].forEach((e$) => {
-      e$.subscribe();
-    });
+    // [this.toolDown, this.toolUp, this.toolDrag, this.toolMove].forEach((e$) => {
+    //   e$.subscribe();
+    // });
     this.updateViewSize();
     this.resize$.subscribe(() => {
       console.log('PROJECT CANVAS RESIZE');
     });
+
+    // CREATE BACKGROUND LAYER
+    this.scope.settings.insertItems = false;
+    this.backgroundLayer = new paper.Layer() as any;
+    this.backgroundLayer.data.ignore = true;
+    this.backgroundLayer.name = 'background';
+    (this.project as any).insertLayer(0, this.backgroundLayer);
+    // (this.project.view as any).changes.subscribe((c: any) => {
+    //   console.log('view change', c);
+    // });
+    this.scope.settings.insertItems = true;
   }
 
   updateViewSize() {
@@ -191,6 +203,7 @@ export class PaperDirective implements OnInit {
     this.project.view.viewSize.width += 0.0001;
     this.project.view.viewSize.width = this.project.view.element.scrollWidth;
     this.project.view.viewSize.height = this.project.view.element.scrollHeight;
+    this.onViewBounds();
   }
 
   @HostListener('window:resize', ['$event'])
@@ -208,7 +221,11 @@ export class PaperDirective implements OnInit {
   @HostListener('mousewheel', ['$event'])
   onMouseWheel(event: WheelEvent) {
     console.log(event);
-    this.tool.emit('mousewheel', new PaperToolWheelEvent(event));
+    // this.tool.emit('mousewheel', new PaperToolWheelEvent(event));
     event.preventDefault();
+  }
+
+  onViewBounds() {
+    console.log('view bounds');
   }
 }

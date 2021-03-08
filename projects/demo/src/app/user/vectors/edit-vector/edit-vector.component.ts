@@ -81,7 +81,7 @@ export class EditVectorComponent
 
   onProjectDataChange(project: paper.Project, gun: GunChain<Vector>) {
     console.log('setting up project graph');
-    this.paperDirective.tool.activate();
+    // this.paperDirective.tool.activate();
     const paperChain: ProjectPair = new ProjectPair(
       gun as any,
       this.paperDirective.project as any,
