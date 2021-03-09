@@ -12,7 +12,10 @@ export class VectorTool extends Tool {
   up = fromEvent<paper.ToolEvent>(this, 'mouseup');
   move = fromEvent<paper.ToolEvent>(this, 'mousemove');
 
-  wheel = fromEvent<any>(this, 'mousewheel');
+  wheel = fromEvent<{ event: WheelEvent; point: paper.Point }>(
+    this,
+    'mousewheel'
+  );
 
   keydown = fromEvent<paper.KeyEvent>(this, 'keydown');
   keyup = fromEvent<paper.KeyEvent>(this, 'keyup');
@@ -30,10 +33,16 @@ export class VectorTool extends Tool {
   constructor(public readonly scope: paper.PaperScope) {
     super();
     this.touchDown.subscribe((e) => {
-      console.log('touch down');
+      console.log('touch down', e);
     });
 
-    this.wheel.subscribe((e) => console.log('wheel', e));
+    this.wheel.subscribe((e) => {
+      const zoomDelta = e.event.deltaY;
+      const centerDelta = (this.scope.view.bounds.center as any).subtract(
+        e.point
+      );
+      console.log('wheel', zoomDelta, centerDelta);
+    });
     this.setup();
     // this.click.subscribe((e) => console.log('click', e));
     // TODO touch events should be filterable/reduce()ed in such a way as to allow gesture integration
