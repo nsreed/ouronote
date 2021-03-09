@@ -47,7 +47,7 @@ export class ColorFormComponent implements OnInit {
     if (value !== this._color) {
       this._color = value;
       (value as any).changes$?.subscribe((che: any) => {
-        console.log('has changes', che);
+        // console.log('has changes', che);
         this.updateFromColor();
       });
       this.updateFromColor();
@@ -62,7 +62,7 @@ export class ColorFormComponent implements OnInit {
       control?.valueChanges
         .pipe(filter((v) => control.valid))
         .subscribe((v) => {
-          console.log('got local change %s: %f', key, control.value);
+          // console.log('got local change %s: %f', key, control.value);
           (this.color as any)[key] = control.value;
         });
     }
@@ -77,7 +77,7 @@ export class ColorFormComponent implements OnInit {
       // console.log('patching %s from color', key);
       const colorKeyValue = (this.color as any)[key];
 
-      console.log('  %s: %d', key, colorKeyValue);
+      // console.log('  %s: %d', key, colorKeyValue);
       this.form.get(key)?.patchValue(colorKeyValue, { emitEvent: false });
     }
   }

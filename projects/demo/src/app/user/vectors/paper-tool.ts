@@ -5,6 +5,9 @@ import * as paper from 'paper';
 import { filter, switchMapTo, takeUntil, tap } from 'rxjs/operators';
 
 export class VectorTool extends Tool {
+  get properties() {
+    return Object.getPrototypeOf(this).___PROPERTIES;
+  }
   drag = fromEvent<paper.ToolEvent>(this, 'mousedrag');
   down = fromEvent<paper.ToolEvent>(this, 'mousedown').pipe(
     tap((e) => this.activateDrawLayer())
@@ -46,6 +49,7 @@ export class VectorTool extends Tool {
       this.scope.view.zoom += zoomDelta > 0 ? -0.01 : 0.01;
     });
     this.setup();
+    console.log('tool', this.name, this.properties);
     // this.click.subscribe((e) => console.log('click', e));
     // TODO touch events should be filterable/reduce()ed in such a way as to allow gesture integration
   }

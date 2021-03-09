@@ -1,7 +1,16 @@
 import { VectorTool } from '../paper-tool';
 import * as paper from 'paper';
 import { filter, mergeMapTo, switchMapTo, tap } from 'rxjs/operators';
+import { Property } from '../functions/decorators';
+
+export type ToolSelectionMode = 'new' | 'add' | 'remove';
+
 export class SelectTool extends VectorTool {
+  @Property({
+    values: ['new', 'add', 'remove'],
+  })
+  mode: ToolSelectionMode = 'new';
+
   name = 'select';
   selecting = false;
 

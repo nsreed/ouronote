@@ -21,6 +21,9 @@ canvas {
 
 mat-accordion {
   overflow: hidden;
+  &:last-child {
+    flex-grow: 1;
+  }
 }
 
 form {

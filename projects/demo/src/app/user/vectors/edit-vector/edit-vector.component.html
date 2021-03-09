@@ -36,13 +36,6 @@
       </ng-template>
     </mat-expansion-panel>
 
-    <mat-expansion-panel *ngIf="paper.scope.project.selectedItems.length>0">
-      <mat-expansion-panel-header>Selected</mat-expansion-panel-header>
-      <ng-template matExpansionPanelContent>
-
-      </ng-template>
-    </mat-expansion-panel>
-
     <mat-expansion-panel>
       <mat-expansion-panel-header>Style</mat-expansion-panel-header>
       <ng-template matExpansionPanelContent>
@@ -54,6 +47,9 @@
         </a>
       </mat-action-row>
     </mat-expansion-panel>
+
+  </mat-accordion>
+  <mat-accordion multi dense *ngIf="project">
 
     <mat-expansion-panel expanded>
       <mat-expansion-panel-header>Layers</mat-expansion-panel-header>
@@ -69,6 +65,13 @@
           <mat-icon>add</mat-icon>
         </a>
       </mat-action-row>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel *ngIf="paper.scope.project.selectedItems.length>0" expanded>
+      <mat-expansion-panel-header>Selected</mat-expansion-panel-header>
+      <ng-template matExpansionPanelContent>
+
+      </ng-template>
     </mat-expansion-panel>
   </mat-accordion>
 

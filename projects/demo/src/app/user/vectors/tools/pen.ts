@@ -1,9 +1,11 @@
 import { VectorTool } from '../paper-tool';
 import { Path, Style } from 'paper';
 import * as paper from 'paper';
+import { Property } from '../functions/decorators';
 export class PenTool extends VectorTool {
   path!: paper.Path;
   name = 'pen';
+  @Property()
   style = new Style({});
   color = new paper.Color(Math.random(), Math.random(), Math.random());
   setup() {
