@@ -27,6 +27,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatStepperModule } from '@angular/material/stepper';
 import { ToolDirective } from './components/tool.directive';
 import { ColorFormComponent } from './components/color-form/color-form.component';
@@ -67,6 +68,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     MatMenuModule,
     MatButtonToggleModule,
     FlexLayoutModule,
+    MatToolbarModule,
   ],
   exports: [PaperDirective],
 })

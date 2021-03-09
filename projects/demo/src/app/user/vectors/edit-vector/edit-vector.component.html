@@ -1,11 +1,16 @@
 <form [formGroup]="vectorForm" class="shrink">
   <input type="text" formControlName="title">
 </form>
-<div class="row grow stretch-items">
-  <mat-accordion multi dense displayMode="flat" *ngIf="project" class="column wrapped">
-
-
-
+<mat-toolbar>
+  <a mat-button [matMenuTriggerFor]="menuSelect">Edit</a>
+  <mat-menu #menuSelect>
+    <button mat-menu-item>Cut</button>
+    <button mat-menu-item>Copy</button>
+    <button mat-menu-item>Paste</button>
+  </mat-menu>
+</mat-toolbar>
+<div fxLayout="row">
+  <mat-accordion multi dense displayMode="flat" *ngIf="project" fxLayout="column" fxFlex="0 1 175px">
     <mat-expansion-panel expanded>
       <mat-expansion-panel-header>Tools</mat-expansion-panel-header>
       <ng-template matExpansionPanelContent>
@@ -62,7 +67,7 @@
     </mat-expansion-panel>
   </mat-accordion>
 
-  <div class="grow" id="CanvasContainer">
+  <div fxFlex="1 1 auto" id="CanvasContainer">
     <canvas appPaper #paper="appPaper"></canvas>
   </div>
 </div>

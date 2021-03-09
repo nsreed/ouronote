@@ -6,8 +6,8 @@ canvas {
   // flex-grow: 1;
   // display: inline-block;
   position: absolute;
-  flex: 1 0.5 auto;
-  align-self: stretch;
+  // flex: 1 0.5 auto;
+  // align-self: stretch;
   overflow: hidden;
 
   // top: 0;
@@ -20,11 +20,6 @@ canvas {
 }
 
 mat-accordion {
-  flex-shrink: 1;
-  flex-grow: 0.25;
-  flex-basis: 175px;
-  // min-width: 175px;
-
   overflow: hidden;
 }
 
@@ -35,7 +30,6 @@ form {
 
 #CanvasContainer {
   overflow: hidden;
-  flex: 1 1 auto;
   display: flex;
   align-items: stretch;
   justify-items: stretch;
