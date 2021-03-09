@@ -22,7 +22,7 @@ export class VectorTool extends Tool {
 
   // click = this.down.pipe(switchMapTo(this.up.pipe(takeUntil(this.move))));
 
-  name = 'unnamed tool';
+  name = Object.getPrototypeOf(this).constructor.name.replace(/tool/gi, '');
 
   touchDown = this.down.pipe(filter((e: any) => e.event instanceof TouchEvent));
 
@@ -42,6 +42,8 @@ export class VectorTool extends Tool {
         e.point
       );
       console.log('wheel', zoomDelta, centerDelta);
+      // (this.scope.view as any).scrollBy(centerDelta.multiply(-0.1));
+      this.scope.view.zoom += zoomDelta > 0 ? -0.01 : 0.01;
     });
     this.setup();
     // this.click.subscribe((e) => console.log('click', e));

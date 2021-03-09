@@ -1,21 +1,24 @@
 <form [formGroup]="vectorForm" class="shrink">
   <input type="text" formControlName="title">
 </form>
+
 <mat-toolbar>
   <a mat-button [matMenuTriggerFor]="menuSelect">Edit</a>
   <mat-menu #menuSelect>
     <button mat-menu-item>Cut</button>
     <button mat-menu-item>Copy</button>
     <button mat-menu-item>Paste</button>
+    <button mat-menu-item>Group Selected</button>
+    <button mat-menu-item>Ungroup Selected</button>
   </mat-menu>
 </mat-toolbar>
+
 <div fxLayout="row">
   <mat-accordion multi dense displayMode="flat" *ngIf="project" fxLayout="column" fxFlex="0 1 175px">
     <mat-expansion-panel expanded>
       <mat-expansion-panel-header>Tools</mat-expansion-panel-header>
       <ng-template matExpansionPanelContent>
         <div matButtonToggleGroup class="column">
-
           <mat-button-toggle [checked]="tool === paper.scope.tool" [value]="tool" [appTool]="tool"
             *ngFor="let tool of paper.scope.tools" (click)="tool.activate()">
             {{tool.name}}
@@ -27,19 +30,22 @@
     <mat-expansion-panel expanded>
       <mat-expansion-panel-header>{{paper.scope.tool.name}}</mat-expansion-panel-header>
       <ng-template matExpansionPanelContent>
-
         <div [appTool]="paper.scope.tool" *ngIf="paper.scope.tool">
           <app-color-form [color]="paper.scope.project.currentStyle.strokeColor"></app-color-form>
-          <!-- <app-color-form [color]="paper.scope.project.currentStyle.fillColor"></app-color-form> -->
         </div>
+      </ng-template>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel *ngIf="paper.scope.project.selectedItems.length>0">
+      <mat-expansion-panel-header>Selected</mat-expansion-panel-header>
+      <ng-template matExpansionPanelContent>
+
       </ng-template>
     </mat-expansion-panel>
 
     <mat-expansion-panel>
       <mat-expansion-panel-header>Style</mat-expansion-panel-header>
-
       <ng-template matExpansionPanelContent>
-
         <app-style-form [style]="project?.currentStyle"></app-style-form>
       </ng-template>
       <mat-action-row>
@@ -59,7 +65,6 @@
         </mat-list>
       </ng-template>
       <mat-action-row>
-
         <a mat-icon-button (click)="addLayer()">
           <mat-icon>add</mat-icon>
         </a>

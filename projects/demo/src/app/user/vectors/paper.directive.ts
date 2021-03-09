@@ -31,16 +31,15 @@ import {
 } from './tools/select';
 import { propertyChange$ } from './classes/paper-chain';
 import { shareReplay } from 'rxjs/operators';
+import { PanTool } from './tools/pan';
+import { MoveTool } from './tools/move';
+import { EyedropperTool } from './tools/eyedropper';
 @Directive({
   selector: '[appPaper]',
   exportAs: 'appPaper',
 })
 export class PaperDirective implements OnInit {
-  constructor(private el: ElementRef<HTMLCanvasElement>) {
-    console.log('paper.directive', this);
-
-    // this.toolWheel.subscribe(console.log);
-  }
+  constructor(private el: ElementRef<HTMLCanvasElement>) {}
   @Output()
   appPaperChange = new EventEmitter();
 
@@ -66,59 +65,14 @@ export class PaperDirective implements OnInit {
   scope = new paper.PaperScope();
   tool$ = propertyChange$(this.scope, 'tool').pipe(shareReplay(1));
 
-  public pen = new PenTool(this.scope);
-  public eraser = new EraserTool(this.scope);
-  public select = new LassoSelectTool(this.scope);
-  public areaSelect = new RectangleSelectTool(this.scope);
+  public pen = new PenTool(this.scope as any);
+  public eraser = new EraserTool(this.scope as any);
+  public select = new LassoSelectTool(this.scope as any);
+  public areaSelect = new RectangleSelectTool(this.scope as any);
+  public pan = new PanTool(this.scope as any);
+  public move = new MoveTool(this.scope as any);
+  public eyedropper = new EyedropperTool(this.scope as any);
 
-  // @Output()
-  // toolDown$ = new EventEmitter<paper.ToolEvent>();
-  // @Output()
-  // toolUp$ = new EventEmitter<paper.ToolEvent>();
-  // @Output()
-  // toolDrag$ = new EventEmitter<paper.ToolEvent>();
-  // @Output()
-  // toolMove$ = new EventEmitter<paper.ToolEvent>();
-  // @Output()
-  // toolWheel$ = new EventEmitter<PaperToolWheelEvent>();
-
-  // private toolMove = fromEvent<paper.ToolEvent>(this.tool, 'mousemove').pipe(
-  //   // tap((event) => this.beforeEach(event)),
-  //   tap((event) => this.toolMove$.emit(event))
-  //   // tap((event) => this.afterEach(event))
-  // );
-  // private toolDown = fromEvent<paper.ToolEvent>(this.tool, 'mousedown').pipe(
-  //   tap((event) => this.beforeTool(event)),
-  //   tap((event) => this.beforeEach(event)),
-  //   tap((event) => this.toolDown$.emit(event)),
-  //   tap((event) => this.afterEach(event))
-  // );
-  // private toolDrag = fromEvent<paper.ToolEvent>(this.tool, 'mousedrag').pipe(
-  //   tap((event) => this.beforeEach(event)),
-  //   tap((event) => this.toolDrag$.emit(event)),
-  //   tap((event) => this.afterEach(event))
-  // );
-  // private toolUp = fromEvent<paper.ToolEvent>(this.tool, 'mouseup').pipe(
-  //   tap((event) => this.beforeEach(event)),
-  //   tap((event) => this.toolUp$.emit(event)),
-  //   tap((event) => this.afterEach(event)),
-  //   tap((event) => this.afterTool(event))
-  // );
-
-  // private toolWheel = fromEvent<PaperToolWheelEvent>(
-  //   this.tool,
-  //   'mousewheel'
-  // ).pipe(
-  //   tap((event) => this.beforeEach(event as any)),
-  //   tap((event) => this.toolWheel$.emit(event as any)),
-  //   tap((event) => this.afterEach(event as any)),
-  //   tap((event) => this.afterTool(event as any))
-  // );
-
-  // data$ = this.toolUp.pipe(
-  //   map(() => this.project.exportJSON()),
-  //   distinct()
-  // );
   ignore(fn: any, ...args: any[]) {
     let item: any;
     try {
@@ -136,23 +90,6 @@ export class PaperDirective implements OnInit {
         }
       }
     }
-  }
-
-  beforeTool(event: paper.ToolEvent) {
-    console.log('beforeTool', event);
-  }
-
-  // TODO this might be unnecessary for anything except re-drawing grid between events
-  beforeEach(event: paper.ToolEvent) {
-    // console.log('beforeEach', event);
-  }
-
-  afterEach(event: paper.ToolEvent) {
-    // console.log('afterEach', event);
-  }
-
-  afterTool(event: paper.ToolEvent) {
-    console.log('afterTool', event);
   }
 
   ngOnInit(): void {
