@@ -2,7 +2,7 @@
   <input type="text" formControlName="title">
 </form>
 <div class="row grow stretch-items">
-  <mat-accordion multi dense displayMode="flat" *ngIf="project" class="column">
+  <mat-accordion multi dense displayMode="flat" *ngIf="project" class="column wrapped">
 
 
 
@@ -24,7 +24,8 @@
       <ng-template matExpansionPanelContent>
 
         <div [appTool]="paper.scope.tool" *ngIf="paper.scope.tool">
-          {{paper.scope.tool.name}}
+          <app-color-form [color]="paper.scope.project.currentStyle.strokeColor"></app-color-form>
+          <!-- <app-color-form [color]="paper.scope.project.currentStyle.fillColor"></app-color-form> -->
         </div>
       </ng-template>
     </mat-expansion-panel>

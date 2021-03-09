@@ -14,8 +14,9 @@ export class PenTool extends VectorTool {
     });
     this.drag.subscribe((e) => {
       this.path.add(e.point);
-      this.color.hue++;
-      this.path.strokeColor = this.color as any;
+      // this.color.hue++;
+      // this.path.strokeColor = this.color as any;
+      // this.path.strokeColor = this.project.currentStyle.strokeColor;
       this.path.strokeWidth = 3 + Math.random() * 4;
     });
     this.up.subscribe((e) => {

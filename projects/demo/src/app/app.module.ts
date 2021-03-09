@@ -25,6 +25,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { FlexLayoutModule } from '@angular/flex-layout';
 @NgModule({
   declarations: [GunPeersComponent, AppComponent],
   imports: [
@@ -49,6 +50,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
     MatListModule,
     MatMenuModule,
     MatButtonToggleModule,
+    FlexLayoutModule,
   ],
   providers: [
     {

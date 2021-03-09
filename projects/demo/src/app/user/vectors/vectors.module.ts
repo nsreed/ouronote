@@ -29,6 +29,8 @@ import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatStepperModule } from '@angular/material/stepper';
 import { ToolDirective } from './components/tool.directive';
+import { ColorFormComponent } from './components/color-form/color-form.component';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 @NgModule({
   declarations: [
@@ -39,6 +41,7 @@ import { ToolDirective } from './components/tool.directive';
     LayerListComponent,
     StyleFormComponent,
     ToolDirective,
+    ColorFormComponent,
   ],
   imports: [
     CommonModule,
@@ -63,6 +66,7 @@ import { ToolDirective } from './components/tool.directive';
     MatListModule,
     MatMenuModule,
     MatButtonToggleModule,
+    FlexLayoutModule,
   ],
   exports: [PaperDirective],
 })

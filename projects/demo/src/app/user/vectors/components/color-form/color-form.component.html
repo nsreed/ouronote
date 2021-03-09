@@ -1,0 +1,7 @@
+<form [formGroup]="form" gdColumns="1fr 1fr 1fr">
+  <mat-form-field *ngFor="let cvp of controlKeys">
+    <input matInput [formControlName]="cvp" type="number" [min]="meta[cvp].min" [max]="meta[cvp].max"
+      [step]="(meta[cvp].max-meta[cvp].min)/100">
+    <mat-label>{{cvp}}</mat-label>
+  </mat-form-field>
+</form>

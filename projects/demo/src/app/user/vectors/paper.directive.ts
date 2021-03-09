@@ -29,6 +29,8 @@ import {
   RectangleSelectTool,
   LassoSelectTool,
 } from './tools/select';
+import { propertyChange$ } from './classes/paper-chain';
+import { shareReplay } from 'rxjs/operators';
 @Directive({
   selector: '[appPaper]',
   exportAs: 'appPaper',
@@ -62,6 +64,7 @@ export class PaperDirective implements OnInit {
   );
 
   scope = new paper.PaperScope();
+  tool$ = propertyChange$(this.scope, 'tool').pipe(shareReplay(1));
 
   public pen = new PenTool(this.scope);
   public eraser = new EraserTool(this.scope);
@@ -221,7 +224,12 @@ export class PaperDirective implements OnInit {
   @HostListener('mousewheel', ['$event'])
   onMouseWheel(event: WheelEvent) {
     console.log(event);
-    // this.tool.emit('mousewheel', new PaperToolWheelEvent(event));
+    const point = this.scope.view.viewToProject(
+      new paper.Point(event.offsetX, event.offsetY)
+    );
+    this.scope.view.emit('mousewheel', { event, point });
+
+    this.scope.tool.emit('mousewheel', { event, point });
     event.preventDefault();
   }
 

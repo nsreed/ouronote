@@ -6,9 +6,12 @@ canvas {
   // flex-grow: 1;
   // display: inline-block;
   position: absolute;
-  flex: 0 1 auto;
+  flex: 1 0.5 auto;
   align-self: stretch;
   overflow: hidden;
+
+  // top: 0;
+  // left: 0;
 
   width: 100%;
   height: 100%;
@@ -16,8 +19,13 @@ canvas {
   outline: solid 1px gray;
 }
 
-aside {
-  flex-shrink: 0;
+mat-accordion {
+  flex-shrink: 1;
+  flex-grow: 0.25;
+  flex-basis: 175px;
+  // min-width: 175px;
+
+  overflow: hidden;
 }
 
 form {
@@ -26,11 +34,12 @@ form {
 }
 
 #CanvasContainer {
-  overflow: auto;
+  overflow: hidden;
   flex: 1 1 auto;
   display: flex;
   align-items: stretch;
   justify-items: stretch;
+  // position: relative;
 }
 
 .virtual-scroll {
