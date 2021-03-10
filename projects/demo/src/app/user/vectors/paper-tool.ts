@@ -41,12 +41,14 @@ export class VectorTool extends Tool {
 
     this.wheel.subscribe((e) => {
       const zoomDelta = e.event.deltaY;
-      const centerDelta = (this.scope.view.bounds.center as any).subtract(
-        e.point
-      );
-      console.log('wheel', zoomDelta, centerDelta);
-      // (this.scope.view as any).scrollBy(centerDelta.multiply(-0.1));
+      const viewPoint = this.scope.view.projectToView(e.point);
       this.scope.view.zoom += zoomDelta > 0 ? -0.01 : 0.01;
+      const zoomPoint = this.scope.view.viewToProject(viewPoint);
+      const zoomOffset = (e.point as any)
+        .subtract(zoomPoint)
+        .multiply(zoomDelta > 0 ? -1 : 1);
+      console.log(zoomOffset);
+      (this.scope.view as any).scrollBy(zoomOffset);
     });
     this.setup();
     console.log('tool', this.name, this.properties);
