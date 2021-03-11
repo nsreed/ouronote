@@ -14,6 +14,8 @@ export class SelectTool extends VectorTool {
   name = 'select';
   selecting = false;
 
+  clickSub = this.click.subscribe((e) => this.project.deselectAll());
+
   //#region sources
   selectDown = this.down.pipe(
     filter(
@@ -94,9 +96,6 @@ export class LassoSelectTool extends SelectTool {
       // this.scope.project.deselectAll();
     }
   });
-  setup() {
-    super.setup();
-  }
 }
 
 export class RectangleSelectTool extends SelectTool {
@@ -140,7 +139,4 @@ export class RectangleSelectTool extends SelectTool {
       // this.scope.project.deselectAll();
     }
   });
-  setup() {
-    super.setup();
-  }
 }

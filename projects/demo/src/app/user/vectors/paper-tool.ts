@@ -6,7 +6,7 @@ import { filter, switchMapTo, takeUntil, tap } from 'rxjs/operators';
 
 export class VectorTool extends Tool {
   get properties() {
-    return Object.getPrototypeOf(this).___PROPERTIES;
+    return Object.getPrototypeOf(this).___PROPERTIES || [];
   }
   drag = fromEvent<paper.ToolEvent>(this, 'mousedrag');
   down = fromEvent<paper.ToolEvent>(this, 'mousedown').pipe(
@@ -23,7 +23,7 @@ export class VectorTool extends Tool {
   keydown = fromEvent<paper.KeyEvent>(this, 'keydown');
   keyup = fromEvent<paper.KeyEvent>(this, 'keyup');
 
-  // click = this.down.pipe(switchMapTo(this.up.pipe(takeUntil(this.move))));
+  click = this.up.pipe(filter((e) => e.delta.length === 0));
 
   name = Object.getPrototypeOf(this).constructor.name.replace(/tool/gi, '');
 
@@ -47,7 +47,7 @@ export class VectorTool extends Tool {
       const zoomOffset = (e.point as any)
         .subtract(zoomPoint)
         .multiply(zoomDelta > 0 ? -1 : 1);
-      console.log(zoomOffset);
+      // console.log(zoomOffset);
       (this.scope.view as any).scrollBy(zoomOffset);
     });
     this.setup();
