@@ -5,6 +5,7 @@ import {
 import { EXPECT_ARRAY, hasRequired } from './constants';
 import * as paper from 'paper';
 import { EventEmitter } from '@angular/core';
+import { serializeValue } from './packaging';
 import {
   buffer,
   debounceTime,
@@ -30,14 +31,19 @@ export class PaperPair {
     filter((v) => !this.ctx.data.ignored),
     bufferTime(100)
   );
-  saveProperty$ = new EventEmitter<[string, any]>();
+  saveProperty$ = new EventEmitter<[string] | [string, any]>();
   saveBuffer$ = this.saveProperty$.pipe(
     buffer(this.debouncedSave$),
     filter((v) => v.length > 0),
     map((v) =>
-      v.reduce((acc, val) => {
-        acc[val[0]] = Array.isArray(val[1]) ? JSON.stringify(val[1]) : val[1];
-        return acc;
+      v.reduce((propertyBuffer, val) => {
+        const propertyName = val[0];
+        const propertyValue =
+          val.length > 1 ? val[1] : serializeValue(this.ctx[propertyName]);
+        propertyBuffer[propertyName] = Array.isArray(propertyValue)
+          ? JSON.stringify(propertyValue)
+          : propertyValue;
+        return propertyBuffer;
       }, {} as any)
     )
   );
@@ -145,15 +151,20 @@ export class PaperPair {
     return child;
   }
 
-  save() {
+  save(properties?: string[]) {
     if (this.ctx?.data?.ignore) {
       console.warn('tried saving ignored item');
       return;
     }
+
+    if (properties) {
+      properties.forEach((name) => this.saveProperty$.emit([name]));
+    }
+
     this.save$.emit();
   }
 
-  doSave(json: any) {
+  protected doSave(json: any) {
     // ...
   }
 }

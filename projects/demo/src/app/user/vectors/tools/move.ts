@@ -11,4 +11,16 @@ export class MoveTool extends VectorTool {
         item.translate(e.delta as any);
       });
   });
+
+  upSub = this.up.subscribe((e) => {
+    this.scope.project
+      .getItems({
+        selected: true,
+        match: (item: paper.Item) => item.className !== 'Layer',
+      })
+      .forEach((item) => {
+        // TODO find a better way to keep track of saved fields
+        (item as any).pair.save(['position', 'segments']);
+      });
+  });
 }
