@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NgGunService } from '../../../ng-gun/src/lib/ng-gun.service';
-import { User } from './model';
+import { User } from './user/model';
 
 @Component({
   selector: 'app-root',
@@ -21,7 +21,7 @@ export class AppComponent {
         .subscribe((v) => {
           console.log('name change', v);
         });
-      a.get('name').put('alice' + Math.random());
+      a.get('name').put(('alice' + Math.random()) as never);
       // bob: ~VrEQ5DzIHnVoWk0vzp7FFCVzjYwMhSrFxcHTZw8_IP4.X6Kt40eR5STMbUgO5mge19o_NxGezx6SMsJ6W0bHaec
       a.root.get(
         '~VrEQ5DzIHnVoWk0vzp7FFCVzjYwMhSrFxcHTZw8_IP4.X6Kt40eR5STMbUgO5mge19o_NxGezx6SMsJ6W0bHaec'

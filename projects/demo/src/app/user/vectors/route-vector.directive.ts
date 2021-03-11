@@ -5,17 +5,20 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { GunChain } from '../../../../../ng-gun/src/lib/classes/GunChain';
-import { Vector } from '../../model';
+import { VectorGraph } from '../VectorGraph';
 
 @Directive({
   selector: '[appRouteVector]',
 })
 export class RouteVectorDirective {
-  vectorNode!: GunChain<Vector>;
+  vectorNode!: GunChain<VectorGraph>;
   vectorNode$ = this.route.data.pipe(
-    map((data) => this.vectorService.vectors.get(data.soul) as GunChain<Vector>)
+    map(
+      (data) =>
+        this.vectorService.vectors.get(data.soul) as GunChain<VectorGraph>
+    )
   );
-  vector$: Observable<Vector> = this.vectorNode$.pipe(
+  vector$: Observable<VectorGraph> = this.vectorNode$.pipe(
     switchMap((node) => node.on())
   );
   constructor(

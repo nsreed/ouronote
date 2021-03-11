@@ -54,11 +54,13 @@
     <mat-expansion-panel expanded>
       <mat-expansion-panel-header>Layers</mat-expansion-panel-header>
       <ng-template matExpansionPanelContent>
-        <mat-list dense>
-          <mat-list-item *ngFor="let layer of project?.layers" (click)="layer.activate()">
+        <mat-action-list dense>
+
+          <mat-list-item *ngFor="let layer of project?.layers" (click)="layer.activate()"
+            [ngClass]="{active: layer===project.activeLayer}">
             {{layer.toString()}} {{layer===project.activeLayer?'*':''}} {{layer.children?.length}}
           </mat-list-item>
-        </mat-list>
+        </mat-action-list>
       </ng-template>
       <mat-action-row>
         <a mat-icon-button (click)="addLayer()">

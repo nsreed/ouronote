@@ -15,6 +15,6 @@ export class VectorsComponent implements OnInit {
   create() {
     this.vectorService.vectors.set({
       title: 'new vector',
-    });
+    } as never);
   }
 }

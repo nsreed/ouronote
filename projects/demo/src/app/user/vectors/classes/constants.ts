@@ -4,6 +4,7 @@ export const EXPECT_ARRAY = [
   'strokeColor',
   'radius',
   'segments',
+  'position',
 ];
 export const REQUIRED_BY = {
   size: ['Shape'],
@@ -36,12 +37,15 @@ export const MUTATION_METHODS = [
   'lineBy',
   'curveTo',
   'curveBy',
+  // 'translate',
 ];
 
 export const MUTATIONS = {
   Path: MUTATION_METHODS,
+  // Item: ['translate'],
 } as any;
 
 export const MUTATION_PROPERTIES = {
   add: ['segments'],
+  // translate: ['position', 'segments'], // FIXME translate gets called by paper internally, causing unnecessary saves
 } as any;

@@ -21,7 +21,7 @@ import {
   GunChainCallbackOptions,
 } from '../../../../../../ng-gun/src/lib/classes/GunChain';
 import { after$, before$, returned } from '../../../functions/aspect-rx';
-import { ItemGraph } from '../../../model';
+import { ItemGraph } from '../../ItemGraph';
 import { getUUID } from '../edit-vector/converter-functions';
 import {
   EXPECT_ARRAY,
@@ -59,7 +59,8 @@ export class ItemPair extends PaperPair {
     })
     .pipe();
 
-  // FIXME find a better way to buffer by time window - bufferTime() continuously emits, causing expensive filtering for thousands of objects!
+  // FIXME find a better way to buffer by time window -
+  // bufferTime() continuously emits, causing expensive filtering for thousands of objects!
   childrenBuffer$ = this.children$.pipe(
     filter((childVK) => !this.childSouls.has(childVK[1])),
     tap((childVK) => {
@@ -188,13 +189,13 @@ export class ItemPair extends PaperPair {
       });
     this.localChange$.subscribe((data) => {
       // console.log('localChange$', data);
+      // FIXME apparently translate() is being called from outside our control
       if (Array.isArray(data)) {
         data.forEach((propName: string) => {
-          this.saveProperty$.emit([
-            propName,
-            serializeValue((this.item as any)[propName]),
-          ]);
+          const serializedValue = serializeValue((this.item as any)[propName]);
+          this.saveProperty$.emit([propName, serializedValue]);
         });
+        this.save();
       } else {
         // TODO handle this (will be necessary for supporting function interceptions that change non-array values)
         console.warn('%s onLocalChange$ was not an array, not saving!!!');

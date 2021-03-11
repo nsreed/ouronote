@@ -1,7 +1,7 @@
 import { after } from 'aspect-ts';
 import { map, mapTo, switchMap, filter, tap } from 'rxjs/operators';
 import { after$, before$, returned } from '../../../functions/aspect-rx';
-import { Vector } from '../../../model';
+import { VectorGraph } from '../../VectorGraph';
 import { of } from 'rxjs';
 import { ItemPair } from './ItemPair';
 import { PaperPair } from './PaperPair';
@@ -45,7 +45,7 @@ export class ProjectPair extends PaperPair {
   );
 
   constructor(
-    public chain: GunChain<Vector>,
+    public chain: GunChain<VectorGraph>,
     public project: paper.Project,
     scope: paper.PaperScope
   ) {

@@ -6,7 +6,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { GunPeersComponent } from './gun-peers/gun-peers.component';
 
-import { Message } from './model';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsUiModule } from './forms-ui/forms-ui.module';
 import { MatIconModule } from '@angular/material/icon';

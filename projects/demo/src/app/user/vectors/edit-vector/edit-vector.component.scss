@@ -42,3 +42,11 @@ form {
 .virtual-scroll {
   max-height: 100px;
 }
+
+mat-list-item.active {
+  // background-color: blue;
+  // margin-left: 1em;
+  // border: none;
+  // border-style: inset;
+  outline: solid 3px #0000ff55;
+}

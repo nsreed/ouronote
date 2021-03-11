@@ -14,6 +14,7 @@ import {
   filter,
   distinct,
   shareReplay,
+  bufferTime,
 } from 'rxjs/operators';
 
 export class PaperPair {
@@ -25,7 +26,10 @@ export class PaperPair {
   protected importing = false;
 
   save$ = new EventEmitter();
-  debouncedSave$ = this.save$.pipe(filter((v) => !this.ctx.data.ignored));
+  debouncedSave$ = this.save$.pipe(
+    filter((v) => !this.ctx.data.ignored),
+    bufferTime(100)
+  );
   saveProperty$ = new EventEmitter<[string, any]>();
   saveBuffer$ = this.saveProperty$.pipe(
     buffer(this.debouncedSave$),

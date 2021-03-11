@@ -9,7 +9,7 @@ import { ActivatedRoute } from '@angular/router';
 import * as paper from 'paper';
 import { take, distinct } from 'rxjs/operators';
 import { GunChain } from '../../../../../../ng-gun/src/lib/classes/GunChain';
-import { Vector } from '../../../model';
+import { VectorGraph } from '../../VectorGraph';
 import { ProjectPair } from '../classes/ProjectPair';
 import { PaperDirective } from '../paper.directive';
 import { RouteVectorDirective } from '../route-vector.directive';
@@ -67,7 +67,7 @@ export class EditVectorComponent
           node.get('title').put(title);
         });
     });
-    this.vector$.subscribe((vector: Vector) => {
+    this.vector$.subscribe((vector: VectorGraph) => {
       // console.log('vector change', vector, this.paperDirective);
       if (!this.paperDirective.project) {
         return;
@@ -79,7 +79,7 @@ export class EditVectorComponent
 
   ngOnInit(): void {}
 
-  onProjectDataChange(project: paper.Project, gun: GunChain<Vector>) {
+  onProjectDataChange(project: paper.Project, gun: GunChain<VectorGraph>) {
     console.log('setting up project graph');
     // this.paperDirective.tool.activate();
     const paperChain: ProjectPair = new ProjectPair(

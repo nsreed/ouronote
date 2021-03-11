@@ -49,6 +49,9 @@ export function serializeValue(value: any): any {
   if (Array.isArray(value)) {
     return value.map((e) => serializeValue(e));
   }
+  if (typeof value === 'object' && value.className === 'Point') {
+    return [value.x, value.y];
+  }
   const serialized =
     typeof value === 'object' && value._serialize
       ? value._serialize.call(value)
