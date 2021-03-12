@@ -1,0 +1,11 @@
+<form [formGroup]="form">
+  <mat-form-field>
+    <input matInput formControlName="alias">
+    <mat-label>alias</mat-label>
+  </mat-form-field>
+  <mat-form-field>
+    <input type="password" matInput formControlName="password">
+    <mat-label>password</mat-label>
+  </mat-form-field>
+  <button mat-button color="primary" (click)="login()" [disabled]="form.invalid">Log In</button>
+</form>

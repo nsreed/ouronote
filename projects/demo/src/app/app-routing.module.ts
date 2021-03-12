@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { GunAuthGuard } from '../../../ng-gun/src/lib/gun-auth.guard';
+import { LoginComponent } from './login/login.component';
 
 const routes: Routes = [
   {
@@ -12,6 +13,10 @@ const routes: Routes = [
     path: 'posts',
     loadChildren: () =>
       import('./user/posts/posts.module').then((m) => m.PostsModule),
+  },
+  {
+    path: 'login',
+    component: LoginComponent,
   },
 ];
 

@@ -25,8 +25,9 @@ import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { LoginComponent } from './login/login.component';
 @NgModule({
-  declarations: [GunPeersComponent, AppComponent],
+  declarations: [GunPeersComponent, AppComponent, LoginComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
