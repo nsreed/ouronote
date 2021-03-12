@@ -21,6 +21,7 @@ import {
   scan,
   shareReplay,
   take,
+  timeout,
 } from 'rxjs/operators';
 import { LexicalQuery } from './LexicalQuery';
 import { tap } from 'rxjs/operators';
@@ -279,7 +280,7 @@ export class GunChain<
       this._auth = new GunAuthChain<DataType, ReferenceKey>(
         this.ngZone,
         // no fix for this... gun.user.is is static! can't have multiple logins on a single gun instance
-        this.gun.user() as any,
+        this.gun.user().recall({ sessionStorage: true }) as any,
         this as any
       );
     }
@@ -330,6 +331,7 @@ export class GunAuthChain<
     @Optional() @SkipSelf() public root: GunChain
   ) {
     super(ngZone, gun as any);
+    this.is = (gun as any).is;
   }
 
   login(alias: string, pass: string) {
@@ -385,10 +387,8 @@ export class GunAuthChain<
   }
 
   recall() {
-    this.gun.recall({ sessionStorage: true }, (ack) => {
-      console.log('recall ack', ack);
-    });
-    return this.auth$;
+    this.gun.recall({ sessionStorage: true });
+    return this.auth$.pipe(timeout(5000));
   }
 
   logout() {

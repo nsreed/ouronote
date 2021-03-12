@@ -24,4 +24,8 @@ export class NgGunService<
   ) {
     super(ngZone, new Gun(gunOptions) as any);
   }
+
+  findAlias(alias: string) {
+    return this.get(`~@${alias}` as any).once();
+  }
 }
