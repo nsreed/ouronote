@@ -1,8 +1,8 @@
-<ng-container *ngIf="user">
+<ng-container *ngIf="user.is">
   <nav>
     <h1>NgGun Demo</h1>
     <a routerLink="/user">User</a>
-    <button>Log Out</button>
+    <button (click)="logout()">Log Out</button>
   </nav>
 
 </ng-container>

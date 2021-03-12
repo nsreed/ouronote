@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NgGunService } from '../../../ng-gun/src/lib/ng-gun.service';
 import { User } from './user/model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -9,13 +10,14 @@ import { User } from './user/model';
 })
 export class AppComponent {
   user: any;
-  constructor(public ngGun: NgGunService<User>) {
+  constructor(public ngGun: NgGunService<User>, private router: Router) {
     // NOTE gun.user(pub) does *not* provide auth() method
     const a = ngGun.auth();
     const b = ngGun.auth();
     ngGun.findAlias('tedddddd').subscribe((data: any) => {
       console.log('found user', data);
     });
+    this.user = this.ngGun.auth();
 
     // a.login('alice', '1234')?.subscribe((ack: any) => {
     //   console.log('login() ack', ack);
@@ -45,5 +47,10 @@ export class AppComponent {
     //   //   );
     //   // });
     // });
+  }
+
+  logout() {
+    this.ngGun.auth().logout();
+    this.router.navigateByUrl('/');
   }
 }

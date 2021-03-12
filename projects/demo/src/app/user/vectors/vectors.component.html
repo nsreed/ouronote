@@ -1,4 +1,11 @@
 <button (click)="create()">New Vector</button>
-<ng-container *ngFor="let vector of vectors|async">
-  <a [routerLink]="['/user/vectors', vector|soul, 'edit']">{{vector.title}}</a>
-</ng-container>
+<div gdColumns="max-content auto max-content">
+  <ng-container *ngFor="let vector of vectors|async">
+    <button mat-icon-button>
+      <mat-icon>delete</mat-icon>
+    </button>
+    <a mat-flat-button [routerLink]="['/user/vectors', vector|soul, 'edit']">{{vector.title}}</a>
+    <span>{{vector|updated|date}}</span>
+  </ng-container>
+
+</div>
