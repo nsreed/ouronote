@@ -32,6 +32,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { ToolDirective } from './components/tool.directive';
 import { ColorFormComponent } from './components/color-form/color-form.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { VectorFormComponent } from './components/vector-form/vector-form.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     StyleFormComponent,
     ToolDirective,
     ColorFormComponent,
+    VectorFormComponent,
   ],
   imports: [
     CommonModule,

@@ -1,15 +1,20 @@
 import { Directive } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, map } from 'rxjs/operators';
 import { MessageService } from './message.service';
+import { GunChain } from '../../../../../ng-gun/src/lib/classes/GunChain';
 
 @Directive({
   selector: '[appRouteMessage]',
 })
 export class RouteMessageDirective {
-  message$: Observable<any> = this.route.data.pipe(
-    switchMap((data) => this.messageService.messages.get(data.message).on())
+  chain!: GunChain;
+  chain$ = this.route.data.pipe(
+    map((data) => this.messageService.messages.get(data.message))
+  );
+  message$: Observable<any> = this.chain$.pipe(
+    switchMap((chain) => chain.on())
   );
   constructor(
     protected messageService: MessageService,

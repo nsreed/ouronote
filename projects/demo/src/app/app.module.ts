@@ -26,6 +26,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { LoginComponent } from './login/login.component';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 @NgModule({
   declarations: [GunPeersComponent, AppComponent, LoginComponent],
   imports: [
@@ -51,6 +52,7 @@ import { LoginComponent } from './login/login.component';
     MatMenuModule,
     MatButtonToggleModule,
     FlexLayoutModule,
+    MatAutocompleteModule,
   ],
   providers: [
     {
