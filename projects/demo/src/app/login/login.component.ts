@@ -19,7 +19,7 @@ export class LoginComponent implements OnInit {
     router: Router
   ) {
     ngGun.auth().auth$.subscribe((data) => {
-      console.log('auth data', data);
+      // console.log('auth data', data);
       router.navigateByUrl('/user');
     });
   }
