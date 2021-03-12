@@ -18,6 +18,17 @@ export class LoginComponent implements OnInit {
     this.form.updateValueAndValidity();
   }
 
+  create() {
+    if (this.form.invalid) {
+      return;
+    }
+    console.log('create', this.form.value);
+    this.ngGun
+      .auth()
+      .create(this.form.value.alias, this.form.value.password)
+      .subscribe((data) => console.log('create result', data));
+  }
+
   login() {
     if (!this.form.valid) {
       return;
