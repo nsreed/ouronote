@@ -12,13 +12,14 @@ export class AppComponent {
   user: any;
   constructor(public ngGun: NgGunService<User>, private router: Router) {
     // NOTE gun.user(pub) does *not* provide auth() method
-    const a = ngGun.auth();
-    const b = ngGun.auth();
-    ngGun.findAlias('tedddddd').subscribe((data: any) => {
-      console.log('found user', data);
-    });
+    // const a = ngGun.auth();
+    // const b = ngGun.auth();
+    // ngGun.findAlias('tedddddd').subscribe((data: any) => {
+    //   console.log('found user', data);
+    // });
     this.user = this.ngGun.auth();
-
+    console.log('app user');
+    console.log(this.user);
     // a.login('alice', '1234')?.subscribe((ack: any) => {
     //   console.log('login() ack', ack);
     //   a.get('name')

@@ -27,8 +27,15 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { LoginComponent } from './login/login.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { SessionInfoComponent } from './session-info/session-info.component';
+import { MatToolbarModule } from '@angular/material/toolbar';
 @NgModule({
-  declarations: [GunPeersComponent, AppComponent, LoginComponent],
+  declarations: [
+    GunPeersComponent,
+    AppComponent,
+    LoginComponent,
+    SessionInfoComponent,
+  ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -53,6 +60,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     MatButtonToggleModule,
     FlexLayoutModule,
     MatAutocompleteModule,
+    MatToolbarModule,
   ],
   providers: [
     {
