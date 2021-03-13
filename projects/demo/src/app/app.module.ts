@@ -29,12 +29,14 @@ import { LoginComponent } from './login/login.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { SessionInfoComponent } from './session-info/session-info.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { ConfirmComponent } from './components/confirm/confirm.component';
 @NgModule({
   declarations: [
     GunPeersComponent,
     AppComponent,
     LoginComponent,
     SessionInfoComponent,
+    ConfirmComponent,
   ],
   imports: [
     BrowserModule,

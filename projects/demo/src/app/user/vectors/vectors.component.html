@@ -1,7 +1,7 @@
 <button (click)="create()">New Vector</button>
 <div gdColumns="max-content auto max-content">
   <ng-container *ngFor="let vector of vectors|async">
-    <button mat-icon-button>
+    <button mat-icon-button (click)="remove(vector)">
       <mat-icon>delete</mat-icon>
     </button>
     <a mat-flat-button [routerLink]="['/user/vectors', vector|soul, 'edit']">{{vector.title}}</a>
