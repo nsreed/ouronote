@@ -1,4 +1,8 @@
-<button (click)="create()">New Vector</button>
+<mat-toolbar>
+
+  <button mat-button color="primary" (click)="create()">New Vector</button>
+</mat-toolbar>
+
 <div gdColumns="max-content auto max-content">
   <ng-container *ngFor="let vector of vectors|async">
     <button mat-icon-button (click)="remove(vector)">

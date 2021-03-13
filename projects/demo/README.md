@@ -2,6 +2,15 @@
 
 ## Multi-User
 
+See [SEA.certify](https://gun.eco/docs/SEA.certify#rooms) for a "Rooms" example
+
+This seems ideal, as it creates a key pair with its own certificates
+
+Requires some modification to handle the concept of a "moderator" role.
+
+- Generate "owner" certificate, granting access to `/ban` `/blacklist` and `/certs`
+- Store this certificate on owner? Or on room???
+
 - Prove on simple document (message?)
 
 Does the document get its own public key? How does the owner get access to it?

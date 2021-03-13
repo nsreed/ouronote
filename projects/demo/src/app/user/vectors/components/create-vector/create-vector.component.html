@@ -1,0 +1,13 @@
+<h1 mat-dialog-title>
+  Create Vector
+</h1>
+<form [formGroup]="form" mat-dialog-content>
+  <mat-form-field>
+    <mat-label>Title</mat-label>
+    <input matInput formControlName="title">
+  </mat-form-field>
+  <mat-checkbox formControlName="public">Public?</mat-checkbox>
+</form>
+<div mat-dialog-actions>
+  <button mat-button color="primary" [disabled]="!form.valid" (click)="create()">Create</button>
+</div>

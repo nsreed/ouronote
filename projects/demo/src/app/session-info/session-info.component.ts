@@ -15,6 +15,7 @@ export class SessionInfoComponent implements OnInit {
       console.log('user', u);
       this.data = u;
     });
+    this.user.auth$.subscribe((event) => this.onAuthEvent(event));
     // this.user
     //   .get('alias' as never)
     //   .once()
@@ -22,4 +23,9 @@ export class SessionInfoComponent implements OnInit {
   }
 
   ngOnInit(): void {}
+
+  onAuthEvent(event: any) {
+    console.log('auth event', event);
+    this.data = event.put;
+  }
 }

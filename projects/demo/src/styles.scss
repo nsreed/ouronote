@@ -53,24 +53,24 @@ nav,
 form {
   padding: 1em;
 }
-button,
-input[type="button"] {
-  padding: 0.5em 0.75em;
-  font-size: medium;
-  line-height: 1.2rem;
-  border: none;
-  text-transform: uppercase;
-  outline: inset 2px #ffeeee;
-  background-image: linear-gradient(
-    to bottom,
-    rgba(243, 237, 237, 0.246),
-    rgb(235, 227, 227)
-  );
+// button,
+// input[type="button"] {
+//   padding: 0.5em 0.75em;
+//   font-size: medium;
+//   line-height: 1.2rem;
+//   border: none;
+//   text-transform: uppercase;
+//   outline: inset 2px #ffeeee;
+//   background-image: linear-gradient(
+//     to bottom,
+//     rgba(243, 237, 237, 0.246),
+//     rgb(235, 227, 227)
+//   );
 
-  &:hover {
-    outline-color: #b0c0c099;
-  }
-}
+//   &:hover {
+//     outline-color: #b0c0c099;
+//   }
+// }
 // h1,
 // h2,
 // h3,
@@ -132,5 +132,11 @@ router-outlet + * {
 body {
   [dense] .mat-expansion-panel-body {
     padding: 0;
+  }
+}
+
+mat-radio-group {
+  mat-radio-button {
+    margin-right: 1em;
   }
 }

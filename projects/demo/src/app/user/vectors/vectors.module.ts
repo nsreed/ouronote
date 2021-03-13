@@ -33,6 +33,7 @@ import { ToolDirective } from './components/tool.directive';
 import { ColorFormComponent } from './components/color-form/color-form.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { VectorFormComponent } from './components/vector-form/vector-form.component';
+import { CreateVectorComponent } from './components/create-vector/create-vector.component';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { VectorFormComponent } from './components/vector-form/vector-form.compon
     ToolDirective,
     ColorFormComponent,
     VectorFormComponent,
+    CreateVectorComponent,
   ],
   imports: [
     CommonModule,

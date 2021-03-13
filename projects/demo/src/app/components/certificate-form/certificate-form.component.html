@@ -1,0 +1,33 @@
+<h1 mat-dialog-title>Certificate</h1>
+<form mat-dialog-content [formGroup]="form">
+  <mat-radio-group formControlName="multi">
+    <mat-radio-button [value]="true">Everyone</mat-radio-button>
+    <mat-radio-button [value]="false">Specific People:</mat-radio-button>
+  </mat-radio-group>
+
+  <mat-form-field>
+    <input matInput>
+    <mat-label>Search</mat-label>
+  </mat-form-field>
+
+  <h2>Policies</h2>
+  <mat-form-field>
+    <input matInput>
+    <mat-label>Path</mat-label>
+  </mat-form-field>
+  <mat-checkbox>Require Public Key in path</mat-checkbox>
+
+  <h2>Expires</h2>
+  <mat-form-field>
+    <input matInput [matDatepicker]="expire">
+    <mat-label>Select an expiration date</mat-label>
+    <mat-datepicker #expire></mat-datepicker>
+    <mat-datepicker-toggle [for]="expire" matSuffix></mat-datepicker-toggle>
+  </mat-form-field>
+
+  <h2>Blacklist</h2>
+  <mat-form-field>
+    <input matInput>
+    <mat-label>Specify a blacklist path</mat-label>
+  </mat-form-field>
+</form>

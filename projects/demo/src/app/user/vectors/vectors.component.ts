@@ -4,6 +4,7 @@ import { map, filter } from 'rxjs/operators';
 import { gunUpdateTime } from '../../../../../ng-gun/src/lib/functions/gun-utils';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmComponent } from '../../components/confirm/confirm.component';
+import { CreateVectorComponent } from './components/create-vector/create-vector.component';
 
 @Component({
   selector: 'app-vectors',
@@ -24,9 +25,10 @@ export class VectorsComponent implements OnInit {
   ngOnInit(): void {}
 
   create() {
-    this.vectorService.vectors.set({
-      title: 'new vector',
-    } as never);
+    this.dialog.open(CreateVectorComponent, { width: '90%', height: '90%' });
+    // this.vectorService.vectors.set({
+    //   title: 'new vector',
+    // } as never);
   }
 
   remove(vector: any) {

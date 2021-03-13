@@ -97,9 +97,10 @@ export class GunChain<
   put(
     data: Partial<
       AlwaysDisallowedType<DisallowPrimitives<IsTop, DisallowArray<DataType>>>
-    >
+    >,
+    cert?: string
   ) {
-    return this.from(this.gun.put(data));
+    return this.from(this.gun.put(data, null, { opt: { cert } }));
   }
 
   set(
