@@ -47,7 +47,10 @@ export class CreateVectorComponent implements OnInit {
       }
     );
     // TODO owner cert for bannings (required for moderator roles, not useful for taking full ownership)
-    const ownerCert = await this.sea.certify(me, paths, vp).toPromise();
+    const certificants = this.form.value.public ? '*' : me;
+    const ownerCert = await this.sea
+      .certify(certificants, paths, vp)
+      .toPromise();
     // vectorRoot.get('owner').put(ownerCert as never, ownerCert);
     console.log('cert', ownerCert);
 
