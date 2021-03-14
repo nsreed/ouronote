@@ -51,7 +51,7 @@ export class VectorTool extends Tool {
       (this.scope.view as any).scrollBy(zoomOffset);
     });
     this.setup();
-    console.log('tool', this.name, this.properties);
+    // console.log('tool', this.name, this.properties);
     // this.click.subscribe((e) => console.log('click', e));
     // TODO touch events should be filterable/reduce()ed in such a way as to allow gesture integration
   }

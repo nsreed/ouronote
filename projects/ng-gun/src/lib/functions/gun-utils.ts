@@ -59,5 +59,3 @@ export function parseCertificate(cert: string) {
   const scrubbed = cert.replace(RE_SEA_CERT, '');
   return JSON.parse(scrubbed) as IGunCertificate;
 }
-
-export function certFull(key: string) {}

@@ -34,6 +34,7 @@ import { FormsUiModule } from './forms-ui/forms-ui.module';
 import { GunPeersComponent } from './gun-peers/gun-peers.component';
 import { LoginComponent } from './login/login.component';
 import { SessionInfoComponent } from './session-info/session-info.component';
+import { AliasAutocompleteComponent } from './components/alias-autocomplete/alias-autocomplete.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { SessionInfoComponent } from './session-info/session-info.component';
     ConfirmComponent,
     CertificatesComponent,
     CertificateFormComponent,
+    AliasAutocompleteComponent,
   ],
   imports: [
     BrowserModule,

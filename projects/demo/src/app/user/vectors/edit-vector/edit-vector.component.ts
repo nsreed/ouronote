@@ -16,6 +16,7 @@ import { RouteVectorDirective } from '../route-vector.directive';
 import { VectorService } from '../vector.service';
 import { gunifyProject as gunifyProject } from './converter-functions';
 import { FormBuilder, Validators } from '@angular/forms';
+import { NgGunService } from '../../../../../../ng-gun/src/lib/ng-gun.service';
 
 const VECTOR_PAPER_JSON_KEY = 'graph';
 
@@ -40,9 +41,10 @@ export class EditVectorComponent
     vectorService: VectorService,
     route: ActivatedRoute,
     private ngZone: NgZone,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    ngGun: NgGunService
   ) {
-    super(vectorService, route);
+    super(vectorService, route, ngGun);
   }
 
   ngAfterViewInit(): void {

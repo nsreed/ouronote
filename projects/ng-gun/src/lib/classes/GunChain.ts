@@ -93,7 +93,27 @@ export class GunChain<
     const chainArray = gunChainArray(value as any);
     this.path = path;
 
+    const myPair = (this.gun.user() as any).is;
+    if (!myPair) {
+      console.warn('NO PAIR');
+      // return;
+    }
+    const myPub = `~${(this.gun.user() as any).is?.pub}`;
     const pubs = path.filter((key) => key.startsWith('~'));
+
+    // // TODO sometimes we want to get() a foreign key directly, in which case we'll only have 1 pubs[]
+    // // TODO change to check against gun.auth().is.pub.
+    // // TODO might need to sign put() and set() values... this doesn't seem to syn
+    // TODO THIS IS NOT A BUG!!! - you are trying to write using the *owner* cert!
+    if (pubs.length === 0 || pubs[0] !== myPub) {
+      console.log(
+        'HAVE A FOREIGN PUBLIC KEY\n%s\n%s',
+        myPub,
+        path.join('.'),
+        myKey
+      );
+      pubs.push(myPub);
+    }
     if (pubs.length > 1) {
       this.isNested = true;
       this.recordPub = pubs[0];
@@ -103,9 +123,9 @@ export class GunChain<
       pathFromRecord.reverse();
 
       if (myKey === this.recordPub) {
-        // console.log('sub root', myKey);
+        console.log('sub root', myKey);
       } else {
-        // console.log('sub-chain', this.recordPub, myKey);
+        console.log('sub-chain', this.recordPub, myKey);
         // console.log(pathFromRecord, chainArray);
         const record = chainArray[firstPub];
         // console.log(record);
@@ -115,6 +135,7 @@ export class GunChain<
           this.certificate = cert;
           // TODO check if owner certificate has user as certificant - or should this be done later?
         });
+        // TODO get certs for paths
         this.record = record;
       }
     }
@@ -138,31 +159,6 @@ export class GunChain<
   private sources = new Map<string, Observable<any>>();
   private _auth: GunAuthChain<DataType, ReferenceKey> | null = null;
 
-  getCertificates() {
-    const path = this.path;
-    const closestIndex = path.findIndex((key) => key.startsWith('~'));
-    const closestKey = path[closestIndex];
-    const remaining = path.splice(closestIndex);
-    const n = this.user(closestKey);
-    n.get('ownerCert')
-      .once()
-      .subscribe((cert) => console.log('cer;t', cert));
-    console.log('closest', closestKey, remaining);
-  }
-
-  get top() {
-    let c: IGunChainReference = this.gun as any;
-    while (c.back) {
-      const back = c.back();
-      if (back !== c) {
-        c = c.back();
-      } else {
-        break;
-      }
-    }
-    return c;
-  }
-
   from<T>(gun: IGunChainReference<T>) {
     return new GunChain<T>(this.ngZone, gun as any);
   }
@@ -182,29 +178,12 @@ export class GunChain<
     >,
     cert: string = this.certificate
   ) {
-    // TODO determine if we should pass a certificate
-    if (this.record) {
-      console.log('%s: ', this.certificate);
-      console.log(data);
-      // this.record.get()
-      // const result = this.from(
-      //   this.gun.put(data, null, cert ? { opt: { cert } } : undefined)
-      // );
-      // this.once().subscribe((me) => {
-      //   console.log('me', me);
-      // });
-      // return result;
-    }
-
-    // console.log('%s: ', this.certificate);
-    // console.log(data);
-
     const result = this.from(
       this.gun.put(data, null, cert ? { opt: { cert } } : undefined)
     );
-    this.once().subscribe((me) => {
-      console.log('me', me);
-    });
+    // this.once().subscribe((me) => {
+    //   console.log('me', me);
+    // });
     return result;
   }
 
@@ -220,6 +199,7 @@ export class GunChain<
         : never
     >
   ) {
+    // TODO get certificate for set()
     return this.from(this.gun.set(data));
   }
 
