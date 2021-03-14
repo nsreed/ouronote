@@ -12,3 +12,12 @@ export type CertificatePolicy =
   | string;
 
 export type Certificants = '*' | string | string[];
+
+export interface IGunCertificate {
+  /** Certificants */
+  c: string;
+  /** Policies */
+  w: CertificatePolicy | CertificatePolicy[];
+  /** Signature */
+  s: string;
+}

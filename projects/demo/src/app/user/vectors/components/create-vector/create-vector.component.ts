@@ -39,10 +39,15 @@ export class CreateVectorComponent implements OnInit {
     const vectorRoot = this.ngGun.get(`~${vp.pub}`);
     console.log('vp', vp.pub);
 
+    const paths = ['layers', 'title', 'owner', 'ownerCert', 'blacklist'].map(
+      (path) => {
+        return {
+          '*': path,
+        };
+      }
+    );
     // TODO owner cert for bannings (required for moderator roles, not useful for taking full ownership)
-    const ownerCert = await this.sea
-      .certify(me, ['layers*', 'title', 'owner', 'ownerCert', 'blacklist*'], vp)
-      .toPromise();
+    const ownerCert = await this.sea.certify(me, paths, vp).toPromise();
     // vectorRoot.get('owner').put(ownerCert as never, ownerCert);
     console.log('cert', ownerCert);
 

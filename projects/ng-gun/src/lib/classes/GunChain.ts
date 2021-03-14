@@ -26,6 +26,11 @@ import {
 import { LexicalQuery } from './LexicalQuery';
 import { tap } from 'rxjs/operators';
 import { IGunPeer } from './IGunPeer';
+import {
+  gunPath,
+  gunChainArray,
+  parseCertificate,
+} from '../functions/gun-utils';
 
 export const GUN_NODE = Symbol('GUN_NODE');
 
@@ -63,11 +68,63 @@ export class GunChain<
   ReferenceKey = any,
   IsTop extends 'pre_root' | 'root' | false = false
 > {
+  path!: string[];
+  isNested = false;
+  recordPub!: any;
+  record?: any;
+  certificate!: string;
+  private _gun!: IGunChainReference<DataType, ReferenceKey, IsTop> &
+    GunChainFunctions &
+    GunChainMeta;
+  public get gun(): IGunChainReference<DataType, ReferenceKey, IsTop> &
+    GunChainFunctions &
+    GunChainMeta {
+    return this._gun;
+  }
+  public set gun(
+    value: IGunChainReference<DataType, ReferenceKey, IsTop> &
+      GunChainFunctions &
+      GunChainMeta
+  ) {
+    this._gun = value;
+    const myKey = (value as any)._.get;
+
+    const path = gunPath(value as any);
+    const chainArray = gunChainArray(value as any);
+    this.path = path;
+
+    const pubs = path.filter((key) => key.startsWith('~'));
+    if (pubs.length > 1) {
+      this.isNested = true;
+      this.recordPub = pubs[0];
+      const firstPub = path.findIndex((key) => key.startsWith('~'));
+      const pathFromRecord = [...path];
+      const recordPath = pathFromRecord.splice(firstPub).reverse();
+      pathFromRecord.reverse();
+
+      if (myKey === this.recordPub) {
+        // console.log('sub root', myKey);
+      } else {
+        // console.log('sub-chain', this.recordPub, myKey);
+        // console.log(pathFromRecord, chainArray);
+        const record = chainArray[firstPub];
+        // console.log(record);
+        record.get('ownerCert').once((cert: any) => {
+          const certificate = parseCertificate(cert);
+          // console.log('owner certificate:', certificate);
+          this.certificate = cert;
+          // TODO check if owner certificate has user as certificant - or should this be done later?
+        });
+        this.record = record;
+      }
+    }
+  }
+
   constructor(
     protected ngZone: NgZone,
     @Optional()
     @Inject(GUN_NODE)
-    public gun: IGunChainReference<DataType, ReferenceKey, IsTop> &
+    gun: IGunChainReference<DataType, ReferenceKey, IsTop> &
       GunChainFunctions &
       GunChainMeta
   ) {
@@ -77,8 +134,34 @@ export class GunChain<
       this.gun = gun;
     }
   }
+  certificates: string[] = [];
   private sources = new Map<string, Observable<any>>();
   private _auth: GunAuthChain<DataType, ReferenceKey> | null = null;
+
+  getCertificates() {
+    const path = this.path;
+    const closestIndex = path.findIndex((key) => key.startsWith('~'));
+    const closestKey = path[closestIndex];
+    const remaining = path.splice(closestIndex);
+    const n = this.user(closestKey);
+    n.get('ownerCert')
+      .once()
+      .subscribe((cert) => console.log('cer;t', cert));
+    console.log('closest', closestKey, remaining);
+  }
+
+  get top() {
+    let c: IGunChainReference = this.gun as any;
+    while (c.back) {
+      const back = c.back();
+      if (back !== c) {
+        c = c.back();
+      } else {
+        break;
+      }
+    }
+    return c;
+  }
 
   from<T>(gun: IGunChainReference<T>) {
     return new GunChain<T>(this.ngZone, gun as any);
@@ -87,10 +170,9 @@ export class GunChain<
   get<K extends keyof DataType>(
     key: ArrayOf<DataType> extends never ? K : ArrayOf<DataType>
   ) {
-    const soul: ArrayOf<DataType> extends never ? K : ArrayOf<DataType> =
-      typeof key === 'object' && Gun.node.is(key)
-        ? (Gun.node.soul(key) as any)
-        : key;
+    const soul: ArrayOf<DataType> extends never
+      ? K
+      : ArrayOf<DataType> = this.getSoul(key);
     return this.from(this.gun.get(soul));
   }
 
@@ -98,9 +180,32 @@ export class GunChain<
     data: Partial<
       AlwaysDisallowedType<DisallowPrimitives<IsTop, DisallowArray<DataType>>>
     >,
-    cert?: string
+    cert: string = this.certificate
   ) {
-    return this.from(this.gun.put(data, null, { opt: { cert } }));
+    // TODO determine if we should pass a certificate
+    if (this.record) {
+      console.log('%s: ', this.certificate);
+      console.log(data);
+      // this.record.get()
+      // const result = this.from(
+      //   this.gun.put(data, null, cert ? { opt: { cert } } : undefined)
+      // );
+      // this.once().subscribe((me) => {
+      //   console.log('me', me);
+      // });
+      // return result;
+    }
+
+    // console.log('%s: ', this.certificate);
+    // console.log(data);
+
+    const result = this.from(
+      this.gun.put(data, null, cert ? { opt: { cert } } : undefined)
+    );
+    this.once().subscribe((me) => {
+      console.log('me', me);
+    });
+    return result;
   }
 
   set(
@@ -289,7 +394,7 @@ export class GunChain<
   }
 
   user(pubKey?: string) {
-    return this.from(this.gun.user(pubKey));
+    return this.from(this.gun.user(pubKey?.replace(/^~/, '')));
   }
 
   onEvent(event: string, node = this.gun): Observable<any> {
@@ -305,6 +410,12 @@ export class GunChain<
       this.sources.set(event, source);
     }
     return this.sources.get(event) as Observable<any>;
+  }
+
+  protected getSoul(key: any) {
+    return typeof key === 'object' && Gun.node.is(key)
+      ? (Gun.node.soul(key) as any)
+      : key;
   }
 }
 
