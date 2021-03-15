@@ -93,8 +93,8 @@ export class GunChain<
     const chainArray = gunChainArray(value as any);
     this.path = path;
 
-    const myPair = (this.gun.user() as any).is;
-    if (!myPair) {
+    const userPair = (this.gun.user() as any).is;
+    if (!userPair) {
       console.warn('NO PAIR');
       // return;
     }
@@ -106,12 +106,12 @@ export class GunChain<
     // // TODO might need to sign put() and set() values... this doesn't seem to syn
     // TODO THIS IS NOT A BUG!!! - you are trying to write using the *owner* cert!
     if (pubs.length === 0 || pubs[0] !== myPub) {
-      console.log(
-        'HAVE A FOREIGN PUBLIC KEY\n%s\n%s',
-        myPub,
-        path.join('.'),
-        myKey
-      );
+      // console.log(
+      //   'HAVE A FOREIGN PUBLIC KEY\n%s\n%s',
+      //   myPub,
+      //   path.join('.'),
+      //   myKey
+      // );
       pubs.push(myPub);
     }
     if (pubs.length > 1) {
@@ -125,7 +125,9 @@ export class GunChain<
       if (myKey === this.recordPub) {
         console.log('sub root', myKey);
       } else {
-        console.log('sub-chain', this.recordPub, myKey);
+        const keyInRecord = pathFromRecord[0];
+        console.log('certs.%s matching', keyInRecord);
+        // console.log('', this.recordPub, pathFromRecord.join('/'));
         // console.log(pathFromRecord, chainArray);
         const record = chainArray[firstPub];
         // console.log(record);

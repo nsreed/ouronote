@@ -35,6 +35,13 @@ export const gunChainArray = (value: IGunChainReference) => {
   return path;
 };
 
+export const gunCertificateChain = (value: IGunChainReference) =>
+  gunChainArray(value).map((c) => c.get('certs'));
+
+/**
+ * Returns an array of keys representing the path of the given chain
+ * @param value the chain to pathify
+ */
 export const gunPath = (value: IGunChainReference) => {
   let c = value as any;
   const path = [];

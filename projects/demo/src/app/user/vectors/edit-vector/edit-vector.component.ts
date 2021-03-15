@@ -30,7 +30,6 @@ export class EditVectorComponent
   @ViewChild('paper')
   private paperDirective!: PaperDirective;
   private isLoaded = false;
-  paperGraph!: GunChain;
   project!: paper.Project;
 
   vectorForm = this.fb.group({
@@ -53,7 +52,7 @@ export class EditVectorComponent
         console.warn('NO PAPER PROJECT');
         return;
       }
-      this.onProjectDataChange(this.paperDirective.project as any, node as any);
+      this.onProjectReady(this.paperDirective.project as any, node as any);
       node
         .get('title')
         .on()
@@ -81,7 +80,7 @@ export class EditVectorComponent
 
   ngOnInit(): void {}
 
-  onProjectDataChange(project: paper.Project, gun: GunChain<VectorGraph>) {
+  onProjectReady(project: paper.Project, gun: GunChain<VectorGraph>) {
     console.log('setting up project graph');
     // this.paperDirective.tool.activate();
     const paperChain: ProjectPair = new ProjectPair(
@@ -96,10 +95,5 @@ export class EditVectorComponent
     const layer = new paper.Layer();
     console.log(this.paperDirective.project.layers);
     (layer as any).pair.save();
-  }
-
-  onIgnored() {
-    const layer = new paper.Layer();
-    layer.data.ignored = true;
   }
 }
