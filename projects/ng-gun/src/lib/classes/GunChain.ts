@@ -126,7 +126,7 @@ export class GunChain<
         console.log('sub root', myKey);
       } else {
         const keyInRecord = pathFromRecord[0];
-        console.log('certs.%s matching', keyInRecord);
+        // console.log('certs.%s matching', keyInRecord);
         // console.log('', this.recordPub, pathFromRecord.join('/'));
         // console.log(pathFromRecord, chainArray);
         const record = chainArray[firstPub];

@@ -153,9 +153,8 @@ export class PaperDirective implements OnInit {
 
   @HostListener('mouseenter')
   onHostMouseEnter(event?: any) {
-    this.scope.activate();
-    this.project.activate();
-    // this.pen.activate();
+    // this.scope.activate();
+    // this.project.activate();
   }
 
   @HostListener('mousewheel', ['$event'])

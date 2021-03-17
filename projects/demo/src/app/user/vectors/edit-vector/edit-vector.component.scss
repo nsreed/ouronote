@@ -1,5 +1,4 @@
-canvas#Workspace,
-canvas#Preview {
+canvas#Workspace {
   // display: inline-block;
   // height: 100%;
   // max-height: 100%;
@@ -41,7 +40,7 @@ form {
 
 #Preview {
   outline: solid 12px blue;
-  background-color: pink;
+  // background-color: pink;
 }
 
 .virtual-scroll {

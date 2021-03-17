@@ -34,6 +34,7 @@ import { ColorFormComponent } from './components/color-form/color-form.component
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { VectorFormComponent } from './components/vector-form/vector-form.component';
 import { CreateVectorComponent } from './components/create-vector/create-vector.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -73,6 +74,7 @@ import { CreateVectorComponent } from './components/create-vector/create-vector.
     MatButtonToggleModule,
     FlexLayoutModule,
     MatToolbarModule,
+    MatTooltipModule,
   ],
   exports: [PaperDirective],
 })

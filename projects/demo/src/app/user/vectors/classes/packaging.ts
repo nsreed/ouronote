@@ -3,7 +3,6 @@ import * as paper from 'paper';
 export function unpack(value: any, soul: string | null = value.data?.soul) {
   // console.log('unpacking value');
   // console.dir(value);
-
   return value.className ? unpackObject(value) : unpackArray(value);
 }
 
@@ -33,6 +32,9 @@ function unpackArray(value: any) {
   // tslint:disable-next-line: forin
   for (const key in value) {
     const item = value[key];
+    if (item === null || !item.className) {
+      continue;
+    }
     // console.log(key, JSON.stringify(item));
 
     // console.log('would unpack', unpacked);

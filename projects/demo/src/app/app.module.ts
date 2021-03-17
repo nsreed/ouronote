@@ -21,6 +21,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserModule } from '@angular/platform-browser';
@@ -75,6 +76,7 @@ import { AliasAutocompleteComponent } from './components/alias-autocomplete/alia
     MatRadioModule,
     MatNativeDateModule,
     MatSnackBarModule,
+    MatTooltipModule,
   ],
   providers: [
     {

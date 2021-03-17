@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as paper from 'paper';
-import { take, distinct } from 'rxjs/operators';
+import { take, distinct, map } from 'rxjs/operators';
 import { GunChain } from '../../../../../../ng-gun/src/lib/classes/GunChain';
 import { VectorGraph } from '../../VectorGraph';
 import { ProjectPair } from '../classes/ProjectPair';
@@ -17,6 +17,8 @@ import { VectorService } from '../vector.service';
 import { gunifyProject as gunifyProject } from './converter-functions';
 import { FormBuilder, Validators } from '@angular/forms';
 import { NgGunService } from '../../../../../../ng-gun/src/lib/ng-gun.service';
+import { unpack } from '../classes/packaging';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 const VECTOR_PAPER_JSON_KEY = 'graph';
 
@@ -29,6 +31,12 @@ export class EditVectorComponent
   implements OnInit, AfterViewInit {
   @ViewChild('paper')
   private paperDirective!: PaperDirective;
+
+  @ViewChild('preview')
+  private preview!: PaperDirective;
+
+  previewSVG?: SafeHtml;
+
   private isLoaded = false;
   project!: paper.Project;
 
@@ -41,7 +49,8 @@ export class EditVectorComponent
     route: ActivatedRoute,
     private ngZone: NgZone,
     private fb: FormBuilder,
-    ngGun: NgGunService
+    ngGun: NgGunService,
+    private sanitizer: DomSanitizer
   ) {
     super(vectorService, route, ngGun);
   }
@@ -52,6 +61,36 @@ export class EditVectorComponent
         console.warn('NO PAPER PROJECT');
         return;
       }
+
+      // const p = new paper.Project(new paper.Size(300, 300));
+      node
+        .get('layers')
+        .open()
+        .subscribe((layers) => {
+          // const layersJSON = JSON.stringify(unpack(layers));
+          // // console.log('layers', layersJSON);
+          // p.clear();
+          // p.importJSON(layersJSON);
+          // const layersSVG = p.exportSVG({ asString: true }) as string;
+          // // console.log('SVG', layersSVG);
+          // this.preview.project.activate();
+          // this.preview.project.clear();
+          // this.preview.project.importSVG(layersSVG);
+          // this.preview.project.view.update();
+          // // (this.preview.project as any).draw();
+          // this.paperDirective.project.activate();
+          // this.previewSVG = this.sanitizer.bypassSecurityTrustHtml(
+          //   layersSVG
+          // ) as string;
+          // this.preview.project.activate();
+          // this.preview.project.clear();
+          // try {
+          //   this.preview.project.importJSON(layersJSON);
+          // } catch (e: any) {
+          //   console.log('problem importing', e);
+          // }
+          // this.paperDirective.project.activate();
+        });
       this.onProjectReady(this.paperDirective.project as any, node as any);
       node
         .get('title')

@@ -31,7 +31,7 @@
       <mat-expansion-panel-header>{{paper.scope.tool.name}}</mat-expansion-panel-header>
       <ng-template matExpansionPanelContent>
         <div [appTool]="paper.scope.tool" *ngIf="paper.scope.tool">
-          <app-color-form [color]="paper.scope.project.currentStyle.strokeColor"></app-color-form>
+          <app-color-form [color]="paper.project.currentStyle.strokeColor"></app-color-form>
         </div>
       </ng-template>
     </mat-expansion-panel>
@@ -77,9 +77,14 @@
     </mat-expansion-panel>
   </mat-accordion>
 
+  <!-- <div>
+
+    <div class="svg" [innerHTML]="previewSVG"></div>
+    <canvas id="Preview" #preview="appPaper" appPaper></canvas>
+  </div> -->
+
 
   <div fxFlex="1 1 auto" id="CanvasContainer">
-    <canvas id="Preview" #preview="appPaper" appPaper></canvas>
     <canvas id="Workspace" appPaper #paper="appPaper"></canvas>
   </div>
 </div>

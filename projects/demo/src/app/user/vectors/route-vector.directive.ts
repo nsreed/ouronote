@@ -13,9 +13,14 @@ import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
 })
 export class RouteVectorDirective {
   vectorNode!: GunChain<VectorGraph>;
+  userPub = this.ngGun.auth().is.pub;
   vectorNode$ = this.route.data.pipe(
     tap((node: any) => console.log('ROUTE SOUL', node.soul)),
-    map((data) => this.ngGun.get(data.soul)),
+    map((data) =>
+      data.soul['#'].indexOf(this.userPub) < 0
+        ? this.ngGun.get(data.soul)
+        : this.vectorService.vectors.get(data.soul)
+    ),
     tap((node: any) => console.log('ROUTE NODE', node)),
     shareReplay(1)
   ) as Observable<GunChain<VectorGraph>>;

@@ -6,8 +6,17 @@
     <mat-label>Title</mat-label>
     <input matInput formControlName="title">
   </mat-form-field>
-  <mat-checkbox formControlName="public">Public?</mat-checkbox>
+  <span fxLayout="column">
+    <mat-checkbox formControlName="detached" matTooltip="Creates document in a new public key">Detached?</mat-checkbox>
+    <mat-checkbox formControlName="addToFavorites">Add to Favorites</mat-checkbox>
+
+    <mat-checkbox formControlName="public" matTooltip="Allows public editing">Public?</mat-checkbox>
+  </span>
+  <pre>
+    {{certificate}}
+  </pre>
 </form>
-<div mat-dialog-actions>
+<div mat-dialog-actions [formGroup]="form">
+  <mat-checkbox formControlName="confirm">Confirm</mat-checkbox>
   <button mat-button color="primary" [disabled]="!form.valid" (click)="create()">Create</button>
 </div>

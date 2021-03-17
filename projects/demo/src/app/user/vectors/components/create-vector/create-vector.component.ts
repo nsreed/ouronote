@@ -12,9 +12,13 @@ import { VectorGraph } from '../../../VectorGraph';
   styleUrls: ['./create-vector.component.scss'],
 })
 export class CreateVectorComponent implements OnInit {
+  certificate?: string;
   form = this.fb.group({
+    detached: false,
+    addToFavorites: false,
     public: false,
     title: ['untitled', Validators.required],
+    confirm: false,
   });
   constructor(
     private fb: FormBuilder,
@@ -25,19 +29,15 @@ export class CreateVectorComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  async create() {
-    if (!this.form.valid) {
-      return;
-    }
-    const me = this.ngGun.auth().is;
+  async createDetached() {
+    const userPair = this.ngGun.auth().is;
+    const vectorPair = (await this.sea.pair().toPromise()) as any;
+    const vectorPairEnc = await SEA.encrypt(vectorPair, userPair);
 
-    const vp = (await this.sea.pair().toPromise()) as any;
+    console.log('vpEnc', vectorPairEnc);
 
-    const vectorPairEncrypted = await SEA.encrypt(vp, me);
-    console.log('vpEnc', vectorPairEncrypted);
-
-    const vectorRoot = this.ngGun.get(`~${vp.pub}`);
-    console.log('vp', vp.pub);
+    const vectorRoot = this.ngGun.get(`~${vectorPair.pub}`);
+    console.log('vp', vectorPair.pub);
 
     const paths = ['layers', 'title', 'owner', 'ownerCert', 'blacklist'].map(
       (path) => {
@@ -47,24 +47,41 @@ export class CreateVectorComponent implements OnInit {
       }
     );
     // TODO owner cert for bannings (required for moderator roles, not useful for taking full ownership)
-    const certificants = this.form.value.public ? '*' : me;
+    const certificants = this.form.value.public ? '*' : userPair;
     const ownerCert = await this.sea
-      .certify(certificants, paths, vp)
+      .certify(certificants, paths, vectorPair)
       .toPromise();
-    // vectorRoot.get('owner').put(ownerCert as never, ownerCert);
+
     console.log('cert', ownerCert);
 
     const vectorData = {
       title: this.form.value.title,
-      owner: vectorPairEncrypted, // Needed for generating certificates later,
+      owner: vectorPairEnc, // Needed for generating certificates later,
       ownerCert,
     } as VectorGraph;
 
     console.log('would create record', vectorData);
-    vectorRoot.once().subscribe((created) => {
-      console.log('created record', created);
-      this.vectorService.vectors.set(created as never);
-    });
-    vectorRoot.put(vectorData as never, ownerCert);
+    if (this.form.value.confirm) {
+      vectorRoot.once().subscribe((created) => {
+        console.log('created record', created);
+        this.vectorService.vectors.set(created as never);
+      });
+      vectorRoot.put(vectorData as never, ownerCert);
+    }
+  }
+
+  async create() {
+    if (!this.form.valid) {
+      return;
+    }
+    const formValue = this.form.value;
+    if (formValue.detached) {
+      return await this.createDetached();
+    }
+    if (formValue.confirm) {
+      this.vectorService.vectors.set({
+        title: this.form.value.title,
+      });
+    }
   }
 }
