@@ -126,11 +126,19 @@ export class GunChain<
         console.log('sub root', myKey);
       } else {
         const keyInRecord = pathFromRecord[0];
-        // console.log('certs.%s matching', keyInRecord);
-        // console.log('', this.recordPub, pathFromRecord.join('/'));
-        // console.log(pathFromRecord, chainArray);
+        console.log('certs.%s matching', keyInRecord);
+        console.log('', this.recordPub, pathFromRecord.join('/'));
+        console.log(pathFromRecord, chainArray);
         const record = chainArray[firstPub];
         // console.log(record);
+        record
+          .get('certs')
+          .get(keyInRecord)
+          .get(userPair.pub)
+          .once((cert: any) => {
+            console.log('cert', cert);
+            this.certificate = cert;
+          });
         record.get('ownerCert').once((cert: any) => {
           const certificate = parseCertificate(cert);
           // console.log('owner certificate:', certificate);
@@ -180,6 +188,7 @@ export class GunChain<
     >,
     cert: string = this.certificate
   ) {
+    // FIXME "unverified data" - certified put values must be signed?
     const result = this.from(
       this.gun.put(data, null, cert ? { opt: { cert } } : undefined)
     );
