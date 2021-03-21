@@ -22,45 +22,39 @@ export class VectorService {
     private sea: NgSeaService
   ) {}
 
-  async create(value: VectorGraph, isPublic = false) {
-    // TODO gunOpts appears to drag in values set by previous gun instance???
-    const detachedGun = new NgGunService(
-      {
-        localStorage: false,
-        peers: ['http://localhost:8765/gun'],
-      },
-      this.ngZone
-    );
-    const userPair = this.ngGun.auth().is;
-    const vectorPair = (await this.sea.pair().toPromise()) as any;
-    (detachedGun.gun.user() as any).auth(vectorPair, async () => {
-      const v = detachedGun.gun.user();
-      console.log(v);
-      const vectorPairEnc = await SEA.encrypt(vectorPair, userPair);
-      const paths = ['layers', 'title'];
-      const certificants = isPublic ? '*' : userPair;
-
-      const vjson = {
-        ...value,
-        owner: {} as any,
-        certs: {} as any,
-      } as any;
-      vjson.owner[userPair.pub] = vectorPairEnc;
-
-      const certPromises = paths.map(async (path) => {
-        const policy = { '*': path };
-        const cert = await this.sea
-          .certify(certificants, policy, vectorPair)
-          .toPromise();
-        vjson.certs[path] = {} as any;
-        vjson.certs[path][userPair.pub] = cert;
-      });
-      from(certPromises)
-        .pipe(mergeAll(), takeLast(1))
-        .subscribe(() => {
-          v.put(vjson);
-          this.vectors.set(v as never);
-        });
+  async certify(certificant: any, paths: string[], auth: any) {
+    // console.log('certifying', certificant);
+    if (typeof certificant !== 'object') {
+      throw new Error('cannot certify provided certificant');
+    } else if (!certificant.pub) {
+      throw new Error('cannot certify provided certificant');
+    }
+    const store = {} as any;
+    const certPromises = paths.map(async (path: string) => {
+      const policy = { '*': path };
+      const cert = await this.sea
+        .certify(certificant, policy, auth)
+        .toPromise();
+      store[path] = {} as any;
+      store[path][certificant.pub] = cert;
     });
+    await Promise.all(certPromises);
+    // console.log('certified', store);
+    return store;
+  }
+
+  async create(value: VectorGraph, vectorPair: any) {
+    // TODO refactor this into a factory/repository
+    const userPair = this.ngGun.auth().is;
+    // const vectorPair = (await this.sea.pair().toPromise()) as any;
+    const certs = await this.certify(userPair, ['layers', 'title'], vectorPair);
+    const vector = {
+      ...value,
+      owner: {} as any,
+      certs,
+    } as any;
+    const vectorPairEnc = await SEA.encrypt(vectorPair, userPair);
+    vector.owner[userPair.pub] = vectorPairEnc;
+    return vector;
   }
 }

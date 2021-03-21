@@ -1,7 +1,7 @@
 <h1 mat-dialog-title>
   Create Vector
 </h1>
-<form [formGroup]="form" mat-dialog-content>
+<form fxFlex [formGroup]="form" mat-dialog-content>
   <mat-form-field>
     <mat-label>Title</mat-label>
     <input matInput formControlName="title">
@@ -12,11 +12,9 @@
 
     <mat-checkbox formControlName="public" matTooltip="Allows public editing">Public?</mat-checkbox>
   </span>
-  <pre>
-    {{certificate}}
-  </pre>
+  <pre> {{vectorPub$ | async}}: {{recordValue | json}}  </pre>
 </form>
-<div mat-dialog-actions [formGroup]="form">
+<div fxFlexAlign="center end" mat-dialog-actions [formGroup]="form">
   <mat-checkbox formControlName="confirm">Confirm</mat-checkbox>
   <button mat-button color="primary" [disabled]="!form.valid" (click)="create()">Create</button>
 </div>

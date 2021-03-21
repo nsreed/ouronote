@@ -3,13 +3,19 @@
   <button mat-button color="primary" (click)="create()">New Vector</button>
 </mat-toolbar>
 
-<div gdColumns="max-content auto max-content">
+<div gdColumns="auto repeat(4, max-content)">
   <ng-container *ngFor="let vector of vectors|async">
+    <a mat-flat-button [routerLink]="['/user/vectors', vector|soul, 'edit']">{{vector.title}}</a>
+    <a mat-flat-button>{{vector|updated|date}}</a>
     <button mat-icon-button (click)="remove(vector)">
       <mat-icon>delete</mat-icon>
     </button>
-    <a mat-flat-button [routerLink]="['/user/vectors', vector|soul, 'edit']">{{vector.title}}</a>
-    <span>{{vector|updated|date}}</span>
+    <button mat-icon-button>
+      <mat-icon>settings</mat-icon>
+    </button>
+    <button mat-icon-button>
+      <mat-icon>people</mat-icon>
+    </button>
   </ng-container>
 
 </div>
