@@ -1,58 +1,32 @@
 # Angular/Gun Demo Project
 
+## Roadmap
+
+## TODO
+
+Paper Metadata Storage - Stop using "soul" and use real soul (global soul vs. key in parent). Stop storing it in data, as that needs additional filtering on clone() and copy/paste type operations. Ideally, chain-related metadata may be stored on paper item prototype itself?
+
+View - Allow filtering of paper item records by bounds
+
+Rendering Pipeline - Allow loading of read-only paper item records in background
+
+Circular Reference Handling - How do we handle circular references?
+
+- Need reference detection (already present in GunChain)
+- When ref is detected... limit load depth? follow until out of bounds or size threshold reached?
+
+Schema Metadata - something to describe permissions, field names, descriptions, etc to allow for more generalized patterns for creating records, assuming ownership, generating certificates
+
+Merge - Treat a user-partitioned set of records as a single record, where writes are directed at user record and reads are Last Write Wins OR Prefer User Value. Sort of a best of both worlds between the full/self certificates. Users may collaborate and not risk data loss.
+
 ## Multi-User
 
-See [SEA.certify](https://gun.eco/docs/SEA.certify#rooms) for a "Rooms" example
+### Write Permissions
 
-This seems ideal, as it creates a key pair with its own certificates
+Two options:
 
-Requires some modification to handle the concept of a "moderator" role.
-
-- Generate "owner" certificate, granting access to `/ban` `/blacklist` and `/certs`
-- Store this certificate on owner? Or on room???
-
-- Prove on simple document (message?)
-
-Does the document get its own public key? How does the owner get access to it?
-
-from [SEA quickstart](https://gun.eco/docs/SEA#quickstart)
-
-```typescript
-var pair = await SEA.pair();
-var enc = await SEA.encrypt("hello self", pair);
-var data = await SEA.sign(enc, pair);
-console.log(data);
-var msg = await SEA.verify(data, pair.pub);
-var dec = await SEA.decrypt(msg, pair);
-var proof = await SEA.work(dec, pair);
-var check = await SEA.work("hello self", pair);
-console.log(dec);
-console.log(proof === check);
-
-// now let's share private data with someone:
-var alice = await SEA.pair();
-var bob = await SEA.pair();
-// `.secret` is Elliptic-curve Diffie–Hellman
-
-// Bob allows Alice to write to part of his graph, he creates a certificate for Bob
-var certificate = await SEA.certify(alice.pub, ["^AliceOnly.*"], bob);
-
-// Alice logged in, she has a certificate signed by Bob
-// TODO WHY DOES ALICE HAVE THE CERTIFICATE???
-var enc = await SEA.encrypt("shared data", await SEA.secret(bob.epub, alice));
-await gun
-  .get("~" + bob.pub)
-  .get("AliceOnly")
-  .get("do-not-tell-anyone")
-  .put(enc, null, { opt: { cert: certificate } });
-await gun
-  .get("~" + bob.pub)
-  .get("AliceOnly")
-  .get("do-not-tell-anyone")
-  .once(console.log); // return 'enc'
-
-await SEA.decrypt(enc, await SEA.secret(alice.epub, bob));
-```
+1. Full - collaborative key
+2. Self - user partitioned key
 
 ### Invitation Process
 
