@@ -26,6 +26,7 @@ import {
 import { LexicalQuery } from './LexicalQuery';
 import { tap } from 'rxjs/operators';
 import { IGunPeer } from './IGunPeer';
+import { SEA } from 'gun';
 import {
   gunPath,
   gunChainArray,
@@ -100,11 +101,6 @@ export class GunChain<
     }
     const myPub = `~${(this.gun.user() as any).is?.pub}`;
     const pubs = path.filter((key) => key.startsWith('~'));
-
-    // // TODO sometimes we want to get() a foreign key directly, in which case we'll only have 1 pubs[]
-    // // TODO change to check against gun.auth().is.pub.
-    // // TODO might need to sign put() and set() values... this doesn't seem to syn
-    // TODO THIS IS NOT A BUG!!! - you are trying to write using the *owner* cert!
     if (pubs.length === 0 || pubs[0] !== myPub) {
       // console.log(
       //   'HAVE A FOREIGN PUBLIC KEY\n%s\n%s',
@@ -126,26 +122,26 @@ export class GunChain<
         console.log('sub root', myKey);
       } else {
         const keyInRecord = pathFromRecord[0];
-        console.log('certs.%s matching', keyInRecord);
-        console.log('', this.recordPub, pathFromRecord.join('/'));
-        console.log(pathFromRecord, chainArray);
+        // console.log('certs.%s matching', keyInRecord);
         const record = chainArray[firstPub];
-        // console.log(record);
+        // TODO move this functionality to Gun.chain... or at least cache on the way?
+        // TODO add hasCert() method
+        // TODO integrate cert permissions into forms/components
+        // TODO recognize owner & provide ability to assume owner auth to issue new certs
         record
           .get('certs')
           .get(keyInRecord)
           .get(userPair.pub)
-          .once((cert: any) => {
-            console.log('cert', cert);
+          .once(async (cert: any) => {
+            // console.log('cert', cert);
+            const verified = await SEA.verify(
+              cert,
+              this.recordPub.replace('~', '')
+            );
             this.certificate = cert;
+            // console.log('verified', verified);
           });
-        record.get('ownerCert').once((cert: any) => {
-          const certificate = parseCertificate(cert);
-          // console.log('owner certificate:', certificate);
-          this.certificate = cert;
-          // TODO check if owner certificate has user as certificant - or should this be done later?
-        });
-        // TODO get certs for paths
+
         this.record = record;
       }
     }
