@@ -8,3 +8,4 @@ export * from './lib/ng-gun.module';
 export * from './lib/classes/GunChain';
 export * from './lib/soul.pipe';
 export * from './lib/updated.pipe';
+export * from './lib/chain.directive';

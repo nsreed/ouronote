@@ -185,6 +185,9 @@ export class GunChain<
     cert: string = this.certificate
   ) {
     // FIXME "unverified data" - certified put values must be signed?
+
+    // TODO? check for ownership
+    // TODO? if owner, and no cert is found, generate one on the fly
     const result = this.from(
       this.gun.put(data, null, cert ? { opt: { cert } } : undefined)
     );
