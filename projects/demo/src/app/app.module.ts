@@ -36,6 +36,7 @@ import { GunPeersComponent } from './gun-peers/gun-peers.component';
 import { LoginComponent } from './login/login.component';
 import { SessionInfoComponent } from './session-info/session-info.component';
 import { AliasAutocompleteComponent } from './components/alias-autocomplete/alias-autocomplete.component';
+import { CertificatesModule } from './certificates/certificates.module';
 
 @NgModule({
   declarations: [
@@ -77,6 +78,7 @@ import { AliasAutocompleteComponent } from './components/alias-autocomplete/alia
     MatNativeDateModule,
     MatSnackBarModule,
     MatTooltipModule,
+    CertificatesModule,
   ],
   providers: [
     {
@@ -87,7 +89,7 @@ import { AliasAutocompleteComponent } from './components/alias-autocomplete/alia
       },
     },
   ],
-  exports: [],
+  exports: [CertificatesComponent],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

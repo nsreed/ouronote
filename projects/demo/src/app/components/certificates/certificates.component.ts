@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { CertificateFormComponent } from '../certificate-form/certificate-form.component';
+import { ChainDirective } from '../../../../../ng-gun/src/lib/chain.directive';
+import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
 
 @Component({
   selector: 'app-certificates',
@@ -8,7 +10,13 @@ import { CertificateFormComponent } from '../certificate-form/certificate-form.c
   styleUrls: ['./certificates.component.scss'],
 })
 export class CertificatesComponent implements OnInit {
-  constructor(private dialog: MatDialog) {}
+  constructor(
+    private dialog: MatDialog,
+    private chainDirective: ChainDirective,
+    ngGun: NgGunService
+  ) {
+    // super(ngGun);
+  }
 
   ngOnInit(): void {}
 

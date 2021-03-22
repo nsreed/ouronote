@@ -1,6 +1,7 @@
 import { Directive, Input, EventEmitter } from '@angular/core';
 import { GunChain } from './classes/GunChain';
 import { NgGunService } from './ng-gun.service';
+import { shareReplay } from 'rxjs/operators';
 
 @Directive({
   // tslint:disable-next-line: directive-selector
@@ -16,11 +17,12 @@ export class ChainDirective {
   public set chain(value: GunChain | undefined) {
     if (value !== this._chain) {
       this._chain = value;
-      this.chain$.emit(value);
+      this._chain$.emit(value);
     }
   }
 
-  chain$ = new EventEmitter<GunChain>();
+  private _chain$ = new EventEmitter<GunChain>();
+  chain$ = this._chain$.pipe(shareReplay(1));
 
   constructor(private ngGun: NgGunService) {}
 }

@@ -1,0 +1,15 @@
+<div *ngIf="owner$|async">
+  You own this record
+</div>
+<div gdColumns="auto auto auto" gdGap="1em">
+  <span>Path</span>
+  <span>User</span>
+  <span>Certificate</span>
+  <ng-container *ngFor="let certPath of (certs$|async)|keyvalue">
+    <ng-container *ngFor="let certUser of certPath.value|keyvalue">
+      <span>{{certPath.key}}</span>
+      <span>{{certUser.key}}</span>
+      <span>{{certUser.value}}</span>
+    </ng-container>
+  </ng-container>
+</div>

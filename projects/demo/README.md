@@ -4,6 +4,10 @@
 
 ## TODO
 
+Path Obfuscation - The .certs and .owner both expose the public key of the user they are associated with. In addition, certificates themselves contain the public key of their certificants. Hash/encrypt the path and encrypt the cert. Content addressing may be appropriate for this.
+
+Auto-Encrypt - Automatically encrypt/decrypt/sign/verify based on schema
+
 Paper Metadata Storage - Stop using "soul" and use real soul (global soul vs. key in parent). Stop storing it in data, as that needs additional filtering on clone() and copy/paste type operations. Ideally, chain-related metadata may be stored on paper item prototype itself?
 
 View - Allow filtering of paper item records by bounds

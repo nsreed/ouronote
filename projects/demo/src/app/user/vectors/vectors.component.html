@@ -5,8 +5,11 @@
 
 <div gdColumns="auto repeat(4, max-content)">
   <ng-container *ngFor="let vector of vectors|async">
-    <a mat-flat-button [routerLink]="['/user/vectors', vector|soul, 'edit']">{{vector.title}}</a>
-    <a mat-flat-button>{{vector|updated|date}}</a>
+    <a mat-flat-button [routerLink]="['/user/vectors', vector|soul, 'edit']">
+      <!-- <mat-icon>enhanced_encryption</mat-icon> -->
+      {{vector.title}}
+    </a>
+    <a mat-flat-button [routerLink]="['/user/vectors', vector|soul]">{{vector|updated|date}}</a>
     <button mat-icon-button (click)="remove(vector)">
       <mat-icon>delete</mat-icon>
     </button>
@@ -16,6 +19,7 @@
     <button mat-icon-button>
       <mat-icon>people</mat-icon>
     </button>
+
   </ng-container>
 
 </div>

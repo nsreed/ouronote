@@ -35,6 +35,8 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { VectorFormComponent } from './components/vector-form/vector-form.component';
 import { CreateVectorComponent } from './components/create-vector/create-vector.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ViewVectorComponent } from './view-vector/view-vector.component';
+import { CertificatesModule } from '../../certificates/certificates.module';
 
 @NgModule({
   declarations: [
@@ -48,6 +50,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     ColorFormComponent,
     VectorFormComponent,
     CreateVectorComponent,
+    ViewVectorComponent,
   ],
   imports: [
     CommonModule,
@@ -75,6 +78,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     FlexLayoutModule,
     MatToolbarModule,
     MatTooltipModule,
+    CertificatesModule,
   ],
   exports: [PaperDirective],
 })
