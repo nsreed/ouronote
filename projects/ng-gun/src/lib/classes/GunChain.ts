@@ -375,7 +375,8 @@ export class GunChain<
     if (!this._auth) {
       this._auth = new GunAuthChain<DataType, ReferenceKey>(
         this.ngZone,
-        // no fix for this... gun.user.is is static! can't have multiple logins on a single gun instance
+        //// no fix for this... gun.user.is is static! can't have multiple logins on a single gun instance
+        // TODO allow option to create a new gun instance for this auth call
         this.gun.user().recall({ sessionStorage: true }) as any,
         this as any
       );
