@@ -23,19 +23,6 @@ import { CertificatesComponent } from '../../../components/certificates/certific
 export class ViewVectorComponent
   extends RouteVectorDirective
   implements OnInit, AfterViewInit {
-  owner$ = this.vectorNode$.pipe(
-    mergeMap((node) =>
-      node.get('owner').map({ includeKeys: true }).on({ includeKeys: true })
-    ),
-    filter(
-      (ownerTuple: any) =>
-        ownerTuple[0] &&
-        ownerTuple[1] === this.userService.user.is.pub.replace('~', '')
-    ),
-    map((ownerTuple) => ownerTuple[0])
-  );
-  certs$ = this.vectorNode$.pipe(switchMap((node) => node.get('certs').open()));
-
   constructor(
     vectorService: VectorService,
     route: ActivatedRoute,
@@ -46,8 +33,6 @@ export class ViewVectorComponent
     private userService: UserService
   ) {
     super(vectorService, route, ngGun as any);
-    this.owner$.subscribe((owner) => console.log('owner', owner));
-    this.certs$.subscribe((certs: any) => console.log('certs', certs));
   }
 
   ngOnInit(): void {}

@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ChainDirective } from '../../../../../ng-gun/src/lib/chain.directive';
 import { filter, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { UserService } from '../../user/user.service';
+import * as Gun from 'gun';
+import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
 
 @Component({
   selector: 'app-certificates',
@@ -9,6 +11,9 @@ import { UserService } from '../../user/user.service';
   styleUrls: ['./certificates.component.scss'],
 })
 export class CertificatesComponent implements OnInit {
+  pub$ = this.chainDirective.chain$.pipe(
+    map((chain) => chain.recordPub.replace('~', ''))
+  );
   certs$ = this.chainDirective.chain$.pipe(
     switchMap((chain) => chain.get('certs').open())
   );
@@ -28,10 +33,14 @@ export class CertificatesComponent implements OnInit {
   );
   constructor(
     private chainDirective: ChainDirective,
-    private userService: UserService
+    private userService: UserService,
+    private ngGun: NgGunService
   ) {
     this.certs$.subscribe();
     this.owners$.subscribe();
+    this.ngGun
+      .findAlias(userService.user.is.pub)
+      .subscribe((v) => console.log('alias', v));
   }
 
   ngOnInit(): void {}
