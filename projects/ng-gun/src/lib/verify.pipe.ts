@@ -29,8 +29,6 @@ export class VerifyPipe extends AsyncPipe implements PipeTransform {
     if (!this.chain.chain) {
       return null;
     }
-    // FIXME this logs a value, but renders as "null" in UI
-    // return super.transform(
     return from(
       SEA.verify(value, this.chain.chain?.recordPub.replace('~', ''))
     ).pipe(
