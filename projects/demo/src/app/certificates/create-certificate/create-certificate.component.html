@@ -3,7 +3,7 @@
     <mat-list>
       <mat-list-item *ngFor="let path of form.controls.paths.value">
         <code>{{path}}</code>
-        <button mat-icon-button color="secondary" (click)="removePath(path)">
+        <button mat-icon-button color="warn" (click)="removePath(path)">
           <mat-icon>remove</mat-icon>
         </button>
       </mat-list-item>
