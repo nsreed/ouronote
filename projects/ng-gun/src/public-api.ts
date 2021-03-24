@@ -9,3 +9,4 @@ export * from './lib/classes/GunChain';
 export * from './lib/soul.pipe';
 export * from './lib/updated.pipe';
 export * from './lib/chain.directive';
+export * from './lib/alias.pipe';
