@@ -32,7 +32,7 @@ export class VerifyPipe extends AsyncPipe implements PipeTransform {
     return from(
       SEA.verify(value, this.chain.chain?.recordPub.replace('~', ''))
     ).pipe(
-      tap((v) => console.log('verified', v)),
+      // tap((v) => console.log('verified', v)),
       tap((v) => this.ref.detectChanges())
     ) as any;
     // ) as any;
