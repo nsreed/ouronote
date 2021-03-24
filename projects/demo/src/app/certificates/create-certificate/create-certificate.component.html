@@ -1,6 +1,4 @@
 <mat-vertical-stepper>
-
-
   <mat-step [label]="'Paths - ' + form.controls.paths.value.join(', ')" [stepControl]="form.controls.paths">
     <mat-list>
       <mat-list-item *ngFor="let path of form.controls.paths.value">
@@ -20,7 +18,6 @@
       </button>
     </div>
   </mat-step>
-
 
   <mat-step label="People" [stepControl]="form" [formGroup]="form">
     <mat-radio-group [formControl]="form.controls.public">
@@ -43,7 +40,6 @@
   </mat-step>
 
   <mat-step label="Permissions">
-
     <mat-radio-group [formControl]='form.controls.protected'>
       <mat-radio-button [value]="false" matTooltip="Users may edit">Full</mat-radio-button>
       <mat-radio-button [value]="true" matTooltip="Users may add/remove records containing their public key">Protected

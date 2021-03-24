@@ -1,13 +1,16 @@
-<h1>Certificates {{pub$|async}}</h1>
-<div gdColumns="auto auto auto" gdGap="1em">
+<h1>Certificates </h1>
+<p>Showing certificates for {{pub$|async}}</p>
+<div gdColumns="max-content repeat(3, max-content)" gdGap="1em">
+  <span></span>
   <span>Path</span>
   <span>User</span>
   <span>Certificate</span>
   <ng-container *ngFor="let certPath of (certs$|async)|keyvalue">
     <ng-container *ngFor="let certUser of certPath.value|keyvalue">
+      <mat-checkbox></mat-checkbox>
       <code>{{certPath.key}}</code>
-      <span>{{certUser.key}}</span>
-      <span>{{certUser.value}}</span>
+      <span>{{certUser.key|alias}}</span>
+      <span>{{(certUser.value|verify|async)?.w | json}}</span>
     </ng-container>
   </ng-container>
 </div>

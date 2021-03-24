@@ -13,6 +13,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatStepperModule } from '@angular/material/stepper';
 import { CreateCertificateComponent } from './create-certificate/create-certificate.component';
 import { MatListModule } from '@angular/material/list';
+import { NgGunModule } from '../../../../ng-gun/src/lib/ng-gun.module';
 
 @NgModule({
   declarations: [CertificatesComponent, CreateCertificateComponent],
@@ -32,6 +33,7 @@ import { MatListModule } from '@angular/material/list';
     MatStepperModule,
 
     MatListModule,
+    NgGunModule,
   ],
   exports: [CertificatesComponent],
 })
