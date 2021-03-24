@@ -42,7 +42,8 @@ export class VectorTool extends Tool {
     this.wheel.subscribe((e) => {
       const zoomDelta = e.event.deltaY;
       const viewPoint = this.scope.view.projectToView(e.point);
-      this.scope.view.zoom += zoomDelta > 0 ? -0.01 : 0.01;
+      const zoomRate = 0.03 * this.scope.view.zoom;
+      this.scope.view.zoom += zoomDelta > 0 ? -zoomRate : zoomRate;
       const zoomPoint = this.scope.view.viewToProject(viewPoint);
       const zoomOffset = (e.point as any)
         .subtract(zoomPoint)
