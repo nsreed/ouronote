@@ -14,13 +14,14 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { CreateCertificateComponent } from './create-certificate/create-certificate.component';
 import { MatListModule } from '@angular/material/list';
 import { NgGunModule } from '../../../../ng-gun/src/lib/ng-gun.module';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @NgModule({
   declarations: [CertificatesComponent, CreateCertificateComponent],
   imports: [
     CommonModule,
     FlexLayoutModule,
-
+    MatAutocompleteModule,
     MatButtonModule,
     MatTooltipModule,
     MatIconModule,
