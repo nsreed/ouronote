@@ -11,6 +11,7 @@ export class AliasPipe extends AsyncPipe implements PipeTransform {
     super(_ref);
   }
   transform(value: any, ...args: any[]): any {
+    // FIXME this is not getting aliases of users other than the current user
     return super.transform(
       this.ngGun
         .get(`~${value.replace('~', '')}`)
