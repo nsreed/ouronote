@@ -29,7 +29,8 @@
     <form *ngIf="!form.controls.public.value">
       <mat-list>
         <mat-list-item *ngFor="let pub of form.controls.people.value">
-          <code>{{pub|alias}}</code> <code>{{pub}}</code>
+          {{pub|alias|async}}
+          <!-- <code>{{pub}}</code> -->
 
           <button mat-icon-button matTooltip="Add a path" (click)="removeUser(pub)">
             <mat-icon>remove</mat-icon>
@@ -43,7 +44,7 @@
         </mat-form-field>
         <mat-autocomplete #userAutocomplete (optionSelected)="onSelectUser($event)">
           <mat-option *ngFor="let result of userResults" [value]="result.pub">
-            {{result.pub}}
+            Add {{result.alias}} ({{result.pub}})
           </mat-option>
         </mat-autocomplete>
         <button mat-icon-button matTooltip="Add a path" (click)="addUser()">

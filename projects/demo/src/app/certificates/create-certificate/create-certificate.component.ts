@@ -77,5 +77,11 @@ export class CreateCertificateComponent implements OnInit {
 
   addUser() {}
 
-  removeUser(user: any) {}
+  removeUser(user: any) {
+    const p = this.form.controls.people.value as string[];
+    const idx = p.indexOf(user);
+    if (idx >= 0) {
+      p.splice(idx, 1);
+    }
+  }
 }

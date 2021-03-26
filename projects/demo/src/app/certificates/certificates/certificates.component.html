@@ -12,7 +12,7 @@
     <ng-container *ngFor="let certUser of certPath.value|keyvalue">
       <mat-checkbox></mat-checkbox>
       <code>{{certPath.key}}</code>
-      <span>{{certUser.key|alias}}</span>
+      <span>{{certUser.key|alias|async}}</span>
       <code>{{(certUser.value|verify|async)?.w | json}}</code>
     </ng-container>
   </ng-container>
