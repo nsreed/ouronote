@@ -133,6 +133,9 @@ export class GunChain<
           .get(keyInRecord)
           .get(userPair.pub)
           .once(async (cert: any) => {
+            if (cert === null || cert === undefined) {
+              return;
+            }
             // console.log('cert', cert);
             const verified = await SEA.verify(
               cert,
