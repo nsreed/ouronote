@@ -106,6 +106,7 @@ export class CreateCertificateComponent implements OnInit {
     if (!r) {
       return;
     }
+    // FIXME if we aren't the owner, fail gracefully
     r.get('owner')
       .get(this.ngGun.auth().is.pub)
       .once()
