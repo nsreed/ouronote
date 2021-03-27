@@ -36,7 +36,7 @@ export class CertificatesComponent implements OnInit {
     private userService: UserService,
     private ngGun: NgGunService
   ) {
-    this.certs$.subscribe();
+    this.certs$.subscribe((c) => console.log('certs raw', c));
     this.owners$.subscribe();
     this.ngGun
       .findAlias(userService.user.is.pub)

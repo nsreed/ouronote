@@ -3,6 +3,7 @@ import * as Gun from 'gun';
 import { IGunStaticSEA } from 'gun/types/static/sea';
 import { from } from 'rxjs';
 import { Certificants, CertificatePolicy } from './classes/Certificate';
+import { mergeAll, mergeMap } from 'rxjs/operators';
 
 export interface CertificateOptions {
   epiry?: number;
@@ -41,5 +42,39 @@ export class NgSeaService {
 
   pair() {
     return from(this.SEA.pair(() => {}));
+  }
+
+  async getCertStore(certificant: any, paths: string[], auth: any) {
+    console.log('certifying', certificant);
+    if (Array.isArray(certificant)) {
+      const certificantsPromises: any = certificant.map(
+        async (c) => await this.getCertStore(c, paths, auth)
+      );
+      const certificants: any[] = await Promise.all(certificantsPromises);
+      from(certificantsPromises)
+        .pipe(mergeMap((p: any) => from(p)))
+        .subscribe((merged) => {
+          console.log('merged', merged);
+        });
+      console.log('certificants', certificants);
+      return certificants;
+    }
+    if (typeof certificant !== 'string') {
+      if (typeof certificant !== 'object') {
+        throw new Error('cannot certify provided certificant');
+      } else if (!certificant.pub) {
+        throw new Error('cannot certify provided certificant');
+      }
+    }
+    const store = {} as any;
+    const certPromises = paths.map(async (path: string) => {
+      const policy = { '*': path };
+      const cert = await this.certify(certificant, policy, auth).toPromise();
+      store[path] = {} as any;
+      store[path][certificant.pub || certificant] = cert;
+    });
+    await Promise.all(certPromises);
+    // console.log('certified', store);
+    return store;
   }
 }
