@@ -4,24 +4,30 @@
 
 ## TODO
 
-Path Obfuscation - The .certs and .owner both expose the public key of the user they are associated with. In addition, certificates themselves contain the public key of their certificants. Hash/encrypt the path and encrypt the cert. Content addressing may be appropriate for this.
+### Security
 
-Auto-Encrypt - Automatically encrypt/decrypt/sign/verify based on schema
+**UX** - Forms/Features should be selectively available based on certs
 
-Paper Metadata Storage - Stop using "soul" and use real soul (global soul vs. key in parent). Stop storing it in data, as that needs additional filtering on clone() and copy/paste type operations. Ideally, chain-related metadata may be stored on paper item prototype itself?
+**Path Obfuscation** - The .certs and .owner both expose the public key of the user they are associated with. In addition, certificates themselves contain the public key of their certificants. Hash/encrypt the path and encrypt the cert. Content addressing may be appropriate for this.
 
-View - Allow filtering of paper item records by bounds
+**Auto-Encrypt/Sign** - Automatically encrypt/decrypt/sign/verify based on schema
 
-Rendering Pipeline - Allow loading of read-only paper item records in background
+### Graphification
 
-Circular Reference Handling - How do we handle circular references?
+**Paper Metadata Storage** - Stop using "soul" and use real soul (global soul vs. key in parent). Stop storing it in data, as that needs additional filtering on clone() and copy/paste type operations. Ideally, chain-related metadata may be stored on paper item prototype itself?
+
+**View** - Allow filtering of paper item records by bounds
+
+**Rendering Pipeline** - Allow loading of read-only paper item records in background
+
+**Circular Reference Handling** - How do we handle circular references?
 
 - Need reference detection (already present in GunChain)
 - When ref is detected... limit load depth? follow until out of bounds or size threshold reached?
 
-Schema Metadata - something to describe permissions, field names, descriptions, etc to allow for more generalized patterns for creating records, assuming ownership, generating certificates
+**Schema Metadata** - something to describe permissions, field names, descriptions, etc to allow for more generalized patterns for creating records, assuming ownership, generating certificates
 
-Merge - Treat a user-partitioned set of records as a single record, where writes are directed at user record and reads are Last Write Wins OR Prefer User Value. Sort of a best of both worlds between the full/self certificates. Users may collaborate and not risk data loss.
+**Merge** - Treat a user-partitioned set of records as a single record, where writes are directed at user record and reads are Last Write Wins OR Prefer User Value. Sort of a best of both worlds between the full/self certificates. Users may collaborate and not risk data loss.
 
 ## Multi-User
 
