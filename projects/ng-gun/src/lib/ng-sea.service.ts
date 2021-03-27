@@ -44,18 +44,19 @@ export class NgSeaService {
     return from(this.SEA.pair(() => {}));
   }
 
-  async getCertStore(certificant: any, paths: string[], auth: any) {
+  async getCertStore(
+    certificant: any,
+    paths: string[],
+    auth: any,
+    isProtected = false,
+    opts = null
+  ) {
     console.log('certifying', certificant);
     if (Array.isArray(certificant)) {
       const certificantsPromises: any = certificant.map(
-        async (c) => await this.getCertStore(c, paths, auth)
+        async (c) => await this.getCertStore(c, paths, auth, isProtected, opts)
       );
       const certificants: any[] = await Promise.all(certificantsPromises);
-      from(certificantsPromises)
-        .pipe(mergeMap((p: any) => from(p)))
-        .subscribe((merged) => {
-          console.log('merged', merged);
-        });
       console.log('certificants', certificants);
       return certificants;
     }
@@ -68,7 +69,10 @@ export class NgSeaService {
     }
     const store = {} as any;
     const certPromises = paths.map(async (path: string) => {
-      const policy = { '*': path };
+      const policy = { '*': path } as any;
+      if (isProtected) {
+        policy['+'] = '*';
+      }
       const cert = await this.certify(certificant, policy, auth).toPromise();
       store[path] = {} as any;
       store[path][certificant.pub || certificant] = cert;

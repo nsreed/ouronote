@@ -99,6 +99,9 @@ export class CreateCertificateComponent implements OnInit {
     console.log('creating certificate store');
     const value = this.form.value;
     const certificants = value.public ? ['*'] : value.people;
+    const isProtected = value.protected;
+    const blacklist = value.options.blacklist;
+    const expires = value.options.expires;
     const r = this.chain.chain;
     if (!r) {
       return;
@@ -112,9 +115,14 @@ export class CreateCertificateComponent implements OnInit {
       .subscribe((recordPair: any) => {
         console.log('owns', recordPair.pub);
         from(
-          // FIXME protected permissions are not accounted for
+          // FIXME options not accounted for
           // TODO improve this process
-          this.sea.getCertStore(certificants, value.paths, recordPair)
+          this.sea.getCertStore(
+            certificants,
+            value.paths,
+            recordPair,
+            isProtected
+          )
         ).subscribe((certStores: any) => {
           // TODO gunOpts appears to drag in values set by previous gun instance???
           const detachedGun = new NgGunService(
