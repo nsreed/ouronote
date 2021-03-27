@@ -1,7 +1,7 @@
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectorRef, Pipe, PipeTransform } from '@angular/core';
 import { NgGunService } from './ng-gun.service';
-import { map } from 'rxjs/operators';
+import { map, take, shareReplay } from 'rxjs/operators';
 
 @Pipe({
   name: 'alias',
@@ -13,7 +13,10 @@ export class AliasPipe extends AsyncPipe implements PipeTransform {
   transform(value: any, ...args: any[]): any {
     return this.ngGun
       .get(`~${value.replace('~', '')}`)
-      .once()
-      .pipe(map((v: any) => v.alias));
+      .on()
+      .pipe(
+        map((v: any) => v.alias),
+        shareReplay(1)
+      );
   }
 }
