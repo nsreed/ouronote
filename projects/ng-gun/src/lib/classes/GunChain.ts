@@ -96,18 +96,13 @@ export class GunChain<
 
     const userPair = (this.gun.user() as any).is;
     if (!userPair) {
+      // TODO figure out how to handle this case
       console.warn('NO PAIR');
       // return;
     }
     const myPub = `~${(this.gun.user() as any).is?.pub}`;
     const pubs = path.filter((key) => key.startsWith('~'));
     if (pubs.length === 0 || pubs[0] !== myPub) {
-      // console.log(
-      //   'HAVE A FOREIGN PUBLIC KEY\n%s\n%s',
-      //   myPub,
-      //   path.join('.'),
-      //   myKey
-      // );
       pubs.push(myPub);
     }
     if (pubs.length > 1) {
@@ -122,28 +117,22 @@ export class GunChain<
         console.log('sub root', myKey);
       } else {
         const keyInRecord = pathFromRecord[0];
-        // console.log('certs.%s matching', keyInRecord);
         const record = chainArray[firstPub];
-        // TODO move this functionality to Gun.chain... or at least cache on the way?
-        // TODO add hasCert() method
-        // TODO integrate cert permissions into forms/components
-        // TODO recognize owner & provide ability to assume owner auth to issue new certs
-        record
-          .get('certs')
-          .get(keyInRecord)
-          .get(userPair.pub)
-          .once(async (cert: any) => {
-            if (cert === null || cert === undefined) {
-              return;
-            }
-            // console.log('cert', cert);
-            const verified = await SEA.verify(
-              cert,
-              this.recordPub.replace('~', '')
-            );
-            this.certificate = cert;
-            // console.log('verified', verified);
-          });
+        const recordCerts = record.get('certs');
+        const pathCerts = recordCerts.get(keyInRecord);
+        const myCert = pathCerts.get(userPair.pub);
+        myCert.once(async (cert: any) => {
+          if (cert === null || cert === undefined) {
+            return;
+          }
+          // console.log('cert', cert);
+          const verified = await SEA.verify(
+            cert,
+            this.recordPub.replace('~', '')
+          );
+          this.certificate = cert;
+          // console.log('verified', verified);
+        });
 
         this.record = record;
       }
