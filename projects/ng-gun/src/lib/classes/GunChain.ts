@@ -9,7 +9,14 @@ import {
   DisallowArray,
   DisallowPrimitives,
 } from 'gun/types/types';
-import { from, fromEventPattern, Observable, of, throwError } from 'rxjs';
+import {
+  from,
+  fromEventPattern,
+  Observable,
+  of,
+  Subject,
+  throwError,
+} from 'rxjs';
 import {
   debounceTime,
   delay,
@@ -20,6 +27,7 @@ import {
   retryWhen,
   scan,
   shareReplay,
+  switchMap,
   take,
   timeout,
 } from 'rxjs/operators';
@@ -27,6 +35,7 @@ import { LexicalQuery } from './LexicalQuery';
 import { tap } from 'rxjs/operators';
 import { IGunPeer } from './IGunPeer';
 import { SEA } from 'gun';
+import { ICertStore } from './ICertStore';
 import {
   gunPath,
   gunChainArray,
@@ -74,6 +83,9 @@ export class GunChain<
   recordPub!: any;
   record?: any;
   certificate!: string;
+
+  certificate$ = new Subject<string>();
+
   private _gun!: IGunChainReference<DataType, ReferenceKey, IsTop> &
     GunChainFunctions &
     GunChainMeta;
@@ -98,7 +110,7 @@ export class GunChain<
     if (!userPair) {
       // TODO figure out how to handle this case
       console.warn('NO PAIR');
-      // return;
+      return;
     }
     const myPub = `~${(this.gun.user() as any).is?.pub}`;
     const pubs = path.filter((key) => key.startsWith('~'));
@@ -121,17 +133,25 @@ export class GunChain<
         const recordCerts = record.get('certs');
         const pathCerts = recordCerts.get(keyInRecord);
         const myCert = pathCerts.get(userPair.pub);
-        myCert.once(async (cert: any) => {
+        // console.log('  %s', keyInRecord);
+        myCert.on(async (cert: any) => {
           if (cert === null || cert === undefined) {
             return;
           }
           // console.log('cert', cert);
-          const verified = await SEA.verify(
-            cert,
-            this.recordPub.replace('~', '')
-          );
+          // TODO verify cert later, the await causes chained put() calls to fail
+          // const verified = await SEA.verify(
+          //   cert,
+          //   this.recordPub.replace('~', '')
+          // );
           this.certificate = cert;
-          // console.log('verified', verified);
+          this.certificate$.next(cert);
+          // console.log(
+          //   'verified cert for %s.%s',
+          //   this.recordPub,
+          //   keyInRecord,
+          //   pathFromRecord.join('.')
+          // );
         });
 
         this.record = record;
@@ -153,7 +173,7 @@ export class GunChain<
       this.gun = gun;
     }
   }
-  certificates: string[] = [];
+  certificates: ICertStore = {};
   private sources = new Map<string, Observable<any>>();
   private _auth: GunAuthChain<DataType, ReferenceKey> | null = null;
 
@@ -174,14 +194,20 @@ export class GunChain<
     data: Partial<
       AlwaysDisallowedType<DisallowPrimitives<IsTop, DisallowArray<DataType>>>
     >,
-    cert: string = this.certificate
+    certificate: string = this.certificate
   ) {
     // FIXME "unverified data" - certified put values must be signed?
+    // // FIXME when chaining a .get(x).put(y), the 'get' doesn't have time to load certificates
 
-    // TODO? check for ownership
-    // TODO? if owner, and no cert is found, generate one on the fly
+    if (this.isNested && !certificate) {
+      console.warn('NO CERTIFICATE FOUND FOR FOREIGN RECORD!');
+    }
     const result = this.from(
-      this.gun.put(data, null, cert ? { opt: { cert } } : undefined)
+      this.gun.put(
+        data,
+        null,
+        certificate ? { opt: { cert: certificate } } : undefined
+      )
     );
     // this.once().subscribe((me) => {
     //   console.log('me', me);
@@ -402,9 +428,11 @@ export class GunChain<
   }
 }
 
+/** Represents a top-level authenticated node (user or key pair) */
 export class GunAuthChain<
   DataType = Record<string, any>,
-  ReferenceKey = any
+  ReferenceKey = any,
+  IsTop = false
 > extends GunChain<DataType, ReferenceKey, false> {
   is: any;
   auth$ = this.root.onEvent('auth').pipe(
@@ -489,11 +517,19 @@ export class GunAuthChain<
   logout() {
     this.gun.leave();
   }
+  put(
+    data: Partial<
+      AlwaysDisallowedType<DisallowPrimitives<IsTop, DisallowArray<DataType>>>
+    >,
+    certificate: string = this.certificate
+  ) {
+    return super.put(data, certificate);
+  }
 }
 
-/**
+/** Represents a node nested under a user/pair
  * gun.user() : AuthChain
  * gun.user(pub) : UserChain
  * gun.get('~@alias') : GunChain<{pub: string}>
  */
-export class GunUserChain extends GunChain {}
+export class GunCertChain extends GunChain {}
