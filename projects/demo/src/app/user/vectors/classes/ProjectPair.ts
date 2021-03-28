@@ -51,7 +51,7 @@ export class ProjectPair extends PaperPair {
   ) {
     super(project, project, scope); // UGN
     this.setupProject();
-    console.log('new ProjectPair');
+    // console.log('new ProjectPair');
     (project as any).pair = this;
     // project.layers
   }

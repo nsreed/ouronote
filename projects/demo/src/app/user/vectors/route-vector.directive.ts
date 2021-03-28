@@ -21,7 +21,7 @@ export class RouteVectorDirective {
         ? this.ngGun.get(data.soul)
         : this.vectorService.vectors.get(data.soul)
     ),
-    tap((node: any) => console.log('ROUTE NODE', node)),
+    // tap((node: any) => console.log('ROUTE NODE', node)),
     shareReplay(1)
   ) as Observable<GunChain<VectorGraph>>;
   vector$: Observable<VectorGraph> = this.vectorNode$.pipe(
@@ -32,6 +32,6 @@ export class RouteVectorDirective {
     private route: ActivatedRoute,
     private ngGun: NgGunService
   ) {
-    console.log('my soul', ngGun.auth().is.pub);
+    // console.log('my soul', ngGun.auth().is.pub);
   }
 }
