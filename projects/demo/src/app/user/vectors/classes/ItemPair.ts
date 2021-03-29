@@ -1,11 +1,8 @@
 import * as paper from 'paper';
-import { from, Observable, of, timer, fromEvent } from 'rxjs';
+import { from, of } from 'rxjs';
 import {
-  buffer,
-  bufferCount,
   bufferTime,
-  bufferToggle,
-  delay,
+  debounceTime,
   distinct,
   filter,
   map,
@@ -13,8 +10,7 @@ import {
   mergeMap,
   shareReplay,
   switchMap,
-  switchMapTo,
-  take,
+  tap,
 } from 'rxjs/operators';
 import {
   GunChain,
@@ -29,10 +25,8 @@ import {
   MUTATIONS,
   MUTATION_PROPERTIES,
 } from './constants';
-import { unpack, serializeValue } from './packaging';
-import { getAllSettable, propertyChange$ } from './paper-chain';
+import { serializeValue } from './packaging';
 import { PaperPair } from './PaperPair';
-import { debounceTime, tap } from 'rxjs/operators';
 
 export class ItemPair extends PaperPair {
   graphValue: any;

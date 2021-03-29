@@ -16,7 +16,7 @@ export class UserComponent implements OnInit {
     route: ActivatedRoute,
     private dialog: MatDialog
   ) {
-    console.log('user route', route.routeConfig?.children);
+    // console.log('user route', route.routeConfig?.children);
   }
 
   ngOnInit(): void {

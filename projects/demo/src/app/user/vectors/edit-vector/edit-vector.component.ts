@@ -34,7 +34,7 @@ export class EditVectorComponent
 
   @ViewChild('preview')
   private preview!: PaperDirective;
-  
+
   previewSVG?: SafeHtml;
   project!: paper.Project;
 

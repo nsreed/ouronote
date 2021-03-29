@@ -20,6 +20,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatStepperModule } from '@angular/material/stepper';
+import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
@@ -79,6 +80,7 @@ import { CertificatesModule } from './certificates/certificates.module';
     MatSnackBarModule,
     MatTooltipModule,
     CertificatesModule,
+    MatSidenavModule,
   ],
   providers: [
     {

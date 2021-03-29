@@ -1,14 +1,36 @@
-<!-- <ng-container *ngIf="user.is">
-  <nav>
-    <h1>NgGun Demo</h1>
-    <a routerLink="/user">User</a>
-    <button (click)="logout()">Log Out</button>
-  </nav>
-
-</ng-container> -->
-<mat-toolbar>
-
-  <app-session-info></app-session-info>
-</mat-toolbar>
+<mat-sidenav-container fxFlexFill>
+  <mat-sidenav #nav [mode]="'side'">
+    <mat-toolbar>
+      <button mat-icon-button (click)="nav.toggle()">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+    </mat-toolbar>
+    <mat-action-list>
+      <mat-list-item routerLink="/user/messages">
+        <mat-icon mat-list-icon>message</mat-icon>
+      </mat-list-item>
+      <mat-list-item routerLink="/user/posts">
+        <mat-icon mat-list-icon>group</mat-icon>
+      </mat-list-item>
+      <mat-list-item routerLink="/user/vectors">
+        <mat-icon mat-list-icon>note</mat-icon>
+      </mat-list-item>
+      <mat-list-item [matMenuTriggerFor]="sessionMenu" *ngIf="user.is">
+        <mat-icon mat-list-icon>person</mat-icon>
+      </mat-list-item>
+      <mat-menu #sessionMenu>
+        <button mat-menu-item>Log Out</button>
+      </mat-menu>
+    </mat-action-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <mat-toolbar *ngIf="!nav.opened">
+      <button mat-icon-button (click)="nav.toggle()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <app-session-info></app-session-info>
+    </mat-toolbar>
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>
 <!-- <app-gun-peers [ngGun]="ngGun"></app-gun-peers> -->
-<router-outlet></router-outlet>
