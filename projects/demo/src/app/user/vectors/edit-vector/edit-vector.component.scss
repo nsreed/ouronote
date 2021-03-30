@@ -1,22 +1,19 @@
+#CanvasContainer {
+  overflow: hidden;
+  //   display: flex;
+
+  //   align-items: stretch;
+  //   justify-items: stretch;
+}
+
 canvas#Workspace {
-  // display: inline-block;
-  // height: 100%;
-  // max-height: 100%;
+  // position: absolute;
   // width: 100%;
-  // flex-grow: 1;
-  // display: inline-block;
-  position: absolute;
-  // flex: 1 0.5 auto;
-  // align-self: stretch;
-  overflow: show;
+  // height: 100%;
+  // flex: 1 1 auto;
+  // overflow: scroll;
 
-  // top: 0;
-  // left: 0;
-
-  width: 100%;
-  height: 100%;
-
-  outline: solid 1px gray;
+  outline: solid 10px gray;
 }
 
 mat-accordion {
@@ -30,14 +27,6 @@ form {
   padding: 0;
   margin: 0;
 }
-
-#CanvasContainer {
-  overflow: hidden;
-  display: flex;
-  align-items: stretch;
-  justify-items: stretch;
-}
-
 #Preview {
   outline: solid 12px blue;
   // background-color: pink;
@@ -48,6 +37,10 @@ form {
 }
 
 mat-list-item.active {
+  white-space: nowrap;
+  break-inside: avoid;
+  overflow: hidden;
+  text-overflow: ellipsis;
   // background-color: blue;
   // margin-left: 1em;
   // border: none;

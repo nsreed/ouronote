@@ -1,39 +1,21 @@
 import {
-  PaperMouseWheelEvent,
-  PaperToolWheelEvent,
-} from './classes/paper-mouse-wheel-event';
-import {
   Directive,
   ElementRef,
   EventEmitter,
   HostListener,
-  Output,
   OnInit,
+  Output,
 } from '@angular/core';
 import * as paper from 'paper';
-import { Color, Project, PaperScope } from 'paper';
-import { fromEvent, from, Observable } from 'rxjs';
-import {
-  mergeAll,
-  tap,
-  map,
-  distinct,
-  switchMapTo,
-  switchMap,
-} from 'rxjs/operators';
-import { after } from 'aspect-ts';
-import { PenTool } from './tools/pen';
-import { EraserTool } from './tools/eraser';
-import {
-  SelectTool,
-  RectangleSelectTool,
-  LassoSelectTool,
-} from './tools/select';
+import { fromEvent, timer } from 'rxjs';
+import { shareReplay, switchMap } from 'rxjs/operators';
 import { propertyChange$ } from './classes/paper-chain';
-import { shareReplay } from 'rxjs/operators';
-import { PanTool } from './tools/pan';
-import { MoveTool } from './tools/move';
+import { EraserTool } from './tools/eraser';
 import { EyedropperTool } from './tools/eyedropper';
+import { MoveTool } from './tools/move';
+import { PanTool } from './tools/pan';
+import { PenTool } from './tools/pen';
+import { LassoSelectTool, RectangleSelectTool } from './tools/select';
 @Directive({
   selector: '[appPaper]',
   exportAs: 'appPaper',
@@ -93,17 +75,11 @@ export class PaperDirective implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.scope.install(this.el.nativeElement);
-    // this.project = new this.scope.Project(this.el.nativeElement) as any;
     this.scope.setup(this.el.nativeElement);
-    // this.ignore.setup(new this.ignore.Size(10, 10));
+
     this.project = this.scope.project as any;
-    // this.project.exportJSON = () => {
-    //   return '';
-    // };
+
     this.project.activate();
-    // this.scope.tools.push(this.tool);
-    // this.tool.activate();
     this.scope.project = this.project as any;
     this.project.currentStyle = new this.scope.Style({}) as any;
     this.project.currentStyle.strokeColor = new this.scope.Color(
@@ -112,10 +88,10 @@ export class PaperDirective implements OnInit {
       0
     ) as any;
     this.project.currentStyle.strokeWidth = 5;
-    // [this.toolDown, this.toolUp, this.toolDrag, this.toolMove].forEach((e$) => {
-    //   e$.subscribe();
-    // });
-    this.updateViewSize();
+
+    // update the view size after a delay to account for UI loading time
+    timer(1000).subscribe(() => this.updateViewSize());
+
     this.resize$.subscribe(() => {
       console.log('PROJECT CANVAS RESIZE');
     });
@@ -126,9 +102,6 @@ export class PaperDirective implements OnInit {
     this.backgroundLayer.data.ignore = true;
     this.backgroundLayer.name = 'background';
     (this.project as any).insertLayer(0, this.backgroundLayer);
-    // (this.project.view as any).changes.subscribe((c: any) => {
-    //   console.log('view change', c);
-    // });
     this.scope.settings.insertItems = true;
   }
 
@@ -139,10 +112,13 @@ export class PaperDirective implements OnInit {
     }
     // If we don't change the view size at all, paper.js doesn't seem to update
     // This solves an issue that occurs on first loading a default size canvas
-    // FIXME cursor offset
     this.project.view.viewSize.width += 0.0001;
-    this.project.view.viewSize.width = this.project.view.element.scrollWidth;
-    this.project.view.viewSize.height = this.project.view.element.scrollHeight;
+    this.project.view.viewSize.width =
+      this.project.view.element.parentElement?.scrollWidth ||
+      this.project.view.element.scrollWidth;
+    this.project.view.viewSize.height =
+      this.project.view.element.parentElement?.scrollHeight ||
+      this.project.view.element.scrollHeight;
     this.onViewBounds();
   }
 
