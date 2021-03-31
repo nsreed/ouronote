@@ -1,9 +1,10 @@
 {
-  "name": "ng-gun",
+  "name": "ouronote",
   "version": "0.0.1",
   "scripts": {
     "ng": "yarn",
     "start": "ng serve",
+    "start:public": "ng serve --disable-host-check=true --ssl=false",
     "build": "ng build",
     "build:watch": "ng build --watch",
     "test": "ng test",

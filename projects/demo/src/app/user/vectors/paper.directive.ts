@@ -135,7 +135,7 @@ export class PaperDirective implements OnInit {
 
   @HostListener('mousewheel', ['$event'])
   onMouseWheel(event: WheelEvent) {
-    // console.log(event);
+    // FIXME firefox does not respond to this event
     const point = this.scope.view.viewToProject(
       new paper.Point(event.offsetX, event.offsetY)
     );

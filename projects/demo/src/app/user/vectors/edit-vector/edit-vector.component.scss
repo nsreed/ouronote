@@ -1,18 +1,8 @@
 #CanvasContainer {
   overflow: hidden;
-  //   display: flex;
-
-  //   align-items: stretch;
-  //   justify-items: stretch;
 }
 
 canvas#Workspace {
-  // position: absolute;
-  // width: 100%;
-  // height: 100%;
-  // flex: 1 1 auto;
-  // overflow: scroll;
-
   outline: solid 10px gray;
 }
 
@@ -27,23 +17,11 @@ form {
   padding: 0;
   margin: 0;
 }
-#Preview {
-  outline: solid 12px blue;
-  // background-color: pink;
-}
-
-.virtual-scroll {
-  max-height: 100px;
-}
 
 mat-list-item.active {
   white-space: nowrap;
   break-inside: avoid;
   overflow: hidden;
   text-overflow: ellipsis;
-  // background-color: blue;
-  // margin-left: 1em;
-  // border: none;
-  // border-style: inset;
   outline: solid 3px #0000ff55;
 }

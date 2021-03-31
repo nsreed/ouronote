@@ -197,7 +197,6 @@ export class GunChain<
     certificate: string = this.certificate
   ) {
     // FIXME "unverified data" - certified put values must be signed?
-    // // FIXME when chaining a .get(x).put(y), the 'get' doesn't have time to load certificates
 
     if (this.isNested && !certificate) {
       console.warn('NO CERTIFICATE FOUND FOR FOREIGN RECORD!');
