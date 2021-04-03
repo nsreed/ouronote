@@ -9,8 +9,8 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent implements OnInit {
   form = this.fb.group({
-    alias: ['alice', Validators.required],
-    password: ['1234', Validators.required],
+    alias: [null, Validators.required],
+    password: [null, Validators.required],
   });
 
   constructor(
