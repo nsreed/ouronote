@@ -1,11 +1,15 @@
 import { FormBuilder, Validators } from '@angular/forms';
 import { Component, Inject, OnInit, NgZone } from '@angular/core';
-import { NgGunService } from '../../../../../../../ng-gun/src/lib/ng-gun.service';
+import {
+  NgGunService,
+  GunOptions,
+} from '../../../../../../../ng-gun/src/lib/ng-gun.service';
 import { NgSeaService } from '../../../../../../../ng-gun/src/lib/ng-sea.service';
 import { SEA } from 'gun';
 import { VectorService } from '../../vector.service';
 import { VectorGraph } from '../../../VectorGraph';
 import { pluck, shareReplay, switchMapTo, switchMap } from 'rxjs/operators';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-create-vector',
@@ -36,9 +40,10 @@ export class CreateVectorComponent implements OnInit {
     private ngGun: NgGunService,
     private sea: NgSeaService,
     private vectorService: VectorService,
-    @Inject('gun-options')
+    @Inject(GunOptions)
     private gunOpts: any,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {}
@@ -59,12 +64,13 @@ export class CreateVectorComponent implements OnInit {
       if (!formValue.confirm) {
         return;
       }
-
       const detachedGun = new NgGunService(this.gunOpts, this.ngZone);
+
       (detachedGun.gun.user() as any).auth(vectorPair, async () => {
         const v = detachedGun.gun.user();
         v.put(vector);
         this.vectorService.vectors.set(v as never);
+        this.dialog.closeAll();
       });
     });
   }
