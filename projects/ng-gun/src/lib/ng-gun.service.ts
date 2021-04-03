@@ -22,7 +22,7 @@ export class NgGunService<
     private gunOptions: IGunConstructorOptions,
     ngZone: NgZone
   ) {
-    super(ngZone, new Gun(gunOptions) as any);
+    super(ngZone, new Gun(JSON.parse(JSON.stringify(gunOptions))) as any);
   }
 
   findAlias(alias: string) {

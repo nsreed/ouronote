@@ -8,9 +8,22 @@ import { AliasPipe } from './alias.pipe';
 import { VerifyPipe } from './verify.pipe';
 
 @NgModule({
-  declarations: [NgGunComponent, SoulPipe, UpdatedPipe, ChainDirective, AliasPipe, VerifyPipe],
+  declarations: [
+    NgGunComponent,
+    SoulPipe,
+    UpdatedPipe,
+    ChainDirective,
+    AliasPipe,
+    VerifyPipe,
+  ],
   imports: [],
-  providers: [{ provide: GunOptions, useValue: { localStorage: true } }],
-  exports: [NgGunComponent, SoulPipe, UpdatedPipe, ChainDirective, AliasPipe, VerifyPipe],
+  exports: [
+    NgGunComponent,
+    SoulPipe,
+    UpdatedPipe,
+    ChainDirective,
+    AliasPipe,
+    VerifyPipe,
+  ],
 })
 export class NgGunModule {}
