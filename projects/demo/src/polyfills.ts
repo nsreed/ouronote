@@ -64,6 +64,8 @@ import 'zone.js/dist/zone'; // Included with Angular CLI.
  */
 
 /* GUN IMPORT */
+// TODO move GUN.js imports to a better place
+// These are here to make sure they're done before the app loads
 import 'gun';
 import 'gun/lib/radix';
 import 'gun/lib/radisk';
@@ -79,7 +81,11 @@ import 'gun/lib/not';
 import 'gun/lib/unset';
 import 'gun/lib/webrtc';
 
-/* PAPER.JS OVERRIDES */
+/* PAPER.JS OVERRIDES
+ * Injects rxjs-style property change observables into paper.js
+ */
+// TODO move paper.js overrides to a better place
+// These are here to make sure they're done before the app loads
 
 import * as paper from 'paper';
 import { EventEmitter } from '@angular/core';
