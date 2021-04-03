@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { UserComponent } from './user.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 const routes: Routes = [
   {
@@ -21,6 +22,10 @@ const routes: Routes = [
         path: 'vectors',
         loadChildren: () =>
           import('./vectors/vectors.module').then((m) => m.VectorsModule),
+      },
+      {
+        path: '**',
+        component: DashboardComponent,
       },
     ],
   },
