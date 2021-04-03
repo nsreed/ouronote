@@ -85,10 +85,10 @@ import { CertificatesModule } from './certificates/certificates.module';
   providers: [
     {
       provide: 'gun-options',
-      useFactory: () => ({
+      useValue: {
         localStorage: false,
         peers: ['http://localhost:8765/gun'],
-      }),
+      },
     },
   ],
   exports: [CertificatesComponent],
