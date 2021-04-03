@@ -60,14 +60,7 @@ export class CreateVectorComponent implements OnInit {
         return;
       }
 
-      // TODO gunOpts appears to drag in values set by previous gun instance???
-      const detachedGun = new NgGunService(
-        {
-          localStorage: false,
-          peers: ['http://localhost:8765/gun'],
-        },
-        this.ngZone
-      );
+      const detachedGun = new NgGunService(this.gunOpts, this.ngZone);
       (detachedGun.gun.user() as any).auth(vectorPair, async () => {
         const v = detachedGun.gun.user();
         v.put(vector);

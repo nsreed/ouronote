@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit, NgZone, Inject } from '@angular/core';
 import { FormArray, FormBuilder, Validators } from '@angular/forms';
 import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
@@ -35,7 +35,9 @@ export class CreateCertificateComponent implements OnInit {
     private ngGun: NgGunService,
     private sea: NgSeaService,
     private chain: ChainDirective,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    @Inject('gun-options')
+    private gunOpts: any
   ) {
     console.log(this.form.value);
     this.form.statusChanges.subscribe((sc) => console.log('status', sc));
@@ -125,14 +127,7 @@ export class CreateCertificateComponent implements OnInit {
             isProtected
           )
         ).subscribe((certStores: any) => {
-          // TODO gunOpts appears to drag in values set by previous gun instance???
-          const detachedGun = new NgGunService(
-            {
-              localStorage: false,
-              peers: ['http://localhost:8765/gun'],
-            },
-            this.ngZone
-          );
+          const detachedGun = new NgGunService(this.gunOpts, this.ngZone);
           (detachedGun.gun.user() as any).auth(recordPair, async () => {
             const v = detachedGun.gun.user();
             const certs = v.get('certs');
