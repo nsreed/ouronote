@@ -1,6 +1,6 @@
 <ng-container [gunChain]="vectorNode$|async" #vectorChain="gunChain">
 
-  <mat-toolbar>
+  <!-- <mat-toolbar>
     <a mat-button [matMenuTriggerFor]="menuSelect">Edit</a>
     <mat-menu #menuSelect>
       <button mat-menu-item>Cut</button>
@@ -21,10 +21,7 @@
         favorite
       </mat-icon>
     </button>
-  </mat-toolbar>
-  <!-- <form [formGroup]="vectorForm" class="shrink">
-    <input type="text" formControlName="title">
-  </form> -->
+  </mat-toolbar> -->
 
   <div fxLayout="row">
     <mat-accordion multi dense displayMode="flat" *ngIf="project" fxLayout="column" fxFlex="0 1 175px">
@@ -41,7 +38,7 @@
       </mat-expansion-panel>
 
       <mat-expansion-panel expanded>
-        <mat-expansion-panel-header>{{paper.scope.tool.name}}</mat-expansion-panel-header>
+        <mat-expansion-panel-header>Color</mat-expansion-panel-header>
         <ng-template matExpansionPanelContent>
           <div [appTool]="paper.scope.tool" *ngIf="paper.scope.tool">
             <app-color-form [color]="paper.project.currentStyle.strokeColor"></app-color-form>
@@ -49,7 +46,7 @@
         </ng-template>
       </mat-expansion-panel>
 
-      <mat-expansion-panel>
+      <!-- <mat-expansion-panel>
         <mat-expansion-panel-header>Style</mat-expansion-panel-header>
         <ng-template matExpansionPanelContent>
           <app-style-form [style]="project?.currentStyle"></app-style-form>
@@ -59,7 +56,8 @@
             <mat-icon>more_horiz</mat-icon>
           </a>
         </mat-action-row>
-      </mat-expansion-panel>
+      </mat-expansion-panel> -->
+
       <mat-expansion-panel expanded>
         <mat-expansion-panel-header>Layers</mat-expansion-panel-header>
         <ng-template matExpansionPanelContent>

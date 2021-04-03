@@ -6,13 +6,7 @@
       </button>
     </mat-toolbar>
     <mat-action-list>
-      <mat-list-item routerLink="/user/messages">
-        <mat-icon mat-list-icon>message</mat-icon>
-      </mat-list-item>
-      <mat-list-item routerLink="/user/posts">
-        <mat-icon mat-list-icon>group</mat-icon>
-      </mat-list-item>
-      <mat-list-item routerLink="/user/vectors">
+      <mat-list-item routerLink="/user/vectors" matTooltip="Vectors">
         <mat-icon mat-list-icon>note</mat-icon>
       </mat-list-item>
       <mat-list-item [matMenuTriggerFor]="sessionMenu" *ngIf="user.is">
@@ -33,4 +27,3 @@
     <router-outlet></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>
-<!-- <app-gun-peers [ngGun]="ngGun"></app-gun-peers> -->
