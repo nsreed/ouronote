@@ -53,7 +53,7 @@ export class PaperDirective implements OnInit {
   public areaSelect = new RectangleSelectTool(this.scope as any);
   public pan = new PanTool(this.scope as any);
   public move = new MoveTool(this.scope as any);
-  public eyedropper = new EyedropperTool(this.scope as any);
+  // public eyedropper = new EyedropperTool(this.scope as any);
 
   ignore(fn: any, ...args: any[]) {
     let item: any;
