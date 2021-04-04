@@ -5,15 +5,16 @@ import {
   RouterStateSnapshot,
   UrlTree,
 } from '@angular/router';
-import { Observable } from 'rxjs';
-import { filter, map, take, tap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError, filter, map, take, tap, timeout } from 'rxjs/operators';
 import { NgGunService } from './ng-gun.service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GunAuthGuard implements CanActivateChild {
-  constructor(private ngGun: NgGunService) {}
+  constructor(private ngGun: NgGunService, private router: Router) {}
   sessionOrRedirect() {}
   canActivateChild(
     childRoute: ActivatedRouteSnapshot,
@@ -28,10 +29,17 @@ export class GunAuthGuard implements CanActivateChild {
       console.log('OK: auth().is');
       return true;
     }
+    // this.ngGun.auth().recall();
     return this.ngGun.auth().auth$.pipe(
+      timeout(5000),
+      catchError((err, caught) => {
+        this.router.navigateByUrl('/login');
+        return of({
+          err: 'Session Recall Timeout',
+        });
+      }),
       tap((ack) => console.log('gunAuthGuard auth$', ack)),
       filter((ack) => !ack.err),
-      map((ack) => true),
       take(1)
     );
   }

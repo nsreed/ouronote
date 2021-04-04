@@ -1,4 +1,22 @@
-<button (click)="create()">New Vector</button>
-<ng-container *ngFor="let vector of vectors|async">
-  <a [routerLink]="['/user/vectors', vector|soul, 'edit']">{{vector.title}}</a>
-</ng-container>
+<mat-toolbar>
+
+  <button mat-button color="primary" (click)="create()">New Vector</button>
+</mat-toolbar>
+
+<div gdColumns="auto repeat(3, max-content)">
+  <ng-container *ngFor="let vector of vectors|async">
+    <a mat-flat-button [routerLink]="['/user/vectors', vector|soul, 'edit']">
+      <!-- <mat-icon>enhanced_encryption</mat-icon> -->
+      {{vector.title}}
+    </a>
+    <a mat-flat-button [routerLink]="['/user/vectors', vector|soul, 'edit']">{{vector|updated|date}}</a>
+    <button mat-icon-button (click)="remove(vector)">
+      <mat-icon>delete</mat-icon>
+    </button>
+    <button mat-icon-button [routerLink]="['/user/vectors', vector|soul]">
+      <mat-icon>settings</mat-icon>
+    </button>
+
+  </ng-container>
+
+</div>

@@ -1,6 +1,13 @@
 import { Component } from '@angular/core';
 import { NgGunService } from '../../../ng-gun/src/lib/ng-gun.service';
-import { User } from './model';
+import { User } from './user/model';
+import {
+  Router,
+  ActivatedRoute,
+  ChildActivationEnd,
+  NavigationEnd,
+} from '@angular/router';
+import { filter, takeLast } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -9,43 +16,28 @@ import { User } from './model';
 })
 export class AppComponent {
   user: any;
-  constructor(public ngGun: NgGunService<User>) {
-    // const ug = ngGun.gun.user(
-    //   'VrEQ5DzIHnVoWk0vzp7FFCVzjYwMhSrFxcHTZw8_IP4.X6Kt40eR5STMbUgO5mge19o_NxGezx6SMsJ6W0bHaec'
-    // );
-    // ug.once((ud) => {
-    //   console.log({ ug, ud });
-    // }); // TODO NOTE gun.user(pub) does *not* provide auth() method
-    const a = ngGun.auth();
-    const b = ngGun.auth();
+  constructor(
+    public ngGun: NgGunService<User>,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
+    this.user = this.ngGun.auth();
+    console.log('!! ROUTE SNAPSHOT', route.snapshot);
 
-    a.login('alice', '1234')?.subscribe((ack: any) => {
-      console.log('login() ack', ack);
-      a.get('name')
-        .on()
-        .subscribe((v) => {
-          console.log('name change', v);
-        });
-      a.get('name').put('alice' + Math.random());
-      // bob: ~VrEQ5DzIHnVoWk0vzp7FFCVzjYwMhSrFxcHTZw8_IP4.X6Kt40eR5STMbUgO5mge19o_NxGezx6SMsJ6W0bHaec
-      a.root.get(
-        '~VrEQ5DzIHnVoWk0vzp7FFCVzjYwMhSrFxcHTZw8_IP4.X6Kt40eR5STMbUgO5mge19o_NxGezx6SMsJ6W0bHaec'
-      );
-      this.user = a;
-      // b.login('bob', '1234').subscribe((bobAck) => {
-      //   console.log('bob ack', bobAck, a.gun, b.gun, b.SEA);
-      //   // TODO store certificate - this is needed for the eventual put(val, cb, opts: {certificate})
-      //   b.certify(
-      //     [ack.put.pub],
-      //     {
-      //       '*': 'inbox',
-      //       '+': '*',
-      //     },
-      //     bobAck.sea
-      //   ).subscribe((cert) =>
-      //     console.log('certify got', JSON.parse(cert.replace(/^SEA/, '')))
-      //   );
-      // });
-    });
+    let lastActivated: ChildActivationEnd;
+    router.events
+      .pipe(filter((e) => e instanceof ChildActivationEnd))
+      .subscribe((e) => (lastActivated = e as any));
+    router.events
+      .pipe(filter((e) => e instanceof NavigationEnd))
+      .subscribe((e) => {
+        console.log('last activated at navigation end', lastActivated);
+      });
+    // router.events.subscribe((e) => console.log('router event', e));
+  }
+
+  logout() {
+    this.ngGun.auth().logout();
+    this.router.navigateByUrl('/');
   }
 }

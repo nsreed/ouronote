@@ -32,8 +32,13 @@ export const propertyChange$ = <T = any, K extends keyof T = any>(
     return (item as any)[emitterName] as EventEmitter<T[K]>;
   }
   const cap = property.charAt(0).toUpperCase() + property.slice(1);
-  const setFn = `set${cap}`;
-  const getter = `get${cap}`;
+  const setFnName = `set${cap}`;
+  const getFnName = `get${cap}`;
+  const setter =
+    (item as any)[setFnName] ||
+    ((value: any) => ((item as any)[propertyName] = value));
+  const getter =
+    (item as any)[getFnName] || (() => (item as any)[propertyName]);
 
   let priorValue: any;
 
@@ -51,19 +56,24 @@ export const propertyChange$ = <T = any, K extends keyof T = any>(
   }
   const emitter = new EventEmitter();
   (item as any)[emitterName] = emitter;
+
   Object.defineProperty(item, property, {
     set: (value) => {
-      if (!(item as any)[setFn]) {
+      // TODO predefine get/set before property to skip this check on every access
+      if (!(item as any)[setFnName]) {
         console.warn('no setter for', property);
         (item as any)[propertyName] = value;
       } else {
-        (item as any)[setFn](value);
+        (item as any)[setFnName](value);
       }
+      // setter(value);
+      // TODO only emit if value changed
       emitter.emit(value);
     },
     get: () => {
-      if ((item as any)[getter]) {
-        return (item as any)[getter]();
+      // return getter();
+      if ((item as any)[getFnName]) {
+        return (item as any)[getFnName]();
       }
       // console.warn('no getter for %s', property);
       return (item as any)[propertyName];
@@ -76,6 +86,7 @@ export const propertyChange$ = <T = any, K extends keyof T = any>(
 
   return (item as any)[emitterName];
 };
+
 const settable: any = {};
 export function getAllSettable(item: any) {
   if (!item.className) {
@@ -122,44 +133,5 @@ export function setupAllEmitters(item: any) {
     console.log('property descriptors', props);
     // console.log('emitting all from', Object.getOwnPropertyNames(proto));
     proto = Object.getPrototypeOf(proto);
-  }
-}
-
-const install = <T extends paper.Project | paper.Item>(item: T) => {
-  // TODO this should wait for the item to have a project/parent (or wait for gun$ via propertyChange$),
-  // ... since we can't construct a node until the object has some kind of parent
-  const itemOrProject = item as any;
-  if (itemOrProject.gun) {
-    return itemOrProject.gun;
-  }
-  if (itemOrProject instanceof paper.Project) {
-    const chain = new ProjectChain(itemOrProject);
-    (itemOrProject as any).gun = chain;
-  } else {
-    const chain = new ItemChain(itemOrProject);
-    (itemOrProject as any).gun = chain;
-  }
-  return itemOrProject.gun;
-};
-
-class ProjectChain<T extends paper.Project> extends GunChain<any> {
-  constructor(private scope: T) {
-    super(null as any, null as any);
-    // propertyChange$(scope, 'parent').subscribe();
-    // propertyChange$(scope, 'data').subscribe(data=>)
-  }
-}
-
-class ItemChain<T extends paper.Item> extends GunChain<any> {
-  project$ = propertyChange$(this.scope, 'project').pipe(shareReplay(1));
-  parent$ = propertyChange$(this.scope, 'parent').pipe(shareReplay(1));
-  parentChain$ = this.parent$.pipe(
-    map((parent) => install(parent)),
-    shareReplay(1)
-  );
-  constructor(private scope: T) {
-    super(null as any, null as any);
-    // propertyChange$(scope, 'parent').subscribe();
-    // propertyChange$(scope, 'data').subscribe(data=>)
   }
 }

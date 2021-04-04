@@ -4,6 +4,7 @@ export const EXPECT_ARRAY = [
   'strokeColor',
   'radius',
   'segments',
+  'position',
 ];
 export const REQUIRED_BY = {
   size: ['Shape'],
@@ -14,8 +15,12 @@ export const REQUIRES = {
 } as any;
 
 export function hasRequired(json: any) {
+  if (!json) {
+    console.warn('hasRequired() NULL VALUE');
+    return false;
+  }
   if (!json.className) {
-    return true;
+    return false;
   }
   const required = (REQUIRES[json.className] as string[]) || [];
   const missing = required.filter((r) => !Object.keys(json).includes(r));
@@ -32,8 +37,15 @@ export const MUTATION_METHODS = [
   'lineBy',
   'curveTo',
   'curveBy',
+  // 'translate',
 ];
 
 export const MUTATIONS = {
   Path: MUTATION_METHODS,
+  // Item: ['translate'],
+} as any;
+
+export const MUTATION_PROPERTIES = {
+  add: ['segments'],
+  // translate: ['position', 'segments'], // FIXME translate gets called by paper internally, causing unnecessary saves
 } as any;

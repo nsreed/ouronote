@@ -1,7 +1,7 @@
 import { after } from 'aspect-ts';
 import { map, mapTo, switchMap, filter, tap } from 'rxjs/operators';
 import { after$, before$, returned } from '../../../functions/aspect-rx';
-import { Vector } from '../../../model';
+import { VectorGraph } from '../../VectorGraph';
 import { of } from 'rxjs';
 import { ItemPair } from './ItemPair';
 import { PaperPair } from './PaperPair';
@@ -44,12 +44,15 @@ export class ProjectPair extends PaperPair {
     )
   );
 
-  constructor(public chain: GunChain<Vector>, public project: paper.Project) {
-    super(project, project); // UGN
+  constructor(
+    public chain: GunChain<VectorGraph>,
+    public project: paper.Project,
+    scope: paper.PaperScope
+  ) {
+    super(project, project, scope); // UGN
     this.setupProject();
-    console.log('new ProjectPair');
+    // console.log('new ProjectPair');
     (project as any).pair = this;
-    this.layers$.subscribe((data) => this.onGraphLayer(data));
     // project.layers
   }
 
@@ -61,45 +64,41 @@ export class ProjectPair extends PaperPair {
   onGraphLayer(data: any) {
     const soul = data[1];
     const json = data[0];
-    console.log('onGraphLayer %s', soul);
+    // console.log('onGraphLayer %s', soul);
     if (!json) {
       console.log('  child was deleted');
       return;
     }
     let child = this.getChild(soul);
     if (!child) {
-      console.log('  child was added');
+      // console.log('  child was added');
       if (!json.className) {
-        console.warn('Child has no className, setting as Layer');
+        // console.warn('Child has no className, setting as Layer');
         json.className = 'Layer';
       }
+      // child = new paper.Layer();
+      // child.data.soul = soul;
+      // this.importing = true;
       child = this.constructChild(json, soul);
+      // TODO insert at appropriate z-order
+      (this.project as any).insertLayer(this.project.layers.length, child);
+      // console.log('  created', child.toString());
+      // this.importing = false;
+      // this.onLocalLayer(child);
     }
   }
 
   onLocalLayer(layer: paper.Layer) {
     const l = layer as any;
-    // console.log('onLocalLayer %s', l.toString());
     if (!l.pair) {
-      // console.log('  no gun');
-      let save = false;
+      // console.log('onLocalLayer %s', l.toString());
       if (!l.data.soul) {
         // console.log('    no soul');
         const soul = getUUID(this.chain as any);
         l.data.soul = soul;
-        save = true;
       }
-      if (l.data.soul) {
-        // console.log('    this has a soul');
-        const layerGun = this.layers.get(l.data.soul);
-        const layerPair = new ItemPair(layerGun, layer, this.project);
-        if (save) {
-          // layerPair.save();
-        }
-      }
-
-      // this is local create
-      // but it could be for a parent's importJSON?????
+      const layerGun = this.layers.get(l.data.soul);
+      const layerPair = new ItemPair(layerGun, layer, this.project, this.scope);
     }
   }
 
@@ -109,5 +108,6 @@ export class ProjectPair extends PaperPair {
     this.afterProjectInsertLayer$.subscribe((layer) =>
       this.onLocalLayer(layer)
     );
+    this.layers$.subscribe((data) => this.onGraphLayer(data));
   }
 }

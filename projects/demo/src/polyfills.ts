@@ -63,6 +63,9 @@ import 'zone.js/dist/zone'; // Included with Angular CLI.
  * APPLICATION IMPORTS
  */
 
+/* GUN IMPORT */
+// TODO move GUN.js imports to a better place
+// These are here to make sure they're done before the app loads
 import 'gun';
 import 'gun/lib/radix';
 import 'gun/lib/radisk';
@@ -73,5 +76,116 @@ import 'gun/sea';
 import 'gun/lib/load';
 import 'gun/lib/open';
 import 'gun/lib/then';
+import 'gun/lib/time';
 import 'gun/lib/not';
 import 'gun/lib/unset';
+import 'gun/lib/webrtc';
+
+/* PAPER.JS OVERRIDES
+ * Injects rxjs-style property change observables into paper.js
+ */
+// TODO move paper.js overrides to a better place
+// These are here to make sure they're done before the app loads
+
+import * as paper from 'paper';
+import { EventEmitter } from '@angular/core';
+
+const IGNORED_PROPS = ['selected', 'fullySelected', 'selection'];
+const prototypeProperties = {} as any;
+const prototypeOwnProperties = {} as any;
+
+function getOwnSettable(proto: any) {
+  if (!(proto.constructor.name in prototypeOwnProperties)) {
+    const likelyProperties = Object.getOwnPropertyDescriptors(proto);
+    const props = Object.keys(likelyProperties)
+      .map((k) => [likelyProperties[k], k, proto.constructor])
+      .filter((prop) => {
+        const d = prop[0] as PropertyDescriptor;
+        return (
+          d.enumerable &&
+          d.set &&
+          !(prop[1] as any).startsWith('on') &&
+          !IGNORED_PROPS.includes(prop[1] as any)
+        );
+      });
+    prototypeOwnProperties[proto.constructor.name] = props.sort();
+  }
+  return prototypeOwnProperties[proto.constructor.name];
+}
+
+function getProtoSettable(prototype: any) {
+  if (!(prototype.constructor.name in prototypeProperties)) {
+    // console.log('prototype', prototype);
+
+    let proto = prototype;
+    let properties: any[] = [];
+    while (proto) {
+      const props = getOwnSettable(proto);
+      properties = [...properties, ...props];
+      proto = Object.getPrototypeOf(proto);
+    }
+    prototypeProperties[prototype.constructor.name] = properties.sort();
+  }
+  return prototypeProperties[prototype.constructor.name];
+}
+
+function interceptAll(prototype: any) {
+  // console.log('intercepting', prototype.constructor.name);
+  addChangeEmitter(prototype);
+  getOwnSettable(prototype).forEach((prop: any[]) => {
+    const original = prop[0];
+    const name = prop[1];
+    // console.log('%s.%s', prototype.constructor.name, name);
+    Object.defineProperty(prototype, name, {
+      get: original.get,
+      set(...args) {
+        // if (this[name] !== args[0]) {
+        original.set.call(this, ...args);
+        this.changes$.emit([name, ...args]);
+        // }
+      },
+    });
+  });
+}
+
+function addChangeEmitter(prototype: any) {
+  if (!Object.getOwnPropertyDescriptor(prototype, 'changes$')) {
+    Object.defineProperty(prototype, 'changes$', {
+      get() {
+        if (!this._changes$) {
+          this._changes$ = new EventEmitter();
+        }
+        return this._changes$;
+      },
+      enumerable: false,
+    });
+  }
+}
+
+const toIntercept = [
+  paper.Item,
+  paper.Path,
+  paper.Layer,
+  paper.Shape,
+  paper.Shape.Circle,
+  paper.Shape.Ellipse,
+  paper.Shape.Rectangle,
+  paper.Style,
+  paper.Group,
+  paper.Gradient,
+  paper.Color,
+  paper.View,
+  paper.Size,
+].map((con) => con.prototype);
+
+toIntercept.forEach((proto) => interceptAll(proto));
+
+function addGunProperty(prototype: any) {
+  // console.log('addGunProperty', prototype.constructor.name);
+  const allSettable = getProtoSettable(prototype);
+  allSettable.forEach((settable: any[]) => {
+    // console.log(settable[1]);
+  });
+}
+
+toIntercept.forEach(addGunProperty);

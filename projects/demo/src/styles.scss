@@ -1,3 +1,5 @@
+@import "@angular/material/prebuilt-themes/deeppurple-amber.css";
+
 /* You can add global styles to this file, and also import other style files */
 body,
 app-root {
@@ -18,7 +20,7 @@ body > app-root {
     rgba(255, 255, 255, 0.3659663694579395) 6%,
     rgba(0, 212, 255, 0) 43%
   );
-  padding-bottom: 6%;
+  // padding-bottom: 6%;
 }
 nav {
   display: flex;
@@ -51,46 +53,47 @@ nav,
 form {
   padding: 1em;
 }
-button,
-input[type="button"] {
-  padding: 0.5em 0.75em;
-  font-size: medium;
-  line-height: 1.2rem;
-  border: none;
-  text-transform: uppercase;
-  outline: inset 2px #ffeeee;
-  background-image: linear-gradient(
-    to bottom,
-    rgba(243, 237, 237, 0.246),
-    rgb(235, 227, 227)
-  );
+// button,
+// input[type="button"] {
+//   padding: 0.5em 0.75em;
+//   font-size: medium;
+//   line-height: 1.2rem;
+//   border: none;
+//   text-transform: uppercase;
+//   outline: inset 2px #ffeeee;
+//   background-image: linear-gradient(
+//     to bottom,
+//     rgba(243, 237, 237, 0.246),
+//     rgb(235, 227, 227)
+//   );
 
-  &:hover {
-    outline-color: #b0c0c099;
-  }
-}
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-header {
-  font-size: large;
-  line-height: 1.5rem;
-}
+//   &:hover {
+//     outline-color: #b0c0c099;
+//   }
+// }
+// h1,
+// h2,
+// h3,
+// h4,
+// h5,
+// h6,
+// header {
+//   font-size: large;
+//   line-height: 1.5rem;
+// }
 form {
   display: flex;
   flex-direction: column;
 
   align-items: stretch;
-  flex: 1 1 auto;
+  // flex: 1 1 auto;
   textarea {
     flex: 1 1 auto;
   }
 }
 router-outlet + * {
   flex-grow: 1;
+  flex-shrink: 1;
 
   display: flex;
   flex-direction: column;
@@ -101,6 +104,10 @@ router-outlet + * {
 .column {
   display: flex;
   align-items: stretch;
+
+  &.wrapped {
+    flex-wrap: wrap;
+  }
 }
 
 .column {
@@ -109,4 +116,42 @@ router-outlet + * {
 
 .row {
   flex-direction: row;
+}
+.grow {
+  flex-grow: 1;
+}
+
+.shrink {
+  flex-shrink: 1;
+}
+
+.stretch-items {
+  align-items: stretch;
+}
+
+body {
+  [dense] .mat-expansion-panel-body {
+    padding: 0;
+  }
+}
+
+mat-radio-group {
+  mat-radio-button {
+    margin-right: 1em;
+  }
+}
+code,
+pre {
+  font-family: monospace;
+}
+i {
+  font-family: sans-serif;
+  font-style: italic;
+  font-weight: normal;
+}
+
+[routerLink].active {
+  mat-icon {
+    color: blue;
+  }
 }

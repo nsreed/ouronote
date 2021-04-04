@@ -1,0 +1,5 @@
+<a *ngIf="!user.is" routerLink="/login">Log In</a>
+<ng-container *ngIf="user.is">
+  {{ data?.alias }}
+  <a mat-button (click)="user.logout()">Log Out</a>
+</ng-container>

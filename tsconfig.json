@@ -12,6 +12,10 @@
     "declaration": false,
     "downlevelIteration": true,
     "paths": {
+      "log": [
+        "dist/log/log",
+        "dist/log"
+      ],
       "ng-gun": ["dist/ng-gun/ng-gun", "dist/ng-gun"],
       "ng-gun-forms": ["dist/ng-gun-forms/ng-gun-forms", "dist/ng-gun-forms"]
     },

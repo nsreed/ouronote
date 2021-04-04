@@ -13,7 +13,7 @@ export class PostsComponent implements OnInit {
   posts = this.postService.posts
     .reduce()
     .pipe(
-      map((posts) =>
+      map((posts: any) =>
         posts.sort((a: any, b: any) => a._['>'].title - b._['>'].title)
       )
     );
@@ -28,7 +28,7 @@ export class PostsComponent implements OnInit {
         body: '# Untitled\n',
       })
       .once()
-      .subscribe((post) => {
+      .subscribe((post: any) => {
         console.log('added post', post);
         this.router.navigate([
           '/user/posts',

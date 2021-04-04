@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { NgGunService } from '../../../../ng-gun/src/lib/ng-gun.service';
-import { User } from '../model';
+import { User } from './model';
+// import { User } from ;
 
 @Injectable({
   providedIn: 'root',

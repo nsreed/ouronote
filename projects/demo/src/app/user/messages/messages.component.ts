@@ -30,14 +30,14 @@ export class MessagesComponent implements OnInit {
       this.messageService.messages
         .get(message as never)
         .once()
-        .subscribe((togo) => {
+        .subscribe((togo: any) => {
           console.log('found removed message', togo);
         });
     }
     this.messageService.messages
       .unset(message)
       .once()
-      .subscribe((r) => {
+      .subscribe((r: any) => {
         console.log('done removing message', r);
       });
   }
@@ -48,7 +48,7 @@ export class MessagesComponent implements OnInit {
       .get(Gun.node.soul(message) as any)
       .put({ text: 'another update' })
       .once()
-      .subscribe((m) => {
+      .subscribe((m: any) => {
         console.log('would update', m);
       });
     // this.messageService.messages.get(message).put({

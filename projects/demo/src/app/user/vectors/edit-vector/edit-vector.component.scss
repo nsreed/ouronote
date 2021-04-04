@@ -1,12 +1,35 @@
-canvas {
-  display: inline-block;
+:host {
+  // position: absolute;
+  // width: 100%;
   height: 100%;
-  flex-grow: 1;
-  align-self: stretch;
-
-  outline: solid 1px gray;
+  display: flex;
+  flex-direction: row;
 }
 
-aside {
-  flex-shrink: 0;
+#CanvasContainer {
+  overflow: hidden;
+}
+
+canvas#Workspace {
+  outline: solid 10px gray;
+}
+
+mat-accordion {
+  overflow: hidden;
+  &:last-child {
+    flex-grow: 1;
+  }
+}
+
+form {
+  padding: 0;
+  margin: 0;
+}
+
+mat-list-item.active {
+  white-space: nowrap;
+  break-inside: avoid;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  outline: solid 3px #0000ff55;
 }

@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from './user.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { CertificatesComponent } from '../components/certificates/certificates.component';
 
 @Component({
   selector: 'app-user',
@@ -8,23 +10,20 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./user.component.css'],
 })
 export class UserComponent implements OnInit {
-  messages = this.userService.user.get('messages');
-
-  inbox = this.messages.reduce();
-
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    router: Router,
+    route: ActivatedRoute,
+    private dialog: MatDialog
+  ) {
+    // console.log('user route', route.routeConfig?.children);
+  }
 
   ngOnInit(): void {
     // this.messages.on().subscribe((msgs) => console.log('messages', msgs));
   }
 
-  onMessageClick() {
-    this.messages.set({
-      text: 'hello',
-    });
-  }
-
-  onMessageRemove(message: any) {
-    this.messages.unset(message);
+  openCertificates() {
+    this.dialog.open(CertificatesComponent, { height: '90%', width: '90%' });
   }
 }

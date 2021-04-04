@@ -1,89 +1,60 @@
 import {
-  PaperMouseWheelEvent,
-  PaperToolWheelEvent,
-} from './classes/paper-mouse-wheel-event';
-import {
   Directive,
   ElementRef,
   EventEmitter,
   HostListener,
-  Output,
   OnInit,
+  Output,
 } from '@angular/core';
 import * as paper from 'paper';
-import { Color, Project, PaperScope } from 'paper';
-import { fromEvent, from, Observable } from 'rxjs';
-import { mergeAll, tap, map, distinct } from 'rxjs/operators';
-import { after } from 'aspect-ts';
-import { PenTool } from './tools/pen';
+import { fromEvent, timer } from 'rxjs';
+import { shareReplay, switchMap } from 'rxjs/operators';
+import { propertyChange$ } from './classes/paper-chain';
 import { EraserTool } from './tools/eraser';
+import { EyedropperTool } from './tools/eyedropper';
+import { MoveTool } from './tools/move';
+import { PanTool } from './tools/pan';
+import { PenTool } from './tools/pen';
+import { LassoSelectTool, RectangleSelectTool } from './tools/select';
 @Directive({
   selector: '[appPaper]',
   exportAs: 'appPaper',
 })
 export class PaperDirective implements OnInit {
-  constructor(private el: ElementRef<HTMLCanvasElement>) {
-    console.log('paper.directive', this);
-
-    this.toolWheel.subscribe(console.log);
-  }
+  constructor(private el: ElementRef<HTMLCanvasElement>) {}
   @Output()
   appPaperChange = new EventEmitter();
-  project!: paper.Project;
+
+  projectChange = new EventEmitter<paper.Project>();
+
+  private _project!: paper.Project;
+  public get project(): paper.Project {
+    return this._project;
+  }
+  public set project(value: paper.Project) {
+    if (value !== this._project) {
+      this._project = value;
+      this.projectChange.emit(value);
+    }
+  }
+
+  backgroundLayer!: paper.Layer;
+
+  resize$ = this.projectChange.pipe(
+    switchMap((project) => fromEvent(project.view, 'resize'))
+  );
+
   scope = new paper.PaperScope();
+  tool$ = propertyChange$(this.scope, 'tool').pipe(shareReplay(1));
 
-  public tool = new paper.Tool();
-  public pen = new PenTool(this.scope);
-  public eraser = new EraserTool(this.scope);
+  public pen = new PenTool(this.scope as any);
+  public eraser = new EraserTool(this.scope as any);
+  public select = new LassoSelectTool(this.scope as any);
+  public areaSelect = new RectangleSelectTool(this.scope as any);
+  public pan = new PanTool(this.scope as any);
+  public move = new MoveTool(this.scope as any);
+  // public eyedropper = new EyedropperTool(this.scope as any);
 
-  @Output()
-  toolDown$ = new EventEmitter<paper.ToolEvent>();
-  @Output()
-  toolUp$ = new EventEmitter<paper.ToolEvent>();
-  @Output()
-  toolDrag$ = new EventEmitter<paper.ToolEvent>();
-  @Output()
-  toolMove$ = new EventEmitter<paper.ToolEvent>();
-  @Output()
-  toolWheel$ = new EventEmitter<PaperToolWheelEvent>();
-
-  private toolMove = fromEvent<paper.ToolEvent>(this.tool, 'mousemove').pipe(
-    // tap((event) => this.beforeEach(event)),
-    tap((event) => this.toolMove$.emit(event))
-    // tap((event) => this.afterEach(event))
-  );
-  private toolDown = fromEvent<paper.ToolEvent>(this.tool, 'mousedown').pipe(
-    tap((event) => this.beforeTool(event)),
-    tap((event) => this.beforeEach(event)),
-    tap((event) => this.toolDown$.emit(event)),
-    tap((event) => this.afterEach(event))
-  );
-  private toolDrag = fromEvent<paper.ToolEvent>(this.tool, 'mousedrag').pipe(
-    tap((event) => this.beforeEach(event)),
-    tap((event) => this.toolDrag$.emit(event)),
-    tap((event) => this.afterEach(event))
-  );
-  private toolUp = fromEvent<paper.ToolEvent>(this.tool, 'mouseup').pipe(
-    tap((event) => this.beforeEach(event)),
-    tap((event) => this.toolUp$.emit(event)),
-    tap((event) => this.afterEach(event)),
-    tap((event) => this.afterTool(event))
-  );
-
-  private toolWheel = fromEvent<PaperToolWheelEvent>(
-    this.tool,
-    'mousewheel'
-  ).pipe(
-    tap((event) => this.beforeEach(event as any)),
-    tap((event) => this.toolWheel$.emit(event as any)),
-    tap((event) => this.afterEach(event as any)),
-    tap((event) => this.afterTool(event as any))
-  );
-
-  data$ = this.toolUp.pipe(
-    map(() => this.project.exportJSON()),
-    distinct()
-  );
   ignore(fn: any, ...args: any[]) {
     let item: any;
     try {
@@ -103,35 +74,12 @@ export class PaperDirective implements OnInit {
     }
   }
 
-  beforeTool(event: paper.ToolEvent) {
-    console.log('beforeTool', event);
-  }
-
-  // TODO this might be unnecessary for anything except re-drawing grid between events
-  beforeEach(event: paper.ToolEvent) {
-    // console.log('beforeEach', event);
-  }
-
-  afterEach(event: paper.ToolEvent) {
-    // console.log('afterEach', event);
-  }
-
-  afterTool(event: paper.ToolEvent) {
-    console.log('afterTool', event);
-  }
-
   ngOnInit(): void {
-    // this.scope.install(this.el.nativeElement);
-    // this.project = new this.scope.Project(this.el.nativeElement) as any;
     this.scope.setup(this.el.nativeElement);
-    // this.ignore.setup(new this.ignore.Size(10, 10));
+
     this.project = this.scope.project as any;
-    // this.project.exportJSON = () => {
-    //   return '';
-    // };
+
     this.project.activate();
-    this.scope.tools.push(this.tool);
-    this.tool.activate();
     this.scope.project = this.project as any;
     this.project.currentStyle = new this.scope.Style({}) as any;
     this.project.currentStyle.strokeColor = new this.scope.Color(
@@ -139,10 +87,22 @@ export class PaperDirective implements OnInit {
       0,
       0
     ) as any;
-    [this.toolDown, this.toolUp, this.toolDrag, this.toolMove].forEach((e$) => {
-      e$.subscribe();
+    this.project.currentStyle.strokeWidth = 5;
+
+    // update the view size after a delay to account for UI loading time
+    timer(1000).subscribe(() => this.updateViewSize());
+
+    this.resize$.subscribe(() => {
+      console.log('PROJECT CANVAS RESIZE');
     });
-    this.updateViewSize();
+
+    // CREATE BACKGROUND LAYER
+    this.scope.settings.insertItems = false;
+    this.backgroundLayer = new paper.Layer() as any;
+    this.backgroundLayer.data.ignore = true;
+    this.backgroundLayer.name = 'background';
+    (this.project as any).insertLayer(0, this.backgroundLayer);
+    this.scope.settings.insertItems = true;
   }
 
   updateViewSize() {
@@ -153,8 +113,13 @@ export class PaperDirective implements OnInit {
     // If we don't change the view size at all, paper.js doesn't seem to update
     // This solves an issue that occurs on first loading a default size canvas
     this.project.view.viewSize.width += 0.0001;
-    this.project.view.viewSize.width = this.project.view.element.scrollWidth;
-    this.project.view.viewSize.height = this.project.view.element.scrollHeight;
+    this.project.view.viewSize.width =
+      this.project.view.element.parentElement?.scrollWidth ||
+      this.project.view.element.scrollWidth;
+    this.project.view.viewSize.height =
+      this.project.view.element.parentElement?.scrollHeight ||
+      this.project.view.element.scrollHeight;
+    this.onViewBounds();
   }
 
   @HostListener('window:resize', ['$event'])
@@ -164,15 +129,23 @@ export class PaperDirective implements OnInit {
 
   @HostListener('mouseenter')
   onHostMouseEnter(event?: any) {
-    this.scope.activate();
-    this.project.activate();
-    // this.pen.activate();
+    // this.scope.activate();
+    // this.project.activate();
   }
 
   @HostListener('mousewheel', ['$event'])
   onMouseWheel(event: WheelEvent) {
-    console.log(event);
-    this.tool.emit('mousewheel', new PaperToolWheelEvent(event));
+    // FIXME firefox does not respond to this event
+    const point = this.scope.view.viewToProject(
+      new paper.Point(event.offsetX, event.offsetY)
+    );
+    this.scope.view.emit('mousewheel', { event, point });
+
+    this.scope.tool.emit('mousewheel', { event, point });
     event.preventDefault();
+  }
+
+  onViewBounds() {
+    console.log('view bounds');
   }
 }

@@ -1,0 +1,16 @@
+<form [formGroup]="form">
+  <mat-form-field>
+    <mat-label>Stroke Width</mat-label>
+    <input matInput formControlName="strokeWidth">
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Stroke Color</mat-label>
+    <input matInput formControlName="strokeColor">
+    <mat-icon matSuffix>color_lens</mat-icon>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Fill Color</mat-label>
+    <input matInput formControlName="fillColor">
+    <mat-icon matSuffix>color_lens</mat-icon>
+  </mat-form-field>
+</form>

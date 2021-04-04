@@ -202,6 +202,46 @@
           }
         }
       }
+    },
+    "log": {
+      "projectType": "library",
+      "root": "projects/log",
+      "sourceRoot": "projects/log/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "tsConfig": "projects/log/tsconfig.lib.json",
+            "project": "projects/log/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/log/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/log/src/test.ts",
+            "tsConfig": "projects/log/tsconfig.spec.json",
+            "karmaConfig": "projects/log/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/log/tsconfig.lib.json",
+              "projects/log/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "ng-gun"

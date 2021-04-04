@@ -1,0 +1,89 @@
+<mat-vertical-stepper>
+  <mat-step [label]="'Paths - ' + form.controls.paths.value.join(', ')" [stepControl]="form.controls.paths">
+    <mat-list>
+      <mat-list-item *ngFor="let path of form.controls.paths.value">
+        <code>{{path}}</code>
+        <button mat-icon-button color="warn" (click)="removePath(path)">
+          <mat-icon>remove</mat-icon>
+        </button>
+      </mat-list-item>
+    </mat-list>
+    <div>
+      <mat-form-field>
+        <input matInput #pathName [formControl]="pathCtl">
+        <mat-label>Path</mat-label>
+      </mat-form-field>
+      <button mat-icon-button matTooltip="Add a path" (click)="addPath(pathName.value)">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+  </mat-step>
+
+  <mat-step label="People" [stepControl]="form" [formGroup]="form">
+    <mat-radio-group [formControl]="form.controls.public">
+      <mat-radio-button [value]="true" matTooltip="Apply this certificate to everyone">Everyone</mat-radio-button>
+      <mat-radio-button [value]="false" matTooltip="Apply this certificate to specific people">
+        Specific People
+      </mat-radio-button>
+    </mat-radio-group>
+    <form *ngIf="!form.controls.public.value">
+      <mat-list>
+        <mat-list-item *ngFor="let pub of form.controls.people.value">
+          {{pub|alias|async}}
+          <!-- <code>{{pub}}</code> -->
+
+          <button mat-icon-button matTooltip="Add a path" (click)="removeUser(pub)">
+            <mat-icon>remove</mat-icon>
+          </button>
+        </mat-list-item>
+      </mat-list>
+      <div>
+        <mat-form-field>
+          <input [formControl]="userCtl" matInput [matAutocomplete]="userAutocomplete">
+          <mat-label>User</mat-label>
+        </mat-form-field>
+        <mat-autocomplete #userAutocomplete (optionSelected)="onSelectUser($event)">
+          <mat-option *ngFor="let result of userResults" [value]="result.pub">
+            Add {{result.alias}} ({{result.pub}})
+          </mat-option>
+        </mat-autocomplete>
+        <button mat-icon-button matTooltip="Add a path" (click)="addUser()">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+    </form>
+  </mat-step>
+
+  <mat-step label="Permissions">
+    <mat-radio-group [formControl]='form.controls.protected'>
+      <mat-radio-button [value]="false" matTooltip="Users have full control over this path">Full</mat-radio-button>
+      <mat-radio-button [value]="true" matTooltip="Users may add/remove records containing their public key">Protected
+      </mat-radio-button>
+    </mat-radio-group>
+  </mat-step>
+
+  <mat-step label="Options" [formGroup]="form.controls.options">
+    <mat-form-field>
+      <input matInput [matDatepicker]="expire" formControlName="expires">
+      <mat-label>Certificate expires</mat-label>
+      <mat-datepicker #expire></mat-datepicker>
+      <mat-datepicker-toggle [for]="expire" matSuffix></mat-datepicker-toggle>
+    </mat-form-field>
+
+    <div></div>
+    <mat-form-field>
+      <input matInput formControlName="blacklist">
+      <mat-label>Blacklist path</mat-label>
+    </mat-form-field>
+  </mat-step>
+
+  <mat-step label="Confirm">
+    <div class="mat-error">
+      <b>WARNING: Verify all choices before creating the certificate.</b>
+      While certificates may be <i>removed</i> after creation, any user who has obtained a copy of the certificate may
+      still use it to modify data.<br>
+      If this is a PUBLIC certificate this can be dangerous!
+    </div>
+    <button mat-raised-button color="primary" (click)="create()">Create Certificate</button>
+  </mat-step>
+</mat-vertical-stepper>

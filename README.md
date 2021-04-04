@@ -1,27 +1,41 @@
-# NgGun
+# ouronote
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.1.1.
+Real-time collaborative whiteboard web app built with Angular, GUN, and paper.js.
 
-## Development server
+Drawings are publicly accessible (between your peers), but only users you invite may edit them.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+## Running the project
 
-## Code scaffolding
+### 0. Prerequisites
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+- Yarn / NPM
+- Docker (optional)
 
-## Build
+### 1. Run a GUN peer
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+For the time being, a GUN relay peer is required on `localhost:8765`.
 
-## Running unit tests
+- To run a local peer using Docker, use `docker run -p 8765:8765 gundb/gun`
+- Or follow the [GUN Installation documentation](https://gun.eco/docs/Installation#node)
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+### 2. Angular development server
 
-## Running end-to-end tests
+Run `ng serve`. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+## Disclaimers
 
-## Further help
+This project is in early experimental development. One could even call it a proof of concept. As such, please be aware:
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+- Future versions may not be backwards compatible
+- Project has issues with Firefox/Safari. Chrome/chromium works best
+
+Use at your own discretion!
+
+## `// TODO`
+
+- [ ] Peerless mode/peer configuration
+- [ ] DOCKERFILE for easier deployment
+- [ ] Cordova for mobile/desktop
+- [ ] Iris integration?
+- [ ] Tests
+- [ ] Non-chromium browser support

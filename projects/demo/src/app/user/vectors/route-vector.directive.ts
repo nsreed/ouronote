@@ -2,24 +2,36 @@ import { Route } from '@angular/compiler/src/core';
 import { Directive } from '@angular/core';
 import { VectorService } from './vector.service';
 import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, switchMap, tap, shareReplay } from 'rxjs/operators';
 import { GunChain } from '../../../../../ng-gun/src/lib/classes/GunChain';
-import { Vector } from '../../model';
+import { VectorGraph } from '../VectorGraph';
+import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
 
 @Directive({
   selector: '[appRouteVector]',
 })
 export class RouteVectorDirective {
-  vectorNode!: GunChain<Vector>;
+  vectorNode!: GunChain<VectorGraph>;
+  userPub = this.ngGun.auth().is.pub;
   vectorNode$ = this.route.data.pipe(
-    map((data) => this.vectorService.vectors.get(data.soul) as GunChain<Vector>)
-  );
-  vector$: Observable<Vector> = this.vectorNode$.pipe(
+    tap((node: any) => console.log('ROUTE SOUL', node.soul)),
+    map((data) =>
+      data.soul['#'].indexOf(this.userPub) < 0
+        ? this.ngGun.get(data.soul)
+        : this.vectorService.vectors.get(data.soul)
+    ),
+    // tap((node: any) => console.log('ROUTE NODE', node)),
+    shareReplay(1)
+  ) as Observable<GunChain<VectorGraph>>;
+  vector$: Observable<VectorGraph> = this.vectorNode$.pipe(
     switchMap((node) => node.on())
   );
   constructor(
     protected vectorService: VectorService,
-    private route: ActivatedRoute
-  ) {}
+    private route: ActivatedRoute,
+    private ngGun: NgGunService
+  ) {
+    // console.log('my soul', ngGun.auth().is.pub);
+  }
 }

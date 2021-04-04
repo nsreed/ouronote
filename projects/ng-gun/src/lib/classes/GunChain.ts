@@ -9,7 +9,14 @@ import {
   DisallowArray,
   DisallowPrimitives,
 } from 'gun/types/types';
-import { from, fromEventPattern, Observable, of, throwError } from 'rxjs';
+import {
+  from,
+  fromEventPattern,
+  Observable,
+  of,
+  Subject,
+  throwError,
+} from 'rxjs';
 import {
   debounceTime,
   delay,
@@ -20,11 +27,20 @@ import {
   retryWhen,
   scan,
   shareReplay,
+  switchMap,
   take,
+  timeout,
 } from 'rxjs/operators';
 import { LexicalQuery } from './LexicalQuery';
 import { tap } from 'rxjs/operators';
 import { IGunPeer } from './IGunPeer';
+import { SEA } from 'gun';
+import { ICertStore } from './ICertStore';
+import {
+  gunPath,
+  gunChainArray,
+  parseCertificate,
+} from '../functions/gun-utils';
 
 export const GUN_NODE = Symbol('GUN_NODE');
 
@@ -32,6 +48,7 @@ export interface GunChainCallbackOptions {
   includeKeys?: boolean;
   includeNulls?: boolean;
   changes?: boolean;
+  bypassZone?: boolean;
 }
 
 export interface GunChainFunctions {
@@ -61,11 +78,92 @@ export class GunChain<
   ReferenceKey = any,
   IsTop extends 'pre_root' | 'root' | false = false
 > {
+  path!: string[];
+  isNested = false;
+  recordPub!: any;
+  record?: any;
+  certificate!: string;
+
+  certificate$ = new Subject<string>();
+
+  private _gun!: IGunChainReference<DataType, ReferenceKey, IsTop> &
+    GunChainFunctions &
+    GunChainMeta;
+  public get gun(): IGunChainReference<DataType, ReferenceKey, IsTop> &
+    GunChainFunctions &
+    GunChainMeta {
+    return this._gun;
+  }
+  public set gun(
+    value: IGunChainReference<DataType, ReferenceKey, IsTop> &
+      GunChainFunctions &
+      GunChainMeta
+  ) {
+    this._gun = value;
+    const myKey = (value as any)._.get;
+
+    const path = gunPath(value as any);
+    const chainArray = gunChainArray(value as any);
+    this.path = path;
+
+    const userPair = (this.gun.user() as any).is;
+    if (!userPair) {
+      // TODO figure out how to handle this case
+      console.warn('NO PAIR');
+      return;
+    }
+    const myPub = `~${(this.gun.user() as any).is?.pub}`;
+    const pubs = path.filter((key) => key.startsWith('~'));
+    if (pubs.length === 0 || pubs[0] !== myPub) {
+      pubs.push(myPub);
+    }
+    if (pubs.length > 1) {
+      this.isNested = true;
+      this.recordPub = pubs[0];
+      const firstPub = path.findIndex((key) => key.startsWith('~'));
+      const pathFromRecord = [...path];
+      const recordPath = pathFromRecord.splice(firstPub).reverse();
+      pathFromRecord.reverse();
+
+      if (myKey === this.recordPub) {
+        console.log('sub root', myKey);
+      } else {
+        const keyInRecord = pathFromRecord[0];
+        const record = chainArray[firstPub];
+        const recordCerts = record.get('certs');
+        const pathCerts = recordCerts.get(keyInRecord);
+        const myCert = pathCerts.get(userPair.pub);
+        // console.log('  %s', keyInRecord);
+        myCert.on(async (cert: any) => {
+          if (cert === null || cert === undefined) {
+            return;
+          }
+          // console.log('cert', cert);
+          // TODO verify cert later, the await causes chained put() calls to fail
+          // const verified = await SEA.verify(
+          //   cert,
+          //   this.recordPub.replace('~', '')
+          // );
+          this.certificate = cert;
+          this.certificate$.next(cert);
+          // console.log(
+          //   'verified cert for %s.%s',
+          //   this.recordPub,
+          //   keyInRecord,
+          //   pathFromRecord.join('.')
+          // );
+        });
+
+        this.record = record;
+      }
+    }
+  }
+
   constructor(
     protected ngZone: NgZone,
     @Optional()
     @Inject(GUN_NODE)
-    public gun: IGunChainReference<DataType, ReferenceKey, IsTop> &
+    gun: IGunChainReference<DataType, ReferenceKey, IsTop> &
       GunChainFunctions &
       GunChainMeta
   ) {
@@ -75,6 +173,7 @@ export class GunChain<
       this.gun = gun;
     }
   }
+  certificates: ICertStore = {};
   private sources = new Map<string, Observable<any>>();
   private _auth: GunAuthChain<DataType, ReferenceKey> | null = null;
 
@@ -85,19 +184,34 @@ export class GunChain<
   get<K extends keyof DataType>(
     key: ArrayOf<DataType> extends never ? K : ArrayOf<DataType>
   ) {
-    const soul: ArrayOf<DataType> extends never ? K : ArrayOf<DataType> =
-      typeof key === 'object' && Gun.node.is(key)
-        ? (Gun.node.soul(key) as any)
-        : key;
+    const soul: ArrayOf<DataType> extends never
+      ? K
+      : ArrayOf<DataType> = this.getSoul(key);
     return this.from(this.gun.get(soul));
   }
 
   put(
     data: Partial<
       AlwaysDisallowedType<DisallowPrimitives<IsTop, DisallowArray<DataType>>>
-    >
+    >,
+    certificate: string = this.certificate
   ) {
-    return this.from(this.gun.put(data));
+    // FIXME "unverified data" - certified put values must be signed?
+
+    if (this.isNested && !certificate) {
+      console.warn('NO CERTIFICATE FOUND FOR FOREIGN RECORD!');
+    }
+    const result = this.from(
+      this.gun.put(
+        data,
+        null,
+        certificate ? { opt: { cert: certificate } } : undefined
+      )
+    );
+    // this.once().subscribe((me) => {
+    //   console.log('me', me);
+    // });
+    return result;
   }
 
   set(
@@ -112,6 +226,7 @@ export class GunChain<
         : never
     >
   ) {
+    // TODO get certificate for set()
     return this.from(this.gun.set(data));
   }
 
@@ -223,8 +338,12 @@ export class GunChain<
                 handler(data);
               }
             };
-            // FIXME: this is causing an infinite recursion?
-            this.ngZone.run(dispatchHandler);
+            // FIXME: ngZone.run() causes infinite recursion
+            if (options?.bypassZone) {
+              dispatchHandler();
+            } else {
+              this.ngZone.run(dispatchHandler);
+            }
           },
           options as any
         );
@@ -273,8 +392,9 @@ export class GunChain<
     if (!this._auth) {
       this._auth = new GunAuthChain<DataType, ReferenceKey>(
         this.ngZone,
-        // no fix for this... gun.user.is is static! can't have multiple logins on a single gun instance
-        this.gun.user() as any,
+        //// no fix for this... gun.user.is is static! can't have multiple logins on a single gun instance
+        // TODO allow option to create a new gun instance for this auth call
+        this.gun.user().recall({ sessionStorage: true }) as any,
         this as any
       );
     }
@@ -282,7 +402,7 @@ export class GunChain<
   }
 
   user(pubKey?: string) {
-    return this.from(this.gun.user(pubKey));
+    return this.from(this.gun.user(pubKey?.replace(/^~/, '')));
   }
 
   onEvent(event: string, node = this.gun): Observable<any> {
@@ -299,11 +419,19 @@ export class GunChain<
     }
     return this.sources.get(event) as Observable<any>;
   }
+
+  protected getSoul(key: any) {
+    return typeof key === 'object' && Gun.node.is(key)
+      ? (Gun.node.soul(key) as any)
+      : key;
+  }
 }
 
+/** Represents a top-level authenticated node (user or key pair) */
 export class GunAuthChain<
   DataType = Record<string, any>,
-  ReferenceKey = any
+  ReferenceKey = any,
+  IsTop = false
 > extends GunChain<DataType, ReferenceKey, false> {
   is: any;
   auth$ = this.root.onEvent('auth').pipe(
@@ -325,6 +453,7 @@ export class GunAuthChain<
     @Optional() @SkipSelf() public root: GunChain
   ) {
     super(ngZone, gun as any);
+    this.is = (gun as any).is;
   }
 
   login(alias: string, pass: string) {
@@ -380,20 +509,26 @@ export class GunAuthChain<
   }
 
   recall() {
-    this.gun.recall({ sessionStorage: true }, (ack) => {
-      console.log('recall ack', ack);
-    });
-    return this.auth$;
+    this.gun.recall({ sessionStorage: true });
+    return this.auth$.pipe(timeout(5000));
   }
 
   logout() {
     this.gun.leave();
   }
+  put(
+    data: Partial<
+      AlwaysDisallowedType<DisallowPrimitives<IsTop, DisallowArray<DataType>>>
+    >,
+    certificate: string = this.certificate
+  ) {
+    return super.put(data, certificate);
+  }
 }
 
-/**
+/** Represents a node nested under a user/pair
  * gun.user() : AuthChain
  * gun.user(pub) : UserChain
  * gun.get('~@alias') : GunChain<{pub: string}>
  */
-export class GunUserChain extends GunChain {}
+export class GunCertChain extends GunChain {}
