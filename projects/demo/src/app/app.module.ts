@@ -38,6 +38,7 @@ import { LoginComponent } from './login/login.component';
 import { SessionInfoComponent } from './session-info/session-info.component';
 import { AliasAutocompleteComponent } from './components/alias-autocomplete/alias-autocomplete.component';
 import { CertificatesModule } from './certificates/certificates.module';
+import { WelcomeComponent } from './welcome/welcome.component';
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { CertificatesModule } from './certificates/certificates.module';
     CertificatesComponent,
     CertificateFormComponent,
     AliasAutocompleteComponent,
+    WelcomeComponent,
   ],
   imports: [
     BrowserModule,

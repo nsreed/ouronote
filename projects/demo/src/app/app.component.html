@@ -5,17 +5,22 @@
         <mat-icon>chevron_left</mat-icon>
       </button>
     </mat-toolbar> -->
-    <mat-action-list>
+    <mat-action-list *ngIf="user.is">
       <mat-list-item routerLinkActive="active" routerLink="/user/vectors" matTooltip="Vectors">
         <mat-icon mat-list-icon>note</mat-icon>
       </mat-list-item>
-      <mat-list-item [matMenuTriggerFor]="sessionMenu" *ngIf="user.is">
+      <mat-list-item [matMenuTriggerFor]="sessionMenu">
         <mat-icon mat-list-icon>person</mat-icon>
       </mat-list-item>
       <mat-menu #sessionMenu>
-        <button mat-menu-item>Log Out</button>
+        <button mat-menu-item (click)="logout()">Log Out</button>
       </mat-menu>
     </mat-action-list>
+    <!-- <ng-template #pubMenu>
+      <mat-action-list>
+        <mat-list-item routerLink="/login">Log In</mat-list-item>
+      </mat-action-list>
+    </ng-template> -->
   </mat-sidenav>
   <mat-sidenav-content>
     <router-outlet></router-outlet>
