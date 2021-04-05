@@ -38,6 +38,6 @@ export class AppComponent {
 
   logout() {
     this.ngGun.auth().logout();
-    this.router.navigateByUrl('/');
+    this.router.navigateByUrl('/login');
   }
 }
