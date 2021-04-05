@@ -8,8 +8,31 @@ Drawings are publicly accessible (between your peers), but only users you invite
 
 ### 0. Prerequisites
 
-- Yarn / NPM
+**Install Required Software**
+
+- node
+- Yarn / NPM package manager
 - Docker (optional)
+
+**Clone this project**
+
+```
+git clone https://github.com/nsreed/ouronote.git
+
+cd ouronote
+```
+
+**Install Packages**
+
+```
+yarn install
+```
+
+OR
+
+```
+npm install
+```
 
 ### 1. Run a GUN peer
 
