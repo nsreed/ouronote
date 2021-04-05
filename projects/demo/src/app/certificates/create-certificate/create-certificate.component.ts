@@ -15,10 +15,10 @@ import { SEA } from 'gun';
 })
 export class CreateCertificateComponent implements OnInit {
   form = this.fb.group({
-    paths: this.fb.array(['comments']),
+    paths: this.fb.array(['layers']),
     public: true,
     people: this.fb.array([]),
-    protected: true,
+    protected: false,
     options: this.fb.group({
       blacklist: 'blacklist',
       expires: null,
