@@ -2,6 +2,8 @@
 
 Real-time collaborative whiteboard web app built with Angular, GUN, and paper.js.
 
+![til](./docs/sync-permissions-demo.gif)
+
 Drawings are publicly accessible (between your peers), but only users you invite may edit them.
 
 ## Running the project
