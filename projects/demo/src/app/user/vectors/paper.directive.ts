@@ -83,7 +83,7 @@ export class PaperDirective implements OnInit {
     this.scope.project = this.project as any;
     this.project.currentStyle = new this.scope.Style({}) as any;
     this.project.currentStyle.strokeColor = new this.scope.Color(
-      1,
+      0,
       0,
       0
     ) as any;
