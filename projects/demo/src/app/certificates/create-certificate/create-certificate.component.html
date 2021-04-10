@@ -26,7 +26,8 @@
         Specific People
       </mat-radio-button>
     </mat-radio-group>
-    <form *ngIf="!form.controls.public.value">
+    <ng-container *ngIf="!form.controls.public.value">
+
       <mat-list>
         <mat-list-item *ngFor="let pub of form.controls.people.value">
           {{pub|alias|async}}
@@ -51,7 +52,7 @@
           <mat-icon>add</mat-icon>
         </button>
       </div>
-    </form>
+    </ng-container>
   </mat-step>
 
   <mat-step label="Permissions">

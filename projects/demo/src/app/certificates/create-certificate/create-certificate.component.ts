@@ -20,7 +20,7 @@ export class CreateCertificateComponent implements OnInit {
     people: this.fb.array([]),
     protected: false,
     options: this.fb.group({
-      blacklist: 'blacklist',
+      blacklist: ['blacklist', Validators.required],
       expires: null,
     }),
   });
@@ -54,6 +54,8 @@ export class CreateCertificateComponent implements OnInit {
             this.userResults = [];
             return;
           }
+          // FIXME aliases are not guaranteed to be unique, and this may give a false match to the user
+          // FIXME warn the user that they should verify that the public key matches the expected public key for whomever they're inviting
           const foundPub = Object.keys(found).find((k) => k !== '_');
           this.userResults = [
             {
@@ -104,6 +106,10 @@ export class CreateCertificateComponent implements OnInit {
     const isProtected = value.protected;
     const blacklist = value.options.blacklist;
     const expires = value.options.expires;
+    const opts = {
+      blacklist,
+      expires,
+    };
     const r = this.chain.chain;
     if (!r) {
       return;
@@ -124,7 +130,8 @@ export class CreateCertificateComponent implements OnInit {
             certificants,
             value.paths,
             recordPair,
-            isProtected
+            isProtected,
+            opts
           )
         ).subscribe((certStores: any) => {
           const detachedGun = new NgGunService(this.gunOpts, this.ngZone);
