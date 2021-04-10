@@ -49,7 +49,7 @@ export class NgSeaService {
     paths: string[],
     auth: any,
     isProtected = false,
-    opts = null
+    opts: any = null
   ) {
     console.log('certifying', certificant);
     if (Array.isArray(certificant)) {
@@ -73,7 +73,12 @@ export class NgSeaService {
       if (isProtected) {
         policy['+'] = '*';
       }
-      const cert = await this.certify(certificant, policy, auth).toPromise();
+      const cert = await this.certify(
+        certificant,
+        policy,
+        auth,
+        opts
+      ).toPromise();
       store[path] = {} as any;
       store[path][certificant.pub || certificant] = cert;
     });

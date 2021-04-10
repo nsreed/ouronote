@@ -2,7 +2,6 @@ import { AfterViewInit, Component, NgZone, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { NgGunService } from 'ng-gun';
 import { RouteVectorDirective } from '../route-vector.directive';
 import { VectorService } from '../vector.service';
 import {
@@ -15,6 +14,7 @@ import {
 } from 'rxjs/operators';
 import { UserService } from '../../user.service';
 import { CertificatesComponent } from '../../../components/certificates/certificates.component';
+import { NgGunService } from 'projects/ng-gun/src/public-api';
 
 @Component({
   templateUrl: './view-vector.component.html',

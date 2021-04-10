@@ -5,12 +5,12 @@ import {
   Pipe,
   PipeTransform,
 } from '@angular/core';
-import { NgGunService } from 'ng-gun';
 import { map, take, pluck, tap } from 'rxjs/operators';
 import { NgSeaService } from './ng-sea.service';
 import { ChainDirective } from './chain.directive';
 import { SEA } from 'gun';
 import { of, from } from 'rxjs';
+import { NgGunService } from './ng-gun.service';
 
 @Pipe({
   name: 'verify',
