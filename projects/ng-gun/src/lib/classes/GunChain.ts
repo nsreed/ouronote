@@ -202,7 +202,7 @@ export class GunChain<
       console.warn('NO CERTIFICATE FOUND FOR FOREIGN RECORD!');
     }
     const result = this.from(
-      this.gun.put(
+      (this.gun.put as any)(
         data,
         null,
         certificate ? { opt: { cert: certificate } } : undefined
