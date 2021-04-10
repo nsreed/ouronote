@@ -8,7 +8,7 @@ Drawings are publicly accessible (between your peers), but only users you invite
 
 ## Running the project
 
-### 0. Prerequisites
+### Prerequisites
 
 **Install Required Software**
 
@@ -26,24 +26,40 @@ cd ouronote
 
 **Install Packages**
 
+_note: `npm` should also work for the following commands_
+
 ```
 yarn install
 ```
 
-OR
+### Running with Docker
+
+**Build Projects**
 
 ```
-npm install
+yarn ng build
+yarn ng build demo
 ```
 
-### 1. Run a GUN peer
+**docker-compose**
+
+```
+docker-compose build
+docker-compose up -d
+```
+
+Navigate to http://localhost:8010
+
+### Development
+
+#### 1. Run a GUN peer
 
 For the time being, a GUN relay peer is required on `localhost:8765`.
 
-- To run a local peer using Docker, use `docker run -p 8765:8765 gundb/gun`
+- To run a local peer using Docker, you may either follow the instructions for docker-compose above, or run `docker run -p 8765:8765 gundb/gun`
 - Or follow the [GUN Installation documentation](https://gun.eco/docs/Installation#node)
 
-### 2. Angular development server
+#### 2. Angular development server
 
 Run `ng serve`. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
@@ -59,8 +75,7 @@ Use at your own discretion!
 ## `// TODO`
 
 - [ ] Peerless mode/peer configuration
-- [ ] DOCKERFILE for easier deployment
-- [ ] Cordova for mobile/desktop
+- [ ] Cordova (or react native rewrite) for mobile/desktop
 - [ ] Iris integration?
 - [ ] Tests
 - [ ] Non-chromium browser support
