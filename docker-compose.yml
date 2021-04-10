@@ -1,0 +1,10 @@
+version: "3"
+services:
+  ouronote-web:
+    build: .
+    ports:
+      - 8010:80
+  ouronote-gun:
+    image: gundb/gun
+    ports:
+      - 8765:8765
