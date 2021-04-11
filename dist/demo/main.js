@@ -486,7 +486,6 @@ AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_39__["ɵɵdefineInjecto
             provide: 'gun-options',
             useValue: {
                 localStorage: false,
-                peers: ['http://192.168.1.233:8765/gun'],
             },
         },
     ], imports: [[
