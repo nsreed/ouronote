@@ -1,0 +1,13 @@
+/*
+ * Public API Surface of ng-gun
+ */
+export * from './lib/ng-gun.service';
+export * from './lib/ng-gun.component';
+export * from './lib/ng-gun.module';
+export * from './lib/classes/GunChain';
+export * from './lib/soul.pipe';
+export * from './lib/updated.pipe';
+export * from './lib/chain.directive';
+export * from './lib/alias.pipe';
+export * from './lib/verify.pipe';
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHVibGljLWFwaS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3Byb2plY3RzL25nLWd1bi9zcmMvcHVibGljLWFwaS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7R0FFRztBQUVILGNBQWMsc0JBQXNCLENBQUM7QUFDckMsY0FBYyx3QkFBd0IsQ0FBQztBQUN2QyxjQUFjLHFCQUFxQixDQUFDO0FBQ3BDLGNBQWMsd0JBQXdCLENBQUM7QUFDdkMsY0FBYyxpQkFBaUIsQ0FBQztBQUNoQyxjQUFjLG9CQUFvQixDQUFDO0FBQ25DLGNBQWMsdUJBQXVCLENBQUM7QUFDdEMsY0FBYyxrQkFBa0IsQ0FBQztBQUNqQyxjQUFjLG1CQUFtQixDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLypcbiAqIFB1YmxpYyBBUEkgU3VyZmFjZSBvZiBuZy1ndW5cbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL2xpYi9uZy1ndW4uc2VydmljZSc7XG5leHBvcnQgKiBmcm9tICcuL2xpYi9uZy1ndW4uY29tcG9uZW50JztcbmV4cG9ydCAqIGZyb20gJy4vbGliL25nLWd1bi5tb2R1bGUnO1xuZXhwb3J0ICogZnJvbSAnLi9saWIvY2xhc3Nlcy9HdW5DaGFpbic7XG5leHBvcnQgKiBmcm9tICcuL2xpYi9zb3VsLnBpcGUnO1xuZXhwb3J0ICogZnJvbSAnLi9saWIvdXBkYXRlZC5waXBlJztcbmV4cG9ydCAqIGZyb20gJy4vbGliL2NoYWluLmRpcmVjdGl2ZSc7XG5leHBvcnQgKiBmcm9tICcuL2xpYi9hbGlhcy5waXBlJztcbmV4cG9ydCAqIGZyb20gJy4vbGliL3ZlcmlmeS5waXBlJztcbiJdfQ==

@@ -1,0 +1,1 @@
+{"version":3,"file":"LexicalQuery.d.ts","sourceRoot":"","sources":["../../../../projects/ng-gun/src/lib/classes/LexicalQuery.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,iBAAiB,EAAE,MAAM,qBAAqB,CAAC;AACxD,OAAO,EAAE,cAAc,EAAE,MAAM,kBAAkB,CAAC;AAElD,MAAM,WAAW,YAAY;IAC3B,GAAG,EAAE,iBAAiB,GAAG,cAAc,CAAC;IACxC,GAAG,CAAC,EAAE,MAAM,CAAC;CACd"}
