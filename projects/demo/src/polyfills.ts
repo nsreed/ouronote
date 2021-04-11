@@ -79,7 +79,7 @@ import 'gun/lib/then';
 import 'gun/lib/time';
 import 'gun/lib/not';
 import 'gun/lib/unset';
-import 'gun/lib/webrtc';
+// import 'gun/lib/webrtc';
 
 /* PAPER.JS OVERRIDES
  * Injects rxjs-style property change observables into paper.js
