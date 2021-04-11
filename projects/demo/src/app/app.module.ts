@@ -89,7 +89,7 @@ import { WelcomeComponent } from './welcome/welcome.component';
       provide: 'gun-options',
       useValue: {
         localStorage: false,
-        peers: ['http://localhost:8765/gun'],
+        peers: [],
       },
     },
   ],
