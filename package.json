@@ -4,7 +4,8 @@
   "license": "AGPL 3.0",
   "scripts": {
     "ng": "yarn",
-    "start": "ng serve",
+    "start": "nodemon server.js",
+    "start:live": "ng serve",
     "start:public": "ng serve --disable-host-check=true --ssl=false",
     "build": "ng build",
     "build:watch": "ng build --watch",
@@ -27,11 +28,15 @@
     "@angular/router": "~11.1.0",
     "@types/gun": "^0.9.2",
     "aspect-ts": "^1.0.6",
+    "express": "^4.17.1",
     "gun": "^0.2020.520",
+    "nodemon": "^2.0.7",
     "paper": "^0.12.11",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
-    "zone.js": "~0.11.3",
+    "zone.js": "~0.11.3"
+  },
+  "devDependencies": {
     "@angular-devkit/build-angular": "~0.1101.1",
     "@angular/cli": "~11.1.1",
     "@angular/compiler-cli": "~11.1.0",
@@ -50,6 +55,5 @@
     "ts-node": "~8.3.0",
     "tslint": "~6.1.0",
     "typescript": "~4.1.2"
-  },
-  "devDependencies": {}
+  }
 }
