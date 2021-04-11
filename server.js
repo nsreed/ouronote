@@ -1,6 +1,6 @@
 const path = require("path");
 const express = require("express");
-const Gun = require("gun/gun");
+const Gun = require("gun");
 const app = express();
 app.use(Gun.serve);
 app.use(express.static(__dirname + "/dist/demo"));
