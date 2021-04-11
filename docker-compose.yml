@@ -3,7 +3,7 @@ services:
   ouronote-web:
     build: .
     ports:
-      - 8010:80
+      - 80:80
   ouronote-gun:
     image: gundb/gun
     ports:
