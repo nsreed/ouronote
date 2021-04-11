@@ -89,6 +89,7 @@ import { WelcomeComponent } from './welcome/welcome.component';
       provide: 'gun-options',
       useValue: {
         localStorage: false,
+        peers: ['https://young-lowlands-60025.herokuapp.com/gun'],
       },
     },
   ],
