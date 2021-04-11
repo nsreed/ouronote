@@ -19804,7 +19804,12 @@ function bindPaperJSON(data, parent) {
     return data;
 }
 function getUUID(parent) {
-    return parent.gun._.root.opt.uuid();
+    try {
+        return parent.gun._.root.opt.uuid();
+    }
+    catch (e) {
+        return `${Math.random()}`.replace('.', '_');
+    }
 }
 function gunifyProject(node, project) {
     const soulless = project.getItems({
