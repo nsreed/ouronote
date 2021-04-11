@@ -89,7 +89,10 @@ import { WelcomeComponent } from './welcome/welcome.component';
       provide: 'gun-options',
       useValue: {
         localStorage: false,
-        peers: [location.origin + '/gun'],
+        peers: [
+          location.origin + '/gun',
+          'https://resistance-tower.herokuapp.com/gun',
+        ],
       },
     },
   ],
