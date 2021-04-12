@@ -488,7 +488,6 @@ AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_39__["ɵɵdefineInjecto
                 localStorage: false,
                 peers: [
                     location.origin + '/gun',
-                    'https://resistance-tower.herokuapp.com/gun',
                 ],
             },
         },

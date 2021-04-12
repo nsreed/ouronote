@@ -91,7 +91,7 @@ import { WelcomeComponent } from './welcome/welcome.component';
         localStorage: false,
         peers: [
           location.origin + '/gun',
-          'https://resistance-tower.herokuapp.com/gun',
+          // 'https://resistance-tower.herokuapp.com/gun',
         ],
       },
     },
