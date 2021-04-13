@@ -85,6 +85,7 @@ import 'gun/lib/webrtc';
  * Injects rxjs-style property change observables into paper.js
  */
 // TODO move paper.js overrides to a better place
+// FIXME this approach is breaking --prod builds
 // These are here to make sure they're done before the app loads
 
 import * as paper from 'paper';
