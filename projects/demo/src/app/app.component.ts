@@ -22,7 +22,7 @@ export class AppComponent {
     private route: ActivatedRoute
   ) {
     this.user = this.ngGun.auth();
-    console.log('!! ROUTE SNAPSHOT', route.snapshot);
+    // console.log('!! ROUTE SNAPSHOT', route.snapshot);
 
     let lastActivated: ChildActivationEnd;
     router.events
@@ -31,7 +31,7 @@ export class AppComponent {
     router.events
       .pipe(filter((e) => e instanceof NavigationEnd))
       .subscribe((e) => {
-        console.log('last activated at navigation end', lastActivated);
+        // console.log('last activated at navigation end', lastActivated);
       });
     // router.events.subscribe((e) => console.log('router event', e));
   }

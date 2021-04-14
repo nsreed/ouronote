@@ -13,6 +13,7 @@ import {
 } from '../../../../../../ng-gun/src/lib/classes/GunChain';
 import * as paper from 'paper';
 import { leadingComment } from '@angular/compiler';
+import { LogService } from '../../../../../../log/src/lib/log.service';
 
 export class ProjectPair extends PaperPair {
   /* STATE */
@@ -47,9 +48,10 @@ export class ProjectPair extends PaperPair {
   constructor(
     public chain: GunChain<VectorGraph>,
     public project: paper.Project,
-    scope: paper.PaperScope
+    scope: paper.PaperScope,
+    log: LogService
   ) {
-    super(project, project, scope); // UGN
+    super(project, project, scope, log); // UGN
     this.setupProject();
     // console.log('new ProjectPair');
     (project as any).pair = this;
@@ -98,7 +100,13 @@ export class ProjectPair extends PaperPair {
         l.data.soul = soul;
       }
       const layerGun = this.layers.get(l.data.soul);
-      const layerPair = new ItemPair(layerGun, layer, this.project, this.scope);
+      const layerPair = new ItemPair(
+        layerGun,
+        layer,
+        this.project,
+        this.scope,
+        this.log
+      );
     }
   }
 

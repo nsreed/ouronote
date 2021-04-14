@@ -109,7 +109,7 @@ export class GunChain<
     const userPair = (this.gun.user() as any).is;
     if (!userPair) {
       // TODO figure out how to handle this case
-      console.warn('NO PAIR');
+
       return;
     }
     const myPub = `~${(this.gun.user() as any).is?.pub}`;
@@ -126,7 +126,7 @@ export class GunChain<
       pathFromRecord.reverse();
 
       if (myKey === this.recordPub) {
-        console.log('sub root', myKey);
+        // console.log('sub root', myKey);
       } else {
         const keyInRecord = pathFromRecord[0];
         const record = chainArray[firstPub];

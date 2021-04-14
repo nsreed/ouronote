@@ -49,3 +49,6 @@ export const MUTATION_PROPERTIES = {
   add: ['segments'],
   // translate: ['position', 'segments'], // FIXME translate gets called by paper internally, causing unnecessary saves
 } as any;
+
+export const INCOMING_DEBOUNCE = 25;
+export const SAVE_DEBOUNCE = 1000;

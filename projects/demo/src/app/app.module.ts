@@ -39,6 +39,7 @@ import { SessionInfoComponent } from './session-info/session-info.component';
 import { AliasAutocompleteComponent } from './components/alias-autocomplete/alias-autocomplete.component';
 import { CertificatesModule } from './certificates/certificates.module';
 import { WelcomeComponent } from './welcome/welcome.component';
+import { LogModule } from '../../../log/src/lib/log.module';
 
 @NgModule({
   declarations: [
@@ -61,6 +62,7 @@ import { WelcomeComponent } from './welcome/welcome.component';
     MatIconModule,
     MatButtonModule,
     ScrollingModule,
+    LogModule,
     MatCardModule,
     MatCheckboxModule,
     MatChipsModule,

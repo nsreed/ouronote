@@ -6,6 +6,7 @@ import { EXPECT_ARRAY, hasRequired } from './constants';
 import * as paper from 'paper';
 import { EventEmitter } from '@angular/core';
 import { serializeValue } from './packaging';
+import { LogService } from '../../../../../../log/src/lib/log.service';
 import {
   buffer,
   debounceTime,
@@ -19,19 +20,14 @@ import {
 } from 'rxjs/operators';
 
 export class PaperPair {
-  // get project(): paper.Project {
-  //   return this.scope instanceof paper.Project
-  //     ? this.scope
-  //     : this.scope.project;
-  // }
+  childCache = {} as any;
   protected importing = false;
-
   save$ = new EventEmitter();
   debouncedSave$ = this.save$.pipe(
     filter((v) => !this.ctx.data.ignored),
     bufferTime(100)
   );
-  saveProperty$ = new EventEmitter<[string] | [string, any]>();
+  saveProperty$ = new EventEmitter<[string] | [string, any]>(); // TODO document this...
   saveBuffer$ = this.saveProperty$.pipe(
     buffer(this.debouncedSave$),
     filter((v) => v.length > 0),
@@ -47,30 +43,25 @@ export class PaperPair {
       }, {} as any)
     )
   );
-  childCache = {} as any;
-  lastSavedKeys: string[] = [];
 
   constructor(
     private ctx: any,
     protected project: paper.Project, // Do we need the project? The item's `project` property should be able to get it...
-    protected scope: paper.PaperScope
+    protected scope: paper.PaperScope,
+    protected log: LogService
   ) {
-    // console.log('%s Pair', ctx.toString());
     if (ctx.pair) {
       console.error('CREATING A DUPLICATE PAIR FOR SCOPE', ctx);
     }
     ctx.pair = this;
-    // this.debouncedSave$.subscribe(() => this.doSave());
+
     this.saveBuffer$.subscribe((buf) => {
       if (this.ctx?.data.ignore || this.importing) {
         console.warn('cannot save');
         return;
       }
       // TODO find a way to ignore the next incoming change for these keys
-      this.lastSavedKeys = Object.keys(buf);
       this.doSave(buf);
-      // console.log('save buffer');
-      // console.log(buf);
     });
   }
 
@@ -79,7 +70,6 @@ export class PaperPair {
   }
 
   getChild(jsonOrKey: any) {
-    // console.log('finding child', jsonOrKey);
     if (!this.childCache[jsonOrKey]) {
       const child = this.ctx.children?.find(
         (i: paper.Item) => i.data.soul === jsonOrKey
@@ -133,8 +123,6 @@ export class PaperPair {
         scrubbed[k] = JSON.parse(scrubbed[k]);
       }
     });
-    // scrubbed.data.soul = key;
-    // scrubbed.name = scrubbed.name || key;
     const stringed = JSON.stringify([childJSON.className, scrubbed]);
     let child: any;
     if (childJSON.className === 'Layer') {
@@ -146,7 +134,6 @@ export class PaperPair {
     } else {
       child = this.project.importJSON(stringed);
     }
-    // console.log('created', child);
     (this.scope.settings as any).insertItems = prevInsertItemsValue;
     return child;
   }

@@ -146,6 +146,6 @@ export class PaperDirective implements OnInit {
   }
 
   onViewBounds() {
-    console.log('view bounds');
+    // console.log('view bounds');
   }
 }

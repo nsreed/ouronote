@@ -24,9 +24,9 @@ export class GunAuthGuard implements CanActivateChild {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    console.log('gunAuthGuard checking...');
+    // console.log('gunAuthGuard checking...');
     if (this.ngGun.auth().is) {
-      console.log('OK: auth().is');
+      // console.log('OK: auth().is');
       return true;
     }
     // this.ngGun.auth().recall();
@@ -38,7 +38,7 @@ export class GunAuthGuard implements CanActivateChild {
           err: 'Session Recall Timeout',
         });
       }),
-      tap((ack) => console.log('gunAuthGuard auth$', ack)),
+      // tap((ack) => console.log('gunAuthGuard auth$', ack)),
       filter((ack) => !ack.err),
       take(1)
     );

@@ -22,17 +22,21 @@ import { getUUID } from '../edit-vector/converter-functions';
 import {
   EXPECT_ARRAY,
   hasRequired,
+  INCOMING_DEBOUNCE,
   MUTATIONS,
   MUTATION_PROPERTIES,
+  SAVE_DEBOUNCE,
 } from './constants';
 import { serializeValue } from './packaging';
 import { PaperPair } from './PaperPair';
+import { LogService } from '../../../../../../log/src/lib/log.service';
 
 export class ItemPair extends PaperPair {
   graphValue: any;
   graph$ = this.chain
     .on({ changes: true, bypassZone: true } as GunChainCallbackOptions)
-    .pipe(debounceTime(25), shareReplay(1));
+    .pipe(debounceTime(INCOMING_DEBOUNCE), shareReplay(1));
+
   graphValue$ = this.graph$.pipe(
     filter((json) => hasRequired(json)),
     distinct((v) => JSON.stringify(v)),
@@ -60,7 +64,7 @@ export class ItemPair extends PaperPair {
     tap((childVK) => {
       this.childSouls.add(childVK[1]);
     }),
-    bufferTime(1000),
+    bufferTime(SAVE_DEBOUNCE),
     filter((children) => children.length > 0)
   );
 
@@ -98,9 +102,10 @@ export class ItemPair extends PaperPair {
     private chain: GunChain<ItemGraph>,
     private item: paper.Item,
     project: paper.Project,
-    scope: paper.PaperScope
+    scope: paper.PaperScope,
+    log: LogService
   ) {
-    super(item, project, scope);
+    super(item, project, scope, log);
     this.setup();
   }
 
@@ -219,7 +224,13 @@ export class ItemPair extends PaperPair {
         l.data.soul = soul;
       }
       const childGun = this.children.get(l.data.soul);
-      const childPair = new ItemPair(childGun, item, this.project, this.scope);
+      const childPair = new ItemPair(
+        childGun,
+        item,
+        this.project,
+        this.scope,
+        this.log
+      );
       l.pair = childPair;
     }
   }
@@ -227,6 +238,7 @@ export class ItemPair extends PaperPair {
   onGraph(json: any) {
     this.graphValue = json;
     // FIXME path segments getting overwritten by previous saves
+    // FIXME occasionally only the first debounce of a path will be saved
     // console.log('%s onGraph', this.item.toString());
     if (!json) {
       console.warn('  NO JSON! SHOULD REMOVE???');
@@ -243,11 +255,7 @@ export class ItemPair extends PaperPair {
   }
 
   onGraphChildren(data: any[]) {
-    // console.log('%s onGraphChildren', this.item.toString());
-    // console.log(data);
     const toInsert = [] as paper.Item[];
-    // const prev = (this.scope.settings as any).autoUpdate;
-    // (this.scope.settings as any).autoUpdate = false;
     data.forEach((childVK) => {
       const soul = childVK[1];
       const json = childVK[0];
@@ -263,7 +271,6 @@ export class ItemPair extends PaperPair {
       }
     });
 
-    // (this.scope.settings as any).autoUpdate = true;
     this.ignoreInsert = true;
     this.item.insertChildren(this.item.children.length, toInsert as any);
     this.ignoreInsert = false;

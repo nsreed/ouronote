@@ -37,6 +37,7 @@ import { CreateVectorComponent } from './components/create-vector/create-vector.
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ViewVectorComponent } from './view-vector/view-vector.component';
 import { CertificatesModule } from '../../certificates/certificates.module';
+import { LogModule } from '../../../../../log/src/lib/log.module';
 
 @NgModule({
   declarations: [
@@ -57,6 +58,7 @@ import { CertificatesModule } from '../../certificates/certificates.module';
     VectorsRoutingModule,
     NgGunModule,
     ReactiveFormsModule,
+    LogModule,
     MatInputModule,
     MatIconModule,
     MatCheckboxModule,
