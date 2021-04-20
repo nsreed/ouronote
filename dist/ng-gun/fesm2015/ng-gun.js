@@ -98,7 +98,6 @@ class GunChain {
         const userPair = this.gun.user().is;
         if (!userPair) {
             // TODO figure out how to handle this case
-            console.warn('NO PAIR');
             return;
         }
         const myPub = `~${(_a = this.gun.user().is) === null || _a === void 0 ? void 0 : _a.pub}`;
@@ -114,7 +113,7 @@ class GunChain {
             const recordPath = pathFromRecord.splice(firstPub).reverse();
             pathFromRecord.reverse();
             if (myKey === this.recordPub) {
-                console.log('sub root', myKey);
+                // console.log('sub root', myKey);
             }
             else {
                 const keyInRecord = pathFromRecord[0];

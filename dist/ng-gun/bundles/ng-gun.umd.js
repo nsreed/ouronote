@@ -429,7 +429,6 @@
                 var userPair = this.gun.user().is;
                 if (!userPair) {
                     // TODO figure out how to handle this case
-                    console.warn('NO PAIR');
                     return;
                 }
                 var myPub = "~" + ((_a = this.gun.user().is) === null || _a === void 0 ? void 0 : _a.pub);
@@ -445,7 +444,7 @@
                     var recordPath = pathFromRecord.splice(firstPub).reverse();
                     pathFromRecord.reverse();
                     if (myKey === this.recordPub) {
-                        console.log('sub root', myKey);
+                        // console.log('sub root', myKey);
                     }
                     else {
                         var keyInRecord = pathFromRecord[0];

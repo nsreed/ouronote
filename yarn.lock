@@ -4556,10 +4556,9 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.6.tgz#ff040b2b0853b23c3d31027523706f1885d76bee"
   integrity sha512-nTnJ528pbqxYanhpDYsi4Rd8MAeaBA67+RZ10CM1m3bTAVFEDcd5AuA4a6W5YkGZ1iNXHzZz8T6TBKLeBuNriQ==
 
-gun@^0.2020.520:
+"gun@https://github.com/amark/gun.git":
   version "0.2020.520"
-  resolved "https://registry.yarnpkg.com/gun/-/gun-0.2020.520.tgz#3bf7c9c0c83ba04aee94c0157c4d4e0a64e865ad"
-  integrity sha512-hMDmj4QQnejweZEy4njbyNlll+GO7H8XIq/SdQ23kFV29B6HqA0+bQmhLCxWKLwQvfRXx9SgSXG/ImGrER/CqQ==
+  resolved "https://github.com/amark/gun.git#2168e3e2d729076818f3a0b5730839148f9ee939"
   dependencies:
     ws "^7.2.1"
   optionalDependencies:
