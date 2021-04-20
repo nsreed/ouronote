@@ -8,6 +8,7 @@ import {
   NavigationEnd,
 } from '@angular/router';
 import { filter, takeLast } from 'rxjs/operators';
+import { ClipboardService } from 'ngx-clipboard';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +20,8 @@ export class AppComponent {
   constructor(
     public ngGun: NgGunService<User>,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cb: ClipboardService
   ) {
     this.user = this.ngGun.auth();
     // console.log('!! ROUTE SNAPSHOT', route.snapshot);
@@ -39,5 +41,10 @@ export class AppComponent {
   logout() {
     this.ngGun.auth().logout();
     this.router.navigateByUrl('/login');
+  }
+
+  bugReport() {
+    const graphString = JSON.stringify(this.ngGun.gun._.graph);
+    this.cb.copy(graphString);
   }
 }

@@ -33,7 +33,7 @@ import { CertificateFormComponent } from './components/certificate-form/certific
 import { CertificatesComponent } from './components/certificates/certificates.component';
 import { ConfirmComponent } from './components/confirm/confirm.component';
 import { FormsUiModule } from './forms-ui/forms-ui.module';
-import { GunPeersComponent } from './gun-peers/gun-peers.component';
+import { GunPeersComponent } from './components/gun-peers/gun-peers.component';
 import { LoginComponent } from './login/login.component';
 import { SessionInfoComponent } from './session-info/session-info.component';
 import { AliasAutocompleteComponent } from './components/alias-autocomplete/alias-autocomplete.component';

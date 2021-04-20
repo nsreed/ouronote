@@ -12,6 +12,9 @@
       <mat-list-item [matMenuTriggerFor]="sessionMenu">
         <mat-icon mat-list-icon>person</mat-icon>
       </mat-list-item>
+      <mat-list-item (click)="bugReport()">
+        <mat-icon mat-list-icon>bug_report</mat-icon>
+      </mat-list-item>
       <mat-menu #sessionMenu>
         <button mat-menu-item (click)="logout()">Log Out</button>
       </mat-menu>

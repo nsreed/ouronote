@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { NgGunService } from '../../../../ng-gun/src/lib/ng-gun.service';
+import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
 
 @Component({
   selector: 'app-gun-peers',
