@@ -9,12 +9,17 @@ import { Observable, of } from 'rxjs';
 import { catchError, filter, map, take, tap, timeout } from 'rxjs/operators';
 import { NgGunService } from './ng-gun.service';
 import { Router } from '@angular/router';
+import { LogService } from '../../../log/src/lib/log.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GunAuthGuard implements CanActivateChild {
-  constructor(private ngGun: NgGunService, private router: Router) {}
+  constructor(
+    private ngGun: NgGunService,
+    private router: Router,
+    private logger: LogService
+  ) {}
   sessionOrRedirect() {}
   canActivateChild(
     childRoute: ActivatedRouteSnapshot,
@@ -27,6 +32,7 @@ export class GunAuthGuard implements CanActivateChild {
     // console.log('gunAuthGuard checking...');
     if (this.ngGun.auth().is) {
       // console.log('OK: auth().is');
+      this.logger.log('gun-auth guard OK');
       return true;
     }
     // this.ngGun.auth().recall();

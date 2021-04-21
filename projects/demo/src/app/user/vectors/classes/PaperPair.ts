@@ -48,16 +48,20 @@ export class PaperPair {
     private ctx: any,
     protected project: paper.Project, // Do we need the project? The item's `project` property should be able to get it...
     protected scope: paper.PaperScope,
-    protected log: LogService
+    protected logger: LogService
   ) {
+    this.logger = logger.supplemental(
+      Object.getPrototypeOf(this).constructor.name
+    );
     if (ctx.pair) {
-      console.error('CREATING A DUPLICATE PAIR FOR SCOPE', ctx);
+      this.logger.error('CREATING A DUPLICATE PAIR FOR SCOPE', ctx);
     }
+    // this.logger.log('paper binding created');
     ctx.pair = this;
 
     this.saveBuffer$.subscribe((buf) => {
       if (this.ctx?.data.ignore || this.importing) {
-        console.warn('cannot save');
+        this.logger.warn('cannot save');
         return;
       }
       // TODO find a way to ignore the next incoming change for these keys
@@ -90,7 +94,7 @@ export class PaperPair {
     };
     Object.keys(scrubbed).forEach((k) => {
       if (EXPECT_ARRAY.includes(k)) {
-        // console.log('  deserializing %s', k, scrubbed[k]);
+        // this.logger.log('  deserializing %s', k, scrubbed[k]);
         scrubbed[k] = JSON.parse(scrubbed[k]);
       }
     });
@@ -98,9 +102,9 @@ export class PaperPair {
   }
 
   constructChild(childJSON: any, key: string) {
-    // console.log('constructing child: %o', childJSON);
+    // this.logger.log('constructing child: %o', childJSON);
     if (!childJSON.className) {
-      console.warn('child has no class name', childJSON);
+      this.logger.error('child has no class name', childJSON);
       if (this.ctx instanceof paper.Project) {
         childJSON.className = 'Layer';
       }
@@ -128,7 +132,7 @@ export class PaperPair {
     if (childJSON.className === 'Layer') {
       // If the Project already has a layer, using importJSON will merge the incoming layer with it,
       // so we have to use its constructor instead
-      // console.log('child is layer, forcing new Layer()');
+      // this.logger.log('child is layer, forcing new Layer()');
       child = new paper.Layer();
       child.importJSON(stringed);
     } else {
@@ -140,7 +144,7 @@ export class PaperPair {
 
   save(properties?: string[]) {
     if (this.ctx?.data?.ignore) {
-      console.warn('tried saving ignored item');
+      this.logger.warn('tried saving ignored item');
       return;
     }
 

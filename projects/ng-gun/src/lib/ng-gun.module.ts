@@ -6,6 +6,8 @@ import { UpdatedPipe } from './updated.pipe';
 import { ChainDirective } from './chain.directive';
 import { AliasPipe } from './alias.pipe';
 import { VerifyPipe } from './verify.pipe';
+import { LogService } from '../../../log/src/lib/log.service';
+import { LogModule } from '../../../log/src/lib/log.module';
 
 @NgModule({
   declarations: [
@@ -16,7 +18,7 @@ import { VerifyPipe } from './verify.pipe';
     AliasPipe,
     VerifyPipe,
   ],
-  imports: [],
+  imports: [LogModule],
   exports: [
     NgGunComponent,
     SoulPipe,

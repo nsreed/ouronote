@@ -40,6 +40,8 @@ import { AliasAutocompleteComponent } from './components/alias-autocomplete/alia
 import { CertificatesModule } from './certificates/certificates.module';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { LogModule } from '../../../log/src/lib/log.module';
+import { LogService } from '../../../log/src/lib/log.service';
+import { ComponentsModule } from './components/components.module';
 
 @NgModule({
   declarations: [
@@ -85,6 +87,7 @@ import { LogModule } from '../../../log/src/lib/log.module';
     MatTooltipModule,
     CertificatesModule,
     MatSidenavModule,
+    ComponentsModule,
   ],
   providers: [
     {
@@ -96,6 +99,10 @@ import { LogModule } from '../../../log/src/lib/log.module';
           // 'https://resistance-tower.herokuapp.com/gun',
         ],
       },
+    },
+    {
+      provide: LogService,
+      useClass: LogService,
     },
   ],
   exports: [CertificatesComponent],

@@ -30,6 +30,7 @@ import {
 import { serializeValue } from './packaging';
 import { PaperPair } from './PaperPair';
 import { LogService } from '../../../../../../log/src/lib/log.service';
+import * as Gun from 'gun';
 
 export class ItemPair extends PaperPair {
   graphValue: any;
@@ -76,6 +77,7 @@ export class ItemPair extends PaperPair {
   afterImportJSON$ = after$(this.item, 'importJSON');
   afterInsertChild$ = after$(this.item, 'insertChild').pipe(
     map(returned),
+    tap((item) => (this.ignoreInsert ? this.logger.log('ignored') : {})),
     filter((item) => !this.item.data.ignored && !item.data.ignored),
     filter((item) => !this.ignoreInsert && item !== null && item !== undefined),
     switchMap((item) =>
@@ -103,9 +105,9 @@ export class ItemPair extends PaperPair {
     private item: paper.Item,
     project: paper.Project,
     scope: paper.PaperScope,
-    log: LogService
+    logger: LogService
   ) {
-    super(item, project, scope, log);
+    super(item, project, scope, logger);
     this.setup();
   }
 
@@ -197,7 +199,7 @@ export class ItemPair extends PaperPair {
         this.save();
       } else {
         // TODO handle this (will be necessary for supporting function interceptions that change non-array values)
-        console.warn('%s onLocalChange$ was not an array, not saving!!!');
+        this.logger.warn('onLocalChange$ was not an array, not saving!!!');
       }
     });
   }
@@ -208,30 +210,30 @@ export class ItemPair extends PaperPair {
     });
   }
 
-  onLocalChild(item: paper.Item) {
-    if (!item) {
-      console.warn('null child');
+  onLocalChild(localChild: paper.Item) {
+    if (!localChild) {
+      this.logger.warn('null child');
       return;
     }
-    if (item.data.ignored) {
-      console.warn('tried to pair an ignored child!');
+    if (localChild.data.ignored) {
+      this.logger.warn('tried to pair an ignored child!');
       return;
     }
-    const l = item as any;
-    if (!l.pair) {
-      if (!l.data.soul) {
+    const childObj = localChild as any;
+    if (!childObj.pair) {
+      if (!childObj.data.soul) {
         const soul = getUUID(this.chain as any);
-        l.data.soul = soul;
+        childObj.data.soul = soul;
       }
-      const childGun = this.children.get(l.data.soul);
+      const childGun = this.children.get(childObj.data.soul);
       const childPair = new ItemPair(
         childGun,
-        item,
+        localChild,
         this.project,
         this.scope,
-        this.log
+        this.logger
       );
-      l.pair = childPair;
+      childObj.pair = childPair;
     }
   }
 
@@ -241,7 +243,7 @@ export class ItemPair extends PaperPair {
     // FIXME occasionally only the first debounce of a path will be saved
     // console.log('%s onGraph', this.item.toString());
     if (!json) {
-      console.warn('  NO JSON! SHOULD REMOVE???');
+      this.logger.warn('  NO JSON! SHOULD REMOVE???');
     }
     const scrubbed = this.scrubJSON(json, this.item.data.soul);
     delete scrubbed.className;
@@ -250,11 +252,21 @@ export class ItemPair extends PaperPair {
       scrubbed,
     ] as any) as any;
     if (imported !== this.item) {
-      console.error('unexpected new item!!!');
+      this.logger.error('unexpected new item!!!');
     }
   }
 
   onGraphChildren(data: any[]) {
+    if (data.length === 0) {
+      return;
+    }
+    this.logger.log(
+      'onGraphChildren',
+      data
+        .map((v) => v[0] as Partial<paper.Item>)
+        .filter((i) => i !== null)
+        .map((i) => `${i.className} ${Gun.node.soul(i as any)}`)
+    );
     const toInsert = [] as paper.Item[];
     data.forEach((childVK) => {
       const soul = childVK[1];
@@ -271,9 +283,12 @@ export class ItemPair extends PaperPair {
       }
     });
 
-    this.ignoreInsert = true;
-    this.item.insertChildren(this.item.children.length, toInsert as any);
-    this.ignoreInsert = false;
+    if (toInsert.length > 0) {
+      this.logger.log('inserting %d paper items', toInsert.length);
+      this.ignoreInsert = true;
+      this.item.insertChildren(this.item.children.length, toInsert as any);
+      this.ignoreInsert = false;
+    }
   }
 
   onLocalRemove() {

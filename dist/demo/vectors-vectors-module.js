@@ -464,11 +464,11 @@ __webpack_require__.r(__webpack_exports__);
 
 class PaperPair {
     constructor(ctx, project, // Do we need the project? The item's `project` property should be able to get it...
-    scope, log) {
+    scope, logger) {
         this.ctx = ctx;
         this.project = project;
         this.scope = scope;
-        this.log = log;
+        this.logger = logger;
         this.childCache = {};
         this.importing = false;
         this.save$ = new _angular_core__WEBPACK_IMPORTED_MODULE_2__["EventEmitter"]();
@@ -482,14 +482,16 @@ class PaperPair {
                 : propertyValue;
             return propertyBuffer;
         }, {})));
+        this.logger = logger.supplemental(Object.getPrototypeOf(this).constructor.name);
         if (ctx.pair) {
-            console.error('CREATING A DUPLICATE PAIR FOR SCOPE', ctx);
+            this.logger.error('CREATING A DUPLICATE PAIR FOR SCOPE', ctx);
         }
+        // this.logger.log('paper binding created');
         ctx.pair = this;
         this.saveBuffer$.subscribe((buf) => {
             var _a;
             if (((_a = this.ctx) === null || _a === void 0 ? void 0 : _a.data.ignore) || this.importing) {
-                console.warn('cannot save');
+                this.logger.warn('cannot save');
                 return;
             }
             // TODO find a way to ignore the next incoming change for these keys
@@ -518,16 +520,16 @@ class PaperPair {
         };
         Object.keys(scrubbed).forEach((k) => {
             if (_constants__WEBPACK_IMPORTED_MODULE_0__["EXPECT_ARRAY"].includes(k)) {
-                // console.log('  deserializing %s', k, scrubbed[k]);
+                // this.logger.log('  deserializing %s', k, scrubbed[k]);
                 scrubbed[k] = JSON.parse(scrubbed[k]);
             }
         });
         return scrubbed;
     }
     constructChild(childJSON, key) {
-        // console.log('constructing child: %o', childJSON);
+        // this.logger.log('constructing child: %o', childJSON);
         if (!childJSON.className) {
-            console.warn('child has no class name', childJSON);
+            this.logger.error('child has no class name', childJSON);
             if (this.ctx instanceof paper__WEBPACK_IMPORTED_MODULE_1__["Project"]) {
                 childJSON.className = 'Layer';
             }
@@ -553,7 +555,7 @@ class PaperPair {
         if (childJSON.className === 'Layer') {
             // If the Project already has a layer, using importJSON will merge the incoming layer with it,
             // so we have to use its constructor instead
-            // console.log('child is layer, forcing new Layer()');
+            // this.logger.log('child is layer, forcing new Layer()');
             child = new paper__WEBPACK_IMPORTED_MODULE_1__["Layer"]();
             child.importJSON(stringed);
         }
@@ -566,7 +568,7 @@ class PaperPair {
     save(properties) {
         var _a, _b;
         if ((_b = (_a = this.ctx) === null || _a === void 0 ? void 0 : _a.data) === null || _b === void 0 ? void 0 : _b.ignore) {
-            console.warn('tried saving ignored item');
+            this.logger.warn('tried saving ignored item');
             return;
         }
         if (properties) {
@@ -1015,11 +1017,12 @@ LayerListComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefin
 /*!*****************************************************************!*\
   !*** ./projects/demo/src/app/user/vectors/vectors.component.ts ***!
   \*****************************************************************/
-/*! exports provided: VectorsComponent */
+/*! exports provided: buildVectorLogger, VectorsComponent */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "buildVectorLogger", function() { return buildVectorLogger; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VectorsComponent", function() { return VectorsComponent; });
 /* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! rxjs/operators */ "kU1M");
 /* harmony import */ var _ng_gun_src_lib_functions_gun_utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../../../ng-gun/src/lib/functions/gun-utils */ "GT5q");
@@ -1092,6 +1095,9 @@ function VectorsComponent_ng_container_4_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵadvance"](6);
     _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵproperty"]("routerLink", _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵpureFunction1"](19, _c1, _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵpipeBind1"](13, 13, vector_r1)));
 } }
+function buildVectorLogger(parent) {
+    return parent.supplemental('name');
+}
 class VectorsComponent {
     constructor(vectorService, dialog) {
         this.vectorService = vectorService;
@@ -1119,7 +1125,13 @@ class VectorsComponent {
     }
 }
 VectorsComponent.ɵfac = function VectorsComponent_Factory(t) { return new (t || VectorsComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdirectiveInject"](_vector_service__WEBPACK_IMPORTED_MODULE_5__["VectorService"]), _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdirectiveInject"](_angular_material_dialog__WEBPACK_IMPORTED_MODULE_6__["MatDialog"])); };
-VectorsComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineComponent"]({ type: VectorsComponent, selectors: [["app-vectors"]], decls: 6, vars: 3, consts: [["mat-button", "", "color", "primary", 3, "click"], ["gdColumns", "auto repeat(3, max-content)"], [4, "ngFor", "ngForOf"], ["mat-flat-button", "", 3, "routerLink"], ["mat-icon-button", "", 3, "click"], ["mat-icon-button", "", 3, "routerLink"]], template: function VectorsComponent_Template(rf, ctx) { if (rf & 1) {
+VectorsComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineComponent"]({ type: VectorsComponent, selectors: [["app-vectors"]], features: [_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵProvidersFeature"]([
+        // {
+        //   provide: LogService,
+        //   useFactory: buildVectorLogger,
+        //   deps: [LogService, 'log-name'],
+        // },
+        ])], decls: 6, vars: 3, consts: [["mat-button", "", "color", "primary", 3, "click"], ["gdColumns", "auto repeat(3, max-content)"], [4, "ngFor", "ngForOf"], ["mat-flat-button", "", 3, "routerLink"], ["mat-icon-button", "", 3, "click"], ["mat-icon-button", "", 3, "routerLink"]], template: function VectorsComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementStart"](0, "mat-toolbar");
         _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementStart"](1, "button", 0);
         _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵlistener"]("click", function VectorsComponent_Template_button_click_1_listener() { return ctx.create(); });
@@ -18848,8 +18860,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class ProjectPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_4__["PaperPair"] {
-    constructor(chain, project, scope, log) {
-        super(project, project, scope, log); // UGN
+    constructor(chain, project, scope, logger) {
+        super(project, project, scope, logger); // UGN
         this.chain = chain;
         this.project = project;
         /* STATE */
@@ -18864,15 +18876,14 @@ class ProjectPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_4__["PaperPair"] {
         this.layerCache = {};
         /* PROJECT EVENTS */
         this.beforeProjectImportJSON$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_1__["before$"])(this.project, 'importJSON');
-        this.afterProjectImportJSON$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_1__["after$"])(this.project, 'importJSON')
-            .pipe();
+        this.afterProjectImportJSON$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_1__["after$"])(this.project, 'importJSON');
         this.afterProjectInsertLayer$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_1__["after$"])(this.project, 'insertLayer').pipe(
-        // tap((inserted: any) => console.log('.afterInsertLayer', inserted)),
+        // tap((inserted: any) => this.logger.log('.afterInsertLayer', inserted)),
         Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_0__["map"])(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_1__["returned"]), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_0__["filter"])((layer) => layer !== null && layer !== undefined), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_0__["switchMap"])((value) => this.importing
             ? this.afterProjectImportJSON$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_0__["mapTo"])(value))
             : Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["of"])(value)));
         this.setupProject();
-        // console.log('new ProjectPair');
+        // this.logger.log('new ProjectPair');
         project.pair = this;
         // project.layers
     }
@@ -18883,16 +18894,16 @@ class ProjectPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_4__["PaperPair"] {
     onGraphLayer(data) {
         const soul = data[1];
         const json = data[0];
-        // console.log('onGraphLayer %s', soul);
+        // this.logger.log('onGraphLayer %s', soul);
         if (!json) {
-            console.log('  child was deleted');
+            this.logger.log('  child was deleted');
             return;
         }
         let child = this.getChild(soul);
         if (!child) {
-            // console.log('  child was added');
+            // this.logger.log('  child was added');
             if (!json.className) {
-                // console.warn('Child has no className, setting as Layer');
+                // this.logger.warn('Child has no className, setting as Layer');
                 json.className = 'Layer';
             }
             // child = new paper.Layer();
@@ -18901,7 +18912,7 @@ class ProjectPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_4__["PaperPair"] {
             child = this.constructChild(json, soul);
             // TODO insert at appropriate z-order
             this.project.insertLayer(this.project.layers.length, child);
-            // console.log('  created', child.toString());
+            // this.logger.log('  created', child.toString());
             // this.importing = false;
             // this.onLocalLayer(child);
         }
@@ -18909,14 +18920,14 @@ class ProjectPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_4__["PaperPair"] {
     onLocalLayer(layer) {
         const l = layer;
         if (!l.pair) {
-            // console.log('onLocalLayer %s', l.toString());
+            // this.logger.log('onLocalLayer %s', l.toString());
             if (!l.data.soul) {
-                // console.log('    no soul');
+                // this.logger.log('    no soul');
                 const soul = Object(_edit_vector_converter_functions__WEBPACK_IMPORTED_MODULE_5__["getUUID"])(this.chain);
                 l.data.soul = soul;
             }
             const layerGun = this.layers.get(l.data.soul);
-            const layerPair = new _ItemPair__WEBPACK_IMPORTED_MODULE_3__["ItemPair"](layerGun, layer, this.project, this.scope, this.log);
+            const layerPair = new _ItemPair__WEBPACK_IMPORTED_MODULE_3__["ItemPair"](layerGun, layer, this.project, this.scope, this.logger);
         }
     }
     setupProject() {
@@ -18980,26 +18991,29 @@ Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
 
 /***/ }),
 
-/***/ "Naon":
-/*!*********************************************!*\
-  !*** ./projects/log/src/lib/log.service.ts ***!
-  \*********************************************/
-/*! exports provided: LogService */
+/***/ "Vvib":
+/*!***********************************************!*\
+  !*** ./projects/log/src/lib/log.component.ts ***!
+  \***********************************************/
+/*! exports provided: LogComponent */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LogService", function() { return LogService; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LogComponent", function() { return LogComponent; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
 
-class LogService {
+class LogComponent {
     constructor() { }
-    log(message, ...args) {
-        console.log(message, ...args);
+    ngOnInit() {
     }
 }
-LogService.ɵfac = function LogService_Factory(t) { return new (t || LogService)(); };
-LogService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: LogService, factory: LogService.ɵfac, providedIn: 'root' });
+LogComponent.ɵfac = function LogComponent_Factory(t) { return new (t || LogComponent)(); };
+LogComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: LogComponent, selectors: [["lib-log"]], decls: 2, vars: 0, template: function LogComponent_Template(rf, ctx) { if (rf & 1) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "p");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " log works! ");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    } }, encapsulation: 2 });
 
 
 /***/ }),
@@ -19008,12 +19022,14 @@ LogService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInject
 /*!****************************************!*\
   !*** ./projects/log/src/public-api.ts ***!
   \****************************************/
-/*! exports provided: LogService, LogComponent, LogModule */
+/*! exports provided: LogLevel, LogService, LogComponent, LogModule */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _lib_log_service__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./lib/log.service */ "Naon");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "LogLevel", function() { return _lib_log_service__WEBPACK_IMPORTED_MODULE_0__["LogLevel"]; });
+
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "LogService", function() { return _lib_log_service__WEBPACK_IMPORTED_MODULE_0__["LogService"]; });
 
 /* harmony import */ var _lib_log_component__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./lib/log.component */ "Vvib");
@@ -19449,6 +19465,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./constants */ "631e");
 /* harmony import */ var _packaging__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./packaging */ "E6wO");
 /* harmony import */ var _PaperPair__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./PaperPair */ "5jeY");
+/* harmony import */ var gun__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! gun */ "U+kO");
+/* harmony import */ var gun__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(gun__WEBPACK_IMPORTED_MODULE_7__);
+
 
 
 
@@ -19457,8 +19476,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class ItemPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_6__["PaperPair"] {
-    constructor(chain, item, project, scope, log) {
-        super(item, project, scope, log);
+    constructor(chain, item, project, scope, logger) {
+        super(item, project, scope, logger);
         this.chain = chain;
         this.item = item;
         this.graph$ = this.chain
@@ -19487,7 +19506,7 @@ class ItemPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_6__["PaperPair"] {
         this.ignoreInsert = false;
         this.beforeImportJSON$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["before$"])(this.item, 'importJSON');
         this.afterImportJSON$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["after$"])(this.item, 'importJSON');
-        this.afterInsertChild$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["after$"])(this.item, 'insertChild').pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["map"])(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["returned"]), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["filter"])((item) => !this.item.data.ignored && !item.data.ignored), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["filter"])((item) => !this.ignoreInsert && item !== null && item !== undefined), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["switchMap"])((item) => this.importing ? this.afterImportJSON$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["mapTo"])(item)) : Object(rxjs__WEBPACK_IMPORTED_MODULE_0__["of"])(item)));
+        this.afterInsertChild$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["after$"])(this.item, 'insertChild').pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["map"])(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["returned"]), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["tap"])((item) => (this.ignoreInsert ? this.logger.log('ignored') : {})), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["filter"])((item) => !this.item.data.ignored && !item.data.ignored), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["filter"])((item) => !this.ignoreInsert && item !== null && item !== undefined), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["switchMap"])((item) => this.importing ? this.afterImportJSON$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["mapTo"])(item)) : Object(rxjs__WEBPACK_IMPORTED_MODULE_0__["of"])(item)));
         this.afterAddChild$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["after$"])(this.item, 'addChild').pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["map"])(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["returned"]), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["filter"])((item) => !this.ignoreInsert && item !== null && item !== undefined), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["switchMap"])((item) => this.importing ? this.afterImportJSON$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["mapTo"])(item)) : Object(rxjs__WEBPACK_IMPORTED_MODULE_0__["of"])(item)));
         this.localChange$ = Object(rxjs__WEBPACK_IMPORTED_MODULE_0__["from"])((_constants__WEBPACK_IMPORTED_MODULE_4__["MUTATIONS"][this.item.className] || [])).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["mergeMap"])((method) => Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["after$"])(this.item, method).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["map"])((v) => _constants__WEBPACK_IMPORTED_MODULE_4__["MUTATION_PROPERTIES"][method]))));
         this.setup();
@@ -19571,7 +19590,7 @@ class ItemPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_6__["PaperPair"] {
             }
             else {
                 // TODO handle this (will be necessary for supporting function interceptions that change non-array values)
-                console.warn('%s onLocalChange$ was not an array, not saving!!!');
+                this.logger.warn('onLocalChange$ was not an array, not saving!!!');
             }
         });
     }
@@ -19581,24 +19600,24 @@ class ItemPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_6__["PaperPair"] {
             this.onLocalChild(item);
         });
     }
-    onLocalChild(item) {
-        if (!item) {
-            console.warn('null child');
+    onLocalChild(localChild) {
+        if (!localChild) {
+            this.logger.warn('null child');
             return;
         }
-        if (item.data.ignored) {
-            console.warn('tried to pair an ignored child!');
+        if (localChild.data.ignored) {
+            this.logger.warn('tried to pair an ignored child!');
             return;
         }
-        const l = item;
-        if (!l.pair) {
-            if (!l.data.soul) {
+        const childObj = localChild;
+        if (!childObj.pair) {
+            if (!childObj.data.soul) {
                 const soul = Object(_edit_vector_converter_functions__WEBPACK_IMPORTED_MODULE_3__["getUUID"])(this.chain);
-                l.data.soul = soul;
+                childObj.data.soul = soul;
             }
-            const childGun = this.children.get(l.data.soul);
-            const childPair = new ItemPair(childGun, item, this.project, this.scope, this.log);
-            l.pair = childPair;
+            const childGun = this.children.get(childObj.data.soul);
+            const childPair = new ItemPair(childGun, localChild, this.project, this.scope, this.logger);
+            childObj.pair = childPair;
         }
     }
     onGraph(json) {
@@ -19607,7 +19626,7 @@ class ItemPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_6__["PaperPair"] {
         // FIXME occasionally only the first debounce of a path will be saved
         // console.log('%s onGraph', this.item.toString());
         if (!json) {
-            console.warn('  NO JSON! SHOULD REMOVE???');
+            this.logger.warn('  NO JSON! SHOULD REMOVE???');
         }
         const scrubbed = this.scrubJSON(json, this.item.data.soul);
         delete scrubbed.className;
@@ -19616,10 +19635,17 @@ class ItemPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_6__["PaperPair"] {
             scrubbed,
         ]);
         if (imported !== this.item) {
-            console.error('unexpected new item!!!');
+            this.logger.error('unexpected new item!!!');
         }
     }
     onGraphChildren(data) {
+        if (data.length === 0) {
+            return;
+        }
+        this.logger.log('onGraphChildren', data
+            .map((v) => v[0])
+            .filter((i) => i !== null)
+            .map((i) => `${i.className} ${gun__WEBPACK_IMPORTED_MODULE_7__["node"].soul(i)}`));
         const toInsert = [];
         data.forEach((childVK) => {
             const soul = childVK[1];
@@ -19636,9 +19662,12 @@ class ItemPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_6__["PaperPair"] {
                 toInsert.push(newChild);
             }
         });
-        this.ignoreInsert = true;
-        this.item.insertChildren(this.item.children.length, toInsert);
-        this.ignoreInsert = false;
+        if (toInsert.length > 0) {
+            this.logger.log('inserting %d paper items', toInsert.length);
+            this.ignoreInsert = true;
+            this.item.insertChildren(this.item.children.length, toInsert);
+            this.ignoreInsert = false;
+        }
     }
     onLocalRemove() {
         if (this.item.data.ignored) {
