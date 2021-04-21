@@ -1,7 +1,6 @@
 import { Inject, Injectable, NgZone, Optional, SkipSelf } from '@angular/core';
 import * as Gun from 'gun';
 import { IGunChainReference } from 'gun/types/chain';
-import { IGunStaticSEA } from 'gun/types/static/sea';
 import {
   AlwaysDisallowedType,
   ArrayAsRecord,
@@ -27,20 +26,14 @@ import {
   retryWhen,
   scan,
   shareReplay,
-  switchMap,
   take,
+  tap,
   timeout,
 } from 'rxjs/operators';
-import { LexicalQuery } from './LexicalQuery';
-import { tap } from 'rxjs/operators';
-import { IGunPeer } from './IGunPeer';
-import { SEA } from 'gun';
+import { gunChainArray, gunPath } from '../functions/gun-utils';
+import { GunRuntimeOpts } from '../GunRuntimeOpts';
 import { ICertStore } from './ICertStore';
-import {
-  gunPath,
-  gunChainArray,
-  parseCertificate,
-} from '../functions/gun-utils';
+import { LexicalQuery } from './LexicalQuery';
 
 export const GUN_NODE = Symbol('GUN_NODE');
 
@@ -56,18 +49,10 @@ export interface GunChainFunctions {
   grant: (value: any) => IGunChainReference;
 }
 
-interface IGunPeers {
-  [key: string]: IGunPeer;
-}
-
-interface IGunRootOpt {
-  peers: IGunPeers;
-}
-
 export interface GunChainMeta {
   _: {
     root: {
-      opt: IGunRootOpt;
+      opt: GunRuntimeOpts;
     };
   } & any;
 }
