@@ -4984,15 +4984,13 @@ FormsUiModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInje
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "NgGunModule", function() { return NgGunModule; });
-/* harmony import */ var _ng_gun_component__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ng-gun.component */ "kwtq");
-/* harmony import */ var _soul_pipe__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./soul.pipe */ "FlTl");
-/* harmony import */ var _updated_pipe__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./updated.pipe */ "xdc7");
-/* harmony import */ var _chain_directive__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./chain.directive */ "R39e");
-/* harmony import */ var _alias_pipe__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./alias.pipe */ "foKA");
+/* harmony import */ var _alias_pipe__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./alias.pipe */ "foKA");
+/* harmony import */ var _chain_directive__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./chain.directive */ "R39e");
+/* harmony import */ var _ng_gun_component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ng-gun.component */ "kwtq");
+/* harmony import */ var _soul_pipe__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./soul.pipe */ "FlTl");
+/* harmony import */ var _updated_pipe__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./updated.pipe */ "xdc7");
 /* harmony import */ var _verify_pipe__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./verify.pipe */ "VUWm");
-/* harmony import */ var _log_src_lib_log_module__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../log/src/lib/log.module */ "fZIX");
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @angular/core */ "fXoL");
-
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/core */ "fXoL");
 
 
 
@@ -5002,18 +5000,18 @@ __webpack_require__.r(__webpack_exports__);
 
 class NgGunModule {
 }
-NgGunModule.ɵmod = _angular_core__WEBPACK_IMPORTED_MODULE_7__["ɵɵdefineNgModule"]({ type: NgGunModule });
-NgGunModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_7__["ɵɵdefineInjector"]({ factory: function NgGunModule_Factory(t) { return new (t || NgGunModule)(); }, imports: [[_log_src_lib_log_module__WEBPACK_IMPORTED_MODULE_6__["LogModule"]]] });
-(function () { (typeof ngJitMode === "undefined" || ngJitMode) && _angular_core__WEBPACK_IMPORTED_MODULE_7__["ɵɵsetNgModuleScope"](NgGunModule, { declarations: [_ng_gun_component__WEBPACK_IMPORTED_MODULE_0__["NgGunComponent"],
-        _soul_pipe__WEBPACK_IMPORTED_MODULE_1__["SoulPipe"],
-        _updated_pipe__WEBPACK_IMPORTED_MODULE_2__["UpdatedPipe"],
-        _chain_directive__WEBPACK_IMPORTED_MODULE_3__["ChainDirective"],
-        _alias_pipe__WEBPACK_IMPORTED_MODULE_4__["AliasPipe"],
-        _verify_pipe__WEBPACK_IMPORTED_MODULE_5__["VerifyPipe"]], imports: [_log_src_lib_log_module__WEBPACK_IMPORTED_MODULE_6__["LogModule"]], exports: [_ng_gun_component__WEBPACK_IMPORTED_MODULE_0__["NgGunComponent"],
-        _soul_pipe__WEBPACK_IMPORTED_MODULE_1__["SoulPipe"],
-        _updated_pipe__WEBPACK_IMPORTED_MODULE_2__["UpdatedPipe"],
-        _chain_directive__WEBPACK_IMPORTED_MODULE_3__["ChainDirective"],
-        _alias_pipe__WEBPACK_IMPORTED_MODULE_4__["AliasPipe"],
+NgGunModule.ɵmod = _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵdefineNgModule"]({ type: NgGunModule });
+NgGunModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵdefineInjector"]({ factory: function NgGunModule_Factory(t) { return new (t || NgGunModule)(); } });
+(function () { (typeof ngJitMode === "undefined" || ngJitMode) && _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵsetNgModuleScope"](NgGunModule, { declarations: [_ng_gun_component__WEBPACK_IMPORTED_MODULE_2__["NgGunComponent"],
+        _soul_pipe__WEBPACK_IMPORTED_MODULE_3__["SoulPipe"],
+        _updated_pipe__WEBPACK_IMPORTED_MODULE_4__["UpdatedPipe"],
+        _chain_directive__WEBPACK_IMPORTED_MODULE_1__["ChainDirective"],
+        _alias_pipe__WEBPACK_IMPORTED_MODULE_0__["AliasPipe"],
+        _verify_pipe__WEBPACK_IMPORTED_MODULE_5__["VerifyPipe"]], exports: [_ng_gun_component__WEBPACK_IMPORTED_MODULE_2__["NgGunComponent"],
+        _soul_pipe__WEBPACK_IMPORTED_MODULE_3__["SoulPipe"],
+        _updated_pipe__WEBPACK_IMPORTED_MODULE_4__["UpdatedPipe"],
+        _chain_directive__WEBPACK_IMPORTED_MODULE_1__["ChainDirective"],
+        _alias_pipe__WEBPACK_IMPORTED_MODULE_0__["AliasPipe"],
         _verify_pipe__WEBPACK_IMPORTED_MODULE_5__["VerifyPipe"]] }); })();
 
 
