@@ -4631,7 +4631,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
 const GUN_NODE = Symbol('GUN_NODE');
 class GunChain {
     constructor(ngZone, gun) {

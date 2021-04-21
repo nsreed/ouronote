@@ -25553,7 +25553,7 @@ class PaperDirective {
 }
 PaperDirective.ɵfac = function PaperDirective_Factory(t) { return new (t || PaperDirective)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["ElementRef"])); };
 PaperDirective.ɵdir = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({ type: PaperDirective, selectors: [["", "appPaper", ""]], hostBindings: function PaperDirective_HostBindings(rf, ctx) { if (rf & 1) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("resize", function PaperDirective_resize_HostBindingHandler($event) { return ctx.onHostResize($event); }, false, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵresolveWindow"])("mouseenter", function PaperDirective_mouseenter_HostBindingHandler() { return ctx.onHostMouseEnter(); })("mousewheel", function PaperDirective_mousewheel_HostBindingHandler($event) { return ctx.onMouseWheel($event); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("resize", function PaperDirective_resize_HostBindingHandler($event) { return ctx.onHostResize($event); }, false, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵresolveWindow"])("mouseenter", function PaperDirective_mouseenter_HostBindingHandler() { return ctx.onHostMouseEnter(); })("wheel", function PaperDirective_wheel_HostBindingHandler($event) { return ctx.onMouseWheel($event); })("mousewheel", function PaperDirective_mousewheel_HostBindingHandler($event) { return ctx.onMouseWheel($event); });
     } }, outputs: { appPaperChange: "appPaperChange" }, exportAs: ["appPaper"] });
 
 
