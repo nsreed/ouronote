@@ -19882,10 +19882,12 @@ function bindPaperJSON(data, parent) {
 }
 function getUUID(parent) {
     try {
-        return parent.gun._.root.opt.uuid();
+        return parent.gun._.root.user._.opt.uuid();
     }
     catch (e) {
-        return `${Math.random()}`.replace('.', '_');
+        return `${Date.now().toString(16)}${Math.random()
+            .toString()
+            .replace('.', '_')}`;
     }
 }
 function gunifyProject(node, project) {
