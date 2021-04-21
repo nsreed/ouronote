@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { NgGunService, GunPeer } from '../../../ng-gun/src/lib/ng-gun.service';
+import { NgGunService } from '../../../ng-gun/src/lib/ng-gun.service';
+import { GunPeer } from '../../../ng-gun/src/lib/GunPeer';
 import { User } from './user/model';
 import {
   Router,

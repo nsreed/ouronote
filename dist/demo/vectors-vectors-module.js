@@ -31,10 +31,9 @@ class VectorTool extends paper__WEBPACK_IMPORTED_MODULE_0__["Tool"] {
         this.keyup = Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["fromEvent"])(this, 'keyup');
         this.click = this.up.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((e) => e.delta.length === 0));
         this.name = Object.getPrototypeOf(this).constructor.name.replace(/tool/gi, '');
-        this.touchDown = this.down.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((e) => e.event instanceof TouchEvent));
-        this.touchDown.subscribe((e) => {
-            console.log('touch down', e);
-        });
+        // this.touchDown.subscribe((e) => {
+        //   console.log('touch down', e);
+        // });
         this.wheel.subscribe((e) => {
             const zoomDelta = e.event.deltaY;
             const viewPoint = this.scope.view.projectToView(e.point);
@@ -55,6 +54,7 @@ class VectorTool extends paper__WEBPACK_IMPORTED_MODULE_0__["Tool"] {
     get properties() {
         return Object.getPrototypeOf(this).___PROPERTIES || [];
     }
+    // touchDown = this.down.pipe(filter((e: any) => e.event instanceof TouchEvent));
     get project() {
         return this.scope.project;
     }

@@ -4,21 +4,8 @@ import * as Gun from 'gun';
 import { IGunChainReference } from 'gun/types/chain';
 import { IGunConstructorOptions } from 'gun/types/options';
 import { GunChain } from './classes/GunChain';
+import { GunPeers } from './GunPeers';
 export const GunOptions = 'gun-options';
-export type GunPeer = {
-  batch: any;
-  id: string;
-  last: string;
-  queue: string[];
-  tail: any;
-  url: string;
-  wire: WebSocket;
-};
-
-export type GunPeers = {
-  [key: string]: GunPeer;
-};
-
 @Injectable({
   providedIn: 'root',
 })
