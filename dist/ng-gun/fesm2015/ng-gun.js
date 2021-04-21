@@ -439,37 +439,29 @@ NgGunComponent.ɵcmp = i0.ɵɵdefineComponent({ type: NgGunComponent, selectors:
             }]
     }], function () { return []; }, null); })();
 
-class SoulPipe {
-    transform(value, ...args) {
-        return Gun.node.is(value) ? Gun.node.soul(value) : undefined;
+class AliasPipe extends AsyncPipe {
+    constructor(ngGun, _ref) {
+        super(_ref);
+        this.ngGun = ngGun;
     }
-}
-SoulPipe.ɵfac = function SoulPipe_Factory(t) { return new (t || SoulPipe)(); };
-SoulPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "soul", type: SoulPipe, pure: true });
-(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(SoulPipe, [{
-        type: Pipe,
-        args: [{
-                name: 'soul',
-            }]
-    }], null, null); })();
-
-class UpdatedPipe {
     transform(value, ...args) {
-        const updates = Gun.node.is(value) ? value._['>'] : null;
-        if (!updates) {
-            return null;
+        if (value === '*') {
+            return of(value);
         }
-        return Object.values(updates).reduce((latest, time) => (time > latest ? time : latest), 0);
+        return this.ngGun
+            .get(`~${value.replace('~', '')}`)
+            .on()
+            .pipe(map((v) => v.alias || value), shareReplay(1));
     }
 }
-UpdatedPipe.ɵfac = function UpdatedPipe_Factory(t) { return new (t || UpdatedPipe)(); };
-UpdatedPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "updated", type: UpdatedPipe, pure: true });
-(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(UpdatedPipe, [{
+AliasPipe.ɵfac = function AliasPipe_Factory(t) { return new (t || AliasPipe)(i0.ɵɵdirectiveInject(NgGunService), i0.ɵɵinjectPipeChangeDetectorRef()); };
+AliasPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "alias", type: AliasPipe, pure: true });
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(AliasPipe, [{
         type: Pipe,
         args: [{
-                name: 'updated',
+                name: 'alias',
             }]
-    }], null, null); })();
+    }], function () { return [{ type: NgGunService }, { type: i0.ChangeDetectorRef }]; }, null); })();
 
 class ChainDirective {
     constructor(ngGun) {
@@ -501,29 +493,37 @@ ChainDirective.ɵdir = i0.ɵɵdefineDirective({ type: ChainDirective, selectors:
             args: ['gunChain']
         }] }); })();
 
-class AliasPipe extends AsyncPipe {
-    constructor(ngGun, _ref) {
-        super(_ref);
-        this.ngGun = ngGun;
-    }
+class SoulPipe {
     transform(value, ...args) {
-        if (value === '*') {
-            return of(value);
-        }
-        return this.ngGun
-            .get(`~${value.replace('~', '')}`)
-            .on()
-            .pipe(map((v) => v.alias || value), shareReplay(1));
+        return Gun.node.is(value) ? Gun.node.soul(value) : undefined;
     }
 }
-AliasPipe.ɵfac = function AliasPipe_Factory(t) { return new (t || AliasPipe)(i0.ɵɵdirectiveInject(NgGunService), i0.ɵɵinjectPipeChangeDetectorRef()); };
-AliasPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "alias", type: AliasPipe, pure: true });
-(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(AliasPipe, [{
+SoulPipe.ɵfac = function SoulPipe_Factory(t) { return new (t || SoulPipe)(); };
+SoulPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "soul", type: SoulPipe, pure: true });
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(SoulPipe, [{
         type: Pipe,
         args: [{
-                name: 'alias',
+                name: 'soul',
             }]
-    }], function () { return [{ type: NgGunService }, { type: i0.ChangeDetectorRef }]; }, null); })();
+    }], null, null); })();
+
+class UpdatedPipe {
+    transform(value, ...args) {
+        const updates = Gun.node.is(value) ? value._['>'] : null;
+        if (!updates) {
+            return null;
+        }
+        return Object.values(updates).reduce((latest, time) => (time > latest ? time : latest), 0);
+    }
+}
+UpdatedPipe.ɵfac = function UpdatedPipe_Factory(t) { return new (t || UpdatedPipe)(); };
+UpdatedPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "updated", type: UpdatedPipe, pure: true });
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(UpdatedPipe, [{
+        type: Pipe,
+        args: [{
+                name: 'updated',
+            }]
+    }], null, null); })();
 
 class NgSeaService {
     constructor() {
@@ -613,7 +613,7 @@ VerifyPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "verify", type: VerifyPipe, pure: 
 class NgGunModule {
 }
 NgGunModule.ɵmod = i0.ɵɵdefineNgModule({ type: NgGunModule });
-NgGunModule.ɵinj = i0.ɵɵdefineInjector({ factory: function NgGunModule_Factory(t) { return new (t || NgGunModule)(); }, imports: [[]] });
+NgGunModule.ɵinj = i0.ɵɵdefineInjector({ factory: function NgGunModule_Factory(t) { return new (t || NgGunModule)(); } });
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(NgGunModule, { declarations: [NgGunComponent,
         SoulPipe,
         UpdatedPipe,
@@ -636,7 +636,6 @@ NgGunModule.ɵinj = i0.ɵɵdefineInjector({ factory: function NgGunModule_Factor
                     AliasPipe,
                     VerifyPipe,
                 ],
-                imports: [],
                 exports: [
                     NgGunComponent,
                     SoulPipe,

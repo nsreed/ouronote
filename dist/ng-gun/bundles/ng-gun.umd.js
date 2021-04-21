@@ -810,6 +810,76 @@
             }], function () { return []; }, null);
     })();
 
+    var AliasPipe = /** @class */ (function (_super) {
+        __extends(AliasPipe, _super);
+        function AliasPipe(ngGun, _ref) {
+            var _this = _super.call(this, _ref) || this;
+            _this.ngGun = ngGun;
+            return _this;
+        }
+        AliasPipe.prototype.transform = function (value) {
+            var args = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                args[_i - 1] = arguments[_i];
+            }
+            if (value === '*') {
+                return rxjs.of(value);
+            }
+            return this.ngGun
+                .get("~" + value.replace('~', ''))
+                .on()
+                .pipe(operators.map(function (v) { return v.alias || value; }), operators.shareReplay(1));
+        };
+        return AliasPipe;
+    }(common.AsyncPipe));
+    AliasPipe.ɵfac = function AliasPipe_Factory(t) { return new (t || AliasPipe)(i0__namespace.ɵɵdirectiveInject(NgGunService), i0__namespace.ɵɵinjectPipeChangeDetectorRef()); };
+    AliasPipe.ɵpipe = i0__namespace.ɵɵdefinePipe({ name: "alias", type: AliasPipe, pure: true });
+    (function () {
+        (typeof ngDevMode === "undefined" || ngDevMode) && i0__namespace.ɵsetClassMetadata(AliasPipe, [{
+                type: i0.Pipe,
+                args: [{
+                        name: 'alias',
+                    }]
+            }], function () { return [{ type: NgGunService }, { type: i0__namespace.ChangeDetectorRef }]; }, null);
+    })();
+
+    var ChainDirective = /** @class */ (function () {
+        function ChainDirective(ngGun) {
+            this.ngGun = ngGun;
+            this._chain$ = new i0.EventEmitter();
+            this.chain$ = this._chain$.pipe(operators.shareReplay(1));
+        }
+        Object.defineProperty(ChainDirective.prototype, "chain", {
+            get: function () {
+                return this._chain;
+            },
+            set: function (value) {
+                if (value !== this._chain) {
+                    this._chain = value;
+                    this._chain$.emit(value);
+                }
+            },
+            enumerable: false,
+            configurable: true
+        });
+        return ChainDirective;
+    }());
+    ChainDirective.ɵfac = function ChainDirective_Factory(t) { return new (t || ChainDirective)(i0__namespace.ɵɵdirectiveInject(NgGunService)); };
+    ChainDirective.ɵdir = i0__namespace.ɵɵdefineDirective({ type: ChainDirective, selectors: [["", "gunChain", ""]], inputs: { chain: ["gunChain", "chain"] }, exportAs: ["gunChain"] });
+    (function () {
+        (typeof ngDevMode === "undefined" || ngDevMode) && i0__namespace.ɵsetClassMetadata(ChainDirective, [{
+                type: i0.Directive,
+                args: [{
+                        // tslint:disable-next-line: directive-selector
+                        selector: '[gunChain]',
+                        exportAs: 'gunChain',
+                    }]
+            }], function () { return [{ type: NgGunService }]; }, { chain: [{
+                    type: i0.Input,
+                    args: ['gunChain']
+                }] });
+    })();
+
     var SoulPipe = /** @class */ (function () {
         function SoulPipe() {
         }
@@ -858,76 +928,6 @@
                         name: 'updated',
                     }]
             }], null, null);
-    })();
-
-    var ChainDirective = /** @class */ (function () {
-        function ChainDirective(ngGun) {
-            this.ngGun = ngGun;
-            this._chain$ = new i0.EventEmitter();
-            this.chain$ = this._chain$.pipe(operators.shareReplay(1));
-        }
-        Object.defineProperty(ChainDirective.prototype, "chain", {
-            get: function () {
-                return this._chain;
-            },
-            set: function (value) {
-                if (value !== this._chain) {
-                    this._chain = value;
-                    this._chain$.emit(value);
-                }
-            },
-            enumerable: false,
-            configurable: true
-        });
-        return ChainDirective;
-    }());
-    ChainDirective.ɵfac = function ChainDirective_Factory(t) { return new (t || ChainDirective)(i0__namespace.ɵɵdirectiveInject(NgGunService)); };
-    ChainDirective.ɵdir = i0__namespace.ɵɵdefineDirective({ type: ChainDirective, selectors: [["", "gunChain", ""]], inputs: { chain: ["gunChain", "chain"] }, exportAs: ["gunChain"] });
-    (function () {
-        (typeof ngDevMode === "undefined" || ngDevMode) && i0__namespace.ɵsetClassMetadata(ChainDirective, [{
-                type: i0.Directive,
-                args: [{
-                        // tslint:disable-next-line: directive-selector
-                        selector: '[gunChain]',
-                        exportAs: 'gunChain',
-                    }]
-            }], function () { return [{ type: NgGunService }]; }, { chain: [{
-                    type: i0.Input,
-                    args: ['gunChain']
-                }] });
-    })();
-
-    var AliasPipe = /** @class */ (function (_super) {
-        __extends(AliasPipe, _super);
-        function AliasPipe(ngGun, _ref) {
-            var _this = _super.call(this, _ref) || this;
-            _this.ngGun = ngGun;
-            return _this;
-        }
-        AliasPipe.prototype.transform = function (value) {
-            var args = [];
-            for (var _i = 1; _i < arguments.length; _i++) {
-                args[_i - 1] = arguments[_i];
-            }
-            if (value === '*') {
-                return rxjs.of(value);
-            }
-            return this.ngGun
-                .get("~" + value.replace('~', ''))
-                .on()
-                .pipe(operators.map(function (v) { return v.alias || value; }), operators.shareReplay(1));
-        };
-        return AliasPipe;
-    }(common.AsyncPipe));
-    AliasPipe.ɵfac = function AliasPipe_Factory(t) { return new (t || AliasPipe)(i0__namespace.ɵɵdirectiveInject(NgGunService), i0__namespace.ɵɵinjectPipeChangeDetectorRef()); };
-    AliasPipe.ɵpipe = i0__namespace.ɵɵdefinePipe({ name: "alias", type: AliasPipe, pure: true });
-    (function () {
-        (typeof ngDevMode === "undefined" || ngDevMode) && i0__namespace.ɵsetClassMetadata(AliasPipe, [{
-                type: i0.Pipe,
-                args: [{
-                        name: 'alias',
-                    }]
-            }], function () { return [{ type: NgGunService }, { type: i0__namespace.ChangeDetectorRef }]; }, null);
     })();
 
     var NgSeaService = /** @class */ (function () {
@@ -1063,7 +1063,7 @@
         return NgGunModule;
     }());
     NgGunModule.ɵmod = i0__namespace.ɵɵdefineNgModule({ type: NgGunModule });
-    NgGunModule.ɵinj = i0__namespace.ɵɵdefineInjector({ factory: function NgGunModule_Factory(t) { return new (t || NgGunModule)(); }, imports: [[]] });
+    NgGunModule.ɵinj = i0__namespace.ɵɵdefineInjector({ factory: function NgGunModule_Factory(t) { return new (t || NgGunModule)(); } });
     (function () {
         (typeof ngJitMode === "undefined" || ngJitMode) && i0__namespace.ɵɵsetNgModuleScope(NgGunModule, { declarations: [NgGunComponent,
                 SoulPipe,
@@ -1089,7 +1089,6 @@
                             AliasPipe,
                             VerifyPipe,
                         ],
-                        imports: [],
                         exports: [
                             NgGunComponent,
                             SoulPipe,
