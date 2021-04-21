@@ -67,6 +67,7 @@ import 'zone.js/dist/zone'; // Included with Angular CLI.
 // TODO move GUN.js imports to a better place
 // These are here to make sure they're done before the app loads
 import 'gun';
+import 'gun/nts';
 import 'gun/lib/radix';
 import 'gun/lib/radisk';
 import 'gun/lib/store';

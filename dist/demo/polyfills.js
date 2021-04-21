@@ -2332,6 +2332,65 @@ function canReportError(observer) {
 
 /***/ }),
 
+/***/ "97Hq":
+/*!*************************************!*\
+  !*** /home/nsreed/repos/gun/nts.js ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+;(function(){
+	// NOTE: While the algorithm is P2P,
+	// the current implementation is one sided,
+	// only browsers self-modify, servers do not.
+	// Need to fix this! Since WebRTC is now working.
+	var env;
+	if(typeof global !== "undefined"){ env = global }
+	if(typeof window !== "undefined"){ var Gun = (env = window).Gun }
+	else {
+	if(true){ var Gun = __webpack_require__(/*! ./gun */ "mKbU") }
+	}
+
+	Gun.on('opt', function(ctx){
+		this.to.next(ctx);
+		if(ctx.once){ return }
+		ctx.on('in', function(at){
+			if(!at.nts && !at.NTS){
+				return this.to.next(at);
+			}
+			if(at['@']){
+				(ask[at['@']]||noop)(at);
+				return;
+			}
+			if(env.window){
+				return this.to.next(at);
+			}
+			this.to.next({'@': at['#'], nts: Gun.time.is()});
+		});
+		var ask = {}, noop = function(){};
+		if(!env.window){ return }
+
+		Gun.state.drift = Gun.state.drift || 0;
+		setTimeout(function ping(){
+			var NTS = {}, ack = Gun.text.random(), msg = {'#': ack, nts: true};
+			NTS.start = Gun.state();
+			ask[ack] = function(at){
+				NTS.end = Gun.state();
+				Gun.obj.del(ask, ack);
+				NTS.latency = (NTS.end - NTS.start)/2;
+				if(!at.nts && !at.NTS){ return }
+				NTS.calc = NTS.latency + (at.NTS || at.nts);
+				Gun.state.drift -= (NTS.end - NTS.calc)/2;
+				setTimeout(ping, 1000);
+			}
+			ctx.on('out', msg);
+		}, 1);
+	});
+	// test by opening up examples/game/nts.html on devices that aren't NTP synced.
+}());
+
+/***/ }),
+
 /***/ "9M8c":
 /*!**********************************************************************!*\
   !*** ./node_modules/rxjs/_esm2015/internal/operators/bufferCount.js ***!
@@ -28262,33 +28321,35 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var zone_js_dist_zone__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(zone_js_dist_zone__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var gun__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! gun */ "U+kO");
 /* harmony import */ var gun__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(gun__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var gun_lib_radix__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! gun/lib/radix */ "ONb1");
-/* harmony import */ var gun_lib_radix__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(gun_lib_radix__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var gun_lib_radisk__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! gun/lib/radisk */ "MUnX");
-/* harmony import */ var gun_lib_radisk__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(gun_lib_radisk__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var gun_lib_store__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! gun/lib/store */ "0OyQ");
-/* harmony import */ var gun_lib_store__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(gun_lib_store__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var gun_lib_rindexed__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! gun/lib/rindexed */ "TVcf");
-/* harmony import */ var gun_lib_rindexed__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(gun_lib_rindexed__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var gun_sea__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! gun/sea */ "DDo5");
-/* harmony import */ var gun_sea__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(gun_sea__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var gun_lib_load__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! gun/lib/load */ "Or6+");
-/* harmony import */ var gun_lib_load__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(gun_lib_load__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var gun_lib_open__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! gun/lib/open */ "T5D8");
-/* harmony import */ var gun_lib_open__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(gun_lib_open__WEBPACK_IMPORTED_MODULE_8__);
-/* harmony import */ var gun_lib_then__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! gun/lib/then */ "+7Q8");
-/* harmony import */ var gun_lib_then__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(gun_lib_then__WEBPACK_IMPORTED_MODULE_9__);
-/* harmony import */ var gun_lib_time__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! gun/lib/time */ "TzrF");
-/* harmony import */ var gun_lib_time__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(gun_lib_time__WEBPACK_IMPORTED_MODULE_10__);
-/* harmony import */ var gun_lib_not__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! gun/lib/not */ "Ld82");
-/* harmony import */ var gun_lib_not__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(gun_lib_not__WEBPACK_IMPORTED_MODULE_11__);
-/* harmony import */ var gun_lib_unset__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! gun/lib/unset */ "8Jsz");
-/* harmony import */ var gun_lib_unset__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(gun_lib_unset__WEBPACK_IMPORTED_MODULE_12__);
-/* harmony import */ var gun_lib_webrtc__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! gun/lib/webrtc */ "pmEQ");
-/* harmony import */ var gun_lib_webrtc__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(gun_lib_webrtc__WEBPACK_IMPORTED_MODULE_13__);
-/* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! paper */ "IiLU");
-/* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(paper__WEBPACK_IMPORTED_MODULE_14__);
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @angular/core */ "fXoL");
+/* harmony import */ var gun_nts__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! gun/nts */ "97Hq");
+/* harmony import */ var gun_nts__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(gun_nts__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var gun_lib_radix__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! gun/lib/radix */ "ONb1");
+/* harmony import */ var gun_lib_radix__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(gun_lib_radix__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var gun_lib_radisk__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! gun/lib/radisk */ "MUnX");
+/* harmony import */ var gun_lib_radisk__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(gun_lib_radisk__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var gun_lib_store__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! gun/lib/store */ "0OyQ");
+/* harmony import */ var gun_lib_store__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(gun_lib_store__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var gun_lib_rindexed__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! gun/lib/rindexed */ "TVcf");
+/* harmony import */ var gun_lib_rindexed__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(gun_lib_rindexed__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var gun_sea__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! gun/sea */ "DDo5");
+/* harmony import */ var gun_sea__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(gun_sea__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var gun_lib_load__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! gun/lib/load */ "Or6+");
+/* harmony import */ var gun_lib_load__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(gun_lib_load__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var gun_lib_open__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! gun/lib/open */ "T5D8");
+/* harmony import */ var gun_lib_open__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(gun_lib_open__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var gun_lib_then__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! gun/lib/then */ "+7Q8");
+/* harmony import */ var gun_lib_then__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(gun_lib_then__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var gun_lib_time__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! gun/lib/time */ "TzrF");
+/* harmony import */ var gun_lib_time__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(gun_lib_time__WEBPACK_IMPORTED_MODULE_11__);
+/* harmony import */ var gun_lib_not__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! gun/lib/not */ "Ld82");
+/* harmony import */ var gun_lib_not__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(gun_lib_not__WEBPACK_IMPORTED_MODULE_12__);
+/* harmony import */ var gun_lib_unset__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! gun/lib/unset */ "8Jsz");
+/* harmony import */ var gun_lib_unset__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(gun_lib_unset__WEBPACK_IMPORTED_MODULE_13__);
+/* harmony import */ var gun_lib_webrtc__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! gun/lib/webrtc */ "pmEQ");
+/* harmony import */ var gun_lib_webrtc__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(gun_lib_webrtc__WEBPACK_IMPORTED_MODULE_14__);
+/* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! paper */ "IiLU");
+/* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(paper__WEBPACK_IMPORTED_MODULE_15__);
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! @angular/core */ "fXoL");
 /**
  * This file includes polyfills needed by Angular and is loaded before the app.
  * You can add your own extra polyfills to this file.
@@ -28350,6 +28411,7 @@ __webpack_require__.r(__webpack_exports__);
 /* GUN IMPORT */
 // TODO move GUN.js imports to a better place
 // These are here to make sure they're done before the app loads
+
 
 
 
@@ -28427,7 +28489,7 @@ function addChangeEmitter(prototype) {
         Object.defineProperty(prototype, 'changes$', {
             get() {
                 if (!this._changes$) {
-                    this._changes$ = new _angular_core__WEBPACK_IMPORTED_MODULE_15__["EventEmitter"]();
+                    this._changes$ = new _angular_core__WEBPACK_IMPORTED_MODULE_16__["EventEmitter"]();
                 }
                 return this._changes$;
             },
@@ -28436,19 +28498,19 @@ function addChangeEmitter(prototype) {
     }
 }
 const toIntercept = [
-    paper__WEBPACK_IMPORTED_MODULE_14__["Item"],
-    paper__WEBPACK_IMPORTED_MODULE_14__["Path"],
-    paper__WEBPACK_IMPORTED_MODULE_14__["Layer"],
-    paper__WEBPACK_IMPORTED_MODULE_14__["Shape"],
-    paper__WEBPACK_IMPORTED_MODULE_14__["Shape"].Circle,
-    paper__WEBPACK_IMPORTED_MODULE_14__["Shape"].Ellipse,
-    paper__WEBPACK_IMPORTED_MODULE_14__["Shape"].Rectangle,
-    paper__WEBPACK_IMPORTED_MODULE_14__["Style"],
-    paper__WEBPACK_IMPORTED_MODULE_14__["Group"],
-    paper__WEBPACK_IMPORTED_MODULE_14__["Gradient"],
-    paper__WEBPACK_IMPORTED_MODULE_14__["Color"],
-    paper__WEBPACK_IMPORTED_MODULE_14__["View"],
-    paper__WEBPACK_IMPORTED_MODULE_14__["Size"],
+    paper__WEBPACK_IMPORTED_MODULE_15__["Item"],
+    paper__WEBPACK_IMPORTED_MODULE_15__["Path"],
+    paper__WEBPACK_IMPORTED_MODULE_15__["Layer"],
+    paper__WEBPACK_IMPORTED_MODULE_15__["Shape"],
+    paper__WEBPACK_IMPORTED_MODULE_15__["Shape"].Circle,
+    paper__WEBPACK_IMPORTED_MODULE_15__["Shape"].Ellipse,
+    paper__WEBPACK_IMPORTED_MODULE_15__["Shape"].Rectangle,
+    paper__WEBPACK_IMPORTED_MODULE_15__["Style"],
+    paper__WEBPACK_IMPORTED_MODULE_15__["Group"],
+    paper__WEBPACK_IMPORTED_MODULE_15__["Gradient"],
+    paper__WEBPACK_IMPORTED_MODULE_15__["Color"],
+    paper__WEBPACK_IMPORTED_MODULE_15__["View"],
+    paper__WEBPACK_IMPORTED_MODULE_15__["Size"],
 ].map((con) => con.prototype);
 toIntercept.forEach((proto) => interceptAll(proto));
 function addGunProperty(prototype) {
