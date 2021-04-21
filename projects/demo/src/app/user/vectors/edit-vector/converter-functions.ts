@@ -126,9 +126,11 @@ export function bindPaperJSON(data: any, parent: GunChain): any {
 
 export function getUUID(parent: GunChain) {
   try {
-    return (parent.gun as any)._.root.opt.uuid();
+    return (parent.gun as any)._.root.user._.opt.uuid();
   } catch (e: any) {
-    return `${Math.random()}`.replace('.', '_');
+    return `${Date.now().toString(16)}${Math.random()
+      .toString()
+      .replace('.', '_')}`;
   }
 }
 
