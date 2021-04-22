@@ -11,12 +11,12 @@ export class EraserTool extends VectorTool {
     (this.scope.settings as any).insertItems = false;
     if (!this.path) {
       this.path = new paper.Path([e.downPoint]);
-      this.path.data.ignored = true;
+      this.path.data.ignore = true;
     }
     this.path.add(e.point);
     const intersects = this.project.getItems({
       match: (i: paper.Item) =>
-        i !== this.path && !i.data.ignored && i.intersects(this.path as any),
+        i !== this.path && !i.data.ignore && i.intersects(this.path as any),
     });
     // TODO skip removing items that were added since the beginning of this drag
     intersects.forEach((i) => i.remove());

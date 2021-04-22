@@ -24,7 +24,7 @@ export class PaperPair {
   protected importing = false;
   save$ = new EventEmitter();
   debouncedSave$ = this.save$.pipe(
-    filter((v) => !this.ctx.data.ignored),
+    filter((v) => !this.ctx.data.ignore),
     bufferTime(100)
   );
   saveProperty$ = new EventEmitter<[string] | [string, any]>(); // TODO document this...

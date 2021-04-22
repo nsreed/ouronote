@@ -78,7 +78,7 @@ export class ItemPair extends PaperPair {
   afterInsertChild$ = after$(this.item, 'insertChild').pipe(
     map(returned),
     tap((item) => (this.ignoreInsert ? this.logger.log('ignored') : {})),
-    filter((item) => !this.item.data.ignored && !item.data.ignored),
+    filter((item) => !this.item.data.ignore && !item.data.ignore),
     filter((item) => !this.ignoreInsert && item !== null && item !== undefined),
     switchMap((item) =>
       this.importing ? this.afterImportJSON$.pipe(mapTo(item)) : of(item)
@@ -145,7 +145,7 @@ export class ItemPair extends PaperPair {
       console.warn('tried to save while importing');
       return;
     }
-    if (this.item.data.ignored) {
+    if (this.item.data.ignore) {
       console.warn('tried saving ignored item');
       return;
     }
@@ -215,7 +215,7 @@ export class ItemPair extends PaperPair {
       this.logger.warn('null child');
       return;
     }
-    if (localChild.data.ignored) {
+    if (localChild.data.ignore) {
       this.logger.warn('tried to pair an ignored child!');
       return;
     }
@@ -292,7 +292,7 @@ export class ItemPair extends PaperPair {
   }
 
   onLocalRemove() {
-    if (this.item.data.ignored) {
+    if (this.item.data.ignore) {
       return;
     }
     this.chain.put(null as never);
