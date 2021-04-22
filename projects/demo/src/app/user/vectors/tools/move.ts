@@ -19,8 +19,11 @@ export class MoveTool extends VectorTool {
         match: (item: paper.Item) => item.className !== 'Layer',
       })
       .forEach((item) => {
-        // TODO find a better way to keep track of saved fields
-        (item as any).pair.save(['position', 'segments']);
+        const saveFields = ['position'];
+        if (item.className === 'Path') {
+          saveFields.push('segments');
+        }
+        (item as any).pair.save(saveFields);
       });
   });
 }
