@@ -277,9 +277,11 @@ export class ItemPair extends PaperPair {
       } else if (json && !child) {
         // child was added
         const newChild = this.constructChild(json, soul);
-        // TODO Performance: onLocalChild sets up **everything** on **every** child in this loop, can we suffice for deferred setups???
-        this.onLocalChild(newChild);
-        toInsert.push(newChild);
+        if (newChild) {
+          // TODO Performance: onLocalChild sets up **everything** on **every** child in this loop, can we suffice for deferred setups???
+          this.onLocalChild(newChild);
+          toInsert.push(newChild);
+        }
       }
     });
 

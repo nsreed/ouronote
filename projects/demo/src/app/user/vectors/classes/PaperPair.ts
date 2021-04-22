@@ -110,6 +110,10 @@ export class PaperPair {
       }
       return;
     }
+    if (!hasRequired(childJSON)) {
+      this.logger.error('child does not have required fields', childJSON);
+      return;
+    }
     const prevInsertItemsValue = (this.scope.settings as any).insertItems;
     (this.scope.settings as any).insertItems = false;
     const scrubbed = {
