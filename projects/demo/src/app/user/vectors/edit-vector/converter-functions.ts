@@ -125,7 +125,13 @@ export function bindPaperJSON(data: any, parent: GunChain): any {
 }
 
 export function getUUID(parent: GunChain) {
-  return (parent.gun as any)._.root.opt.uuid();
+  try {
+    return (parent.gun as any)._.root.user._.opt.uuid();
+  } catch (e: any) {
+    return `${Date.now().toString(16)}${Math.random()
+      .toString()
+      .replace('.', '_')}`;
+  }
 }
 
 export function gunifyProject(node: GunChain, project: paper.Project) {

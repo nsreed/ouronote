@@ -19,6 +19,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { NgGunService } from '../../../../../../ng-gun/src/lib/ng-gun.service';
 import { unpack } from '../classes/packaging';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { LogService } from 'projects/log/src/public-api';
 
 const VECTOR_PAPER_JSON_KEY = 'graph';
 
@@ -94,14 +95,14 @@ export class EditVectorComponent
         .get('title')
         .on()
         .subscribe((title: any) => {
-          console.log('title change', title);
+          // console.log('title change', title);
           this.vectorForm.get('title')?.patchValue(title, { emitEvent: false });
         });
       this.vectorForm
         .get('title')
         ?.valueChanges.pipe(distinct())
         .subscribe((title) => {
-          console.log('local title change', title);
+          // console.log('local title change', title);
           node.get('title').put(title);
         });
     });
@@ -118,12 +119,13 @@ export class EditVectorComponent
   ngOnInit(): void {}
 
   onProjectReady(project: paper.Project, gun: GunChain<VectorGraph>) {
-    console.log('setting up project graph');
+    // console.log('setting up project graph');
     // this.paperDirective.tool.activate();
     const paperChain: ProjectPair = new ProjectPair(
       gun as any,
       this.paperDirective.project as any,
-      this.paperDirective.scope as any
+      this.paperDirective.scope as any,
+      new LogService()
     );
   }
 

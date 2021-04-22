@@ -27,7 +27,7 @@ export class VectorTool extends Tool {
 
   name = Object.getPrototypeOf(this).constructor.name.replace(/tool/gi, '');
 
-  touchDown = this.down.pipe(filter((e: any) => e.event instanceof TouchEvent));
+  // touchDown = this.down.pipe(filter((e: any) => e.event instanceof TouchEvent));
 
   get project() {
     return this.scope.project as paper.Project;
@@ -35,9 +35,9 @@ export class VectorTool extends Tool {
 
   constructor(public readonly scope: paper.PaperScope) {
     super();
-    this.touchDown.subscribe((e) => {
-      console.log('touch down', e);
-    });
+    // this.touchDown.subscribe((e) => {
+    //   console.log('touch down', e);
+    // });
 
     this.wheel.subscribe((e) => {
       const zoomDelta = e.event.deltaY;

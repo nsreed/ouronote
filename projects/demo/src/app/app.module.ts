@@ -33,16 +33,17 @@ import { CertificateFormComponent } from './components/certificate-form/certific
 import { CertificatesComponent } from './components/certificates/certificates.component';
 import { ConfirmComponent } from './components/confirm/confirm.component';
 import { FormsUiModule } from './forms-ui/forms-ui.module';
-import { GunPeersComponent } from './gun-peers/gun-peers.component';
 import { LoginComponent } from './login/login.component';
 import { SessionInfoComponent } from './session-info/session-info.component';
 import { AliasAutocompleteComponent } from './components/alias-autocomplete/alias-autocomplete.component';
 import { CertificatesModule } from './certificates/certificates.module';
 import { WelcomeComponent } from './welcome/welcome.component';
+import { LogModule } from '../../../log/src/lib/log.module';
+import { LogService } from '../../../log/src/lib/log.service';
+import { ComponentsModule } from './components/components.module';
 
 @NgModule({
   declarations: [
-    GunPeersComponent,
     AppComponent,
     LoginComponent,
     SessionInfoComponent,
@@ -61,6 +62,7 @@ import { WelcomeComponent } from './welcome/welcome.component';
     MatIconModule,
     MatButtonModule,
     ScrollingModule,
+    LogModule,
     MatCardModule,
     MatCheckboxModule,
     MatChipsModule,
@@ -83,14 +85,24 @@ import { WelcomeComponent } from './welcome/welcome.component';
     MatTooltipModule,
     CertificatesModule,
     MatSidenavModule,
+    ComponentsModule,
   ],
   providers: [
     {
       provide: 'gun-options',
       useValue: {
         localStorage: false,
-        peers: [],
+        peers: [
+          location.origin.match(/localhost/)
+            ? 'http://localhost:8765/gun'
+            : location.origin + '/gun',
+          // 'https://resistance-tower.herokuapp.com/gun',
+        ],
       },
+    },
+    {
+      provide: LogService,
+      useClass: LogService,
     },
   ],
   exports: [CertificatesComponent],

@@ -1,15 +1,26 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { VectorService } from './vector.service';
 import { map, filter } from 'rxjs/operators';
 import { gunUpdateTime } from '../../../../../ng-gun/src/lib/functions/gun-utils';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmComponent } from '../../components/confirm/confirm.component';
 import { CreateVectorComponent } from './components/create-vector/create-vector.component';
+import { LogService } from '../../../../../log/src/lib/log.service';
 
+export function buildVectorLogger(parent: LogService) {
+  return parent.supplemental('name');
+}
 @Component({
   selector: 'app-vectors',
   templateUrl: './vectors.component.html',
   styleUrls: ['./vectors.component.scss'],
+  providers: [
+    // {
+    //   provide: LogService,
+    //   useFactory: buildVectorLogger,
+    //   deps: [LogService, 'log-name'],
+    // },
+  ],
 })
 export class VectorsComponent implements OnInit {
   vectors = this.vectorService.vectors

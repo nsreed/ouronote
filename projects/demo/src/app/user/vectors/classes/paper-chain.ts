@@ -61,7 +61,7 @@ export const propertyChange$ = <T = any, K extends keyof T = any>(
     set: (value) => {
       // TODO predefine get/set before property to skip this check on every access
       if (!(item as any)[setFnName]) {
-        console.warn('no setter for', property);
+        // console.warn('no setter for', property);
         (item as any)[propertyName] = value;
       } else {
         (item as any)[setFnName](value);

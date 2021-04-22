@@ -22,17 +22,22 @@ import { getUUID } from '../edit-vector/converter-functions';
 import {
   EXPECT_ARRAY,
   hasRequired,
+  INCOMING_DEBOUNCE,
   MUTATIONS,
   MUTATION_PROPERTIES,
+  SAVE_DEBOUNCE,
 } from './constants';
 import { serializeValue } from './packaging';
 import { PaperPair } from './PaperPair';
+import { LogService } from '../../../../../../log/src/lib/log.service';
+import * as Gun from 'gun';
 
 export class ItemPair extends PaperPair {
   graphValue: any;
   graph$ = this.chain
     .on({ changes: true, bypassZone: true } as GunChainCallbackOptions)
-    .pipe(debounceTime(25), shareReplay(1));
+    .pipe(debounceTime(INCOMING_DEBOUNCE), shareReplay(1));
+
   graphValue$ = this.graph$.pipe(
     filter((json) => hasRequired(json)),
     distinct((v) => JSON.stringify(v)),
@@ -60,7 +65,7 @@ export class ItemPair extends PaperPair {
     tap((childVK) => {
       this.childSouls.add(childVK[1]);
     }),
-    bufferTime(1000),
+    bufferTime(SAVE_DEBOUNCE),
     filter((children) => children.length > 0)
   );
 
@@ -72,6 +77,7 @@ export class ItemPair extends PaperPair {
   afterImportJSON$ = after$(this.item, 'importJSON');
   afterInsertChild$ = after$(this.item, 'insertChild').pipe(
     map(returned),
+    tap((item) => (this.ignoreInsert ? this.logger.log('ignored') : {})),
     filter((item) => !this.item.data.ignored && !item.data.ignored),
     filter((item) => !this.ignoreInsert && item !== null && item !== undefined),
     switchMap((item) =>
@@ -98,9 +104,10 @@ export class ItemPair extends PaperPair {
     private chain: GunChain<ItemGraph>,
     private item: paper.Item,
     project: paper.Project,
-    scope: paper.PaperScope
+    scope: paper.PaperScope,
+    logger: LogService
   ) {
-    super(item, project, scope);
+    super(item, project, scope, logger);
     this.setup();
   }
 
@@ -192,7 +199,7 @@ export class ItemPair extends PaperPair {
         this.save();
       } else {
         // TODO handle this (will be necessary for supporting function interceptions that change non-array values)
-        console.warn('%s onLocalChange$ was not an array, not saving!!!');
+        this.logger.warn('onLocalChange$ was not an array, not saving!!!');
       }
     });
   }
@@ -203,33 +210,40 @@ export class ItemPair extends PaperPair {
     });
   }
 
-  onLocalChild(item: paper.Item) {
-    if (!item) {
-      console.warn('null child');
+  onLocalChild(localChild: paper.Item) {
+    if (!localChild) {
+      this.logger.warn('null child');
       return;
     }
-    if (item.data.ignored) {
-      console.warn('tried to pair an ignored child!');
+    if (localChild.data.ignored) {
+      this.logger.warn('tried to pair an ignored child!');
       return;
     }
-    const l = item as any;
-    if (!l.pair) {
-      if (!l.data.soul) {
+    const childObj = localChild as any;
+    if (!childObj.pair) {
+      if (!childObj.data.soul) {
         const soul = getUUID(this.chain as any);
-        l.data.soul = soul;
+        childObj.data.soul = soul;
       }
-      const childGun = this.children.get(l.data.soul);
-      const childPair = new ItemPair(childGun, item, this.project, this.scope);
-      l.pair = childPair;
+      const childGun = this.children.get(childObj.data.soul);
+      const childPair = new ItemPair(
+        childGun,
+        localChild,
+        this.project,
+        this.scope,
+        this.logger
+      );
+      childObj.pair = childPair;
     }
   }
 
   onGraph(json: any) {
     this.graphValue = json;
     // FIXME path segments getting overwritten by previous saves
+    // FIXME occasionally only the first debounce of a path will be saved
     // console.log('%s onGraph', this.item.toString());
     if (!json) {
-      console.warn('  NO JSON! SHOULD REMOVE???');
+      this.logger.warn('  NO JSON! SHOULD REMOVE???');
     }
     const scrubbed = this.scrubJSON(json, this.item.data.soul);
     delete scrubbed.className;
@@ -238,16 +252,22 @@ export class ItemPair extends PaperPair {
       scrubbed,
     ] as any) as any;
     if (imported !== this.item) {
-      console.error('unexpected new item!!!');
+      this.logger.error('unexpected new item!!!');
     }
   }
 
   onGraphChildren(data: any[]) {
-    // console.log('%s onGraphChildren', this.item.toString());
-    // console.log(data);
+    if (data.length === 0) {
+      return;
+    }
+    this.logger.log(
+      'onGraphChildren',
+      data
+        .map((v) => v[0] as Partial<paper.Item>)
+        .filter((i) => i !== null)
+        .map((i) => `${i.className} ${Gun.node.soul(i as any)}`)
+    );
     const toInsert = [] as paper.Item[];
-    // const prev = (this.scope.settings as any).autoUpdate;
-    // (this.scope.settings as any).autoUpdate = false;
     data.forEach((childVK) => {
       const soul = childVK[1];
       const json = childVK[0];
@@ -263,10 +283,12 @@ export class ItemPair extends PaperPair {
       }
     });
 
-    // (this.scope.settings as any).autoUpdate = true;
-    this.ignoreInsert = true;
-    this.item.insertChildren(this.item.children.length, toInsert as any);
-    this.ignoreInsert = false;
+    if (toInsert.length > 0) {
+      this.logger.log('inserting %d paper items', toInsert.length);
+      this.ignoreInsert = true;
+      this.item.insertChildren(this.item.children.length, toInsert as any);
+      this.ignoreInsert = false;
+    }
   }
 
   onLocalRemove() {

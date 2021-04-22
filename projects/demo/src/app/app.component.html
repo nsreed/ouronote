@@ -1,16 +1,22 @@
 <mat-sidenav-container fxFlexFill>
-  <mat-sidenav #nav [mode]="'side'" [opened]="true">
+  <mat-sidenav #nav [mode]="'side'" [opened]="user.is">
     <!-- <mat-toolbar>
       <button mat-icon-button (click)="nav.toggle()">
         <mat-icon>chevron_left</mat-icon>
       </button>
     </mat-toolbar> -->
-    <mat-action-list *ngIf="user.is">
+    <mat-action-list>
       <mat-list-item routerLinkActive="active" routerLink="/user/vectors" matTooltip="Vectors">
         <mat-icon mat-list-icon>note</mat-icon>
       </mat-list-item>
-      <mat-list-item [matMenuTriggerFor]="sessionMenu">
+      <mat-list-item [matMenuTriggerFor]="sessionMenu" matTooltip="Session">
         <mat-icon mat-list-icon>person</mat-icon>
+      </mat-list-item>
+      <mat-list-item (click)="bugReport()" matTooltip="Open bug report dialog">
+        <mat-icon mat-list-icon>bug_report</mat-icon>
+      </mat-list-item>
+      <mat-list-item (click)="peers()" matTooltip="Open peer statistics">
+        <mat-icon mat-list-icon>signal_wifi_4_bar</mat-icon>
       </mat-list-item>
       <mat-menu #sessionMenu>
         <button mat-menu-item (click)="logout()">Log Out</button>

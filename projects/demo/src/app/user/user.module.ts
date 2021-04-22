@@ -9,12 +9,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { LogModule } from '../../../../log/src/lib/log.module';
 
 @NgModule({
   declarations: [UserComponent, DashboardComponent],
   imports: [
     CommonModule,
     UserRoutingModule,
+    LogModule,
     MatButtonModule,
     MatToolbarModule,
     MatIconModule,

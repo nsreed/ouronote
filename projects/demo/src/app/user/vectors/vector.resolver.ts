@@ -26,11 +26,11 @@ export class VectorResolver implements Resolve<boolean> {
       .get(route.params.soul)
       .once()
       .pipe(
-        tap((vector: any) => console.log('got vector', vector)),
+        // tap((vector: any) => console.log('got vector', vector)),
         switchMap((vector: any) =>
           vector ? of(vector) : this.ngGun.get(route.params.soul).once()
         ),
-        tap((vector: any) => console.log('got vector', vector)),
+        // tap((vector: any) => console.log('got vector', vector)),
         map((post: any) => post._)
       );
   }

@@ -36,9 +36,7 @@
               "projects/ng-gun/tsconfig.lib.json",
               "projects/ng-gun/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
@@ -67,10 +65,14 @@
               "projects/demo/src/favicon.ico",
               "projects/demo/src/assets"
             ],
-            "styles": [
-              "projects/demo/src/styles.scss"
-            ],
-            "scripts": []
+            "styles": ["projects/demo/src/styles.scss"],
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "aspect-ts",
+              "file-saver",
+              "gun",
+              "paper"
+            ]
           },
           "configurations": {
             "production": {
@@ -130,9 +132,7 @@
               "projects/demo/src/favicon.ico",
               "projects/demo/src/assets"
             ],
-            "styles": [
-              "projects/demo/src/styles.scss"
-            ],
+            "styles": ["projects/demo/src/styles.scss"],
             "scripts": []
           }
         },
@@ -144,9 +144,7 @@
               "projects/demo/tsconfig.spec.json",
               "projects/demo/e2e/tsconfig.json"
             ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         },
         "e2e": {
@@ -196,9 +194,7 @@
               "projects/ng-gun-forms/tsconfig.lib.json",
               "projects/ng-gun-forms/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
@@ -236,9 +232,7 @@
               "projects/log/tsconfig.lib.json",
               "projects/log/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         }
       }

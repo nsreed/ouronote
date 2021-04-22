@@ -1,0 +1,16 @@
+<h1>Peers</h1>
+<div gdColumns="max-content max-content auto repeat(2, max-content)" gdGap="1em" gdAlignRows="stretch">
+  <h2>id</h2>
+  <h2>state</h2>
+  <h2>last</h2>
+  <h2>queue</h2>
+  <h2>tail</h2>
+  <ng-container *ngFor="let peer of peers|keyvalue">
+    <div>{{peer.key}}</div>
+    <div>{{peer.value.wire?.readyState}}</div>
+    <div>{{peer.value.last}}</div>
+    <div>{{peer.value.queue?.length}}</div>
+    <div>{{peer.value.tail}}</div>
+  </ng-container>
+</div>
+<button mat-button (click)="logGun()">console.log gun</button>

@@ -1,12 +1,8 @@
 import { NgModule } from '@angular/core';
-import { LogComponent } from './log.component';
-
-
 
 @NgModule({
-  declarations: [LogComponent],
-  imports: [
-  ],
-  exports: [LogComponent]
+  declarations: [],
+  imports: [],
+  exports: [],
 })
-export class LogModule { }
+export class LogModule {}

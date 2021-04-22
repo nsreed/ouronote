@@ -15,7 +15,7 @@ export class RouteVectorDirective {
   vectorNode!: GunChain<VectorGraph>;
   userPub = this.ngGun.auth().is.pub;
   vectorNode$ = this.route.data.pipe(
-    tap((node: any) => console.log('ROUTE SOUL', node.soul)),
+    // tap((node: any) => console.log('ROUTE SOUL', node.soul)),
     map((data) =>
       data.soul['#'].indexOf(this.userPub) < 0
         ? this.ngGun.get(data.soul)
