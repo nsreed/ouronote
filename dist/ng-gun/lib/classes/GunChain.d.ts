@@ -2,9 +2,9 @@ import { NgZone } from '@angular/core';
 import { IGunChainReference } from 'gun/types/chain';
 import { AlwaysDisallowedType, ArrayAsRecord, ArrayOf, DisallowArray, DisallowPrimitives } from 'gun/types/types';
 import { Observable, Subject } from 'rxjs';
-import { LexicalQuery } from './LexicalQuery';
-import { IGunPeer } from './IGunPeer';
+import { GunRuntimeOpts } from '../GunRuntimeOpts';
 import { ICertStore } from './ICertStore';
+import { LexicalQuery } from './LexicalQuery';
 import * as i0 from "@angular/core";
 export declare const GUN_NODE: unique symbol;
 export interface GunChainCallbackOptions {
@@ -17,16 +17,10 @@ export interface GunChainFunctions {
     secret: (value: any) => IGunChainReference;
     grant: (value: any) => IGunChainReference;
 }
-interface IGunPeers {
-    [key: string]: IGunPeer;
-}
-interface IGunRootOpt {
-    peers: IGunPeers;
-}
 export interface GunChainMeta {
     _: {
         root: {
-            opt: IGunRootOpt;
+            opt: GunRuntimeOpts;
         };
     } & any;
 }
@@ -89,5 +83,4 @@ export declare class GunAuthChain<DataType = Record<string, any>, ReferenceKey =
  */
 export declare class GunCertChain extends GunChain {
 }
-export {};
 //# sourceMappingURL=GunChain.d.ts.map

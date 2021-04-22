@@ -1,0 +1,1 @@
+{"version":3,"file":"GunPeer.d.ts","sourceRoot":"","sources":["../../../projects/ng-gun/src/lib/GunPeer.ts"],"names":[],"mappings":"AAAA,oBAAY,OAAO,GAAG;IACpB,KAAK,EAAE,GAAG,CAAC;IACX,EAAE,EAAE,MAAM,CAAC;IACX,IAAI,EAAE,MAAM,CAAC;IACb,KAAK,EAAE,MAAM,EAAE,CAAC;IAChB,IAAI,EAAE,GAAG,CAAC;IACV,GAAG,EAAE,MAAM,CAAC;IACZ,IAAI,EAAE,SAAS,CAAC;CACjB,CAAC"}

@@ -11,3 +11,5 @@ export * from './lib/updated.pipe';
 export * from './lib/chain.directive';
 export * from './lib/alias.pipe';
 export * from './lib/verify.pipe';
+export * from './lib/GunPeer';
+export * from './lib/GunPeers';

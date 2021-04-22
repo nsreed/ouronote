@@ -651,6 +651,20 @@ const SAVE_DEBOUNCE = 1000;
 
 /***/ }),
 
+/***/ "6N56":
+/*!********************************************!*\
+  !*** ./projects/ng-gun/src/lib/GunPeer.ts ***!
+  \********************************************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+
+
+
+/***/ }),
+
 /***/ "7ESq":
 /*!**********************************************!*\
   !*** ./node_modules/aspect-ts/lib/aspect.js ***!
@@ -962,6 +976,20 @@ class VectorsRoutingModule {
 VectorsRoutingModule.ɵmod = _angular_core__WEBPACK_IMPORTED_MODULE_5__["ɵɵdefineNgModule"]({ type: VectorsRoutingModule });
 VectorsRoutingModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_5__["ɵɵdefineInjector"]({ factory: function VectorsRoutingModule_Factory(t) { return new (t || VectorsRoutingModule)(); }, imports: [[_angular_router__WEBPACK_IMPORTED_MODULE_0__["RouterModule"].forChild(routes)], _angular_router__WEBPACK_IMPORTED_MODULE_0__["RouterModule"]] });
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && _angular_core__WEBPACK_IMPORTED_MODULE_5__["ɵɵsetNgModuleScope"](VectorsRoutingModule, { imports: [_angular_router__WEBPACK_IMPORTED_MODULE_0__["RouterModule"]], exports: [_angular_router__WEBPACK_IMPORTED_MODULE_0__["RouterModule"]] }); })();
+
+
+/***/ }),
+
+/***/ "CGJs":
+/*!*********************************************!*\
+  !*** ./projects/ng-gun/src/lib/GunPeers.ts ***!
+  \*********************************************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+
 
 
 /***/ }),
@@ -20262,7 +20290,7 @@ EditVectorComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵdefi
         _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("gunChain", _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵpipeBind1"](2, 2, ctx.vectorNode$));
         _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵadvance"](3);
         _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("ngIf", ctx.project);
-    } }, directives: [_ng_gun_src_lib_chain_directive__WEBPACK_IMPORTED_MODULE_11__["ChainDirective"], _angular_common__WEBPACK_IMPORTED_MODULE_12__["NgIf"], _angular_flex_layout_flex__WEBPACK_IMPORTED_MODULE_13__["DefaultFlexDirective"], _angular_flex_layout_flex__WEBPACK_IMPORTED_MODULE_13__["DefaultLayoutDirective"], _angular_flex_layout_flex__WEBPACK_IMPORTED_MODULE_13__["DefaultLayoutAlignDirective"], _paper_directive__WEBPACK_IMPORTED_MODULE_14__["PaperDirective"], _angular_material_expansion__WEBPACK_IMPORTED_MODULE_15__["MatAccordion"], _angular_material_expansion__WEBPACK_IMPORTED_MODULE_15__["MatExpansionPanel"], _angular_material_expansion__WEBPACK_IMPORTED_MODULE_15__["MatExpansionPanelHeader"], _angular_material_expansion__WEBPACK_IMPORTED_MODULE_15__["MatExpansionPanelContent"], _angular_material_expansion__WEBPACK_IMPORTED_MODULE_15__["MatExpansionPanelActionRow"], _angular_material_button__WEBPACK_IMPORTED_MODULE_16__["MatAnchor"], _angular_material_icon__WEBPACK_IMPORTED_MODULE_17__["MatIcon"], _angular_common__WEBPACK_IMPORTED_MODULE_12__["NgForOf"], _angular_material_button_toggle__WEBPACK_IMPORTED_MODULE_18__["MatButtonToggle"], _components_tool_directive__WEBPACK_IMPORTED_MODULE_19__["ToolDirective"], _components_color_form_color_form_component__WEBPACK_IMPORTED_MODULE_20__["ColorFormComponent"], _angular_material_list__WEBPACK_IMPORTED_MODULE_21__["MatList"], _angular_material_list__WEBPACK_IMPORTED_MODULE_21__["MatListItem"], _angular_common__WEBPACK_IMPORTED_MODULE_12__["NgClass"], _angular_flex_layout_extended__WEBPACK_IMPORTED_MODULE_22__["DefaultClassDirective"]], pipes: [_angular_common__WEBPACK_IMPORTED_MODULE_12__["AsyncPipe"]], styles: ["[_nghost-%COMP%] {\n  height: 100%;\n  display: flex;\n  flex-direction: row;\n}\n\n#CanvasContainer[_ngcontent-%COMP%] {\n  overflow: hidden;\n}\n\ncanvas#Workspace[_ngcontent-%COMP%] {\n  outline: solid 10px gray;\n}\n\nmat-accordion[_ngcontent-%COMP%] {\n  overflow: hidden;\n}\n\nmat-accordion[_ngcontent-%COMP%]:last-child {\n  flex-grow: 1;\n}\n\nform[_ngcontent-%COMP%] {\n  padding: 0;\n  margin: 0;\n}\n\nmat-list-item.active[_ngcontent-%COMP%] {\n  white-space: nowrap;\n  break-inside: avoid;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  outline: solid 3px #0000ff55;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uL2VkaXQtdmVjdG9yLmNvbXBvbmVudC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBR0UsWUFBQTtFQUNBLGFBQUE7RUFDQSxtQkFBQTtBQURGOztBQUlBO0VBQ0UsZ0JBQUE7QUFERjs7QUFJQTtFQUNFLHdCQUFBO0FBREY7O0FBSUE7RUFDRSxnQkFBQTtBQURGOztBQUVFO0VBQ0UsWUFBQTtBQUFKOztBQUlBO0VBQ0UsVUFBQTtFQUNBLFNBQUE7QUFERjs7QUFJQTtFQUNFLG1CQUFBO0VBQ0EsbUJBQUE7RUFDQSxnQkFBQTtFQUNBLHVCQUFBO0VBQ0EsNEJBQUE7QUFERiIsImZpbGUiOiJlZGl0LXZlY3Rvci5jb21wb25lbnQuc2NzcyIsInNvdXJjZXNDb250ZW50IjpbIjpob3N0IHtcbiAgLy8gcG9zaXRpb246IGFic29sdXRlO1xuICAvLyB3aWR0aDogMTAwJTtcbiAgaGVpZ2h0OiAxMDAlO1xuICBkaXNwbGF5OiBmbGV4O1xuICBmbGV4LWRpcmVjdGlvbjogcm93O1xufVxuXG4jQ2FudmFzQ29udGFpbmVyIHtcbiAgb3ZlcmZsb3c6IGhpZGRlbjtcbn1cblxuY2FudmFzI1dvcmtzcGFjZSB7XG4gIG91dGxpbmU6IHNvbGlkIDEwcHggZ3JheTtcbn1cblxubWF0LWFjY29yZGlvbiB7XG4gIG92ZXJmbG93OiBoaWRkZW47XG4gICY6bGFzdC1jaGlsZCB7XG4gICAgZmxleC1ncm93OiAxO1xuICB9XG59XG5cbmZvcm0ge1xuICBwYWRkaW5nOiAwO1xuICBtYXJnaW46IDA7XG59XG5cbm1hdC1saXN0LWl0ZW0uYWN0aXZlIHtcbiAgd2hpdGUtc3BhY2U6IG5vd3JhcDtcbiAgYnJlYWstaW5zaWRlOiBhdm9pZDtcbiAgb3ZlcmZsb3c6IGhpZGRlbjtcbiAgdGV4dC1vdmVyZmxvdzogZWxsaXBzaXM7XG4gIG91dGxpbmU6IHNvbGlkIDNweCAjMDAwMGZmNTU7XG59XG4iXX0= */"] });
+    } }, directives: [_ng_gun_src_lib_chain_directive__WEBPACK_IMPORTED_MODULE_11__["ChainDirective"], _angular_common__WEBPACK_IMPORTED_MODULE_12__["NgIf"], _angular_flex_layout_flex__WEBPACK_IMPORTED_MODULE_13__["DefaultFlexDirective"], _angular_flex_layout_flex__WEBPACK_IMPORTED_MODULE_13__["DefaultLayoutDirective"], _angular_flex_layout_flex__WEBPACK_IMPORTED_MODULE_13__["DefaultLayoutAlignDirective"], _paper_directive__WEBPACK_IMPORTED_MODULE_14__["PaperDirective"], _angular_material_expansion__WEBPACK_IMPORTED_MODULE_15__["MatAccordion"], _angular_material_expansion__WEBPACK_IMPORTED_MODULE_15__["MatExpansionPanel"], _angular_material_expansion__WEBPACK_IMPORTED_MODULE_15__["MatExpansionPanelHeader"], _angular_material_expansion__WEBPACK_IMPORTED_MODULE_15__["MatExpansionPanelContent"], _angular_material_expansion__WEBPACK_IMPORTED_MODULE_15__["MatExpansionPanelActionRow"], _angular_material_button__WEBPACK_IMPORTED_MODULE_16__["MatAnchor"], _angular_material_icon__WEBPACK_IMPORTED_MODULE_17__["MatIcon"], _angular_common__WEBPACK_IMPORTED_MODULE_12__["NgForOf"], _angular_material_button_toggle__WEBPACK_IMPORTED_MODULE_18__["MatButtonToggle"], _components_tool_directive__WEBPACK_IMPORTED_MODULE_19__["ToolDirective"], _components_color_form_color_form_component__WEBPACK_IMPORTED_MODULE_20__["ColorFormComponent"], _angular_material_list__WEBPACK_IMPORTED_MODULE_21__["MatList"], _angular_material_list__WEBPACK_IMPORTED_MODULE_21__["MatListItem"], _angular_common__WEBPACK_IMPORTED_MODULE_12__["NgClass"], _angular_flex_layout_extended__WEBPACK_IMPORTED_MODULE_22__["DefaultClassDirective"]], pipes: [_angular_common__WEBPACK_IMPORTED_MODULE_12__["AsyncPipe"]], styles: ["[_nghost-%COMP%] {\n  height: 100%;\n  display: flex;\n  flex-direction: row;\n}\n\n#CanvasContainer[_ngcontent-%COMP%] {\n  overflow: hidden;\n}\n\ncanvas#Workspace[_ngcontent-%COMP%] {\n  outline: solid 10px gray;\n  touch-action: pinch-zoom;\n}\n\nmat-accordion[_ngcontent-%COMP%] {\n  overflow: hidden;\n}\n\nmat-accordion[_ngcontent-%COMP%]:last-child {\n  flex-grow: 1;\n}\n\nform[_ngcontent-%COMP%] {\n  padding: 0;\n  margin: 0;\n}\n\nmat-list-item.active[_ngcontent-%COMP%] {\n  white-space: nowrap;\n  break-inside: avoid;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  outline: solid 3px #0000ff55;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uL2VkaXQtdmVjdG9yLmNvbXBvbmVudC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBR0UsWUFBQTtFQUNBLGFBQUE7RUFDQSxtQkFBQTtBQURGOztBQUlBO0VBQ0UsZ0JBQUE7QUFERjs7QUFJQTtFQUNFLHdCQUFBO0VBQ0Esd0JBQUE7QUFERjs7QUFJQTtFQUNFLGdCQUFBO0FBREY7O0FBRUU7RUFDRSxZQUFBO0FBQUo7O0FBSUE7RUFDRSxVQUFBO0VBQ0EsU0FBQTtBQURGOztBQUlBO0VBQ0UsbUJBQUE7RUFDQSxtQkFBQTtFQUNBLGdCQUFBO0VBQ0EsdUJBQUE7RUFDQSw0QkFBQTtBQURGIiwiZmlsZSI6ImVkaXQtdmVjdG9yLmNvbXBvbmVudC5zY3NzIiwic291cmNlc0NvbnRlbnQiOlsiOmhvc3Qge1xuICAvLyBwb3NpdGlvbjogYWJzb2x1dGU7XG4gIC8vIHdpZHRoOiAxMDAlO1xuICBoZWlnaHQ6IDEwMCU7XG4gIGRpc3BsYXk6IGZsZXg7XG4gIGZsZXgtZGlyZWN0aW9uOiByb3c7XG59XG5cbiNDYW52YXNDb250YWluZXIge1xuICBvdmVyZmxvdzogaGlkZGVuO1xufVxuXG5jYW52YXMjV29ya3NwYWNlIHtcbiAgb3V0bGluZTogc29saWQgMTBweCBncmF5O1xuICB0b3VjaC1hY3Rpb246IHBpbmNoLXpvb207XG59XG5cbm1hdC1hY2NvcmRpb24ge1xuICBvdmVyZmxvdzogaGlkZGVuO1xuICAmOmxhc3QtY2hpbGQge1xuICAgIGZsZXgtZ3JvdzogMTtcbiAgfVxufVxuXG5mb3JtIHtcbiAgcGFkZGluZzogMDtcbiAgbWFyZ2luOiAwO1xufVxuXG5tYXQtbGlzdC1pdGVtLmFjdGl2ZSB7XG4gIHdoaXRlLXNwYWNlOiBub3dyYXA7XG4gIGJyZWFrLWluc2lkZTogYXZvaWQ7XG4gIG92ZXJmbG93OiBoaWRkZW47XG4gIHRleHQtb3ZlcmZsb3c6IGVsbGlwc2lzO1xuICBvdXRsaW5lOiBzb2xpZCAzcHggIzAwMDBmZjU1O1xufVxuIl19 */"] });
 
 
 /***/ }),
@@ -25328,9 +25356,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _lib_verify_pipe__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./lib/verify.pipe */ "VUWm");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "VerifyPipe", function() { return _lib_verify_pipe__WEBPACK_IMPORTED_MODULE_8__["VerifyPipe"]; });
 
-/*
+/* harmony import */ var _lib_GunPeer__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./lib/GunPeer */ "6N56");
+/* empty/unused harmony star reexport *//* harmony import */ var _lib_GunPeers__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./lib/GunPeers */ "CGJs");
+/* empty/unused harmony star reexport *//*
  * Public API Surface of ng-gun
  */
+
+
 
 
 
