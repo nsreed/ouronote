@@ -1,16 +1,9 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import {
-  MatDialog,
-  MatDialogRef,
-  MAT_DIALOG_DATA,
-} from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router, ActivatedRoute } from '@angular/router';
-import { LogService } from 'log';
-import { NgGunService, GunPeer } from 'ng-gun';
+import { Router } from '@angular/router';
+import { GunPeer, NgGunService } from 'ng-gun';
 import { ClipboardService } from 'ngx-clipboard';
-import { take } from 'rxjs/operators';
-import { User } from '../../user/model';
 
 @Component({
   selector: 'app-bug-report',

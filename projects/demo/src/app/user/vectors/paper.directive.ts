@@ -16,6 +16,7 @@ import { MoveTool } from './tools/move';
 import { PanTool } from './tools/pan';
 import { PenTool } from './tools/pen';
 import { LassoSelectTool, RectangleSelectTool } from './tools/select';
+import { ShapeTool } from './tools/shape';
 @Directive({
   selector: '[appPaper]',
   exportAs: 'appPaper',
@@ -48,6 +49,7 @@ export class PaperDirective implements OnInit {
   tool$ = propertyChange$(this.scope, 'tool').pipe(shareReplay(1));
 
   public pen = new PenTool(this.scope as any);
+  public shape = new ShapeTool(this.scope as any);
   public eraser = new EraserTool(this.scope as any);
   public select = new LassoSelectTool(this.scope as any);
   public areaSelect = new RectangleSelectTool(this.scope as any);

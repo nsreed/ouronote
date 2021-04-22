@@ -24,7 +24,7 @@ export class PaperPair {
   protected importing = false;
   save$ = new EventEmitter();
   debouncedSave$ = this.save$.pipe(
-    filter((v) => !this.ctx.data.ignored),
+    filter((v) => !this.ctx.data.ignore),
     bufferTime(100)
   );
   saveProperty$ = new EventEmitter<[string] | [string, any]>(); // TODO document this...
@@ -108,6 +108,10 @@ export class PaperPair {
       if (this.ctx instanceof paper.Project) {
         childJSON.className = 'Layer';
       }
+      return;
+    }
+    if (!hasRequired(childJSON)) {
+      this.logger.error('child does not have required fields', childJSON);
       return;
     }
     const prevInsertItemsValue = (this.scope.settings as any).insertItems;

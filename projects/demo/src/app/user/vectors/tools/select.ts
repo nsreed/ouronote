@@ -69,7 +69,7 @@ export class LassoSelectTool extends SelectTool {
       const prev = (this.scope.settings as any).insertItems;
       (this.scope.settings as any).insertItems = false;
       this.path = this.path || new paper.Path([e.downPoint]);
-      this.path.data.ignored = true;
+      this.path.data.ignore = true;
       this.path.dashArray = [12, 12];
       this.path.closed = true;
       this.path.fillColor = new paper.Color(0, 0, 1, 0.5) as any;
@@ -109,7 +109,7 @@ export class RectangleSelectTool extends SelectTool {
     (this.scope.settings as any).insertItems = false;
     this.rect = new paper.Shape.Rectangle(e.downPoint, e.point) as any;
     this.rect.pivot = new paper.Point(0, 0) as any;
-    this.rect.data.ignored = true;
+    this.rect.data.ignore = true;
     this.rect.dashArray = [12, 12];
     this.rect.fillColor = new paper.Color(0, 0, 1, 0.5) as any;
     this.rect.strokeWidth = 1;
