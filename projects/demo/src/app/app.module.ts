@@ -95,7 +95,9 @@ import { ComponentsModule } from './components/components.module';
       useValue: {
         localStorage: false,
         peers: [
-          location.origin + '/gun',
+          location.origin.match(/localhost/)
+            ? 'http://localhost:8765/gun'
+            : location.origin + '/gun',
           // 'https://resistance-tower.herokuapp.com/gun',
         ],
       },

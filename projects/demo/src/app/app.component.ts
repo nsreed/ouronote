@@ -20,6 +20,8 @@ import {
 import { ClipboardService } from 'ngx-clipboard';
 import { saveAs } from 'file-saver';
 import { LogService, LogMessage } from '../../../log/src/lib/log.service';
+import { MatDialog } from '@angular/material/dialog';
+import { BugReportComponent } from './components/bug-report/bug-report.component';
 
 @Component({
   selector: 'app-root',
@@ -34,7 +36,8 @@ export class AppComponent {
     private router: Router,
     private route: ActivatedRoute,
     private cb: ClipboardService,
-    private logger: LogService
+    private logger: LogService,
+    private dialog: MatDialog
   ) {
     logger.log('app started');
     this.user = this.ngGun.auth();
@@ -65,51 +68,46 @@ export class AppComponent {
   }
 
   bugReport() {
-    LogService.buffer$.pipe(take(1)).subscribe((messages) => {
-      console.table(messages);
-      const peers = Object.keys(this.ngGun.peers).map((k) => {
-        const rawPeer = this.ngGun.peers[k] as GunPeer;
-
-        const x = {
-          ...rawPeer,
-          wire: {
-            readyState: rawPeer.wire.readyState,
-            protocol: rawPeer.wire.protocol,
-            extensions: rawPeer.wire.extensions,
-            bufferedAmount: rawPeer.wire.bufferedAmount,
-          },
-        };
-        return x;
-      });
-      const graph = this.ngGun.gun._.graph;
-      const gunConstructorOptions = this.ngGun.gunOptions;
-      const report = {
-        url: this.router.url,
-        is: this.user.is?.pub,
-        gunConstructorOptions,
-        peers,
-        graph,
-        log: messages,
-      };
-      const reportStr = JSON.stringify(report, null, 2);
-      // console.log(reportStr);
-      this.cb.copy(reportStr);
-      const graphBlob = new Blob([reportStr], {
-        type: 'text/plain;charset=utf-8',
-      });
-      saveAs(graphBlob, `ouronote-bugreport-${Date.now()}.json`);
+    this.dialog.open(BugReportComponent, {
+      data: {
+        gun: this.ngGun.gun,
+      },
+      width: '80%',
+      height: '80%',
     });
-    // });
-    // this.logger.out$
-    //   .pipe(
-    //     scan((acc, val) => {
-    //       acc.push(val as never);
-    //       return acc;
-    //     }, []),
-    //     take(1)
-    //   )
-    //   .subscribe((messages) => {
-    //     console.log({ messages });
+    // LogService.buffer$.pipe(take(1)).subscribe((messages) => {
+    //   console.table(messages);
+    //   const peers = Object.keys(this.ngGun.peers).map((k) => {
+    //     const rawPeer = this.ngGun.peers[k] as GunPeer;
+
+    //     const x = {
+    //       ...rawPeer,
+    //       wire: {
+    //         readyState: rawPeer.wire.readyState,
+    //         protocol: rawPeer.wire.protocol,
+    //         extensions: rawPeer.wire.extensions,
+    //         bufferedAmount: rawPeer.wire.bufferedAmount,
+    //       },
+    //     };
+    //     return x;
     //   });
+    //   const graph = this.ngGun.gun._.graph;
+    //   const gunConstructorOptions = this.ngGun.gunOptions;
+    //   const report = {
+    //     url: this.router.url,
+    //     is: this.user.is?.pub,
+    //     gunConstructorOptions,
+    //     peers,
+    //     graph,
+    //     log: messages,
+    //   };
+    //   const reportStr = JSON.stringify(report, null, 2);
+    //   // console.log(reportStr);
+    //   this.cb.copy(reportStr);
+    //   const graphBlob = new Blob([reportStr], {
+    //     type: 'text/plain;charset=utf-8',
+    //   });
+    //   saveAs(graphBlob, `ouronote-bugreport-${Date.now()}.json`);
+    // });
   }
 }

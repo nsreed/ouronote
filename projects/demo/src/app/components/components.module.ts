@@ -14,9 +14,11 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatListModule } from '@angular/material/list';
 import { NgGunModule } from '../../../../ng-gun/src/lib/ng-gun.module';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { BugReportComponent } from './bug-report/bug-report.component';
+import { NgGunService } from '../../../../ng-gun/src/lib/ng-gun.service';
 
 @NgModule({
-  declarations: [],
+  declarations: [BugReportComponent],
   imports: [
     CommonModule,
     FlexLayoutModule,
@@ -35,6 +37,6 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     MatListModule,
     NgGunModule,
   ],
-  exports: [],
+  exports: [BugReportComponent],
 })
 export class ComponentsModule {}

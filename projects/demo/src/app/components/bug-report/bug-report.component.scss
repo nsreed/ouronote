@@ -1,0 +1,14 @@
+pre {
+  // height: 20em;
+  // max-height: 20em;
+  overflow: auto;
+  overflow-y: scroll;
+}
+:host {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+[matDialogContent] {
+  flex: 1;
+}

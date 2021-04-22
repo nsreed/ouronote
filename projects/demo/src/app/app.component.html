@@ -1,11 +1,11 @@
 <mat-sidenav-container fxFlexFill>
-  <mat-sidenav #nav [mode]="'side'" [opened]="true">
+  <mat-sidenav #nav [mode]="'side'" [opened]="user.is">
     <!-- <mat-toolbar>
       <button mat-icon-button (click)="nav.toggle()">
         <mat-icon>chevron_left</mat-icon>
       </button>
     </mat-toolbar> -->
-    <mat-action-list *ngIf="user.is">
+    <mat-action-list>
       <mat-list-item routerLinkActive="active" routerLink="/user/vectors" matTooltip="Vectors">
         <mat-icon mat-list-icon>note</mat-icon>
       </mat-list-item>
