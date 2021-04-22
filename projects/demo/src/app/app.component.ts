@@ -22,6 +22,7 @@ import { saveAs } from 'file-saver';
 import { LogService, LogMessage } from '../../../log/src/lib/log.service';
 import { MatDialog } from '@angular/material/dialog';
 import { BugReportComponent } from './components/bug-report/bug-report.component';
+import { GunPeersComponent } from './components/gun-peers/gun-peers.component';
 
 @Component({
   selector: 'app-root',
@@ -65,6 +66,16 @@ export class AppComponent {
   logout() {
     this.ngGun.auth().logout();
     this.router.navigateByUrl('/login');
+  }
+
+  peers() {
+    this.dialog.open(GunPeersComponent, {
+      data: {
+        ngGun: this.ngGun,
+      },
+      width: '80%',
+      height: '80%',
+    });
   }
 
   bugReport() {

@@ -1,5 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, Inject, Input } from '@angular/core';
 import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { GunPeers } from '../../../../../ng-gun/src/lib/GunPeers';
 
 @Component({
   selector: 'app-gun-peers',
@@ -7,6 +9,10 @@ import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
   styleUrls: ['./gun-peers.component.scss'],
 })
 export class GunPeersComponent {
-  @Input() ngGun!: NgGunService;
-  constructor() {}
+  peers = this.data.ngGun.peers as GunPeers;
+  constructor(
+    public ngGun: NgGunService,
+    public dialogRef: MatDialogRef<GunPeersComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {}
 }

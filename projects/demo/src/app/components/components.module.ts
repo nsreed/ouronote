@@ -16,9 +16,10 @@ import { NgGunModule } from '../../../../ng-gun/src/lib/ng-gun.module';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { BugReportComponent } from './bug-report/bug-report.component';
 import { NgGunService } from '../../../../ng-gun/src/lib/ng-gun.service';
+import { GunPeersComponent } from './gun-peers/gun-peers.component';
 
 @NgModule({
-  declarations: [BugReportComponent],
+  declarations: [BugReportComponent, GunPeersComponent],
   imports: [
     CommonModule,
     FlexLayoutModule,
@@ -37,6 +38,6 @@ import { NgGunService } from '../../../../ng-gun/src/lib/ng-gun.service';
     MatListModule,
     NgGunModule,
   ],
-  exports: [BugReportComponent],
+  exports: [BugReportComponent, GunPeersComponent],
 })
 export class ComponentsModule {}
