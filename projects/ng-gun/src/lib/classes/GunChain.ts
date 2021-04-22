@@ -209,10 +209,22 @@ export class GunChain<
           ? ArrayOf<DataType>
           : never
         : never
-    >
+    >,
+    certificate: string = this.certificate
   ) {
-    // TODO get certificate for set()
-    return this.from(this.gun.set(data));
+    return this.from(
+      this.gun.set(
+        data,
+        null,
+        certificate
+          ? {
+              opt: {
+                cert: certificate,
+              },
+            }
+          : undefined
+      )
+    );
   }
 
   unset(data: ArrayOf<DataType>) {
