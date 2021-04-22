@@ -15,4 +15,8 @@ export class GunPeersComponent {
     public dialogRef: MatDialogRef<GunPeersComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
+
+  logGun() {
+    console.log(this.data.ngGun);
+  }
 }
