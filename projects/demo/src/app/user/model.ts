@@ -9,9 +9,11 @@ export interface Post {
 
 export interface Message {
   text: string;
+  to: string;
 }
 
 export interface User {
+  inbox: Message[];
   messages: Message[];
   posts: Post[];
   vectors: VectorGraph[];

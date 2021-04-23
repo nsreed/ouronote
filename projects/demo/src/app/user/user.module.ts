@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { LogModule } from '../../../../log/src/lib/log.module';
+import { ComponentsModule } from '../components/components.module';
 
 @NgModule({
   declarations: [UserComponent, DashboardComponent],
@@ -22,6 +23,7 @@ import { LogModule } from '../../../../log/src/lib/log.module';
     MatIconModule,
     MatInputModule,
     FlexLayoutModule,
+    ComponentsModule,
   ],
 })
 export class UserModule {}
