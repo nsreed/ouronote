@@ -17,9 +17,15 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { BugReportComponent } from './bug-report/bug-report.component';
 import { NgGunService } from '../../../../ng-gun/src/lib/ng-gun.service';
 import { GunPeersComponent } from './gun-peers/gun-peers.component';
+import { AliasAutocompleteComponent } from './alias-autocomplete/alias-autocomplete.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @NgModule({
-  declarations: [BugReportComponent, GunPeersComponent],
+  declarations: [
+    BugReportComponent,
+    GunPeersComponent,
+    AliasAutocompleteComponent,
+  ],
   imports: [
     CommonModule,
     FlexLayoutModule,
@@ -29,6 +35,7 @@ import { GunPeersComponent } from './gun-peers/gun-peers.component';
     MatIconModule,
     MatInputModule,
     ReactiveFormsModule,
+    MatFormFieldModule,
 
     MatCheckboxModule,
     MatRadioModule,
@@ -38,6 +45,6 @@ import { GunPeersComponent } from './gun-peers/gun-peers.component';
     MatListModule,
     NgGunModule,
   ],
-  exports: [BugReportComponent, GunPeersComponent],
+  exports: [BugReportComponent, GunPeersComponent, AliasAutocompleteComponent],
 })
 export class ComponentsModule {}
