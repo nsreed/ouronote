@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { filter } from 'rxjs/operators';
 import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
@@ -11,6 +11,8 @@ import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
 export class AliasAutocompleteComponent implements OnInit {
   userResults: any[] = [];
   aliasCtl = this.fb.control(null);
+  @Output()
+  select$ = new EventEmitter<string>();
 
   constructor(private fb: FormBuilder, private ngGun: NgGunService) {
     this.aliasCtl.valueChanges
@@ -41,5 +43,12 @@ export class AliasAutocompleteComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  onSelectUser(event: any) {}
+  onSelectUser(event: any) {
+    const selectedValue = event.option.value;
+    console.log('selected', selectedValue);
+    // this.form.controls.people.value.push(selectedValue.replace('~', ''));
+    this.select$.emit(selectedValue.replace(/~/g, ''));
+    this.aliasCtl.reset();
+    this.userResults = [];
+  }
 }
