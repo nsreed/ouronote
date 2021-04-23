@@ -8,20 +8,21 @@ import {
 import { Observable, of } from 'rxjs';
 import { UserService } from '../user.service';
 import { map, take } from 'rxjs/operators';
+import { MessageService } from './message.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MessageResolver implements Resolve<any> {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private messageService: MessageService
+  ) {}
   resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<any> {
-    return this.userService.user
-      .get('messages')
-      .get(route.params.soul)
-      .once()
-      .pipe(map((message: any) => message._));
+    const soul = route.params.soul;
+    return this.userService.user.root.get(soul).once();
   }
 }

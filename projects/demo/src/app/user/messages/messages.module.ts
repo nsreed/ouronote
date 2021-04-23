@@ -12,6 +12,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { ComponentsModule } from '../../components/components.module';
+import { NewMessageComponent } from './new-message/new-message.component';
 
 @NgModule({
   declarations: [
@@ -19,16 +22,19 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     MessageComponent,
     RouteMessageDirective,
     EditMessageComponent,
+    NewMessageComponent,
   ],
   imports: [
     CommonModule,
     MessagesRoutingModule,
+    FlexLayoutModule,
     ReactiveFormsModule,
     NgGunModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
     MatAutocompleteModule,
+    ComponentsModule,
   ],
 })
 export class MessagesModule {}

@@ -1,8 +1,8 @@
 <nav>
   <h3>Messages</h3>
-  <button (click)="onMessageClick()">New Message</button>
+  <button (click)="newMessage()">New Message</button>
 </nav>
-<div id="Messages" class="list">
+<div id="Messages" gdColumns="max-content auto repeat(1, max-content)">
   <ng-container *ngFor="let message of inbox|async">
     <ng-container *ngIf="message && message._">
       <input type="checkbox">
