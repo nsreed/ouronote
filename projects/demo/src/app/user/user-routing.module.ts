@@ -24,6 +24,11 @@ const routes: Routes = [
           import('./vectors/vectors.module').then((m) => m.VectorsModule),
       },
       {
+        path: 'settings',
+        loadChildren: () =>
+          import('./settings/settings.module').then((m) => m.SettingsModule),
+      },
+      {
         path: '**',
         component: DashboardComponent,
       },
