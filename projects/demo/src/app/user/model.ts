@@ -18,4 +18,9 @@ export interface User {
   posts: Post[];
   vectors: VectorGraph[];
   name: string;
+  certs: {
+    [path: string]: {
+      [pub: string]: string;
+    };
+  };
 }

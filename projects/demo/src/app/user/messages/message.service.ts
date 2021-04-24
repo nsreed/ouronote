@@ -14,6 +14,7 @@ import * as Gun from 'gun';
 })
 export class MessageService {
   messages = this.userService.user.get('messages');
+  inbox = this.userService.user.get('inbox');
   constructor(
     private userService: UserService,
     private logger: LogService,
@@ -33,8 +34,8 @@ export class MessageService {
 
     m.once().subscribe((mval: any) => {
       this.logger.log('created local message', mval);
-      const to = this.ngGun.get(`~${message.to}`).get('messages');
-      const sent = to.set(mval as never);
+      const to = this.ngGun.get(`~${message.to}`).get('inbox');
+      const sent = to.set(m.gun as never);
       sent.once().subscribe((sentVal) => {
         if (sentVal === undefined) {
           this.logger.warn('could not add message to recipient inbox');

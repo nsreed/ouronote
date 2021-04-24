@@ -11,13 +11,20 @@ import { NewMessageComponent } from './new-message/new-message.component';
   styleUrls: ['./messages.component.scss'],
 })
 export class MessagesComponent implements OnInit {
-  inbox = this.messageService.messages.reduce();
+  outbox = this.messageService.messages.reduce();
+  inbox = this.messageService.inbox.reduce();
 
   constructor(
     private userService: UserService,
     private messageService: MessageService,
     private dialog: MatDialog
-  ) {}
+  ) {
+    // console.log(this.userService.user.alias);
+    this.userService.alias$.subscribe((alias) => console.log('alias', alias));
+    this.messageService.inbox.load().subscribe((inbox) => {
+      console.log('inbox', inbox);
+    });
+  }
 
   ngOnInit() {}
 

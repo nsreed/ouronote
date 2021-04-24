@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MessageService } from '../message.service';
 import { Message } from '../../model';
+import { NgGunService } from '../../../../../../ng-gun/src/lib/ng-gun.service';
 
 @Component({
   selector: 'app-new-message',
@@ -15,13 +16,19 @@ export class NewMessageComponent implements OnInit {
   });
   constructor(
     private fb: FormBuilder,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private ngGun: NgGunService
   ) {}
+
+  dst!: any;
 
   ngOnInit() {}
 
   onSelectUser(pub: string) {
     console.log('selected', pub);
+
+    this.dst = this.ngGun.get(`~${pub}`).get('inbox');
+
     this.messageForm.get('to')?.patchValue(pub);
   }
 
