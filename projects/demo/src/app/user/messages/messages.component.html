@@ -1,18 +1,43 @@
-<nav>
-  <h3>Messages</h3>
-  <button (click)="newMessage()">New Message</button>
-</nav>
-<div id="Messages" gdColumns="max-content auto repeat(1, max-content)">
-  <ng-container *ngFor="let message of inbox|async">
-    <ng-container *ngIf="message && message._">
-      <input type="checkbox">
-      <a [routerLink]="['/user/messages/', message | soul]">{{message.text}}</a>
-      <!-- <div>{{message|updated|date:"YYYY-MM-dd HH:mm:ss"}}</div> -->
-      <div>
-        <button [routerLink]="['/user/messages/', message | soul, 'edit']">Edit</button>
-        <button (click)="onMessageRemove(message)">Remove</button>
-      </div>
-    </ng-container>
-  </ng-container>
-</div>
+<mat-toolbar>
+  <h3 fxFlex="1 0 auto">Messages</h3>
+  <button mat-raised-button color="primary" (click)="newMessage()">New Message</button>
+</mat-toolbar>
+<mat-tab-group>
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <mat-icon class="example-tab-icon">inbox</mat-icon>
+      Inbox
+    </ng-template>
+    <div id="Messages" gdColumns="auto repeat(1, max-content)">
+      <ng-container *ngFor="let message of inbox|async">
+        <ng-container *ngIf="message && message._">
+          <!-- <a mat-flat-button [routerLink]="['/user/messages/', message | soul]">{{message.text}}</a> -->
+          <span>{{message.text}}</span>
+          <!-- <button [routerLink]="['/user/messages/', message | soul, 'edit']">Edit</button> -->
+          <button mat-icon-button (click)="onMessageRemove(message)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </ng-container>
+      </ng-container>
+    </div>
+  </mat-tab>
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <mat-icon class="example-tab-icon">send</mat-icon>
+      Sent
+    </ng-template>
+    <div id="Messages" gdColumns="auto repeat(1, max-content)">
+      <!-- TODO add indicator for send success (whether message is actually in user's inbox) -->
+      <ng-container *ngFor="let message of outbox|async">
+        <ng-container *ngIf="message && message._">
+          <a mat-flat-button [routerLink]="['/user/messages/', message | soul]">{{message.text}}</a>
+          <!-- <button [routerLink]="['/user/messages/', message | soul, 'edit']">Edit</button> -->
+          <button mat-icon-button (click)="onMessageRemove(message)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </ng-container>
+      </ng-container>
+    </div>
+  </mat-tab>
+</mat-tab-group>
 <router-outlet></router-outlet>

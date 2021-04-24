@@ -20,8 +20,8 @@
         <mat-icon mat-list-icon>signal_wifi_4_bar</mat-icon>
       </mat-list-item>
       <mat-divider></mat-divider>
-      <mat-list-item [matMenuTriggerFor]="sessionMenu" [matTooltip]="ngGun.auth().alias">
-        <mat-icon mat-list-icon>person</mat-icon>
+      <mat-list-item [matMenuTriggerFor]="sessionMenu" [matTooltip]="'@'+ngGun.auth().alias">
+        <mat-icon mat-list-icon color="primary">account_circle</mat-icon>
       </mat-list-item>
       <mat-menu #sessionMenu>
         <button mat-menu-item routerLink="/user/settings">Settings</button>

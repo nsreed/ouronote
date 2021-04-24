@@ -20,10 +20,10 @@ export class MessagesComponent implements OnInit {
     private dialog: MatDialog
   ) {
     // console.log(this.userService.user.alias);
-    this.userService.alias$.subscribe((alias) => console.log('alias', alias));
-    this.messageService.inbox.load().subscribe((inbox) => {
-      console.log('inbox', inbox);
-    });
+    // this.userService.alias$.subscribe((alias) => console.log('alias', alias));
+    // this.messageService.inbox.load().subscribe((inbox) => {
+    //   console.log('inbox', inbox);
+    // });
   }
 
   ngOnInit() {}
