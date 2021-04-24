@@ -36,11 +36,11 @@ export class ItemPair extends PaperPair {
   graphValue: any;
   graph$ = this.chain
     .on({ changes: true, bypassZone: true } as GunChainCallbackOptions)
-    .pipe(debounceTime(INCOMING_DEBOUNCE), shareReplay(1));
+    .pipe(shareReplay(1));
 
   graphValue$ = this.graph$.pipe(
     filter((json) => hasRequired(json)),
-    distinct((v) => JSON.stringify(v)),
+    // distinct((v) => JSON.stringify(v)),
     tap((value) => (this.graphValue = value))
   );
   graphRemove$ = this.graph$.pipe(filter((json) => json === null));
@@ -72,23 +72,33 @@ export class ItemPair extends PaperPair {
   afterRemove$ = after$(this.item, 'remove');
 
   // Local Methods
-  ignoreInsert = false;
+  isInsertingFromGraph = false;
   beforeImportJSON$ = before$(this.item, 'importJSON');
   afterImportJSON$ = after$(this.item, 'importJSON');
   afterInsertChild$ = after$(this.item, 'insertChild').pipe(
     map(returned),
-    tap((item) => (this.ignoreInsert ? this.logger.log('ignored') : {})),
+    tap((item) =>
+      this.isInsertingFromGraph
+        ? this.logger.log('ignored %o because children are being imported')
+        : {}
+    ),
     filter((item) => !this.item.data.ignore && !item.data.ignore),
-    filter((item) => !this.ignoreInsert && item !== null && item !== undefined),
+    filter(
+      (item) =>
+        !this.isInsertingFromGraph && item !== null && item !== undefined
+    ),
     switchMap((item) =>
-      this.importing ? this.afterImportJSON$.pipe(mapTo(item)) : of(item)
+      this.isImportingJSON ? this.afterImportJSON$.pipe(mapTo(item)) : of(item)
     )
   );
   afterAddChild$ = after$(this.item, 'addChild').pipe(
     map(returned),
-    filter((item) => !this.ignoreInsert && item !== null && item !== undefined),
+    filter(
+      (item) =>
+        !this.isInsertingFromGraph && item !== null && item !== undefined
+    ),
     switchMap((item) =>
-      this.importing ? this.afterImportJSON$.pipe(mapTo(item)) : of(item)
+      this.isImportingJSON ? this.afterImportJSON$.pipe(mapTo(item)) : of(item)
     )
   );
 
@@ -99,6 +109,8 @@ export class ItemPair extends PaperPair {
       )
     )
   );
+
+  editing = false;
 
   constructor(
     private chain: GunChain<ItemGraph>,
@@ -141,7 +153,7 @@ export class ItemPair extends PaperPair {
   }
 
   doSave(json: any) {
-    if (this.importing) {
+    if (this.isImportingJSON) {
       console.warn('tried to save while importing');
       return;
     }
@@ -163,8 +175,8 @@ export class ItemPair extends PaperPair {
 
   setup() {
     this.afterRemove$.subscribe(() => this.onLocalRemove());
-    this.beforeImportJSON$.subscribe(() => (this.importing = true));
-    this.afterImportJSON$.subscribe(() => (this.importing = false));
+    this.beforeImportJSON$.subscribe(() => (this.isImportingJSON = true));
+    this.afterImportJSON$.subscribe(() => (this.isImportingJSON = false));
     // TODO? ignoreInsert causing multiple local child adds to be ignored???
     this.afterInsertChild$.subscribe((child) => this.onLocalChild(child));
 
@@ -181,7 +193,14 @@ export class ItemPair extends PaperPair {
     //   console.log('%s got native change', this.item.toString(), change);
     // });
     (this.item as any).changes$
-      .pipe(filter((v) => !this.importing))
+      .pipe(
+        tap(() => {
+          if (this.isImportingJSON) {
+            this.logger.log('ignoring local change because importing JSON');
+          }
+        }),
+        filter((v) => !this.isImportingJSON)
+      )
       .subscribe((change: [string, any]) => {
         // console.log('%s %s change', this.item.toString(), change[0]);
         const value = change[1];
@@ -239,6 +258,10 @@ export class ItemPair extends PaperPair {
 
   onGraph(json: any) {
     this.graphValue = json;
+    if (this.editing) {
+      this.logger.log('ignored incoming graph update because editing');
+      return;
+    }
     // FIXME path segments getting overwritten by previous saves
     // FIXME occasionally only the first debounce of a path will be saved
     // console.log('%s onGraph', this.item.toString());
@@ -287,9 +310,9 @@ export class ItemPair extends PaperPair {
 
     if (toInsert.length > 0) {
       this.logger.log('inserting %d paper items', toInsert.length);
-      this.ignoreInsert = true;
+      this.isInsertingFromGraph = true;
       this.item.insertChildren(this.item.children.length, toInsert as any);
-      this.ignoreInsert = false;
+      this.isInsertingFromGraph = false;
     }
   }
 

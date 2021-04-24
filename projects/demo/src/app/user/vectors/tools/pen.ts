@@ -11,6 +11,7 @@ export class PenTool extends VectorTool {
   setup() {
     this.down.subscribe((e) => {
       this.path = new paper.Path(e.point) as any;
+      (this.path as any).pair.editing = true;
       this.path.strokeWidth = 3;
       this.path.strokeColor = this.project.currentStyle.strokeColor;
     });
@@ -19,7 +20,10 @@ export class PenTool extends VectorTool {
     });
     this.up.subscribe((e) => {
       this.path.strokeColor = this.project.currentStyle.strokeColor;
-      (this.path as any).pair?.save();
+      // (this.path as any).pair?.save('segments');
+      // (this.path as any).pair?.save();
+      (this.path as any).pair?.doSave();
+      (this.path as any).pair.editing = false;
     });
   }
 }

@@ -17,7 +17,7 @@ import { LogService } from '../../../../../../log/src/lib/log.service';
 
 export class ProjectPair extends PaperPair {
   /* STATE */
-  importing = false;
+  isImportingJSON = false;
 
   /* GRAPH EVENTS */
   layers = this.chain.get('layers');
@@ -36,7 +36,7 @@ export class ProjectPair extends PaperPair {
     map(returned),
     filter((layer) => layer !== null && layer !== undefined),
     switchMap((value) =>
-      this.importing
+      this.isImportingJSON
         ? this.afterProjectImportJSON$.pipe(mapTo(value))
         : of(value)
     )
@@ -108,8 +108,12 @@ export class ProjectPair extends PaperPair {
   }
 
   setupProject() {
-    this.beforeProjectImportJSON$.subscribe(() => (this.importing = true));
-    this.afterProjectImportJSON$.subscribe(() => (this.importing = false));
+    this.beforeProjectImportJSON$.subscribe(
+      () => (this.isImportingJSON = true)
+    );
+    this.afterProjectImportJSON$.subscribe(
+      () => (this.isImportingJSON = false)
+    );
     this.afterProjectInsertLayer$.subscribe((layer) =>
       this.onLocalLayer(layer)
     );

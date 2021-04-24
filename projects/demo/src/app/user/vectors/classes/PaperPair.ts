@@ -21,7 +21,7 @@ import {
 
 export class PaperPair {
   childCache = {} as any;
-  protected importing = false;
+  protected isImportingJSON = false;
   save$ = new EventEmitter();
   debouncedSave$ = this.save$.pipe(
     filter((v) => !this.ctx.data.ignore),
@@ -60,7 +60,7 @@ export class PaperPair {
     ctx.pair = this;
 
     this.saveBuffer$.subscribe((buf) => {
-      if (this.ctx?.data.ignore || this.importing) {
+      if (this.ctx?.data.ignore || this.isImportingJSON) {
         this.logger.warn('cannot save');
         return;
       }
@@ -153,6 +153,14 @@ export class PaperPair {
     }
 
     if (properties) {
+      if (!Array.isArray(properties)) {
+        if (typeof properties === 'string') {
+          properties = [properties];
+        } else {
+          this.logger.error('save() properties argument must string or array');
+          return;
+        }
+      }
       properties.forEach((name) => this.saveProperty$.emit([name]));
     }
 
