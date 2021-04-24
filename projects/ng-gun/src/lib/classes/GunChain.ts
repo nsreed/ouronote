@@ -34,6 +34,7 @@ import { gunChainArray, gunPath } from '../functions/gun-utils';
 import { GunRuntimeOpts } from '../GunRuntimeOpts';
 import { ICertStore } from './ICertStore';
 import { LexicalQuery } from './LexicalQuery';
+import { SEA } from 'gun';
 
 export const GUN_NODE = Symbol('GUN_NODE');
 
@@ -204,17 +205,14 @@ export class GunChain<
     if (this.isNested && !certificate) {
       console.warn('NO CERTIFICATE FOUND FOR FOREIGN RECORD!');
     }
-    const result = this.from(
-      (this.gun.put as any)(
-        data,
-        null,
-        certificate ? { opt: { cert: certificate } } : undefined
-      )
+    (this.gun.put as any)(
+      data,
+      (...putAck: any[]) => {
+        console.log('putAck', putAck);
+      },
+      certificate ? { opt: { cert: certificate } } : undefined
     );
-    // this.once().subscribe((me) => {
-    //   console.log('me', me);
-    // });
-    return result;
+    return this;
   }
 
   set(
@@ -560,7 +558,9 @@ export class GunAuthChain<
     >,
     certificate: string = this.certificate
   ) {
-    return super.put(data, certificate);
+    // SEA.sign(data, this.is.alias);
+    super.put(data, certificate);
+    return this;
   }
 }
 
