@@ -64,6 +64,11 @@ export class LogService {
 
   private supplementals = new Map<string, LogService>();
 
+  verbose(message: string, ...args: any[]) {
+    const packed = this.buildMessage(LogLevel.VERBOSE, message, args);
+    LogService._out$.next(packed);
+  }
+
   log(message: string, ...args: any[]) {
     const packed = this.buildMessage(LogLevel.INFO, message, args);
     LogService._out$.next(packed);
