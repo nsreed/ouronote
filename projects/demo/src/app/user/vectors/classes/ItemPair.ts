@@ -1,9 +1,7 @@
-import * as paper from 'paper';
+import * as Gun from 'gun';
 import { from, of } from 'rxjs';
 import {
   bufferTime,
-  debounceTime,
-  distinct,
   filter,
   map,
   mapTo,
@@ -12,6 +10,7 @@ import {
   switchMap,
   tap,
 } from 'rxjs/operators';
+import { LogService } from '../../../../../../log/src/lib/log.service';
 import {
   GunChain,
   GunChainCallbackOptions,
@@ -22,15 +21,13 @@ import { getUUID } from '../edit-vector/converter-functions';
 import {
   EXPECT_ARRAY,
   hasRequired,
-  INCOMING_DEBOUNCE,
   MUTATIONS,
   MUTATION_PROPERTIES,
   SAVE_DEBOUNCE,
 } from './constants';
 import { serializeValue } from './packaging';
 import { PaperPair } from './PaperPair';
-import { LogService } from '../../../../../../log/src/lib/log.service';
-import * as Gun from 'gun';
+import { SaveStrategy } from './SaveStrategy';
 
 export class ItemPair extends PaperPair {
   graphValue: any;
@@ -196,31 +193,43 @@ export class ItemPair extends PaperPair {
       .pipe(
         tap(() => {
           if (this.isImportingJSON) {
-            this.logger.log('ignoring local change because importing JSON');
+            this.logger.verbose('ignoring local change because importing JSON');
           }
         }),
+        filter(
+          (v) =>
+            (this.project as any).pair.saveStrategy === SaveStrategy.AUTOMATIC
+        ),
         filter((v) => !this.isImportingJSON)
       )
       .subscribe((change: [string, any]) => {
-        // console.log('%s %s change', this.item.toString(), change[0]);
+        this.logger.verbose('%s %s change', this.item.toString(), change[0]);
         const value = change[1];
         this.saveProperty$.emit([change[0], serializeValue(value)]);
         this.save();
       });
-    this.localChange$.subscribe((data) => {
-      // console.log('localChange$', data);
-      // FIXME apparently translate() is being called from outside our control
-      if (Array.isArray(data)) {
-        data.forEach((propName: string) => {
-          const serializedValue = serializeValue((this.item as any)[propName]);
-          this.saveProperty$.emit([propName, serializedValue]);
-        });
-        this.save();
-      } else {
-        // TODO handle this (will be necessary for supporting function interceptions that change non-array values)
-        this.logger.warn('onLocalChange$ was not an array, not saving!!!');
-      }
-    });
+    this.localChange$
+      .pipe(
+        filter(
+          (v) =>
+            (this.project as any).pair.saveStrategy === SaveStrategy.AUTOMATIC
+        )
+      )
+      .subscribe((data) => {
+        this.logger.verbose('localChange$', data);
+        if (Array.isArray(data)) {
+          data.forEach((propName: string) => {
+            const serializedValue = serializeValue(
+              (this.item as any)[propName]
+            );
+            this.saveProperty$.emit([propName, serializedValue]);
+          });
+          this.save();
+        } else {
+          // TODO handle this (will be necessary for supporting function interceptions that change non-array values)
+          this.logger.warn('onLocalChange$ was not an array, not saving!!!');
+        }
+      });
   }
 
   onLocalChildren() {
