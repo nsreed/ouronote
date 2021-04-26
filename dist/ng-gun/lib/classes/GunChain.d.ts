@@ -35,17 +35,18 @@ export declare class GunChain<DataType = Record<string, any>, ReferenceKey = any
     private _gun;
     get gun(): IGunChainReference<DataType, ReferenceKey, IsTop> & GunChainFunctions & GunChainMeta;
     set gun(value: IGunChainReference<DataType, ReferenceKey, IsTop> & GunChainFunctions & GunChainMeta);
+    get canEdit(): boolean;
     constructor(ngZone: NgZone, gun: IGunChainReference<DataType, ReferenceKey, IsTop> & GunChainFunctions & GunChainMeta);
     certificates: ICertStore;
     private sources;
     private _auth;
     from<T>(gun: IGunChainReference<T>): GunChain<T, any, false>;
     get<K extends keyof DataType>(key: ArrayOf<DataType> extends never ? K : ArrayOf<DataType>): GunChain<DataType[K], any, false>;
-    put(data: Partial<AlwaysDisallowedType<DisallowPrimitives<IsTop, DisallowArray<DataType>>>>, certificate?: string): GunChain<unknown, any, false>;
+    put(data: Partial<AlwaysDisallowedType<DisallowPrimitives<IsTop, DisallowArray<DataType>>>>, certificate?: string): this;
     set(data: AlwaysDisallowedType<DataType extends Array<infer U> ? U extends {
         [key: string]: any;
         [key: number]: any;
-    } ? ArrayOf<DataType> : never : never>): GunChain<ArrayOf<DataType>, any, false>;
+    } ? ArrayOf<DataType> : never : never>, certificate?: string): GunChain<ArrayOf<DataType>, any, false>;
     unset(data: ArrayOf<DataType>): GunChain<DataType, any, false>;
     query(query: LexicalQuery): GunChain<DataType, ReferenceKey, IsTop>;
     load(): Observable<unknown>;
@@ -65,7 +66,10 @@ export declare class GunChain<DataType = Record<string, any>, ReferenceKey = any
 /** Represents a top-level authenticated node (user or key pair) */
 export declare class GunAuthChain<DataType = Record<string, any>, ReferenceKey = any, IsTop = false> extends GunChain<DataType, ReferenceKey, false> {
     root: GunChain;
-    is: any;
+    private _is;
+    set is(value: any);
+    get is(): any;
+    alias: string;
     auth$: Observable<any>;
     constructor(ngZone: NgZone, gun: IGunChainReference<DataType, ReferenceKey, false> & Partial<GunChainFunctions> & Partial<GunChainMeta>, root: GunChain);
     login(alias: string, pass: string): Observable<any>;
@@ -74,7 +78,7 @@ export declare class GunAuthChain<DataType = Record<string, any>, ReferenceKey =
     from<T>(gun: IGunChainReference<T>): GunAuthChain<T, any, false>;
     recall(): Observable<any>;
     logout(): void;
-    put(data: Partial<AlwaysDisallowedType<DisallowPrimitives<IsTop, DisallowArray<DataType>>>>, certificate?: string): GunChain<unknown, any, false>;
+    put(data: Partial<AlwaysDisallowedType<DisallowPrimitives<IsTop, DisallowArray<DataType>>>>, certificate?: string): this;
 }
 /** Represents a node nested under a user/pair
  * gun.user() : AuthChain

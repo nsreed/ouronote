@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('gun'), require('rxjs'), require('rxjs/operators'), require('@angular/common')) :
-    typeof define === 'function' && define.amd ? define('ng-gun', ['exports', '@angular/core', 'gun', 'rxjs', 'rxjs/operators', '@angular/common'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global['ng-gun'] = {}, global.ng.core, global.Gun, global.rxjs, global.rxjs.operators, global.ng.common));
-}(this, (function (exports, i0, Gun, rxjs, operators, common) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('gun'), require('rxjs'), require('rxjs/operators'), require('@angular/common'), require('@angular/router')) :
+    typeof define === 'function' && define.amd ? define('ng-gun', ['exports', '@angular/core', 'gun', 'rxjs', 'rxjs/operators', '@angular/common', '@angular/router'], factory) :
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global['ng-gun'] = {}, global.ng.core, global.Gun, global.rxjs, global.rxjs.operators, global.ng.common, global.ng.router));
+}(this, (function (exports, i0, Gun, rxjs, operators, common, i1) { 'use strict';
 
     function _interopNamespace(e) {
         if (e && e.__esModule) return e;
@@ -26,6 +26,7 @@
 
     var i0__namespace = /*#__PURE__*/_interopNamespace(i0);
     var Gun__namespace = /*#__PURE__*/_interopNamespace(Gun);
+    var i1__namespace = /*#__PURE__*/_interopNamespace(i1);
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -431,47 +432,68 @@
                     // TODO figure out how to handle this case
                     return;
                 }
-                var myPub = "~" + ((_a = this.gun.user().is) === null || _a === void 0 ? void 0 : _a.pub);
+                var userPub = "~" + ((_a = this.gun.user().is) === null || _a === void 0 ? void 0 : _a.pub);
                 var pubs = path.filter(function (key) { return key.startsWith('~'); });
-                if (pubs.length === 0 || pubs[0] !== myPub) {
-                    pubs.push(myPub);
-                }
-                if (pubs.length > 1) {
-                    this.isNested = true;
+                if (pubs.length > 0) {
                     this.recordPub = pubs[0];
-                    var firstPub = path.findIndex(function (key) { return key.startsWith('~'); });
-                    var pathFromRecord = __spread(path);
-                    var recordPath = pathFromRecord.splice(firstPub).reverse();
-                    pathFromRecord.reverse();
-                    if (myKey === this.recordPub) {
-                        // console.log('sub root', myKey);
-                    }
-                    else {
-                        var keyInRecord = pathFromRecord[0];
-                        var record = chainArray[firstPub];
-                        var recordCerts = record.get('certs');
-                        var pathCerts = recordCerts.get(keyInRecord);
-                        var myCert = pathCerts.get(userPair.pub);
-                        // console.log('  %s', keyInRecord);
-                        myCert.on(function (cert) { return __awaiter(_this, void 0, void 0, function () {
-                            return __generator(this, function (_b) {
-                                if (cert === null || cert === undefined) {
-                                    return [2 /*return*/];
-                                }
-                                // console.log('cert', cert);
-                                // TODO verify cert later, the await causes chained put() calls to fail
-                                // const verified = await SEA.verify(
-                                //   cert,
-                                //   this.recordPub.replace('~', '')
-                                // );
-                                this.certificate = cert;
-                                this.certificate$.next(cert);
-                                return [2 /*return*/];
+                    var firstPub = path.findIndex(function (k) { return k.startsWith('~'); });
+                    this.record = chainArray[firstPub];
+                    if (this.recordPub.indexOf(userPub) < 0) {
+                        this.isNested = true;
+                        var pathFromRecord = __spread(path);
+                        var recordPath = pathFromRecord.splice(firstPub).reverse();
+                        pathFromRecord.reverse();
+                        if (myKey === this.recordPub) {
+                            // console.log('sub root', myKey);
+                        }
+                        else {
+                            // console.log('foreign key', myKey);
+                            var keyInRecord = pathFromRecord[0];
+                            var record = chainArray[firstPub];
+                            // console.log('record', record);
+                            this.record = record;
+                            var recordCerts = record.get('certs');
+                            var pathCerts_1 = recordCerts.get(keyInRecord);
+                            var searchKeys = [userPair.pub, '*'];
+                            var myCert = pathCerts_1.get(userPair.pub);
+                            myCert.not(function () {
+                                // console.log('no cert found');
+                                pathCerts_1.get('*').once(function (pubCert) {
+                                    if (!pubCert) {
+                                        // console.warn('no public cert found either');
+                                    }
+                                    _this.certificate = pubCert;
+                                    _this.certificate$.next(pubCert);
+                                });
                             });
-                        }); });
-                        this.record = record;
+                            // console.log('  %s', keyInRecord);
+                            myCert.once(function (cert) { return __awaiter(_this, void 0, void 0, function () {
+                                return __generator(this, function (_d) {
+                                    if (cert === null || cert === undefined) {
+                                        console.log('no user cert found, checking for public cert');
+                                        return [2 /*return*/];
+                                    }
+                                    // console.log('cert', cert);
+                                    // TODO verify cert later, the await causes chained put() calls to fail
+                                    // const verified = await SEA.verify(
+                                    //   cert,
+                                    //   this.recordPub.replace('~', '')
+                                    // );
+                                    this.certificate = cert;
+                                    this.certificate$.next(cert);
+                                    return [2 /*return*/];
+                                });
+                            }); });
+                        }
                     }
                 }
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(GunChain.prototype, "canEdit", {
+            get: function () {
+                return this.certificate !== null && this.certificate !== undefined;
             },
             enumerable: false,
             configurable: true
@@ -489,15 +511,31 @@
             if (this.isNested && !certificate) {
                 console.warn('NO CERTIFICATE FOUND FOR FOREIGN RECORD!');
             }
-            var result = this.from(this.gun.put(data, null, certificate ? { opt: { cert: certificate } } : undefined));
-            // this.once().subscribe((me) => {
-            //   console.log('me', me);
-            // });
-            return result;
+            this.gun.put(data, function () {
+                var putAck = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    putAck[_i] = arguments[_i];
+                }
+                console.log('putAck', putAck);
+            }, certificate ? { opt: { cert: certificate } } : undefined);
+            return this;
         };
-        GunChain.prototype.set = function (data) {
-            // TODO get certificate for set()
-            return this.from(this.gun.set(data));
+        GunChain.prototype.set = function (data, certificate) {
+            if (certificate === void 0) { certificate = this.certificate; }
+            var _a;
+            if (this.isNested && !certificate) {
+                console.warn('NO CERTIFICATE FOUND FOR FOREIGN RECORD!');
+                (_a = this.record) === null || _a === void 0 ? void 0 : _a.get('certs').load(function (certs) {
+                    console.log('all certs:', certs);
+                });
+            }
+            return this.from(this.gun.set(data, null, certificate
+                ? {
+                    opt: {
+                        cert: certificate,
+                    },
+                }
+                : undefined));
         };
         GunChain.prototype.unset = function (data) {
             if (this.gun.unset) {
@@ -682,6 +720,27 @@
             _this.is = gun.is;
             return _this;
         }
+        Object.defineProperty(GunAuthChain.prototype, "is", {
+            get: function () {
+                return this._is;
+            },
+            set: function (value) {
+                var _this = this;
+                this._is = value;
+                if (value) {
+                    this.root
+                        .get("~" + value.pub)
+                        .get('alias')
+                        .once()
+                        .subscribe(function (alias) {
+                        var _a, _b, _c;
+                        _this.alias = (_c = (_b = (_a = _this.gun._.root.user) === null || _a === void 0 ? void 0 : _a._) === null || _b === void 0 ? void 0 : _b.put) === null || _c === void 0 ? void 0 : _c.alias;
+                    });
+                }
+            },
+            enumerable: false,
+            configurable: true
+        });
         GunAuthChain.prototype.login = function (alias, pass) {
             var _this = this;
             var auth$ = this.root.onEvent('auth').pipe(operators.filter(function (ack) { return !ack.err; }), operators.filter(function (ack) {
@@ -726,7 +785,9 @@
         };
         GunAuthChain.prototype.put = function (data, certificate) {
             if (certificate === void 0) { certificate = this.certificate; }
-            return _super.prototype.put.call(this, data, certificate);
+            // SEA.sign(data, this.is.alias);
+            _super.prototype.put.call(this, data, certificate);
+            return this;
         };
         return GunAuthChain;
     }(GunChain));
@@ -1057,25 +1118,67 @@
         }, null);
     })();
 
+    var RouteChainDirective = /** @class */ (function () {
+        function RouteChainDirective(route, ngGun, dataKey) {
+            var _this = this;
+            if (dataKey === void 0) { dataKey = 'chain'; }
+            this.route = route;
+            this.ngGun = ngGun;
+            this.dataKey = dataKey;
+            this.chain$ = this.route.data.pipe(operators.map(function (data) {
+                var d = data[_this.dataKey];
+                var soul = Gun__namespace.node.soul(d);
+                // console.log('route data', this.dataKey);
+                return _this.ngGun.auth().root.get(soul);
+            }));
+            this.data$ = this.chain$.pipe(operators.switchMap(function (chain) { return chain.once(); }));
+            this.data$.subscribe(function (data) { return console.log({ data: data }); });
+        }
+        return RouteChainDirective;
+    }());
+    RouteChainDirective.ɵfac = function RouteChainDirective_Factory(t) { return new (t || RouteChainDirective)(i0__namespace.ɵɵdirectiveInject(i1__namespace.ActivatedRoute), i0__namespace.ɵɵdirectiveInject(NgGunService), i0__namespace.ɵɵdirectiveInject('gun-route-data-key', 8)); };
+    RouteChainDirective.ɵdir = i0__namespace.ɵɵdefineDirective({ type: RouteChainDirective, selectors: [["", "libRouteGun", ""]], outputs: { chain$: "chain$", data$: "data$" } });
+    (function () {
+        (typeof ngDevMode === "undefined" || ngDevMode) && i0__namespace.ɵsetClassMetadata(RouteChainDirective, [{
+                type: i0.Directive,
+                args: [{
+                        selector: '[libRouteGun]',
+                    }]
+            }], function () {
+            return [{ type: i1__namespace.ActivatedRoute }, { type: NgGunService }, { type: undefined, decorators: [{
+                            type: i0.Optional
+                        }, {
+                            type: i0.Inject,
+                            args: ['gun-route-data-key']
+                        }] }];
+        }, { chain$: [{
+                    type: i0.Output
+                }], data$: [{
+                    type: i0.Output
+                }] });
+    })();
+
     var NgGunModule = /** @class */ (function () {
         function NgGunModule() {
         }
         return NgGunModule;
     }());
     NgGunModule.ɵmod = i0__namespace.ɵɵdefineNgModule({ type: NgGunModule });
-    NgGunModule.ɵinj = i0__namespace.ɵɵdefineInjector({ factory: function NgGunModule_Factory(t) { return new (t || NgGunModule)(); } });
+    NgGunModule.ɵinj = i0__namespace.ɵɵdefineInjector({ factory: function NgGunModule_Factory(t) { return new (t || NgGunModule)(); }, providers: [{ provide: 'gun-route-data-key', useValue: 'chain' }] });
     (function () {
         (typeof ngJitMode === "undefined" || ngJitMode) && i0__namespace.ɵɵsetNgModuleScope(NgGunModule, { declarations: [NgGunComponent,
                 SoulPipe,
                 UpdatedPipe,
                 ChainDirective,
                 AliasPipe,
-                VerifyPipe], exports: [NgGunComponent,
+                VerifyPipe,
+                RouteChainDirective], exports: [NgGunComponent,
                 SoulPipe,
                 UpdatedPipe,
                 ChainDirective,
                 AliasPipe,
-                VerifyPipe] });
+                VerifyPipe,
+                RouteChainDirective] });
     })();
     (function () {
         (typeof ngDevMode === "undefined" || ngDevMode) && i0__namespace.ɵsetClassMetadata(NgGunModule, [{
@@ -1088,6 +1191,7 @@
                             ChainDirective,
                             AliasPipe,
                             VerifyPipe,
+                            RouteChainDirective,
                         ],
                         exports: [
                             NgGunComponent,
@@ -1096,9 +1200,32 @@
                             ChainDirective,
                             AliasPipe,
                             VerifyPipe,
+                            RouteChainDirective,
                         ],
+                        providers: [{ provide: 'gun-route-data-key', useValue: 'chain' }],
                     }]
             }], null, null);
+    })();
+
+    var GunResolverService = /** @class */ (function () {
+        function GunResolverService(ngGun) {
+            this.ngGun = ngGun;
+        }
+        GunResolverService.prototype.resolve = function (route, state) {
+            var soul = route.params.soul;
+            return this.ngGun.auth().root.get(soul).once();
+        };
+        return GunResolverService;
+    }());
+    GunResolverService.ɵfac = function GunResolverService_Factory(t) { return new (t || GunResolverService)(i0__namespace.ɵɵinject(NgGunService)); };
+    GunResolverService.ɵprov = i0__namespace.ɵɵdefineInjectable({ token: GunResolverService, factory: GunResolverService.ɵfac, providedIn: 'root' });
+    (function () {
+        (typeof ngDevMode === "undefined" || ngDevMode) && i0__namespace.ɵsetClassMetadata(GunResolverService, [{
+                type: i0.Injectable,
+                args: [{
+                        providedIn: 'root',
+                    }]
+            }], function () { return [{ type: NgGunService }]; }, null);
     })();
 
     /*
@@ -1115,9 +1242,11 @@
     exports.GunCertChain = GunCertChain;
     exports.GunChain = GunChain;
     exports.GunOptions = GunOptions;
+    exports.GunResolverService = GunResolverService;
     exports.NgGunComponent = NgGunComponent;
     exports.NgGunModule = NgGunModule;
     exports.NgGunService = NgGunService;
+    exports.RouteChainDirective = RouteChainDirective;
     exports.SoulPipe = SoulPipe;
     exports.UpdatedPipe = UpdatedPipe;
     exports.VerifyPipe = VerifyPipe;

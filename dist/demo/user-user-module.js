@@ -67,7 +67,7 @@ const routes = [
         children: [
             {
                 path: 'messages',
-                loadChildren: () => __webpack_require__.e(/*! import() | messages-messages-module */ "messages-messages-module").then(__webpack_require__.bind(null, /*! ./messages/messages.module */ "zkYC")).then((m) => m.MessagesModule),
+                loadChildren: () => Promise.all(/*! import() | messages-messages-module */[__webpack_require__.e("common"), __webpack_require__.e("messages-messages-module")]).then(__webpack_require__.bind(null, /*! ./messages/messages.module */ "zkYC")).then((m) => m.MessagesModule),
             },
             {
                 path: 'posts',
@@ -75,7 +75,11 @@ const routes = [
             },
             {
                 path: 'vectors',
-                loadChildren: () => __webpack_require__.e(/*! import() | vectors-vectors-module */ "vectors-vectors-module").then(__webpack_require__.bind(null, /*! ./vectors/vectors.module */ "8qAI")).then((m) => m.VectorsModule),
+                loadChildren: () => Promise.all(/*! import() | vectors-vectors-module */[__webpack_require__.e("common"), __webpack_require__.e("vectors-vectors-module")]).then(__webpack_require__.bind(null, /*! ./vectors/vectors.module */ "8qAI")).then((m) => m.VectorsModule),
+            },
+            {
+                path: 'settings',
+                loadChildren: () => __webpack_require__.e(/*! import() | settings-settings-module */ "settings-settings-module").then(__webpack_require__.bind(null, /*! ./settings/settings.module */ "20t9")).then((m) => m.SettingsModule),
             },
             {
                 path: '**',
@@ -145,7 +149,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_flex_layout__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @angular/flex-layout */ "YUcS");
 /* harmony import */ var _dashboard_dashboard_component__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./dashboard/dashboard.component */ "XFAN");
 /* harmony import */ var _log_src_lib_log_module__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../../../log/src/lib/log.module */ "fZIX");
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @angular/core */ "fXoL");
+/* harmony import */ var _components_components_module__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../components/components.module */ "47RE");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @angular/core */ "fXoL");
+
 
 
 
@@ -159,8 +165,8 @@ __webpack_require__.r(__webpack_exports__);
 
 class UserModule {
 }
-UserModule.ɵmod = _angular_core__WEBPACK_IMPORTED_MODULE_10__["ɵɵdefineNgModule"]({ type: UserModule });
-UserModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_10__["ɵɵdefineInjector"]({ factory: function UserModule_Factory(t) { return new (t || UserModule)(); }, imports: [[
+UserModule.ɵmod = _angular_core__WEBPACK_IMPORTED_MODULE_11__["ɵɵdefineNgModule"]({ type: UserModule });
+UserModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_11__["ɵɵdefineInjector"]({ factory: function UserModule_Factory(t) { return new (t || UserModule)(); }, imports: [[
             _angular_common__WEBPACK_IMPORTED_MODULE_0__["CommonModule"],
             _user_routing_module__WEBPACK_IMPORTED_MODULE_1__["UserRoutingModule"],
             _log_src_lib_log_module__WEBPACK_IMPORTED_MODULE_9__["LogModule"],
@@ -169,15 +175,17 @@ UserModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_10__["ɵɵdefineInject
             _angular_material_icon__WEBPACK_IMPORTED_MODULE_5__["MatIconModule"],
             _angular_material_input__WEBPACK_IMPORTED_MODULE_6__["MatInputModule"],
             _angular_flex_layout__WEBPACK_IMPORTED_MODULE_7__["FlexLayoutModule"],
+            _components_components_module__WEBPACK_IMPORTED_MODULE_10__["ComponentsModule"],
         ]] });
-(function () { (typeof ngJitMode === "undefined" || ngJitMode) && _angular_core__WEBPACK_IMPORTED_MODULE_10__["ɵɵsetNgModuleScope"](UserModule, { declarations: [_user_component__WEBPACK_IMPORTED_MODULE_2__["UserComponent"], _dashboard_dashboard_component__WEBPACK_IMPORTED_MODULE_8__["DashboardComponent"]], imports: [_angular_common__WEBPACK_IMPORTED_MODULE_0__["CommonModule"],
+(function () { (typeof ngJitMode === "undefined" || ngJitMode) && _angular_core__WEBPACK_IMPORTED_MODULE_11__["ɵɵsetNgModuleScope"](UserModule, { declarations: [_user_component__WEBPACK_IMPORTED_MODULE_2__["UserComponent"], _dashboard_dashboard_component__WEBPACK_IMPORTED_MODULE_8__["DashboardComponent"]], imports: [_angular_common__WEBPACK_IMPORTED_MODULE_0__["CommonModule"],
         _user_routing_module__WEBPACK_IMPORTED_MODULE_1__["UserRoutingModule"],
         _log_src_lib_log_module__WEBPACK_IMPORTED_MODULE_9__["LogModule"],
         _angular_material_button__WEBPACK_IMPORTED_MODULE_3__["MatButtonModule"],
         _angular_material_toolbar__WEBPACK_IMPORTED_MODULE_4__["MatToolbarModule"],
         _angular_material_icon__WEBPACK_IMPORTED_MODULE_5__["MatIconModule"],
         _angular_material_input__WEBPACK_IMPORTED_MODULE_6__["MatInputModule"],
-        _angular_flex_layout__WEBPACK_IMPORTED_MODULE_7__["FlexLayoutModule"]] }); })();
+        _angular_flex_layout__WEBPACK_IMPORTED_MODULE_7__["FlexLayoutModule"],
+        _components_components_module__WEBPACK_IMPORTED_MODULE_10__["ComponentsModule"]] }); })();
 
 
 /***/ })

@@ -14,6 +14,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(paper__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs */ "qCKp");
 /* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs/operators */ "kU1M");
+/* harmony import */ var _log_src_lib_log_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../../log/src/lib/log.service */ "Naon");
+
 
 
 
@@ -31,6 +33,7 @@ class VectorTool extends paper__WEBPACK_IMPORTED_MODULE_0__["Tool"] {
         this.keyup = Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["fromEvent"])(this, 'keyup');
         this.click = this.up.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((e) => e.delta.length === 0));
         this.name = Object.getPrototypeOf(this).constructor.name.replace(/tool/gi, '');
+        this.logger = _log_src_lib_log_service__WEBPACK_IMPORTED_MODULE_3__["LogService"].getLogger(`${this.name}`);
         // this.touchDown.subscribe((e) => {
         //   console.log('touch down', e);
         // });
@@ -161,7 +164,7 @@ class LassoSelectTool extends SelectTool {
                 const prev = this.scope.settings.insertItems;
                 this.scope.settings.insertItems = false;
                 this.path = this.path || new paper__WEBPACK_IMPORTED_MODULE_2__["Path"]([e.downPoint]);
-                this.path.data.ignored = true;
+                this.path.data.ignore = true;
                 this.path.dashArray = [12, 12];
                 this.path.closed = true;
                 this.path.fillColor = new paper__WEBPACK_IMPORTED_MODULE_2__["Color"](0, 0, 1, 0.5);
@@ -202,7 +205,7 @@ class RectangleSelectTool extends SelectTool {
             this.scope.settings.insertItems = false;
             this.rect = new paper__WEBPACK_IMPORTED_MODULE_2__["Shape"].Rectangle(e.downPoint, e.point);
             this.rect.pivot = new paper__WEBPACK_IMPORTED_MODULE_2__["Point"](0, 0);
-            this.rect.data.ignored = true;
+            this.rect.data.ignore = true;
             this.rect.dashArray = [12, 12];
             this.rect.fillColor = new paper__WEBPACK_IMPORTED_MODULE_2__["Color"](0, 0, 1, 0.5);
             this.rect.strokeWidth = 1;
@@ -470,9 +473,9 @@ class PaperPair {
         this.scope = scope;
         this.logger = logger;
         this.childCache = {};
-        this.importing = false;
+        this.isImportingJSON = false;
         this.save$ = new _angular_core__WEBPACK_IMPORTED_MODULE_2__["EventEmitter"]();
-        this.debouncedSave$ = this.save$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["filter"])((v) => !this.ctx.data.ignored), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["bufferTime"])(100));
+        this.debouncedSave$ = this.save$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["filter"])((v) => !this.ctx.data.ignore), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["bufferTime"])(100));
         this.saveProperty$ = new _angular_core__WEBPACK_IMPORTED_MODULE_2__["EventEmitter"](); // TODO document this...
         this.saveBuffer$ = this.saveProperty$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["buffer"])(this.debouncedSave$), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["filter"])((v) => v.length > 0), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["map"])((v) => v.reduce((propertyBuffer, val) => {
             const propertyName = val[0];
@@ -490,7 +493,7 @@ class PaperPair {
         ctx.pair = this;
         this.saveBuffer$.subscribe((buf) => {
             var _a;
-            if (((_a = this.ctx) === null || _a === void 0 ? void 0 : _a.data.ignore) || this.importing) {
+            if (((_a = this.ctx) === null || _a === void 0 ? void 0 : _a.data.ignore) || this.isImportingJSON) {
                 this.logger.warn('cannot save');
                 return;
             }
@@ -535,6 +538,10 @@ class PaperPair {
             }
             return;
         }
+        if (!Object(_constants__WEBPACK_IMPORTED_MODULE_0__["hasRequired"])(childJSON)) {
+            this.logger.error('child does not have required fields', childJSON);
+            return;
+        }
         const prevInsertItemsValue = this.scope.settings.insertItems;
         this.scope.settings.insertItems = false;
         const scrubbed = Object.assign({}, childJSON);
@@ -572,6 +579,15 @@ class PaperPair {
             return;
         }
         if (properties) {
+            if (!Array.isArray(properties)) {
+                if (typeof properties === 'string') {
+                    properties = [properties];
+                }
+                else {
+                    this.logger.error('save() properties argument must string or array');
+                    return;
+                }
+            }
             properties.forEach((name) => this.saveProperty$.emit([name]));
         }
         this.save$.emit();
@@ -618,7 +634,7 @@ const REQUIRES = {
 };
 function hasRequired(json) {
     if (!json) {
-        console.warn('hasRequired() NULL VALUE');
+        // console.warn('hasRequired() NULL VALUE');
         return false;
     }
     if (!json.className) {
@@ -774,6 +790,25 @@ exports.after = after;
 
 /***/ }),
 
+/***/ "8Ro7":
+/*!********************************************************************!*\
+  !*** ./projects/demo/src/app/user/vectors/classes/SaveStrategy.ts ***!
+  \********************************************************************/
+/*! exports provided: SaveStrategy */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SaveStrategy", function() { return SaveStrategy; });
+var SaveStrategy;
+(function (SaveStrategy) {
+    SaveStrategy[SaveStrategy["AUTOMATIC"] = 0] = "AUTOMATIC";
+    SaveStrategy[SaveStrategy["MANUAL"] = 1] = "MANUAL";
+})(SaveStrategy || (SaveStrategy = {}));
+
+
+/***/ }),
+
 /***/ "8qAI":
 /*!**************************************************************!*\
   !*** ./projects/demo/src/app/user/vectors/vectors.module.ts ***!
@@ -862,33 +897,33 @@ class VectorsModule {
 }
 VectorsModule.ɵmod = _angular_core__WEBPACK_IMPORTED_MODULE_36__["ɵɵdefineNgModule"]({ type: VectorsModule });
 VectorsModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_36__["ɵɵdefineInjector"]({ factory: function VectorsModule_Factory(t) { return new (t || VectorsModule)(); }, imports: [[
+            _certificates_certificates_module__WEBPACK_IMPORTED_MODULE_34__["CertificatesModule"],
             _angular_common__WEBPACK_IMPORTED_MODULE_0__["CommonModule"],
-            _vectors_routing_module__WEBPACK_IMPORTED_MODULE_1__["VectorsRoutingModule"],
-            _ng_gun_src_lib_ng_gun_module__WEBPACK_IMPORTED_MODULE_5__["NgGunModule"],
-            _angular_forms__WEBPACK_IMPORTED_MODULE_8__["ReactiveFormsModule"],
+            _angular_flex_layout__WEBPACK_IMPORTED_MODULE_29__["FlexLayoutModule"],
             _log_src_lib_log_module__WEBPACK_IMPORTED_MODULE_35__["LogModule"],
-            _angular_material_input__WEBPACK_IMPORTED_MODULE_10__["MatInputModule"],
-            _angular_material_icon__WEBPACK_IMPORTED_MODULE_11__["MatIconModule"],
-            _angular_material_checkbox__WEBPACK_IMPORTED_MODULE_14__["MatCheckboxModule"],
             _angular_material_button__WEBPACK_IMPORTED_MODULE_12__["MatButtonModule"],
-            _angular_cdk_scrolling__WEBPACK_IMPORTED_MODULE_15__["ScrollingModule"],
+            _angular_material_button_toggle__WEBPACK_IMPORTED_MODULE_13__["MatButtonToggleModule"],
             _angular_material_card__WEBPACK_IMPORTED_MODULE_16__["MatCardModule"],
             _angular_material_checkbox__WEBPACK_IMPORTED_MODULE_14__["MatCheckboxModule"],
+            _angular_material_checkbox__WEBPACK_IMPORTED_MODULE_14__["MatCheckboxModule"],
             _angular_material_chips__WEBPACK_IMPORTED_MODULE_17__["MatChipsModule"],
-            _angular_material_stepper__WEBPACK_IMPORTED_MODULE_26__["MatStepperModule"],
             _angular_material_datepicker__WEBPACK_IMPORTED_MODULE_18__["MatDatepickerModule"],
             _angular_material_dialog__WEBPACK_IMPORTED_MODULE_19__["MatDialogModule"],
             _angular_material_divider__WEBPACK_IMPORTED_MODULE_20__["MatDividerModule"],
             _angular_material_expansion__WEBPACK_IMPORTED_MODULE_21__["MatExpansionModule"],
             _angular_material_grid_list__WEBPACK_IMPORTED_MODULE_22__["MatGridListModule"],
+            _angular_material_icon__WEBPACK_IMPORTED_MODULE_11__["MatIconModule"],
+            _angular_material_input__WEBPACK_IMPORTED_MODULE_10__["MatInputModule"],
             _angular_material_input__WEBPACK_IMPORTED_MODULE_10__["MatInputModule"],
             _angular_material_list__WEBPACK_IMPORTED_MODULE_23__["MatListModule"],
             _angular_material_menu__WEBPACK_IMPORTED_MODULE_24__["MatMenuModule"],
-            _angular_material_button_toggle__WEBPACK_IMPORTED_MODULE_13__["MatButtonToggleModule"],
-            _angular_flex_layout__WEBPACK_IMPORTED_MODULE_29__["FlexLayoutModule"],
+            _angular_material_stepper__WEBPACK_IMPORTED_MODULE_26__["MatStepperModule"],
             _angular_material_toolbar__WEBPACK_IMPORTED_MODULE_25__["MatToolbarModule"],
             _angular_material_tooltip__WEBPACK_IMPORTED_MODULE_32__["MatTooltipModule"],
-            _certificates_certificates_module__WEBPACK_IMPORTED_MODULE_34__["CertificatesModule"],
+            _ng_gun_src_lib_ng_gun_module__WEBPACK_IMPORTED_MODULE_5__["NgGunModule"],
+            _angular_forms__WEBPACK_IMPORTED_MODULE_8__["ReactiveFormsModule"],
+            _angular_cdk_scrolling__WEBPACK_IMPORTED_MODULE_15__["ScrollingModule"],
+            _vectors_routing_module__WEBPACK_IMPORTED_MODULE_1__["VectorsRoutingModule"],
         ]] });
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && _angular_core__WEBPACK_IMPORTED_MODULE_36__["ɵɵsetNgModuleScope"](VectorsModule, { declarations: [_vectors_component__WEBPACK_IMPORTED_MODULE_2__["VectorsComponent"],
         _paper_directive__WEBPACK_IMPORTED_MODULE_3__["PaperDirective"],
@@ -900,33 +935,33 @@ VectorsModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_36__["ɵɵdefineInj
         _components_color_form_color_form_component__WEBPACK_IMPORTED_MODULE_28__["ColorFormComponent"],
         _components_vector_form_vector_form_component__WEBPACK_IMPORTED_MODULE_30__["VectorFormComponent"],
         _components_create_vector_create_vector_component__WEBPACK_IMPORTED_MODULE_31__["CreateVectorComponent"],
-        _view_vector_view_vector_component__WEBPACK_IMPORTED_MODULE_33__["ViewVectorComponent"]], imports: [_angular_common__WEBPACK_IMPORTED_MODULE_0__["CommonModule"],
-        _vectors_routing_module__WEBPACK_IMPORTED_MODULE_1__["VectorsRoutingModule"],
-        _ng_gun_src_lib_ng_gun_module__WEBPACK_IMPORTED_MODULE_5__["NgGunModule"],
-        _angular_forms__WEBPACK_IMPORTED_MODULE_8__["ReactiveFormsModule"],
+        _view_vector_view_vector_component__WEBPACK_IMPORTED_MODULE_33__["ViewVectorComponent"]], imports: [_certificates_certificates_module__WEBPACK_IMPORTED_MODULE_34__["CertificatesModule"],
+        _angular_common__WEBPACK_IMPORTED_MODULE_0__["CommonModule"],
+        _angular_flex_layout__WEBPACK_IMPORTED_MODULE_29__["FlexLayoutModule"],
         _log_src_lib_log_module__WEBPACK_IMPORTED_MODULE_35__["LogModule"],
-        _angular_material_input__WEBPACK_IMPORTED_MODULE_10__["MatInputModule"],
-        _angular_material_icon__WEBPACK_IMPORTED_MODULE_11__["MatIconModule"],
-        _angular_material_checkbox__WEBPACK_IMPORTED_MODULE_14__["MatCheckboxModule"],
         _angular_material_button__WEBPACK_IMPORTED_MODULE_12__["MatButtonModule"],
-        _angular_cdk_scrolling__WEBPACK_IMPORTED_MODULE_15__["ScrollingModule"],
+        _angular_material_button_toggle__WEBPACK_IMPORTED_MODULE_13__["MatButtonToggleModule"],
         _angular_material_card__WEBPACK_IMPORTED_MODULE_16__["MatCardModule"],
         _angular_material_checkbox__WEBPACK_IMPORTED_MODULE_14__["MatCheckboxModule"],
+        _angular_material_checkbox__WEBPACK_IMPORTED_MODULE_14__["MatCheckboxModule"],
         _angular_material_chips__WEBPACK_IMPORTED_MODULE_17__["MatChipsModule"],
-        _angular_material_stepper__WEBPACK_IMPORTED_MODULE_26__["MatStepperModule"],
         _angular_material_datepicker__WEBPACK_IMPORTED_MODULE_18__["MatDatepickerModule"],
         _angular_material_dialog__WEBPACK_IMPORTED_MODULE_19__["MatDialogModule"],
         _angular_material_divider__WEBPACK_IMPORTED_MODULE_20__["MatDividerModule"],
         _angular_material_expansion__WEBPACK_IMPORTED_MODULE_21__["MatExpansionModule"],
         _angular_material_grid_list__WEBPACK_IMPORTED_MODULE_22__["MatGridListModule"],
+        _angular_material_icon__WEBPACK_IMPORTED_MODULE_11__["MatIconModule"],
+        _angular_material_input__WEBPACK_IMPORTED_MODULE_10__["MatInputModule"],
         _angular_material_input__WEBPACK_IMPORTED_MODULE_10__["MatInputModule"],
         _angular_material_list__WEBPACK_IMPORTED_MODULE_23__["MatListModule"],
         _angular_material_menu__WEBPACK_IMPORTED_MODULE_24__["MatMenuModule"],
-        _angular_material_button_toggle__WEBPACK_IMPORTED_MODULE_13__["MatButtonToggleModule"],
-        _angular_flex_layout__WEBPACK_IMPORTED_MODULE_29__["FlexLayoutModule"],
+        _angular_material_stepper__WEBPACK_IMPORTED_MODULE_26__["MatStepperModule"],
         _angular_material_toolbar__WEBPACK_IMPORTED_MODULE_25__["MatToolbarModule"],
         _angular_material_tooltip__WEBPACK_IMPORTED_MODULE_32__["MatTooltipModule"],
-        _certificates_certificates_module__WEBPACK_IMPORTED_MODULE_34__["CertificatesModule"]], exports: [_paper_directive__WEBPACK_IMPORTED_MODULE_3__["PaperDirective"]] }); })();
+        _ng_gun_src_lib_ng_gun_module__WEBPACK_IMPORTED_MODULE_5__["NgGunModule"],
+        _angular_forms__WEBPACK_IMPORTED_MODULE_8__["ReactiveFormsModule"],
+        _angular_cdk_scrolling__WEBPACK_IMPORTED_MODULE_15__["ScrollingModule"],
+        _vectors_routing_module__WEBPACK_IMPORTED_MODULE_1__["VectorsRoutingModule"]], exports: [_paper_directive__WEBPACK_IMPORTED_MODULE_3__["PaperDirective"]] }); })();
 
 
 /***/ }),
@@ -1060,13 +1095,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _vector_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./vector.service */ "w907");
 /* harmony import */ var _angular_material_dialog__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/material/dialog */ "0IaG");
 /* harmony import */ var _angular_material_toolbar__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @angular/material/toolbar */ "/t3+");
-/* harmony import */ var _angular_material_button__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @angular/material/button */ "bTqV");
-/* harmony import */ var _angular_flex_layout_grid__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @angular/flex-layout/grid */ "zpSk");
-/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @angular/common */ "ofXK");
-/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @angular/router */ "tyNb");
-/* harmony import */ var _angular_material_icon__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @angular/material/icon */ "NFeN");
-/* harmony import */ var _ng_gun_src_lib_soul_pipe__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../../../../../ng-gun/src/lib/soul.pipe */ "FlTl");
-/* harmony import */ var _ng_gun_src_lib_updated_pipe__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../../../../../ng-gun/src/lib/updated.pipe */ "xdc7");
+/* harmony import */ var _angular_flex_layout_flex__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @angular/flex-layout/flex */ "XiUz");
+/* harmony import */ var _angular_material_button__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @angular/material/button */ "bTqV");
+/* harmony import */ var _angular_flex_layout_grid__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @angular/flex-layout/grid */ "zpSk");
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @angular/common */ "ofXK");
+/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @angular/router */ "tyNb");
+/* harmony import */ var _angular_material_icon__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @angular/material/icon */ "NFeN");
+/* harmony import */ var _ng_gun_src_lib_soul_pipe__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../../../../../ng-gun/src/lib/soul.pipe */ "FlTl");
+/* harmony import */ var _ng_gun_src_lib_updated_pipe__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../../../../../ng-gun/src/lib/updated.pipe */ "xdc7");
+
 
 
 
@@ -1084,26 +1121,26 @@ __webpack_require__.r(__webpack_exports__);
 
 const _c0 = function (a1) { return ["/user/vectors", a1, "edit"]; };
 const _c1 = function (a1) { return ["/user/vectors", a1]; };
-function VectorsComponent_ng_container_4_Template(rf, ctx) { if (rf & 1) {
+function VectorsComponent_ng_container_6_Template(rf, ctx) { if (rf & 1) {
     const _r3 = _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementContainerStart"](0);
-    _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementStart"](1, "a", 3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementStart"](1, "a", 4);
     _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵpipe"](2, "soul");
     _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵtext"](3);
     _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementStart"](4, "a", 3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementStart"](4, "a", 4);
     _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵpipe"](5, "soul");
     _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵtext"](6);
     _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵpipe"](7, "date");
     _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵpipe"](8, "updated");
     _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementStart"](9, "button", 4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵlistener"]("click", function VectorsComponent_ng_container_4_Template_button_click_9_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵrestoreView"](_r3); const vector_r1 = ctx.$implicit; const ctx_r2 = _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵnextContext"](); return ctx_r2.remove(vector_r1); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementStart"](9, "button", 5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵlistener"]("click", function VectorsComponent_ng_container_6_Template_button_click_9_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵrestoreView"](_r3); const vector_r1 = ctx.$implicit; const ctx_r2 = _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵnextContext"](); return ctx_r2.remove(vector_r1); });
     _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementStart"](10, "mat-icon");
     _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵtext"](11, "delete");
     _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementStart"](12, "button", 5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementStart"](12, "button", 6);
     _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵpipe"](13, "soul");
     _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementStart"](14, "mat-icon");
     _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵtext"](15, "settings");
@@ -1159,21 +1196,24 @@ VectorsComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineC
         //   useFactory: buildVectorLogger,
         //   deps: [LogService, 'log-name'],
         // },
-        ])], decls: 6, vars: 3, consts: [["mat-button", "", "color", "primary", 3, "click"], ["gdColumns", "auto repeat(3, max-content)"], [4, "ngFor", "ngForOf"], ["mat-flat-button", "", 3, "routerLink"], ["mat-icon-button", "", 3, "click"], ["mat-icon-button", "", 3, "routerLink"]], template: function VectorsComponent_Template(rf, ctx) { if (rf & 1) {
+        ])], decls: 8, vars: 3, consts: [["fxFlex", "1 0 auto"], ["mat-raised-button", "", "color", "primary", 3, "click"], ["gdColumns", "auto repeat(3, max-content)"], [4, "ngFor", "ngForOf"], ["mat-flat-button", "", 3, "routerLink"], ["mat-icon-button", "", 3, "click"], ["mat-icon-button", "", 3, "routerLink"]], template: function VectorsComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementStart"](0, "mat-toolbar");
-        _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementStart"](1, "button", 0);
-        _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵlistener"]("click", function VectorsComponent_Template_button_click_1_listener() { return ctx.create(); });
-        _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵtext"](2, "New Vector");
+        _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementStart"](1, "h1", 0);
+        _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵtext"](2, "Vectors");
+        _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementStart"](3, "button", 1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵlistener"]("click", function VectorsComponent_Template_button_click_3_listener() { return ctx.create(); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵtext"](4, "New Vector");
         _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementStart"](3, "div", 1);
-        _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵtemplate"](4, VectorsComponent_ng_container_4_Template, 16, 21, "ng-container", 2);
-        _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵpipe"](5, "async");
+        _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementStart"](5, "div", 2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵtemplate"](6, VectorsComponent_ng_container_6_Template, 16, 21, "ng-container", 3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵpipe"](7, "async");
         _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementEnd"]();
     } if (rf & 2) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵadvance"](4);
-        _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵproperty"]("ngForOf", _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵpipeBind1"](5, 1, ctx.vectors));
-    } }, directives: [_angular_material_toolbar__WEBPACK_IMPORTED_MODULE_7__["MatToolbar"], _angular_material_button__WEBPACK_IMPORTED_MODULE_8__["MatButton"], _angular_flex_layout_grid__WEBPACK_IMPORTED_MODULE_9__["ɵgrid_privatex"], _angular_common__WEBPACK_IMPORTED_MODULE_10__["NgForOf"], _angular_material_button__WEBPACK_IMPORTED_MODULE_8__["MatAnchor"], _angular_router__WEBPACK_IMPORTED_MODULE_11__["RouterLinkWithHref"], _angular_material_icon__WEBPACK_IMPORTED_MODULE_12__["MatIcon"], _angular_router__WEBPACK_IMPORTED_MODULE_11__["RouterLink"]], pipes: [_angular_common__WEBPACK_IMPORTED_MODULE_10__["AsyncPipe"], _ng_gun_src_lib_soul_pipe__WEBPACK_IMPORTED_MODULE_13__["SoulPipe"], _angular_common__WEBPACK_IMPORTED_MODULE_10__["DatePipe"], _ng_gun_src_lib_updated_pipe__WEBPACK_IMPORTED_MODULE_14__["UpdatedPipe"]], styles: ["div[_ngcontent-%COMP%]   [mat-flat-button][_ngcontent-%COMP%] {\n  text-align: left;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uL3ZlY3RvcnMuY29tcG9uZW50LnNjc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDRSxnQkFBQTtBQUNGIiwiZmlsZSI6InZlY3RvcnMuY29tcG9uZW50LnNjc3MiLCJzb3VyY2VzQ29udGVudCI6WyJkaXYgW21hdC1mbGF0LWJ1dHRvbl0ge1xuICB0ZXh0LWFsaWduOiBsZWZ0O1xufVxuIl19 */"] });
+        _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵadvance"](6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵproperty"]("ngForOf", _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵpipeBind1"](7, 1, ctx.vectors));
+    } }, directives: [_angular_material_toolbar__WEBPACK_IMPORTED_MODULE_7__["MatToolbar"], _angular_flex_layout_flex__WEBPACK_IMPORTED_MODULE_8__["DefaultFlexDirective"], _angular_material_button__WEBPACK_IMPORTED_MODULE_9__["MatButton"], _angular_flex_layout_grid__WEBPACK_IMPORTED_MODULE_10__["ɵgrid_privatex"], _angular_common__WEBPACK_IMPORTED_MODULE_11__["NgForOf"], _angular_material_button__WEBPACK_IMPORTED_MODULE_9__["MatAnchor"], _angular_router__WEBPACK_IMPORTED_MODULE_12__["RouterLinkWithHref"], _angular_material_icon__WEBPACK_IMPORTED_MODULE_13__["MatIcon"], _angular_router__WEBPACK_IMPORTED_MODULE_12__["RouterLink"]], pipes: [_angular_common__WEBPACK_IMPORTED_MODULE_11__["AsyncPipe"], _ng_gun_src_lib_soul_pipe__WEBPACK_IMPORTED_MODULE_14__["SoulPipe"], _angular_common__WEBPACK_IMPORTED_MODULE_11__["DatePipe"], _ng_gun_src_lib_updated_pipe__WEBPACK_IMPORTED_MODULE_15__["UpdatedPipe"]], styles: ["div[_ngcontent-%COMP%]   [mat-flat-button][_ngcontent-%COMP%] {\n  text-align: left;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uL3ZlY3RvcnMuY29tcG9uZW50LnNjc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDRSxnQkFBQTtBQUNGIiwiZmlsZSI6InZlY3RvcnMuY29tcG9uZW50LnNjc3MiLCJzb3VyY2VzQ29udGVudCI6WyJkaXYgW21hdC1mbGF0LWJ1dHRvbl0ge1xuICB0ZXh0LWFsaWduOiBsZWZ0O1xufVxuIl19 */"] });
 
 
 /***/ }),
@@ -18875,25 +18915,28 @@ return paper;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ProjectPair", function() { return ProjectPair; });
-/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! rxjs/operators */ "kU1M");
-/* harmony import */ var _functions_aspect_rx__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../functions/aspect-rx */ "4Dgj");
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs */ "qCKp");
-/* harmony import */ var _ItemPair__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ItemPair */ "kDHW");
-/* harmony import */ var _PaperPair__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./PaperPair */ "5jeY");
-/* harmony import */ var _edit_vector_converter_functions__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../edit-vector/converter-functions */ "qI0X");
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! rxjs */ "qCKp");
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs/operators */ "kU1M");
+/* harmony import */ var _functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../functions/aspect-rx */ "4Dgj");
+/* harmony import */ var _edit_vector_converter_functions__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../edit-vector/converter-functions */ "qI0X");
+/* harmony import */ var _ItemPair__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ItemPair */ "kDHW");
+/* harmony import */ var _PaperPair__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./PaperPair */ "5jeY");
+/* harmony import */ var _SaveStrategy__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./SaveStrategy */ "8Ro7");
 
 
 
 
 
 
-class ProjectPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_4__["PaperPair"] {
+
+class ProjectPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_5__["PaperPair"] {
     constructor(chain, project, scope, logger) {
         super(project, project, scope, logger); // UGN
         this.chain = chain;
         this.project = project;
         /* STATE */
-        this.importing = false;
+        this.isImportingJSON = false;
+        this.saveStrategy = _SaveStrategy__WEBPACK_IMPORTED_MODULE_6__["SaveStrategy"].MANUAL;
         /* GRAPH EVENTS */
         this.layers = this.chain.get('layers');
         this.layerMap = this.layers.map();
@@ -18903,13 +18946,13 @@ class ProjectPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_4__["PaperPair"] {
         });
         this.layerCache = {};
         /* PROJECT EVENTS */
-        this.beforeProjectImportJSON$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_1__["before$"])(this.project, 'importJSON');
-        this.afterProjectImportJSON$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_1__["after$"])(this.project, 'importJSON');
-        this.afterProjectInsertLayer$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_1__["after$"])(this.project, 'insertLayer').pipe(
+        this.beforeProjectImportJSON$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["before$"])(this.project, 'importJSON');
+        this.afterProjectImportJSON$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["after$"])(this.project, 'importJSON');
+        this.afterProjectInsertLayer$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["after$"])(this.project, 'insertLayer').pipe(
         // tap((inserted: any) => this.logger.log('.afterInsertLayer', inserted)),
-        Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_0__["map"])(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_1__["returned"]), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_0__["filter"])((layer) => layer !== null && layer !== undefined), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_0__["switchMap"])((value) => this.importing
-            ? this.afterProjectImportJSON$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_0__["mapTo"])(value))
-            : Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["of"])(value)));
+        Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["map"])(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["returned"]), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["filter"])((layer) => layer !== null && layer !== undefined), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["switchMap"])((value) => this.isImportingJSON
+            ? this.afterProjectImportJSON$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["mapTo"])(value))
+            : Object(rxjs__WEBPACK_IMPORTED_MODULE_0__["of"])(value)));
         this.setupProject();
         // this.logger.log('new ProjectPair');
         project.pair = this;
@@ -18951,16 +18994,16 @@ class ProjectPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_4__["PaperPair"] {
             // this.logger.log('onLocalLayer %s', l.toString());
             if (!l.data.soul) {
                 // this.logger.log('    no soul');
-                const soul = Object(_edit_vector_converter_functions__WEBPACK_IMPORTED_MODULE_5__["getUUID"])(this.chain);
+                const soul = Object(_edit_vector_converter_functions__WEBPACK_IMPORTED_MODULE_3__["getUUID"])(this.chain);
                 l.data.soul = soul;
             }
             const layerGun = this.layers.get(l.data.soul);
-            const layerPair = new _ItemPair__WEBPACK_IMPORTED_MODULE_3__["ItemPair"](layerGun, layer, this.project, this.scope, this.logger);
+            const layerPair = new _ItemPair__WEBPACK_IMPORTED_MODULE_4__["ItemPair"](layerGun, layer, this.project, this.scope, this.logger);
         }
     }
     setupProject() {
-        this.beforeProjectImportJSON$.subscribe(() => (this.importing = true));
-        this.afterProjectImportJSON$.subscribe(() => (this.importing = false));
+        this.beforeProjectImportJSON$.subscribe(() => (this.isImportingJSON = true));
+        this.afterProjectImportJSON$.subscribe(() => (this.isImportingJSON = false));
         this.afterProjectInsertLayer$.subscribe((layer) => this.onLocalLayer(layer));
         this.layers$.subscribe((data) => this.onGraphLayer(data));
     }
@@ -18999,6 +19042,7 @@ class PenTool extends _paper_tool__WEBPACK_IMPORTED_MODULE_1__["VectorTool"] {
     setup() {
         this.down.subscribe((e) => {
             this.path = new paper__WEBPACK_IMPORTED_MODULE_2__["Path"](e.point);
+            this.path.pair.editing = true;
             this.path.strokeWidth = 3;
             this.path.strokeColor = this.project.currentStyle.strokeColor;
         });
@@ -19008,7 +19052,10 @@ class PenTool extends _paper_tool__WEBPACK_IMPORTED_MODULE_1__["VectorTool"] {
         this.up.subscribe((e) => {
             var _a;
             this.path.strokeColor = this.project.currentStyle.strokeColor;
-            (_a = this.path.pair) === null || _a === void 0 ? void 0 : _a.save();
+            // (this.path as any).pair?.save('segments');
+            // (this.path as any).pair?.save();
+            (_a = this.path.pair) === null || _a === void 0 ? void 0 : _a.doSave();
+            this.path.pair.editing = false;
         });
     }
 }
@@ -19291,8 +19338,11 @@ class MoveTool extends _paper_tool__WEBPACK_IMPORTED_MODULE_0__["VectorTool"] {
                 match: (item) => item.className !== 'Layer',
             })
                 .forEach((item) => {
-                // TODO find a better way to keep track of saved fields
-                item.pair.save(['position', 'segments']);
+                const saveFields = ['position'];
+                if (item.className === 'Path') {
+                    saveFields.push('segments');
+                }
+                item.pair.save(saveFields);
             });
         });
     }
@@ -19340,20 +19390,34 @@ class PanTool extends _paper_tool__WEBPACK_IMPORTED_MODULE_0__["VectorTool"] {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EraserTool", function() { return EraserTool; });
 /* harmony import */ var _paper_tool__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../paper-tool */ "/NF4");
+/* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! paper */ "IiLU");
+/* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(paper__WEBPACK_IMPORTED_MODULE_1__);
+
 
 class EraserTool extends _paper_tool__WEBPACK_IMPORTED_MODULE_0__["VectorTool"] {
     constructor() {
         super(...arguments);
         this.name = 'eraser';
-    }
-    setup() {
-        this.drag.subscribe((e) => {
+        this.dragSub = this.drag.subscribe((e) => {
             // console.log('eraser drag');
-            const hits = this.project.hitTestAll(e.point);
-            hits.forEach((hitResult) => hitResult.item.remove());
-            // console.log('would erase', hits);
+            const prev = this.scope.settings.insertItems;
+            this.scope.settings.insertItems = false;
+            if (!this.path) {
+                this.path = new paper__WEBPACK_IMPORTED_MODULE_1__["Path"]([e.downPoint]);
+                this.path.data.ignore = true;
+            }
+            this.path.add(e.point);
+            const intersects = this.project.getItems({
+                match: (i) => i !== this.path &&
+                    i.className !== 'Layer' &&
+                    !i.data.ignore &&
+                    i.intersects(this.path),
+            });
+            // TODO skip removing items that were added since the beginning of this drag
+            intersects.forEach((i) => i.remove());
+            this.scope.settings.insertItems = prev;
         });
-        this.up.subscribe((e) => (this.path = null));
+        this.upSub = this.up.subscribe((e) => (this.path = null));
     }
 }
 
@@ -19486,15 +19550,16 @@ StyleFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefin
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ItemPair", function() { return ItemPair; });
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! rxjs */ "qCKp");
-/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs/operators */ "kU1M");
-/* harmony import */ var _functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../functions/aspect-rx */ "4Dgj");
-/* harmony import */ var _edit_vector_converter_functions__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../edit-vector/converter-functions */ "qI0X");
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./constants */ "631e");
-/* harmony import */ var _packaging__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./packaging */ "E6wO");
-/* harmony import */ var _PaperPair__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./PaperPair */ "5jeY");
-/* harmony import */ var gun__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! gun */ "U+kO");
-/* harmony import */ var gun__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(gun__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var gun__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gun */ "U+kO");
+/* harmony import */ var gun__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(gun__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs */ "qCKp");
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs/operators */ "kU1M");
+/* harmony import */ var _functions_aspect_rx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../functions/aspect-rx */ "4Dgj");
+/* harmony import */ var _edit_vector_converter_functions__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../edit-vector/converter-functions */ "qI0X");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./constants */ "631e");
+/* harmony import */ var _packaging__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./packaging */ "E6wO");
+/* harmony import */ var _PaperPair__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./PaperPair */ "5jeY");
+/* harmony import */ var _SaveStrategy__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./SaveStrategy */ "8Ro7");
 
 
 
@@ -19503,16 +19568,19 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-class ItemPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_6__["PaperPair"] {
+
+class ItemPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_7__["PaperPair"] {
     constructor(chain, item, project, scope, logger) {
         super(item, project, scope, logger);
         this.chain = chain;
         this.item = item;
         this.graph$ = this.chain
             .on({ changes: true, bypassZone: true })
-            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["debounceTime"])(_constants__WEBPACK_IMPORTED_MODULE_4__["INCOMING_DEBOUNCE"]), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["shareReplay"])(1));
-        this.graphValue$ = this.graph$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["filter"])((json) => Object(_constants__WEBPACK_IMPORTED_MODULE_4__["hasRequired"])(json)), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["distinct"])((v) => JSON.stringify(v)), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["tap"])((value) => (this.graphValue = value)));
-        this.graphRemove$ = this.graph$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["filter"])((json) => json === null));
+            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["shareReplay"])(1));
+        this.graphValue$ = this.graph$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((json) => Object(_constants__WEBPACK_IMPORTED_MODULE_5__["hasRequired"])(json)), 
+        // distinct((v) => JSON.stringify(v)),
+        Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["tap"])((value) => (this.graphValue = value)));
+        this.graphRemove$ = this.graph$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((json) => json === null));
         // Graph Methods
         this.childSouls = new Set();
         this.children = this.chain.get('children');
@@ -19526,17 +19594,20 @@ class ItemPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_6__["PaperPair"] {
             .pipe();
         // FIXME find a better way to buffer by time window -
         // bufferTime() continuously emits, causing expensive filtering for thousands of objects!
-        this.childrenBuffer$ = this.children$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["filter"])((childVK) => !this.childSouls.has(childVK[1])), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["tap"])((childVK) => {
+        this.childrenBuffer$ = this.children$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((childVK) => !this.childSouls.has(childVK[1])), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["tap"])((childVK) => {
             this.childSouls.add(childVK[1]);
-        }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["bufferTime"])(_constants__WEBPACK_IMPORTED_MODULE_4__["SAVE_DEBOUNCE"]), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["filter"])((children) => children.length > 0));
-        this.afterRemove$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["after$"])(this.item, 'remove');
+        }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["bufferTime"])(_constants__WEBPACK_IMPORTED_MODULE_5__["SAVE_DEBOUNCE"]), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((children) => children.length > 0));
+        this.afterRemove$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_3__["after$"])(this.item, 'remove');
         // Local Methods
-        this.ignoreInsert = false;
-        this.beforeImportJSON$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["before$"])(this.item, 'importJSON');
-        this.afterImportJSON$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["after$"])(this.item, 'importJSON');
-        this.afterInsertChild$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["after$"])(this.item, 'insertChild').pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["map"])(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["returned"]), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["tap"])((item) => (this.ignoreInsert ? this.logger.log('ignored') : {})), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["filter"])((item) => !this.item.data.ignored && !item.data.ignored), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["filter"])((item) => !this.ignoreInsert && item !== null && item !== undefined), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["switchMap"])((item) => this.importing ? this.afterImportJSON$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["mapTo"])(item)) : Object(rxjs__WEBPACK_IMPORTED_MODULE_0__["of"])(item)));
-        this.afterAddChild$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["after$"])(this.item, 'addChild').pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["map"])(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["returned"]), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["filter"])((item) => !this.ignoreInsert && item !== null && item !== undefined), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["switchMap"])((item) => this.importing ? this.afterImportJSON$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["mapTo"])(item)) : Object(rxjs__WEBPACK_IMPORTED_MODULE_0__["of"])(item)));
-        this.localChange$ = Object(rxjs__WEBPACK_IMPORTED_MODULE_0__["from"])((_constants__WEBPACK_IMPORTED_MODULE_4__["MUTATIONS"][this.item.className] || [])).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["mergeMap"])((method) => Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["after$"])(this.item, method).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["map"])((v) => _constants__WEBPACK_IMPORTED_MODULE_4__["MUTATION_PROPERTIES"][method]))));
+        this.isInsertingFromGraph = false;
+        this.beforeImportJSON$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_3__["before$"])(this.item, 'importJSON');
+        this.afterImportJSON$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_3__["after$"])(this.item, 'importJSON');
+        this.afterInsertChild$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_3__["after$"])(this.item, 'insertChild').pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["map"])(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_3__["returned"]), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["tap"])((item) => this.isInsertingFromGraph
+            ? this.logger.log('ignored %o because children are being imported')
+            : {}), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((item) => !this.item.data.ignore && !item.data.ignore), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((item) => !this.isInsertingFromGraph && item !== null && item !== undefined), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["switchMap"])((item) => this.isImportingJSON ? this.afterImportJSON$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["mapTo"])(item)) : Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["of"])(item)));
+        this.afterAddChild$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_3__["after$"])(this.item, 'addChild').pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["map"])(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_3__["returned"]), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((item) => !this.isInsertingFromGraph && item !== null && item !== undefined), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["switchMap"])((item) => this.isImportingJSON ? this.afterImportJSON$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["mapTo"])(item)) : Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["of"])(item)));
+        this.localChange$ = Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["from"])((_constants__WEBPACK_IMPORTED_MODULE_5__["MUTATIONS"][this.item.className] || [])).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["mergeMap"])((method) => Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_3__["after$"])(this.item, method).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["map"])((v) => _constants__WEBPACK_IMPORTED_MODULE_5__["MUTATION_PROPERTIES"][method]))));
+        this.editing = false;
         this.setup();
     }
     getShallow() {
@@ -19550,7 +19621,7 @@ class ItemPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_6__["PaperPair"] {
         Object.keys(shallow).forEach((k) => {
             const value = shallow[k];
             if (Array.isArray(value)) {
-                if (!_constants__WEBPACK_IMPORTED_MODULE_4__["EXPECT_ARRAY"].includes(k)) {
+                if (!_constants__WEBPACK_IMPORTED_MODULE_5__["EXPECT_ARRAY"].includes(k)) {
                     console.warn('UNEXPECTED ARRAY %s, NOT SERIALIZING!!!', k);
                     console.warn('  value', value);
                     // continue;
@@ -19564,11 +19635,11 @@ class ItemPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_6__["PaperPair"] {
         return shallow;
     }
     doSave(json) {
-        if (this.importing) {
+        if (this.isImportingJSON) {
             console.warn('tried to save while importing');
             return;
         }
-        if (this.item.data.ignored) {
+        if (this.item.data.ignore) {
             console.warn('tried saving ignored item');
             return;
         }
@@ -19583,8 +19654,8 @@ class ItemPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_6__["PaperPair"] {
     }
     setup() {
         this.afterRemove$.subscribe(() => this.onLocalRemove());
-        this.beforeImportJSON$.subscribe(() => (this.importing = true));
-        this.afterImportJSON$.subscribe(() => (this.importing = false));
+        this.beforeImportJSON$.subscribe(() => (this.isImportingJSON = true));
+        this.afterImportJSON$.subscribe(() => (this.isImportingJSON = false));
         // TODO? ignoreInsert causing multiple local child adds to be ignored???
         this.afterInsertChild$.subscribe((child) => this.onLocalChild(child));
         this.graphValue$.subscribe((json) => this.onGraph(json));
@@ -19599,19 +19670,26 @@ class ItemPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_6__["PaperPair"] {
         //   console.log('%s got native change', this.item.toString(), change);
         // });
         this.item.changes$
-            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["filter"])((v) => !this.importing))
+            .pipe(
+        // tap(() => {
+        //   if (this.isImportingJSON) {
+        //     this.logger.verbose('ignoring local change because importing JSON');
+        //   }
+        // }),
+        Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((v) => this.project.pair.saveStrategy === _SaveStrategy__WEBPACK_IMPORTED_MODULE_8__["SaveStrategy"].AUTOMATIC), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((v) => !this.isImportingJSON))
             .subscribe((change) => {
-            // console.log('%s %s change', this.item.toString(), change[0]);
+            this.logger.verbose('%s %s change', this.item.toString(), change[0]);
             const value = change[1];
-            this.saveProperty$.emit([change[0], Object(_packaging__WEBPACK_IMPORTED_MODULE_5__["serializeValue"])(value)]);
+            this.saveProperty$.emit([change[0], Object(_packaging__WEBPACK_IMPORTED_MODULE_6__["serializeValue"])(value)]);
             this.save();
         });
-        this.localChange$.subscribe((data) => {
-            // console.log('localChange$', data);
-            // FIXME apparently translate() is being called from outside our control
+        this.localChange$
+            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((v) => this.project.pair.saveStrategy === _SaveStrategy__WEBPACK_IMPORTED_MODULE_8__["SaveStrategy"].AUTOMATIC))
+            .subscribe((data) => {
+            this.logger.verbose('localChange$', data);
             if (Array.isArray(data)) {
                 data.forEach((propName) => {
-                    const serializedValue = Object(_packaging__WEBPACK_IMPORTED_MODULE_5__["serializeValue"])(this.item[propName]);
+                    const serializedValue = Object(_packaging__WEBPACK_IMPORTED_MODULE_6__["serializeValue"])(this.item[propName]);
                     this.saveProperty$.emit([propName, serializedValue]);
                 });
                 this.save();
@@ -19633,14 +19711,14 @@ class ItemPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_6__["PaperPair"] {
             this.logger.warn('null child');
             return;
         }
-        if (localChild.data.ignored) {
+        if (localChild.data.ignore) {
             this.logger.warn('tried to pair an ignored child!');
             return;
         }
         const childObj = localChild;
         if (!childObj.pair) {
             if (!childObj.data.soul) {
-                const soul = Object(_edit_vector_converter_functions__WEBPACK_IMPORTED_MODULE_3__["getUUID"])(this.chain);
+                const soul = Object(_edit_vector_converter_functions__WEBPACK_IMPORTED_MODULE_4__["getUUID"])(this.chain);
                 childObj.data.soul = soul;
             }
             const childGun = this.children.get(childObj.data.soul);
@@ -19650,6 +19728,10 @@ class ItemPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_6__["PaperPair"] {
     }
     onGraph(json) {
         this.graphValue = json;
+        if (this.editing) {
+            this.logger.log('ignored incoming graph update because editing');
+            return;
+        }
         // FIXME path segments getting overwritten by previous saves
         // FIXME occasionally only the first debounce of a path will be saved
         // console.log('%s onGraph', this.item.toString());
@@ -19673,7 +19755,7 @@ class ItemPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_6__["PaperPair"] {
         this.logger.log('onGraphChildren', data
             .map((v) => v[0])
             .filter((i) => i !== null)
-            .map((i) => `${i.className} ${gun__WEBPACK_IMPORTED_MODULE_7__["node"].soul(i)}`));
+            .map((i) => `${i.className} ${gun__WEBPACK_IMPORTED_MODULE_0__["node"].soul(i)}`));
         const toInsert = [];
         data.forEach((childVK) => {
             const soul = childVK[1];
@@ -19685,20 +19767,22 @@ class ItemPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_6__["PaperPair"] {
             else if (json && !child) {
                 // child was added
                 const newChild = this.constructChild(json, soul);
-                // TODO Performance: onLocalChild sets up **everything** on **every** child in this loop, can we suffice for deferred setups???
-                this.onLocalChild(newChild);
-                toInsert.push(newChild);
+                if (newChild) {
+                    // TODO Performance: onLocalChild sets up **everything** on **every** child in this loop, can we suffice for deferred setups???
+                    this.onLocalChild(newChild);
+                    toInsert.push(newChild);
+                }
             }
         });
         if (toInsert.length > 0) {
             this.logger.log('inserting %d paper items', toInsert.length);
-            this.ignoreInsert = true;
+            this.isInsertingFromGraph = true;
             this.item.insertChildren(this.item.children.length, toInsert);
-            this.ignoreInsert = false;
+            this.isInsertingFromGraph = false;
         }
     }
     onLocalRemove() {
-        if (this.item.data.ignored) {
+        if (this.item.data.ignore) {
             return;
         }
         this.chain.put(null);
@@ -19738,6 +19822,52 @@ VectorFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefi
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](1, "vector-form works!");
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     } }, styles: ["\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJ2ZWN0b3ItZm9ybS5jb21wb25lbnQuc2NzcyJ9 */"] });
+
+
+/***/ }),
+
+/***/ "ljHS":
+/*!***********************************************************!*\
+  !*** ./projects/demo/src/app/user/vectors/tools/shape.ts ***!
+  \***********************************************************/
+/*! exports provided: ShapeTool */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ShapeTool", function() { return ShapeTool; });
+/* harmony import */ var _paper_tool__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../paper-tool */ "/NF4");
+/* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! paper */ "IiLU");
+/* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(paper__WEBPACK_IMPORTED_MODULE_1__);
+
+
+class ShapeTool extends _paper_tool__WEBPACK_IMPORTED_MODULE_0__["VectorTool"] {
+    constructor() {
+        super(...arguments);
+        this.name = 'shapes';
+        this.downSub = this.down.subscribe(() => this.activateDrawLayer());
+        this.dragSub = this.drag.subscribe((e) => {
+            var _a;
+            const prev = this.scope.settings.insertItems;
+            this.scope.settings.insertItems = false;
+            (_a = this.shape) === null || _a === void 0 ? void 0 : _a.remove();
+            this.shape = new paper__WEBPACK_IMPORTED_MODULE_1__["Shape"].Rectangle(e.downPoint, e.point);
+            this.shape.data.ignore = true;
+            this.shape.style = this.project.currentStyle;
+            this.scope.settings.insertItems = prev;
+            this.project.activeLayer.insertChild(0, this.shape);
+        });
+        this.upSub = this.up.subscribe((e) => {
+            var _a;
+            if (this.shape) {
+                this.shape.data.ignore = undefined;
+                this.project.activeLayer.insertChild(this.project.activeLayer.children.length, this.shape);
+                (_a = this.shape.pair) === null || _a === void 0 ? void 0 : _a.doSave(); // this is to get around weirdness in 'smart' saves when starting with an ignored item
+                delete this.shape;
+            }
+        });
+    }
+}
 
 
 /***/ }),
@@ -25316,7 +25446,7 @@ ToolDirective.ɵdir = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDire
 /*!*******************************************!*\
   !*** ./projects/ng-gun/src/public-api.ts ***!
   \*******************************************/
-/*! exports provided: GunOptions, NgGunService, NgGunComponent, NgGunModule, GUN_NODE, GunChain, GunAuthChain, GunCertChain, SoulPipe, UpdatedPipe, ChainDirective, AliasPipe, VerifyPipe */
+/*! exports provided: GunOptions, NgGunService, NgGunComponent, NgGunModule, GUN_NODE, GunChain, GunAuthChain, GunCertChain, SoulPipe, UpdatedPipe, ChainDirective, AliasPipe, VerifyPipe, GunResolverService, RouteChainDirective */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -25358,9 +25488,17 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony import */ var _lib_GunPeer__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./lib/GunPeer */ "6N56");
 /* empty/unused harmony star reexport *//* harmony import */ var _lib_GunPeers__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./lib/GunPeers */ "CGJs");
-/* empty/unused harmony star reexport *//*
+/* empty/unused harmony star reexport *//* harmony import */ var _lib_gun_resolver_service__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./lib/gun-resolver.service */ "ZwLl");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GunResolverService", function() { return _lib_gun_resolver_service__WEBPACK_IMPORTED_MODULE_11__["GunResolverService"]; });
+
+/* harmony import */ var _lib_route_chain_directive__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./lib/route-chain.directive */ "wqjN");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RouteChainDirective", function() { return _lib_route_chain_directive__WEBPACK_IMPORTED_MODULE_12__["RouteChainDirective"]; });
+
+/*
  * Public API Surface of ng-gun
  */
+
+
 
 
 
@@ -25471,6 +25609,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _tools_pan__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./tools/pan */ "fYSZ");
 /* harmony import */ var _tools_pen__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./tools/pen */ "M9g4");
 /* harmony import */ var _tools_select__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./tools/select */ "00F/");
+/* harmony import */ var _tools_shape__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./tools/shape */ "ljHS");
+
 
 
 
@@ -25491,6 +25631,7 @@ class PaperDirective {
         this.scope = new paper__WEBPACK_IMPORTED_MODULE_1__["PaperScope"]();
         this.tool$ = Object(_classes_paper_chain__WEBPACK_IMPORTED_MODULE_4__["propertyChange$"])(this.scope, 'tool').pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["shareReplay"])(1));
         this.pen = new _tools_pen__WEBPACK_IMPORTED_MODULE_8__["PenTool"](this.scope);
+        this.shape = new _tools_shape__WEBPACK_IMPORTED_MODULE_10__["ShapeTool"](this.scope);
         this.eraser = new _tools_eraser__WEBPACK_IMPORTED_MODULE_5__["EraserTool"](this.scope);
         this.select = new _tools_select__WEBPACK_IMPORTED_MODULE_9__["LassoSelectTool"](this.scope);
         this.areaSelect = new _tools_select__WEBPACK_IMPORTED_MODULE_9__["RectangleSelectTool"](this.scope);

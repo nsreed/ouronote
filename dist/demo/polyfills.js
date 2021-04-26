@@ -2287,16 +2287,26 @@ function combineAll(project) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Gun = (typeof window !== "undefined")? window.Gun : __webpack_require__(/*! ../gun */ "mKbU");
+var Gun = typeof window !== 'undefined' ? window.Gun : __webpack_require__(/*! ../gun */ "mKbU");
 
-const rel_ = Gun.val.link._;  // '#'
-const node_ = Gun.node._;  // '_'
+const rel_ = Gun.val.link._; // '#'
+const node_ = Gun.node._; // '_'
 
-Gun.chain.unset = function(node){
-	if( this && node && node[node_] && node[node_].put && node[node_].put[node_] && node[node_].put[node_][rel_] )
-		this.put( { [node[node_].put[node_][rel_]]:null} );
-	return this;
-}
+Gun.chain.unset = function (node) {
+  if (this && node) {
+    if (
+      node[node_] &&
+      node[node_].put &&
+      node[node_].put[node_] &&
+      node[node_].put[node_][rel_]
+    ) {
+      this.put({[node[node_].put[node_][rel_]]: null});
+    } else if (node[node_] && node[node_][rel_]) {
+      this.put({[node[node_][rel_]]: null});
+    }
+    return this;
+  }
+};
 
 
 /***/ }),
