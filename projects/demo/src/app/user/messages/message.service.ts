@@ -20,12 +20,10 @@ export class MessageService {
     private logger: LogService,
     private ngGun: NgGunService
   ) {}
-  delete(message: { _: { '#': string } }) {
-    const t = { _: { '#': message._['#'] } };
-
-    // FIXME unset not working here, or for vectors
-    const mn = (this.messages.gun as any).get(t);
-    (this.messages.gun as any).unset(mn);
+  delete(message: any) {
+    this.logger.log('deleting message', Gun.node.soul(message as any));
+    this.messages.unset(message);
+    this.inbox.unset(message);
   }
   send(message: Message) {
     this.logger.log('sending message %o', message);
