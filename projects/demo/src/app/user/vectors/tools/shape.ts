@@ -4,6 +4,8 @@ export class ShapeTool extends VectorTool {
   name = 'shapes';
   shape?: paper.Shape;
 
+  downSub = this.down.subscribe(() => this.activateDrawLayer());
+
   dragSub = this.drag.subscribe((e) => {
     const prev = (this.scope.settings as any).insertItems;
     (this.scope.settings as any).insertItems = false;
@@ -16,11 +18,13 @@ export class ShapeTool extends VectorTool {
   });
 
   upSub = this.up.subscribe((e) => {
-    // this.shape = null;
     if (this.shape) {
       this.shape.data.ignore = undefined;
-      this.project.activeLayer.insertChild(0, this.shape);
-      (this.shape as any).pair.doSave(); // this is to get around weirdness in 'smart' saves when starting with an ignored item
+      this.project.activeLayer.insertChild(
+        this.project.activeLayer.children.length,
+        this.shape
+      );
+      (this.shape as any).pair?.doSave(); // this is to get around weirdness in 'smart' saves when starting with an ignored item
       delete this.shape;
     }
   });
