@@ -191,11 +191,11 @@ export class ItemPair extends PaperPair {
     // });
     (this.item as any).changes$
       .pipe(
-        tap(() => {
-          if (this.isImportingJSON) {
-            this.logger.verbose('ignoring local change because importing JSON');
-          }
-        }),
+        // tap(() => {
+        //   if (this.isImportingJSON) {
+        //     this.logger.verbose('ignoring local change because importing JSON');
+        //   }
+        // }),
         filter(
           (v) =>
             (this.project as any).pair.saveStrategy === SaveStrategy.AUTOMATIC
