@@ -15,7 +15,7 @@ export class RouteMessageDirective {
   message!: Message;
   chain$ = this.route.data.pipe(
     map((data) =>
-      this.messageService.messages.auth().root.get(Gun.node.soul(data.message))
+      this.messageService.inbox.get(Gun.node.soul(data.message) as any)
     ),
     tap((chain: any) => (this.chain = chain)),
     shareReplay(1)
@@ -27,8 +27,5 @@ export class RouteMessageDirective {
   constructor(
     protected messageService: MessageService,
     private route: ActivatedRoute
-  ) {
-    this.route.data.subscribe((d) => console.log('route data', d));
-    // this.message.subscribe((m) => console.log('got message', m));
-  }
+  ) {}
 }
