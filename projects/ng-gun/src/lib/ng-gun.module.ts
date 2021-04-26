@@ -5,6 +5,7 @@ import { NgGunComponent } from './ng-gun.component';
 import { SoulPipe } from './soul.pipe';
 import { UpdatedPipe } from './updated.pipe';
 import { VerifyPipe } from './verify.pipe';
+import { RouteChainDirective } from './route-chain.directive';
 
 @NgModule({
   declarations: [
@@ -14,6 +15,7 @@ import { VerifyPipe } from './verify.pipe';
     ChainDirective,
     AliasPipe,
     VerifyPipe,
+    RouteChainDirective,
   ],
   exports: [
     NgGunComponent,
@@ -22,6 +24,8 @@ import { VerifyPipe } from './verify.pipe';
     ChainDirective,
     AliasPipe,
     VerifyPipe,
+    RouteChainDirective,
   ],
+  providers: [{ provide: 'gun-route-data-key', useValue: 'chain' }],
 })
 export class NgGunModule {}

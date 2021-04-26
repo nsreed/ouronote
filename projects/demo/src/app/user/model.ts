@@ -9,11 +9,20 @@ export interface Post {
 
 export interface Message {
   text: string;
+  to: string;
+  from?: string;
+  read?: boolean;
 }
 
 export interface User {
+  inbox: Message[];
   messages: Message[];
   posts: Post[];
   vectors: VectorGraph[];
   name: string;
+  certs: {
+    [path: string]: {
+      [pub: string]: string;
+    };
+  };
 }

@@ -1,4 +1,10 @@
 <mat-form-field>
-  <input matInput>
+  <input matInput [matAutocomplete]="userAutocomplete" [formControl]="aliasCtl">
   <mat-label>Enter an alias:</mat-label>
 </mat-form-field>
+
+<mat-autocomplete #userAutocomplete (optionSelected)="onSelectUser($event)">
+  <mat-option *ngFor="let result of userResults" [value]="result.pub" [matTooltip]="result.pub">
+    {{result.alias}} ({{result.pub}})
+  </mat-option>
+</mat-autocomplete>

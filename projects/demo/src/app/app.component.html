@@ -9,16 +9,23 @@
       <mat-list-item routerLinkActive="active" routerLink="/user/vectors" matTooltip="Vectors">
         <mat-icon mat-list-icon>note</mat-icon>
       </mat-list-item>
-      <mat-list-item [matMenuTriggerFor]="sessionMenu" matTooltip="Session">
-        <mat-icon mat-list-icon>person</mat-icon>
+      <mat-list-item routerLinkActive="active" routerLink="/user/messages" matTooltip="Messages">
+        <mat-icon mat-list-icon>message</mat-icon>
       </mat-list-item>
+      <mat-divider></mat-divider>
       <mat-list-item (click)="bugReport()" matTooltip="Open bug report dialog">
         <mat-icon mat-list-icon>bug_report</mat-icon>
       </mat-list-item>
       <mat-list-item (click)="peers()" matTooltip="Open peer statistics">
-        <mat-icon mat-list-icon>signal_wifi_4_bar</mat-icon>
+        <mat-icon mat-list-icon>signal_wifi_4_bar
+        </mat-icon>
+      </mat-list-item>
+      <mat-divider></mat-divider>
+      <mat-list-item [matMenuTriggerFor]=" sessionMenu" [matTooltip]="'@'+ngGun.auth().alias">
+        <mat-icon mat-list-icon color="primary">account_circle</mat-icon>
       </mat-list-item>
       <mat-menu #sessionMenu>
+        <button mat-menu-item routerLink="/user/settings">Settings</button>
         <button mat-menu-item (click)="logout()">Log Out</button>
       </mat-menu>
     </mat-action-list>

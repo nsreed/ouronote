@@ -34,6 +34,7 @@ import { gunChainArray, gunPath } from '../functions/gun-utils';
 import { GunRuntimeOpts } from '../GunRuntimeOpts';
 import { ICertStore } from './ICertStore';
 import { LexicalQuery } from './LexicalQuery';
+import { SEA } from 'gun';
 
 export const GUN_NODE = Symbol('GUN_NODE');
 
@@ -68,7 +69,6 @@ export class GunChain<
   recordPub!: any;
   record?: any;
   certificate!: string;
-
   certificate$ = new Subject<string>();
 
   private _gun!: IGunChainReference<DataType, ReferenceKey, IsTop> &
@@ -97,51 +97,70 @@ export class GunChain<
 
       return;
     }
-    const myPub = `~${(this.gun.user() as any).is?.pub}`;
+    const userPub = `~${(this.gun.user() as any).is?.pub}`;
     const pubs = path.filter((key) => key.startsWith('~'));
-    if (pubs.length === 0 || pubs[0] !== myPub) {
-      pubs.push(myPub);
-    }
-    if (pubs.length > 1) {
-      this.isNested = true;
+    if (pubs.length > 0) {
       this.recordPub = pubs[0];
-      const firstPub = path.findIndex((key) => key.startsWith('~'));
-      const pathFromRecord = [...path];
-      const recordPath = pathFromRecord.splice(firstPub).reverse();
-      pathFromRecord.reverse();
+      const firstPub = path.findIndex((k) => k.startsWith('~'));
+      this.record = chainArray[firstPub];
 
-      if (myKey === this.recordPub) {
-        // console.log('sub root', myKey);
-      } else {
-        const keyInRecord = pathFromRecord[0];
-        const record = chainArray[firstPub];
-        const recordCerts = record.get('certs');
-        const pathCerts = recordCerts.get(keyInRecord);
-        const myCert = pathCerts.get(userPair.pub);
-        // console.log('  %s', keyInRecord);
-        myCert.on(async (cert: any) => {
-          if (cert === null || cert === undefined) {
-            return;
-          }
-          // console.log('cert', cert);
-          // TODO verify cert later, the await causes chained put() calls to fail
-          // const verified = await SEA.verify(
-          //   cert,
-          //   this.recordPub.replace('~', '')
-          // );
-          this.certificate = cert;
-          this.certificate$.next(cert);
-          // console.log(
-          //   'verified cert for %s.%s',
-          //   this.recordPub,
-          //   keyInRecord,
-          //   pathFromRecord.join('.')
-          // );
-        });
+      if (this.recordPub.indexOf(userPub) < 0) {
+        this.isNested = true;
+        const pathFromRecord = [...path];
+        const recordPath = pathFromRecord.splice(firstPub).reverse();
+        pathFromRecord.reverse();
 
-        this.record = record;
+        if (myKey === this.recordPub) {
+          // console.log('sub root', myKey);
+        } else {
+          // console.log('foreign key', myKey);
+          const keyInRecord = pathFromRecord[0];
+          const record = chainArray[firstPub];
+          // console.log('record', record);
+
+          this.record = record;
+          const recordCerts = record.get('certs');
+          const pathCerts = recordCerts.get(keyInRecord);
+          const searchKeys = [userPair.pub, '*'];
+          const myCert = pathCerts.get(userPair.pub);
+          myCert.not(() => {
+            // console.log('no cert found');
+            pathCerts.get('*').once((pubCert: any) => {
+              if (!pubCert) {
+                // console.warn('no public cert found either');
+              }
+              this.certificate = pubCert;
+              this.certificate$.next(pubCert);
+            });
+          });
+          // console.log('  %s', keyInRecord);
+          myCert.once(async (cert: any) => {
+            if (cert === null || cert === undefined) {
+              console.log('no user cert found, checking for public cert');
+              return;
+            }
+            // console.log('cert', cert);
+            // TODO verify cert later, the await causes chained put() calls to fail
+            // const verified = await SEA.verify(
+            //   cert,
+            //   this.recordPub.replace('~', '')
+            // );
+            this.certificate = cert;
+            this.certificate$.next(cert);
+            // console.log(
+            //   'verified cert for %s.%s',
+            //   this.recordPub,
+            //   keyInRecord,
+            //   pathFromRecord.join('.')
+            // );
+          });
+        }
       }
     }
+  }
+
+  public get canEdit(): boolean {
+    return this.certificate !== null && this.certificate !== undefined;
   }
 
   constructor(
@@ -186,17 +205,14 @@ export class GunChain<
     if (this.isNested && !certificate) {
       console.warn('NO CERTIFICATE FOUND FOR FOREIGN RECORD!');
     }
-    const result = this.from(
-      (this.gun.put as any)(
-        data,
-        null,
-        certificate ? { opt: { cert: certificate } } : undefined
-      )
+    (this.gun.put as any)(
+      data,
+      (...putAck: any[]) => {
+        console.log('putAck', putAck);
+      },
+      certificate ? { opt: { cert: certificate } } : undefined
     );
-    // this.once().subscribe((me) => {
-    //   console.log('me', me);
-    // });
-    return result;
+    return this;
   }
 
   set(
@@ -212,6 +228,12 @@ export class GunChain<
     >,
     certificate: string = this.certificate
   ) {
+    if (this.isNested && !certificate) {
+      console.warn('NO CERTIFICATE FOUND FOR FOREIGN RECORD!');
+      this.record?.get('certs').load((certs: any) => {
+        console.log('all certs:', certs);
+      });
+    }
     return this.from(
       this.gun.set(
         data,
@@ -430,7 +452,24 @@ export class GunAuthChain<
   ReferenceKey = any,
   IsTop = false
 > extends GunChain<DataType, ReferenceKey, false> {
-  is: any;
+  private _is: any;
+  set is(value: any) {
+    this._is = value;
+
+    if (value) {
+      this.root
+        .get(`~${value.pub}`)
+        .get('alias')
+        .once()
+        .subscribe((alias: any) => {
+          this.alias = this.gun._.root.user?._?.put?.alias;
+        });
+    }
+  }
+  get is() {
+    return this._is;
+  }
+  alias!: string;
   auth$ = this.root.onEvent('auth').pipe(
     tap((ack) => {
       if (!ack.err) {
@@ -519,7 +558,9 @@ export class GunAuthChain<
     >,
     certificate: string = this.certificate
   ) {
-    return super.put(data, certificate);
+    // SEA.sign(data, this.is.alias);
+    super.put(data, certificate);
+    return this;
   }
 }
 

@@ -3,6 +3,7 @@ import { fromEvent } from 'rxjs';
 import { after$ } from '../../functions/aspect-rx';
 import * as paper from 'paper';
 import { filter, switchMapTo, takeUntil, tap } from 'rxjs/operators';
+import { LogService } from '../../../../../log/src/lib/log.service';
 
 export class VectorTool extends Tool {
   get properties() {
@@ -27,6 +28,7 @@ export class VectorTool extends Tool {
 
   name = Object.getPrototypeOf(this).constructor.name.replace(/tool/gi, '');
 
+  readonly logger = LogService.getLogger(`${this.name}`);
   // touchDown = this.down.pipe(filter((e: any) => e.event instanceof TouchEvent));
 
   get project() {

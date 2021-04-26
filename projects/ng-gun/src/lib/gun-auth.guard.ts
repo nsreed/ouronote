@@ -32,7 +32,7 @@ export class GunAuthGuard implements CanActivateChild {
     // console.log('gunAuthGuard checking...');
     if (this.ngGun.auth().is) {
       // console.log('OK: auth().is');
-      this.logger.log('gun-auth guard OK');
+      // this.logger.log('gun-auth guard OK');
       return true;
     }
     // this.ngGun.auth().recall();

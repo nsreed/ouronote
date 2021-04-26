@@ -1,23 +1,21 @@
-import { after } from 'aspect-ts';
-import { map, mapTo, switchMap, filter, tap } from 'rxjs/operators';
-import { after$, before$, returned } from '../../../functions/aspect-rx';
-import { VectorGraph } from '../../VectorGraph';
 import { of } from 'rxjs';
-import { ItemPair } from './ItemPair';
-import { PaperPair } from './PaperPair';
-import * as Gun from 'gun';
-import { getUUID } from '../edit-vector/converter-functions';
+import { filter, map, mapTo, switchMap } from 'rxjs/operators';
+import { LogService } from '../../../../../../log/src/lib/log.service';
 import {
   GunChain,
   GunChainCallbackOptions,
 } from '../../../../../../ng-gun/src/lib/classes/GunChain';
-import * as paper from 'paper';
-import { leadingComment } from '@angular/compiler';
-import { LogService } from '../../../../../../log/src/lib/log.service';
+import { after$, before$, returned } from '../../../functions/aspect-rx';
+import { VectorGraph } from '../../VectorGraph';
+import { getUUID } from '../edit-vector/converter-functions';
+import { ItemPair } from './ItemPair';
+import { PaperPair } from './PaperPair';
+import { SaveStrategy } from './SaveStrategy';
 
 export class ProjectPair extends PaperPair {
   /* STATE */
-  importing = false;
+  isImportingJSON = false;
+  saveStrategy: SaveStrategy = SaveStrategy.MANUAL;
 
   /* GRAPH EVENTS */
   layers = this.chain.get('layers');
@@ -36,7 +34,7 @@ export class ProjectPair extends PaperPair {
     map(returned),
     filter((layer) => layer !== null && layer !== undefined),
     switchMap((value) =>
-      this.importing
+      this.isImportingJSON
         ? this.afterProjectImportJSON$.pipe(mapTo(value))
         : of(value)
     )
@@ -108,8 +106,12 @@ export class ProjectPair extends PaperPair {
   }
 
   setupProject() {
-    this.beforeProjectImportJSON$.subscribe(() => (this.importing = true));
-    this.afterProjectImportJSON$.subscribe(() => (this.importing = false));
+    this.beforeProjectImportJSON$.subscribe(
+      () => (this.isImportingJSON = true)
+    );
+    this.afterProjectImportJSON$.subscribe(
+      () => (this.isImportingJSON = false)
+    );
     this.afterProjectInsertLayer$.subscribe((layer) =>
       this.onLocalLayer(layer)
     );

@@ -1,9 +1,14 @@
 import { Component, Inject, OnInit } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import host from '@jsdevtools/host-environment';
 import { GunPeer, NgGunService } from 'ng-gun';
 import { ClipboardService } from 'ngx-clipboard';
+import { VERSION } from 'projects/demo/src/environments/version';
+import { debounceTime } from 'rxjs/operators';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-bug-report',
@@ -13,6 +18,7 @@ import { ClipboardService } from 'ngx-clipboard';
 export class BugReportComponent implements OnInit {
   report: any = null;
   reportStr = '';
+  descriptionCtl = this.fb.control(null);
 
   constructor(
     public ngGun: NgGunService,
@@ -21,9 +27,19 @@ export class BugReportComponent implements OnInit {
     private dialogRef: MatDialogRef<BugReportComponent>,
     @Inject(MAT_DIALOG_DATA)
     private data: any,
-    private toaster: MatSnackBar
+    private toaster: MatSnackBar,
+    private fb: FormBuilder
   ) {
     this.generate();
+    this.descriptionCtl.valueChanges.pipe(debounceTime(200)).subscribe(() => {
+      // if (this.descriptionCtl.value?.length > 0) {
+      this.report = {
+        ...this.report,
+        description: this.descriptionCtl.value,
+      };
+      // }
+      this.updatePreview();
+    });
   }
 
   ngOnInit() {}
@@ -31,36 +47,28 @@ export class BugReportComponent implements OnInit {
   generate() {
     // LogService.buffer$.pipe(take(1)).subscribe((messages) => {
     //   console.table(messages);
-    const peers = Object.keys(this.ngGun.peers).map((k) => {
-      const rawPeer = this.ngGun.peers[k] as GunPeer;
-
-      const x = {
-        ...rawPeer,
-        wire:
-          rawPeer.wire === undefined
-            ? undefined
-            : {
-                readyState: rawPeer.wire.readyState,
-                protocol: rawPeer.wire.protocol,
-                extensions: rawPeer.wire.extensions,
-                bufferedAmount: rawPeer.wire.bufferedAmount,
-              },
-      };
-      return x;
-    });
     const graph = this.data.gun._.graph;
     const gunConstructorOptions = this.ngGun.gunOptions;
     const report = {
-      url: this.router.url,
+      host: window.location.host,
+      route: this.router.url,
       is: this.ngGun.auth().is?.pub,
       gunConstructorOptions,
-      peers,
+      peers: this.data.peers,
       graph,
+      timestamp: Date.now(),
+      version: VERSION,
+      system: host.browser,
+      log: this.data.messages,
       // log: messages,
     };
     this.report = report;
-    this.reportStr = JSON.stringify(this.report, null, 2);
     // });
+    this.updatePreview();
+  }
+
+  updatePreview() {
+    this.reportStr = JSON.stringify(this.report, null, 2);
   }
 
   copy() {

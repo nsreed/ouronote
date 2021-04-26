@@ -60,9 +60,19 @@ export class LogService {
     }, []),
     shareReplay(1)
   );
+
   level: LogLevel = LogLevel.INFO;
 
   private supplementals = new Map<string, LogService>();
+
+  static getLogger(name: string) {
+    return new LogService(name);
+  }
+
+  verbose(message: string, ...args: any[]) {
+    const packed = this.buildMessage(LogLevel.VERBOSE, message, args);
+    LogService._out$.next(packed);
+  }
 
   log(message: string, ...args: any[]) {
     const packed = this.buildMessage(LogLevel.INFO, message, args);

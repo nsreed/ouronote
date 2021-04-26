@@ -23,6 +23,7 @@ import { LogService, LogMessage } from '../../../log/src/lib/log.service';
 import { MatDialog } from '@angular/material/dialog';
 import { BugReportComponent } from './components/bug-report/bug-report.component';
 import { GunPeersComponent } from './components/gun-peers/gun-peers.component';
+import { VERSION } from '../environments/version';
 
 @Component({
   selector: 'app-root',
@@ -43,6 +44,7 @@ export class AppComponent {
     logger.log('app started');
     this.user = this.ngGun.auth();
     // console.log('!! ROUTE SNAPSHOT', route.snapshot);
+    window.document.title = `ouronote version ${VERSION.version} ${VERSION.hash}`;
 
     let lastActivated: ChildActivationEnd;
     router.events
@@ -79,12 +81,33 @@ export class AppComponent {
   }
 
   bugReport() {
-    this.dialog.open(BugReportComponent, {
-      data: {
-        gun: this.ngGun.gun,
-      },
-      width: '80%',
-      height: '80%',
+    const peers = Object.keys(this.ngGun.peers).map((k) => {
+      const rawPeer = this.ngGun.peers[k] as GunPeer;
+
+      const x = {
+        ...rawPeer,
+        wire:
+          rawPeer.wire === undefined
+            ? undefined
+            : {
+                readyState: rawPeer.wire.readyState,
+                protocol: rawPeer.wire.protocol,
+                extensions: rawPeer.wire.extensions,
+                bufferedAmount: rawPeer.wire.bufferedAmount,
+              },
+      };
+      return x;
+    });
+    LogService.buffer$.pipe(take(1)).subscribe((messages) => {
+      this.dialog.open(BugReportComponent, {
+        data: {
+          gun: this.ngGun.gun,
+          peers,
+          messages,
+        },
+        width: '80%',
+        height: '80%',
+      });
     });
     // LogService.buffer$.pipe(take(1)).subscribe((messages) => {
     //   console.table(messages);

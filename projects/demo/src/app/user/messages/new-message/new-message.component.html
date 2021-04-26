@@ -1,0 +1,6 @@
+<b>To</b> {{messageForm.controls.to.value}}
+<div [formGroup]="messageForm" fxLayout="column">
+  <app-alias-autocomplete (select$)="onSelectUser($event)"></app-alias-autocomplete>
+  <textarea matInput placeholder="Message body" formControlName="text"></textarea>
+</div>
+<button mat-button (click)="send()" [disabled]="messageForm.invalid">Send</button>

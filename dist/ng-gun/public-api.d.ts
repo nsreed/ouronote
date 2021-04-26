@@ -9,4 +9,6 @@ export * from './lib/alias.pipe';
 export * from './lib/verify.pipe';
 export * from './lib/GunPeer';
 export * from './lib/GunPeers';
+export * from './lib/gun-resolver.service';
+export * from './lib/route-chain.directive';
 //# sourceMappingURL=public-api.d.ts.map

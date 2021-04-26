@@ -1,11 +1,12 @@
 import * as i0 from '@angular/core';
-import { Injectable, Optional, Inject, SkipSelf, Component, Pipe, EventEmitter, Directive, Input, NgModule } from '@angular/core';
+import { Injectable, Optional, Inject, SkipSelf, Component, Pipe, EventEmitter, Directive, Input, Output, NgModule } from '@angular/core';
 import * as Gun from 'gun';
 import { SEA } from 'gun';
 import { __awaiter, __decorate, __param } from 'tslib';
 import { Subject, fromEventPattern, throwError, of, from } from 'rxjs';
-import { take, debounceTime, scan, map, shareReplay, tap, filter, mergeMap, retryWhen, delay, mergeAll, timeout } from 'rxjs/operators';
+import { take, debounceTime, scan, map, shareReplay, tap, filter, mergeMap, retryWhen, delay, mergeAll, timeout, switchMap } from 'rxjs/operators';
 import { AsyncPipe } from '@angular/common';
+import * as i1 from '@angular/router';
 
 const gunUpdateTime = (value) => {
     const updates = Gun.node.is(value) ? value._['>'] : null;
@@ -100,50 +101,67 @@ class GunChain {
             // TODO figure out how to handle this case
             return;
         }
-        const myPub = `~${(_a = this.gun.user().is) === null || _a === void 0 ? void 0 : _a.pub}`;
+        const userPub = `~${(_a = this.gun.user().is) === null || _a === void 0 ? void 0 : _a.pub}`;
         const pubs = path.filter((key) => key.startsWith('~'));
-        if (pubs.length === 0 || pubs[0] !== myPub) {
-            pubs.push(myPub);
-        }
-        if (pubs.length > 1) {
-            this.isNested = true;
+        if (pubs.length > 0) {
             this.recordPub = pubs[0];
-            const firstPub = path.findIndex((key) => key.startsWith('~'));
-            const pathFromRecord = [...path];
-            const recordPath = pathFromRecord.splice(firstPub).reverse();
-            pathFromRecord.reverse();
-            if (myKey === this.recordPub) {
-                // console.log('sub root', myKey);
-            }
-            else {
-                const keyInRecord = pathFromRecord[0];
-                const record = chainArray[firstPub];
-                const recordCerts = record.get('certs');
-                const pathCerts = recordCerts.get(keyInRecord);
-                const myCert = pathCerts.get(userPair.pub);
-                // console.log('  %s', keyInRecord);
-                myCert.on((cert) => __awaiter(this, void 0, void 0, function* () {
-                    if (cert === null || cert === undefined) {
-                        return;
-                    }
-                    // console.log('cert', cert);
-                    // TODO verify cert later, the await causes chained put() calls to fail
-                    // const verified = await SEA.verify(
-                    //   cert,
-                    //   this.recordPub.replace('~', '')
-                    // );
-                    this.certificate = cert;
-                    this.certificate$.next(cert);
-                    // console.log(
-                    //   'verified cert for %s.%s',
-                    //   this.recordPub,
-                    //   keyInRecord,
-                    //   pathFromRecord.join('.')
-                    // );
-                }));
-                this.record = record;
+            const firstPub = path.findIndex((k) => k.startsWith('~'));
+            this.record = chainArray[firstPub];
+            if (this.recordPub.indexOf(userPub) < 0) {
+                this.isNested = true;
+                const pathFromRecord = [...path];
+                const recordPath = pathFromRecord.splice(firstPub).reverse();
+                pathFromRecord.reverse();
+                if (myKey === this.recordPub) {
+                    // console.log('sub root', myKey);
+                }
+                else {
+                    // console.log('foreign key', myKey);
+                    const keyInRecord = pathFromRecord[0];
+                    const record = chainArray[firstPub];
+                    // console.log('record', record);
+                    this.record = record;
+                    const recordCerts = record.get('certs');
+                    const pathCerts = recordCerts.get(keyInRecord);
+                    const searchKeys = [userPair.pub, '*'];
+                    const myCert = pathCerts.get(userPair.pub);
+                    myCert.not(() => {
+                        // console.log('no cert found');
+                        pathCerts.get('*').once((pubCert) => {
+                            if (!pubCert) {
+                                // console.warn('no public cert found either');
+                            }
+                            this.certificate = pubCert;
+                            this.certificate$.next(pubCert);
+                        });
+                    });
+                    // console.log('  %s', keyInRecord);
+                    myCert.once((cert) => __awaiter(this, void 0, void 0, function* () {
+                        if (cert === null || cert === undefined) {
+                            console.log('no user cert found, checking for public cert');
+                            return;
+                        }
+                        // console.log('cert', cert);
+                        // TODO verify cert later, the await causes chained put() calls to fail
+                        // const verified = await SEA.verify(
+                        //   cert,
+                        //   this.recordPub.replace('~', '')
+                        // );
+                        this.certificate = cert;
+                        this.certificate$.next(cert);
+                        // console.log(
+                        //   'verified cert for %s.%s',
+                        //   this.recordPub,
+                        //   keyInRecord,
+                        //   pathFromRecord.join('.')
+                        // );
+                    }));
+                }
             }
         }
+    }
+    get canEdit() {
+        return this.certificate !== null && this.certificate !== undefined;
     }
     from(gun) {
         return new GunChain(this.ngZone, gun);
@@ -157,15 +175,26 @@ class GunChain {
         if (this.isNested && !certificate) {
             console.warn('NO CERTIFICATE FOUND FOR FOREIGN RECORD!');
         }
-        const result = this.from(this.gun.put(data, null, certificate ? { opt: { cert: certificate } } : undefined));
-        // this.once().subscribe((me) => {
-        //   console.log('me', me);
-        // });
-        return result;
+        this.gun.put(data, (...putAck) => {
+            console.log('putAck', putAck);
+        }, certificate ? { opt: { cert: certificate } } : undefined);
+        return this;
     }
-    set(data) {
-        // TODO get certificate for set()
-        return this.from(this.gun.set(data));
+    set(data, certificate = this.certificate) {
+        var _a;
+        if (this.isNested && !certificate) {
+            console.warn('NO CERTIFICATE FOUND FOR FOREIGN RECORD!');
+            (_a = this.record) === null || _a === void 0 ? void 0 : _a.get('certs').load((certs) => {
+                console.log('all certs:', certs);
+            });
+        }
+        return this.from(this.gun.set(data, null, certificate
+            ? {
+                opt: {
+                    cert: certificate,
+                },
+            }
+            : undefined));
     }
     unset(data) {
         if (this.gun.unset) {
@@ -332,6 +361,22 @@ let GunAuthChain = class GunAuthChain extends GunChain {
         }), shareReplay(1));
         this.is = gun.is;
     }
+    set is(value) {
+        this._is = value;
+        if (value) {
+            this.root
+                .get(`~${value.pub}`)
+                .get('alias')
+                .once()
+                .subscribe((alias) => {
+                var _a, _b, _c;
+                this.alias = (_c = (_b = (_a = this.gun._.root.user) === null || _a === void 0 ? void 0 : _a._) === null || _b === void 0 ? void 0 : _b.put) === null || _c === void 0 ? void 0 : _c.alias;
+            });
+        }
+    }
+    get is() {
+        return this._is;
+    }
     login(alias, pass) {
         const auth$ = this.root.onEvent('auth').pipe(filter((ack) => !ack.err), filter((ack) => {
             return ack.put.alias === alias;
@@ -374,7 +419,9 @@ let GunAuthChain = class GunAuthChain extends GunChain {
         this.gun.leave();
     }
     put(data, certificate = this.certificate) {
-        return super.put(data, certificate);
+        // SEA.sign(data, this.is.alias);
+        super.put(data, certificate);
+        return this;
     }
 };
 GunAuthChain = __decorate([
@@ -610,21 +657,56 @@ VerifyPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "verify", type: VerifyPipe, pure: 
                 type: Optional
             }] }]; }, null); })();
 
+class RouteChainDirective {
+    constructor(route, ngGun, dataKey = 'chain') {
+        this.route = route;
+        this.ngGun = ngGun;
+        this.dataKey = dataKey;
+        this.chain$ = this.route.data.pipe(map((data) => {
+            const d = data[this.dataKey];
+            const soul = Gun.node.soul(d);
+            // console.log('route data', this.dataKey);
+            return this.ngGun.auth().root.get(soul);
+        }));
+        this.data$ = this.chain$.pipe(switchMap((chain) => chain.once()));
+        this.data$.subscribe((data) => console.log({ data }));
+    }
+}
+RouteChainDirective.ɵfac = function RouteChainDirective_Factory(t) { return new (t || RouteChainDirective)(i0.ɵɵdirectiveInject(i1.ActivatedRoute), i0.ɵɵdirectiveInject(NgGunService), i0.ɵɵdirectiveInject('gun-route-data-key', 8)); };
+RouteChainDirective.ɵdir = i0.ɵɵdefineDirective({ type: RouteChainDirective, selectors: [["", "libRouteGun", ""]], outputs: { chain$: "chain$", data$: "data$" } });
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(RouteChainDirective, [{
+        type: Directive,
+        args: [{
+                selector: '[libRouteGun]',
+            }]
+    }], function () { return [{ type: i1.ActivatedRoute }, { type: NgGunService }, { type: undefined, decorators: [{
+                type: Optional
+            }, {
+                type: Inject,
+                args: ['gun-route-data-key']
+            }] }]; }, { chain$: [{
+            type: Output
+        }], data$: [{
+            type: Output
+        }] }); })();
+
 class NgGunModule {
 }
 NgGunModule.ɵmod = i0.ɵɵdefineNgModule({ type: NgGunModule });
-NgGunModule.ɵinj = i0.ɵɵdefineInjector({ factory: function NgGunModule_Factory(t) { return new (t || NgGunModule)(); } });
+NgGunModule.ɵinj = i0.ɵɵdefineInjector({ factory: function NgGunModule_Factory(t) { return new (t || NgGunModule)(); }, providers: [{ provide: 'gun-route-data-key', useValue: 'chain' }] });
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(NgGunModule, { declarations: [NgGunComponent,
         SoulPipe,
         UpdatedPipe,
         ChainDirective,
         AliasPipe,
-        VerifyPipe], exports: [NgGunComponent,
+        VerifyPipe,
+        RouteChainDirective], exports: [NgGunComponent,
         SoulPipe,
         UpdatedPipe,
         ChainDirective,
         AliasPipe,
-        VerifyPipe] }); })();
+        VerifyPipe,
+        RouteChainDirective] }); })();
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(NgGunModule, [{
         type: NgModule,
         args: [{
@@ -635,6 +717,7 @@ NgGunModule.ɵinj = i0.ɵɵdefineInjector({ factory: function NgGunModule_Factor
                     ChainDirective,
                     AliasPipe,
                     VerifyPipe,
+                    RouteChainDirective,
                 ],
                 exports: [
                     NgGunComponent,
@@ -643,9 +726,29 @@ NgGunModule.ɵinj = i0.ɵɵdefineInjector({ factory: function NgGunModule_Factor
                     ChainDirective,
                     AliasPipe,
                     VerifyPipe,
+                    RouteChainDirective,
                 ],
+                providers: [{ provide: 'gun-route-data-key', useValue: 'chain' }],
             }]
     }], null, null); })();
+
+class GunResolverService {
+    constructor(ngGun) {
+        this.ngGun = ngGun;
+    }
+    resolve(route, state) {
+        const soul = route.params.soul;
+        return this.ngGun.auth().root.get(soul).once();
+    }
+}
+GunResolverService.ɵfac = function GunResolverService_Factory(t) { return new (t || GunResolverService)(i0.ɵɵinject(NgGunService)); };
+GunResolverService.ɵprov = i0.ɵɵdefineInjectable({ token: GunResolverService, factory: GunResolverService.ɵfac, providedIn: 'root' });
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(GunResolverService, [{
+        type: Injectable,
+        args: [{
+                providedIn: 'root',
+            }]
+    }], function () { return [{ type: NgGunService }]; }, null); })();
 
 /*
  * Public API Surface of ng-gun
@@ -655,5 +758,5 @@ NgGunModule.ɵinj = i0.ɵɵdefineInjector({ factory: function NgGunModule_Factor
  * Generated bundle index. Do not edit.
  */
 
-export { AliasPipe, ChainDirective, GUN_NODE, GunAuthChain, GunCertChain, GunChain, GunOptions, NgGunComponent, NgGunModule, NgGunService, SoulPipe, UpdatedPipe, VerifyPipe };
+export { AliasPipe, ChainDirective, GUN_NODE, GunAuthChain, GunCertChain, GunChain, GunOptions, GunResolverService, NgGunComponent, NgGunModule, NgGunService, RouteChainDirective, SoulPipe, UpdatedPipe, VerifyPipe };
 //# sourceMappingURL=ng-gun.js.map

@@ -4,9 +4,9 @@
 <form>
   <mat-form-field>
     <mat-label>Search for user</mat-label>
-    <input matInput [formControl]="userSearch" [matAutocomplete]="auto">
+    <input matInput [formControl]="userSearch">
   </mat-form-field>
-  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelectUser($event)">
+  <!-- <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelectUser($event)">
     <mat-option *ngIf="user" [value]="user.alias">{{user.alias}} {{user.pub}}</mat-option>
-  </mat-autocomplete>
+  </mat-autocomplete> -->
 </form>

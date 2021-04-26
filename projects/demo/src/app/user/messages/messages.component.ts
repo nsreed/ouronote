@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { UserService } from '../user.service';
 import { MessageService } from './message.service';
 import * as Gun from 'gun';
+import { MatDialog } from '@angular/material/dialog';
+import { NewMessageComponent } from './new-message/new-message.component';
 
 @Component({
   selector: 'app-messages',
@@ -9,50 +11,22 @@ import * as Gun from 'gun';
   styleUrls: ['./messages.component.scss'],
 })
 export class MessagesComponent implements OnInit {
-  inbox = this.messageService.messages.reduce();
+  outbox = this.messageService.messages.reduce();
+  inbox = this.messageService.inbox.reduce();
 
   constructor(
     private userService: UserService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {}
 
-  onMessageClick() {
-    this.messageService.messages.set({
-      text: 'hello',
-    });
-  }
-
   onMessageRemove(message: any) {
-    if (Gun.node.is(message)) {
-      console.log('removing message', message);
-      this.messageService.messages
-        .get(message as never)
-        .once()
-        .subscribe((togo: any) => {
-          console.log('found removed message', togo);
-        });
-    }
-    this.messageService.messages
-      .unset(message)
-      .once()
-      .subscribe((r: any) => {
-        console.log('done removing message', r);
-      });
+    this.messageService.delete(message);
   }
 
-  onMessageUpdate(message: any) {
-    console.log('updating', message);
-    this.messageService.messages
-      .get(Gun.node.soul(message) as any)
-      .put({ text: 'another update' })
-      .once()
-      .subscribe((m: any) => {
-        console.log('would update', m);
-      });
-    // this.messageService.messages.get(message).put({
-    //   text: 'updated',
-    // });
+  newMessage() {
+    this.dialog.open(NewMessageComponent);
   }
 }
