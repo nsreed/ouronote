@@ -3,9 +3,11 @@
   <mat-accordion [multi]="true">
     <mat-expansion-panel [expanded]="true">
       <mat-expansion-panel-header>Description</mat-expansion-panel-header>
-      <textarea matInput autofocus
-        placeholder="Please provide a description of the problem and what you were doing/what you expected when you encountered it."
-        [formControl]="descriptionCtl"></textarea>
+      <mat-form-field fxFlexFill>
+        <textarea matInput
+          placeholder="Please provide a description of the problem and what you were doing/what you expected when you encountered it."
+          [formControl]="descriptionCtl"></textarea>
+      </mat-form-field>
     </mat-expansion-panel>
     <mat-expansion-panel>
       <mat-expansion-panel-header>Preview</mat-expansion-panel-header>

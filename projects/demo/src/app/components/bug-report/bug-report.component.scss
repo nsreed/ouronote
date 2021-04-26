@@ -7,6 +7,8 @@
     h2 {
       user-select: none;
     }
+    display: flex;
+    align-items: stretch;
     flex: 1 1 auto;
     flex-direction: column;
     overflow: auto;
