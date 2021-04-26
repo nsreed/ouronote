@@ -1,12 +1,25 @@
 <h1 matDialogTitle>Bug Report</h1>
-<pre matDialogContent>{{reportStr}}</pre>
+<div matDialogContent>
+  <mat-accordion [multi]="true">
+    <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel-header>Description</mat-expansion-panel-header>
+      <textarea matInput autofocus
+        placeholder="Please provide a description of the problem and what you were doing/what you expected when you encountered it."
+        [formControl]="descriptionCtl"></textarea>
+    </mat-expansion-panel>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>Preview</mat-expansion-panel-header>
+      <pre>{{reportStr}}</pre>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>
 <div matDialogActions>
 
   <!-- <button mat-button (click)="generate()">Generate</button> -->
-  <button mat-icon-button (click)="copy()">
+  <button mat-icon-button (click)="copy()" matTooltip="Copy to clipboard">
     <mat-icon>content_copy</mat-icon>
   </button>
-  <button mat-icon-button (click)="download()">
+  <button mat-icon-button (click)="download()" matTooltip="Download .json">
     <mat-icon>file_download</mat-icon>
   </button>
 

@@ -1138,6 +1138,13 @@
     merge-source-map "^1.1.0"
     schema-utils "^2.7.0"
 
+"@jsdevtools/host-environment@^2.1.2":
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@jsdevtools/host-environment/-/host-environment-2.1.2.tgz#099492811ea6a51759c230d61079d33a4655109c"
+  integrity sha512-9T+w9lWwMExriyAXafL12lPHxOaF7PwSbyf6nCZDpidrXb5r+SiCs6YjsAEOHHdFj7spvNVzEFVT23fDsPbf5Q==
+  dependencies:
+    "@qawolf/ci-info" "^2.1.0"
+
 "@ngtools/webpack@11.1.4":
   version "11.1.4"
   resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-11.1.4.tgz#8c7a9f6d9ade5610e3baf7299c50250cac02ca2a"
@@ -1254,6 +1261,11 @@
     pvtsutils "^1.1.2"
     tslib "^2.1.0"
     webcrypto-core "^1.2.0"
+
+"@qawolf/ci-info@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@qawolf/ci-info/-/ci-info-2.1.0.tgz#c7253f6cc208f9af1e4d5ad56e8419aa1d7856d8"
+  integrity sha512-D5H5RjqqE+YxI2oeTgSRuIjdy/hli90H5mMd81bBrYlOfB/f4TBsKMoaWfzI5E4bmFzLfQJuvvepTaWrxVfBug==
 
 "@rollup/plugin-commonjs@^17.0.0":
   version "17.1.0"
@@ -4469,6 +4481,15 @@ getpass@^0.1.1:
   integrity sha1-Xv+OPmhNVprkyysSgmBOi6YhSfo=
   dependencies:
     assert-plus "^1.0.0"
+
+git-describe@^4.0.4:
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/git-describe/-/git-describe-4.0.4.tgz#f3d55bce309becf6dc27fed535d380a621967e8c"
+  integrity sha512-L1X9OO1e4MusB4PzG9LXeXCQifRvyuoHTpuuZ521Qyxn/B0kWHWEOtsT4LsSfSNacZz0h4ZdYDsDG7f+SrA3hg==
+  dependencies:
+    lodash "^4.17.11"
+  optionalDependencies:
+    semver "^5.6.0"
 
 glob-parent@^3.1.0:
   version "3.1.0"

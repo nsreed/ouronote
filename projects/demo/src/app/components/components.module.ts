@@ -19,6 +19,7 @@ import { NgGunService } from '../../../../ng-gun/src/lib/ng-gun.service';
 import { GunPeersComponent } from './gun-peers/gun-peers.component';
 import { AliasAutocompleteComponent } from './alias-autocomplete/alias-autocomplete.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @NgModule({
   declarations: [
@@ -31,19 +32,19 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     FlexLayoutModule,
     MatAutocompleteModule,
     MatButtonModule,
-    MatTooltipModule,
+    MatCheckboxModule,
+    MatDatepickerModule,
+    MatExpansionModule,
+    MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    ReactiveFormsModule,
-    MatFormFieldModule,
-
-    MatCheckboxModule,
-    MatRadioModule,
-    MatDatepickerModule,
-    MatStepperModule,
-
     MatListModule,
+    MatListModule,
+    MatRadioModule,
+    MatStepperModule,
+    MatTooltipModule,
     NgGunModule,
+    ReactiveFormsModule,
   ],
   exports: [BugReportComponent, GunPeersComponent, AliasAutocompleteComponent],
 })

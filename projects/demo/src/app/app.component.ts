@@ -79,9 +79,27 @@ export class AppComponent {
   }
 
   bugReport() {
+    const peers = Object.keys(this.ngGun.peers).map((k) => {
+      const rawPeer = this.ngGun.peers[k] as GunPeer;
+
+      const x = {
+        ...rawPeer,
+        wire:
+          rawPeer.wire === undefined
+            ? undefined
+            : {
+                readyState: rawPeer.wire.readyState,
+                protocol: rawPeer.wire.protocol,
+                extensions: rawPeer.wire.extensions,
+                bufferedAmount: rawPeer.wire.bufferedAmount,
+              },
+      };
+      return x;
+    });
     this.dialog.open(BugReportComponent, {
       data: {
         gun: this.ngGun.gun,
+        peers,
       },
       width: '80%',
       height: '80%',
