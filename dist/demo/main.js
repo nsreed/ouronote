@@ -875,7 +875,7 @@ class AppComponent {
         logger.log('app started');
         this.user = this.ngGun.auth();
         // console.log('!! ROUTE SNAPSHOT', route.snapshot);
-        window.document.title = `ouronote version ${_environments_version__WEBPACK_IMPORTED_MODULE_5__["VERSION"].version} ${_environments_version__WEBPACK_IMPORTED_MODULE_5__["VERSION"].hash}`;
+        window.document.title = `ouronote version ${_environments_version__WEBPACK_IMPORTED_MODULE_5__["VERSION"].version}`;
         let lastActivated;
         router.events
             .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["filter"])((e) => e instanceof _angular_router__WEBPACK_IMPORTED_MODULE_0__["ChildActivationEnd"]))
@@ -3104,14 +3104,6 @@ __webpack_require__.r(__webpack_exports__);
 // IMPORTANT: THIS FILE IS AUTO GENERATED! DO NOT MANUALLY EDIT OR CHECKIN!
 /* tslint:disable */
 const VERSION = {
-    "dirty": true,
-    "raw": "9ccf834-dirty",
-    "hash": "9ccf834",
-    "distance": null,
-    "tag": null,
-    "semver": null,
-    "suffix": "9ccf834-dirty",
-    "semverString": null,
     "version": "0.0.1"
 };
 /* tslint:enable */

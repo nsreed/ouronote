@@ -44,7 +44,7 @@ export class AppComponent {
     logger.log('app started');
     this.user = this.ngGun.auth();
     // console.log('!! ROUTE SNAPSHOT', route.snapshot);
-    window.document.title = `ouronote version ${VERSION.version} ${VERSION.hash}`;
+    window.document.title = `ouronote version ${VERSION.version}`;
 
     let lastActivated: ChildActivationEnd;
     router.events
