@@ -59,6 +59,7 @@ export class BugReportComponent implements OnInit {
       timestamp: Date.now(),
       version: VERSION,
       system: host.browser,
+      log: this.data.messages,
       // log: messages,
     };
     this.report = report;
