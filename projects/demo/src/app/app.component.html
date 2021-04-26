@@ -17,10 +17,11 @@
         <mat-icon mat-list-icon>bug_report</mat-icon>
       </mat-list-item>
       <mat-list-item (click)="peers()" matTooltip="Open peer statistics">
-        <mat-icon mat-list-icon>signal_wifi_4_bar</mat-icon>
+        <mat-icon mat-list-icon>signal_wifi_4_bar
+        </mat-icon>
       </mat-list-item>
       <mat-divider></mat-divider>
-      <mat-list-item [matMenuTriggerFor]="sessionMenu" [matTooltip]="'@'+ngGun.auth().alias">
+      <mat-list-item [matMenuTriggerFor]=" sessionMenu" [matTooltip]="'@'+ngGun.auth().alias">
         <mat-icon mat-list-icon color="primary">account_circle</mat-icon>
       </mat-list-item>
       <mat-menu #sessionMenu>

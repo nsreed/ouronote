@@ -10,6 +10,8 @@ export interface Post {
 export interface Message {
   text: string;
   to: string;
+  from?: string;
+  read?: boolean;
 }
 
 export interface User {

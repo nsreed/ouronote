@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
@@ -19,28 +20,26 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatRadioModule } from '@angular/material/radio';
-import { MatStepperModule } from '@angular/material/stepper';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatStepperModule } from '@angular/material/stepper';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { LogModule } from '../../../log/src/lib/log.module';
+import { LogService } from '../../../log/src/lib/log.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { CertificatesModule } from './certificates/certificates.module';
 import { CertificateFormComponent } from './components/certificate-form/certificate-form.component';
 import { CertificatesComponent } from './components/certificates/certificates.component';
+import { ComponentsModule } from './components/components.module';
 import { ConfirmComponent } from './components/confirm/confirm.component';
 import { FormsUiModule } from './forms-ui/forms-ui.module';
 import { LoginComponent } from './login/login.component';
 import { SessionInfoComponent } from './session-info/session-info.component';
-import { AliasAutocompleteComponent } from './components/alias-autocomplete/alias-autocomplete.component';
-import { CertificatesModule } from './certificates/certificates.module';
 import { WelcomeComponent } from './welcome/welcome.component';
-import { LogModule } from '../../../log/src/lib/log.module';
-import { LogService } from '../../../log/src/lib/log.service';
-import { ComponentsModule } from './components/components.module';
 
 @NgModule({
   declarations: [
@@ -53,38 +52,39 @@ import { ComponentsModule } from './components/components.module';
     WelcomeComponent,
   ],
   imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
     AppRoutingModule,
-    ReactiveFormsModule,
+    BrowserAnimationsModule,
+    BrowserModule,
+    CertificatesModule,
+    ComponentsModule,
+    FlexLayoutModule,
     FormsUiModule,
-    MatIconModule,
-    MatButtonModule,
-    ScrollingModule,
     LogModule,
+    MatAutocompleteModule,
+    MatBadgeModule,
+    MatButtonModule,
+    MatButtonToggleModule,
     MatCardModule,
     MatCheckboxModule,
     MatChipsModule,
-    MatStepperModule,
     MatDatepickerModule,
     MatDialogModule,
     MatDividerModule,
     MatExpansionModule,
     MatGridListModule,
+    MatIconModule,
     MatInputModule,
     MatListModule,
     MatMenuModule,
-    MatButtonToggleModule,
-    FlexLayoutModule,
-    MatAutocompleteModule,
-    MatToolbarModule,
-    MatRadioModule,
     MatNativeDateModule,
-    MatSnackBarModule,
-    MatTooltipModule,
-    CertificatesModule,
+    MatRadioModule,
     MatSidenavModule,
-    ComponentsModule,
+    MatSnackBarModule,
+    MatStepperModule,
+    MatToolbarModule,
+    MatTooltipModule,
+    ReactiveFormsModule,
+    ScrollingModule,
   ],
   providers: [
     {
