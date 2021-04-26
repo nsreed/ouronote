@@ -16,7 +16,7 @@ export const REQUIRES = {
 
 export function hasRequired(json: any) {
   if (!json) {
-    console.warn('hasRequired() NULL VALUE');
+    // console.warn('hasRequired() NULL VALUE');
     return false;
   }
   if (!json.className) {
