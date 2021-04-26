@@ -17,13 +17,11 @@ import { MessageComponent } from './message/message.component';
 import { MessagesRoutingModule } from './messages-routing.module';
 import { MessagesComponent } from './messages.component';
 import { NewMessageComponent } from './new-message/new-message.component';
-import { RouteMessageDirective } from './route-message.directive';
 
 @NgModule({
   declarations: [
     MessagesComponent,
     MessageComponent,
-    RouteMessageDirective,
     EditMessageComponent,
     NewMessageComponent,
   ],

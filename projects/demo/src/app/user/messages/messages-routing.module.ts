@@ -16,6 +16,7 @@ const routes: Routes = [
     component: MessageComponent,
     resolve: {
       message: GunResolverService,
+      chain: GunResolverService,
     },
   },
   {
@@ -23,6 +24,7 @@ const routes: Routes = [
     component: EditMessageComponent,
     resolve: {
       message: GunResolverService,
+      chain: GunResolverService,
     },
   },
 ];

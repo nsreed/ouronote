@@ -1,14 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { switchMap } from 'rxjs/operators';
-import { MessageService } from '../message.service';
-import { Observable } from 'rxjs';
-import { RouteMessageDirective } from '../route-message.directive';
+import { RouteChainDirective } from '../../../../../../ng-gun/src/lib/route-chain.directive';
 
 @Component({
   templateUrl: './message.component.html',
   styleUrls: ['./message.component.scss'],
 })
-export class MessageComponent extends RouteMessageDirective implements OnInit {
+export class MessageComponent
+  extends RouteChainDirective<any>
+  implements OnInit {
   ngOnInit(): void {}
 }
