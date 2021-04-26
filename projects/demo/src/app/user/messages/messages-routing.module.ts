@@ -2,8 +2,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { MessagesComponent } from './messages.component';
 import { MessageComponent } from './message/message.component';
-import { MessageResolver } from './message.resolver';
 import { EditMessageComponent } from './edit-message/edit-message.component';
+import { GunResolverService } from '../../../../../ng-gun/src/lib/gun-resolver.service';
 
 const routes: Routes = [
   {
@@ -15,14 +15,14 @@ const routes: Routes = [
     path: ':soul',
     component: MessageComponent,
     resolve: {
-      message: MessageResolver,
+      message: GunResolverService,
     },
   },
   {
     path: ':soul/edit',
     component: EditMessageComponent,
     resolve: {
-      message: MessageResolver,
+      message: GunResolverService,
     },
   },
 ];
