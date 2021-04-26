@@ -3,11 +3,12 @@ import { ActivatedRoute } from '@angular/router';
 import { NgGunService } from './ng-gun.service';
 import { map, switchMap } from 'rxjs/operators';
 import * as Gun from 'gun';
+import { Observable } from 'rxjs';
 
 @Directive({
   selector: '[libRouteGun]',
 })
-export class RouteChainDirective {
+export class RouteChainDirective<T = any> {
   @Output()
   chain$ = this.route.data.pipe(
     map((data) => {
@@ -18,13 +19,15 @@ export class RouteChainDirective {
     })
   );
   @Output()
-  data$ = this.chain$.pipe(switchMap((chain) => chain.once()));
+  data$: Observable<T> = this.chain$.pipe(
+    switchMap((chain) => chain.once() as Observable<T>)
+  );
   constructor(
     private route: ActivatedRoute,
-    private ngGun: NgGunService,
+    protected ngGun: NgGunService,
     @Optional()
     @Inject('gun-route-data-key')
-    private dataKey: string
+    private dataKey: string = 'chain'
   ) {
     this.data$.subscribe((data) => console.log({ data }));
   }
