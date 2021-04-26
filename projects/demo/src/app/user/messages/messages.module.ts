@@ -17,6 +17,7 @@ import { NewMessageComponent } from './new-message/new-message.component';
 import { RouteMessageDirective } from './route-message.directive';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     MatButtonModule,
     MatAutocompleteModule,
     MatTabsModule,
+    MatTooltipModule,
     MatIconModule,
     MatToolbarModule,
     ComponentsModule,

@@ -12,7 +12,8 @@
       <ng-container *ngFor="let message of inbox|async">
         <ng-container *ngIf="message && message._">
           <!-- <a mat-flat-button [routerLink]="['/user/messages/', message | soul]">{{message.text}}</a> -->
-          <span>{{message.text}}</span>
+          <!-- <span [matTooltip]="message|soul">{{message.text}}</span> -->
+          <a mat-flat-button [routerLink]="['/user/messages/', message | soul]">{{message.text}}</a>
           <!-- <button [routerLink]="['/user/messages/', message | soul, 'edit']">Edit</button> -->
           <button mat-icon-button (click)="onMessageRemove(message)">
             <mat-icon>delete</mat-icon>
