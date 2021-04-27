@@ -21,6 +21,12 @@ export class DiagnosticsService {
       // console.log('got message', buff);
       this.messages = buff;
     });
+    this.disconnectedPeers$.subscribe((peers) => {
+      this.logger.log('attempting to reconnect peers', peers);
+      this.ngGun.gun.opt({
+        peers,
+      });
+    });
   }
 
   configuredPeers = Array.isArray(this.ngGun.gunOptions.peers)
@@ -48,7 +54,7 @@ export class DiagnosticsService {
     return peers;
   }
 
-  disconnectedPeers$ = timer(1000 * 30, 1000 * 30).pipe(
+  disconnectedPeers$ = timer(1000 * 5, 1000 * 5).pipe(
     map(() => this.disconnectedPeers),
     shareReplay(1)
   );
@@ -60,7 +66,9 @@ export class DiagnosticsService {
   }
 
   get disconnectedPeers() {
-    const errorPeers = this.peers.filter((peer) => peer.wire?.readyState === 0);
+    const errorPeers = this.peers
+      .filter((peer) => peer.wire?.readyState === 0)
+      .map((p) => p.url);
     return [...errorPeers, ...this.missingPeers];
   }
 
