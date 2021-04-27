@@ -30,7 +30,7 @@ export class AppComponent {
     private cb: ClipboardService,
     private logger: LogService,
     private dialog: MatDialog,
-    private diagnosticsService: DiagnosticsService
+    public diagnosticsService: DiagnosticsService
   ) {
     // logger.out$.subscribe(console.log);
     logger.log('app started');

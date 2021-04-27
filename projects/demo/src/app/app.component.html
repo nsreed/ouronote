@@ -17,7 +17,9 @@
         <mat-icon mat-list-icon>bug_report</mat-icon>
       </mat-list-item>
       <mat-list-item (click)="peers()" matTooltip="Open peer statistics">
-        <mat-icon mat-list-icon>signal_wifi_4_bar
+        <mat-icon mat-list-icon [matBadge]="(diagnosticsService.disconnectedPeers$|async)?.length||null"
+          matBadgeColor="warn" matBadgeSize="small">
+          signal_wifi_4_bar
         </mat-icon>
       </mat-list-item>
       <mat-divider></mat-divider>
