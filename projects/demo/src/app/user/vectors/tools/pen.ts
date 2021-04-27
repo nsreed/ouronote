@@ -10,6 +10,7 @@ export class PenTool extends VectorTool {
   color = new paper.Color(Math.random(), Math.random(), Math.random());
   setup() {
     this.down.subscribe((e) => {
+      this.logger.log('pen down', e.point);
       this.path = new paper.Path(e.point) as any;
       (this.path as any).pair.editing = true;
       this.path.strokeWidth = 3;

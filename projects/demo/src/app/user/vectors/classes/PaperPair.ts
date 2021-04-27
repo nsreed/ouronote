@@ -56,7 +56,6 @@ export class PaperPair {
     if (ctx.pair) {
       this.logger.error('CREATING A DUPLICATE PAIR FOR SCOPE', ctx);
     }
-    // this.logger.log('paper binding created');
     ctx.pair = this;
 
     this.saveBuffer$.subscribe((buf) => {
