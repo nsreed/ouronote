@@ -43,12 +43,17 @@ yarn ng build demo
 
 **docker-compose**
 
+Generate self-signed certs (not required for localhost)
+
 ```
-docker-compose build
+openssl req -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out ouronote-dev.crt -keyout ouronote-dev.key
+```
+
+```
 docker-compose up -d
 ```
 
-Navigate to http://localhost:8010
+Navigate to http://localhost:8080
 
 ### Development
 

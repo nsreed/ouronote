@@ -1,9 +1,19 @@
 version: "3"
 services:
   ouronote-web:
-    build: .
+    image: node
+    working_dir: /home/node/app
+    user: "node"
+    volumes:
+      - ./:/home/node/app
     ports:
-      - 8080:80
+      - 8080:8081
+      - 4430:4430
+    environment:
+      - PORT=8081
+      - HTTPS_PORT=4430
+      - TZ=America/New York
+    command: "npm start"
   ouronote-gun:
     image: gundb/gun
     ports:
