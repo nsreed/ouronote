@@ -5765,7 +5765,9 @@ class DiagnosticsService {
             // console.log('got message', buff);
             this.messages = buff;
         });
-        this.disconnectedPeers$.subscribe((peers) => {
+        this.disconnectedPeers$
+            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_0__["filter"])((peers) => peers.length > 0))
+            .subscribe((peers) => {
             this.logger.log('attempting to reconnect peers', peers);
             this.ngGun.gun.opt({
                 peers,
