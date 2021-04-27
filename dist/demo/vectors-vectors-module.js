@@ -454,12 +454,12 @@ function before$(context, method) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PaperPair", function() { return PaperPair; });
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "631e");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
 /* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! paper */ "IiLU");
 /* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(paper__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/core */ "fXoL");
-/* harmony import */ var _packaging__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./packaging */ "E6wO");
-/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! rxjs/operators */ "kU1M");
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs/operators */ "kU1M");
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./constants */ "631e");
+/* harmony import */ var _packaging__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./packaging */ "E6wO");
 
 
 
@@ -474,12 +474,12 @@ class PaperPair {
         this.logger = logger;
         this.childCache = {};
         this.isImportingJSON = false;
-        this.save$ = new _angular_core__WEBPACK_IMPORTED_MODULE_2__["EventEmitter"]();
-        this.debouncedSave$ = this.save$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["filter"])((v) => !this.ctx.data.ignore), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["bufferTime"])(100));
-        this.saveProperty$ = new _angular_core__WEBPACK_IMPORTED_MODULE_2__["EventEmitter"](); // TODO document this...
-        this.saveBuffer$ = this.saveProperty$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["buffer"])(this.debouncedSave$), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["filter"])((v) => v.length > 0), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_4__["map"])((v) => v.reduce((propertyBuffer, val) => {
+        this.save$ = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
+        this.debouncedSave$ = this.save$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((v) => !this.ctx.data.ignore), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["bufferTime"])(100));
+        this.saveProperty$ = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"](); // TODO document this...
+        this.saveBuffer$ = this.saveProperty$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["buffer"])(this.debouncedSave$), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((v) => v.length > 0), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["map"])((v) => v.reduce((propertyBuffer, val) => {
             const propertyName = val[0];
-            const propertyValue = val.length > 1 ? val[1] : Object(_packaging__WEBPACK_IMPORTED_MODULE_3__["serializeValue"])(this.ctx[propertyName]);
+            const propertyValue = val.length > 1 ? val[1] : Object(_packaging__WEBPACK_IMPORTED_MODULE_4__["serializeValue"])(this.ctx[propertyName]);
             propertyBuffer[propertyName] = Array.isArray(propertyValue)
                 ? JSON.stringify(propertyValue)
                 : propertyValue;
@@ -489,7 +489,6 @@ class PaperPair {
         if (ctx.pair) {
             this.logger.error('CREATING A DUPLICATE PAIR FOR SCOPE', ctx);
         }
-        // this.logger.log('paper binding created');
         ctx.pair = this;
         this.saveBuffer$.subscribe((buf) => {
             var _a;
@@ -522,7 +521,7 @@ class PaperPair {
             soul: key,
         };
         Object.keys(scrubbed).forEach((k) => {
-            if (_constants__WEBPACK_IMPORTED_MODULE_0__["EXPECT_ARRAY"].includes(k)) {
+            if (_constants__WEBPACK_IMPORTED_MODULE_3__["EXPECT_ARRAY"].includes(k)) {
                 // this.logger.log('  deserializing %s', k, scrubbed[k]);
                 scrubbed[k] = JSON.parse(scrubbed[k]);
             }
@@ -538,7 +537,7 @@ class PaperPair {
             }
             return;
         }
-        if (!Object(_constants__WEBPACK_IMPORTED_MODULE_0__["hasRequired"])(childJSON)) {
+        if (!Object(_constants__WEBPACK_IMPORTED_MODULE_3__["hasRequired"])(childJSON)) {
             this.logger.error('child does not have required fields', childJSON);
             return;
         }
@@ -553,7 +552,7 @@ class PaperPair {
             soul: key,
         };
         Object.keys(scrubbed).forEach((k) => {
-            if (_constants__WEBPACK_IMPORTED_MODULE_0__["EXPECT_ARRAY"].includes(k)) {
+            if (_constants__WEBPACK_IMPORTED_MODULE_3__["EXPECT_ARRAY"].includes(k)) {
                 scrubbed[k] = JSON.parse(scrubbed[k]);
             }
         });
@@ -19036,15 +19035,20 @@ class PenTool extends _paper_tool__WEBPACK_IMPORTED_MODULE_1__["VectorTool"] {
     constructor() {
         super(...arguments);
         this.name = 'pen';
-        this.style = new paper__WEBPACK_IMPORTED_MODULE_2__["Style"]({});
-        this.color = new paper__WEBPACK_IMPORTED_MODULE_2__["Color"](Math.random(), Math.random(), Math.random());
+        this.style = new paper__WEBPACK_IMPORTED_MODULE_2__["Style"]({
+            strokeCap: 'round',
+            strokeJoin: 'round',
+            strokeWidth: 3,
+        });
+        this.smoothing = true;
     }
     setup() {
+        // this.style.strokeJoin
         this.down.subscribe((e) => {
+            this.logger.log('pen down', e.point);
             this.path = new paper__WEBPACK_IMPORTED_MODULE_2__["Path"](e.point);
             this.path.pair.editing = true;
-            this.path.strokeWidth = 3;
-            this.path.strokeColor = this.project.currentStyle.strokeColor;
+            this.path.style = this.style;
         });
         this.drag.subscribe((e) => {
             this.path.add(e.point);
@@ -19052,8 +19056,12 @@ class PenTool extends _paper_tool__WEBPACK_IMPORTED_MODULE_1__["VectorTool"] {
         this.up.subscribe((e) => {
             var _a;
             this.path.strokeColor = this.project.currentStyle.strokeColor;
+            this.path.fillColor = this.project.currentStyle.fillColor;
             // (this.path as any).pair?.save('segments');
             // (this.path as any).pair?.save();
+            if (this.smoothing) {
+                this.path.smooth();
+            }
             (_a = this.path.pair) === null || _a === void 0 ? void 0 : _a.doSave();
             this.path.pair.editing = false;
         });
@@ -19062,6 +19070,9 @@ class PenTool extends _paper_tool__WEBPACK_IMPORTED_MODULE_1__["VectorTool"] {
 Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
     Object(_functions_decorators__WEBPACK_IMPORTED_MODULE_3__["Property"])()
 ], PenTool.prototype, "style", void 0);
+Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
+    Object(_functions_decorators__WEBPACK_IMPORTED_MODULE_3__["Property"])()
+], PenTool.prototype, "smoothing", void 0);
 
 
 /***/ }),
@@ -20220,6 +20231,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 const _c0 = ["paper"];
 const _c1 = ["preview"];
 function EditVectorComponent_mat_accordion_3_ng_template_4_mat_button_toggle_1_Template(rf, ctx) { if (rf & 1) {
@@ -20318,14 +20330,16 @@ function EditVectorComponent_mat_accordion_3_Template(rf, ctx) { if (rf & 1) {
 } }
 const VECTOR_PAPER_JSON_KEY = 'graph';
 class EditVectorComponent extends _route_vector_directive__WEBPACK_IMPORTED_MODULE_3__["RouteVectorDirective"] {
-    constructor(vectorService, route, ngZone, fb, ngGun, sanitizer) {
+    constructor(vectorService, route, ngZone, fb, ngGun, sanitizer, logger) {
         super(vectorService, route, ngGun);
         this.ngZone = ngZone;
         this.fb = fb;
         this.sanitizer = sanitizer;
+        this.logger = logger;
         this.vectorForm = this.fb.group({
             title: [null, _angular_forms__WEBPACK_IMPORTED_MODULE_4__["Validators"].required],
         });
+        this.logger = logger.supplemental('edit-vector.component');
     }
     ngAfterViewInit() {
         this.vectorNode$.subscribe((node) => {
@@ -20391,16 +20405,16 @@ class EditVectorComponent extends _route_vector_directive__WEBPACK_IMPORTED_MODU
     onProjectReady(project, gun) {
         // console.log('setting up project graph');
         // this.paperDirective.tool.activate();
+        this.logger.log('project ready');
         const paperChain = new _classes_ProjectPair__WEBPACK_IMPORTED_MODULE_2__["ProjectPair"](gun, this.paperDirective.project, this.paperDirective.scope, new projects_log_src_public_api__WEBPACK_IMPORTED_MODULE_5__["LogService"]());
     }
     addLayer() {
-        console.log('adding layer');
+        this.logger.log('adding layer');
         const layer = new paper__WEBPACK_IMPORTED_MODULE_0__["Layer"]();
-        console.log(this.paperDirective.project.layers);
         layer.pair.save();
     }
 }
-EditVectorComponent.ɵfac = function EditVectorComponent_Factory(t) { return new (t || EditVectorComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵdirectiveInject"](_vector_service__WEBPACK_IMPORTED_MODULE_7__["VectorService"]), _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵdirectiveInject"](_angular_router__WEBPACK_IMPORTED_MODULE_8__["ActivatedRoute"]), _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_6__["NgZone"]), _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵdirectiveInject"](_angular_forms__WEBPACK_IMPORTED_MODULE_4__["FormBuilder"]), _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵdirectiveInject"](_ng_gun_src_lib_ng_gun_service__WEBPACK_IMPORTED_MODULE_9__["NgGunService"]), _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵdirectiveInject"](_angular_platform_browser__WEBPACK_IMPORTED_MODULE_10__["DomSanitizer"])); };
+EditVectorComponent.ɵfac = function EditVectorComponent_Factory(t) { return new (t || EditVectorComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵdirectiveInject"](_vector_service__WEBPACK_IMPORTED_MODULE_7__["VectorService"]), _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵdirectiveInject"](_angular_router__WEBPACK_IMPORTED_MODULE_8__["ActivatedRoute"]), _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_6__["NgZone"]), _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵdirectiveInject"](_angular_forms__WEBPACK_IMPORTED_MODULE_4__["FormBuilder"]), _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵdirectiveInject"](_ng_gun_src_lib_ng_gun_service__WEBPACK_IMPORTED_MODULE_9__["NgGunService"]), _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵdirectiveInject"](_angular_platform_browser__WEBPACK_IMPORTED_MODULE_10__["DomSanitizer"]), _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵdirectiveInject"](projects_log_src_public_api__WEBPACK_IMPORTED_MODULE_5__["LogService"])); };
 EditVectorComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵdefineComponent"]({ type: EditVectorComponent, selectors: [["ng-component"]], viewQuery: function EditVectorComponent_Query(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵviewQuery"](_c0, 1);
         _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵviewQuery"](_c1, 1);
@@ -20420,7 +20434,7 @@ EditVectorComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵdefi
         _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("gunChain", _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵpipeBind1"](2, 2, ctx.vectorNode$));
         _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵadvance"](3);
         _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("ngIf", ctx.project);
-    } }, directives: [_ng_gun_src_lib_chain_directive__WEBPACK_IMPORTED_MODULE_11__["ChainDirective"], _angular_common__WEBPACK_IMPORTED_MODULE_12__["NgIf"], _angular_flex_layout_flex__WEBPACK_IMPORTED_MODULE_13__["DefaultFlexDirective"], _angular_flex_layout_flex__WEBPACK_IMPORTED_MODULE_13__["DefaultLayoutDirective"], _angular_flex_layout_flex__WEBPACK_IMPORTED_MODULE_13__["DefaultLayoutAlignDirective"], _paper_directive__WEBPACK_IMPORTED_MODULE_14__["PaperDirective"], _angular_material_expansion__WEBPACK_IMPORTED_MODULE_15__["MatAccordion"], _angular_material_expansion__WEBPACK_IMPORTED_MODULE_15__["MatExpansionPanel"], _angular_material_expansion__WEBPACK_IMPORTED_MODULE_15__["MatExpansionPanelHeader"], _angular_material_expansion__WEBPACK_IMPORTED_MODULE_15__["MatExpansionPanelContent"], _angular_material_expansion__WEBPACK_IMPORTED_MODULE_15__["MatExpansionPanelActionRow"], _angular_material_button__WEBPACK_IMPORTED_MODULE_16__["MatAnchor"], _angular_material_icon__WEBPACK_IMPORTED_MODULE_17__["MatIcon"], _angular_common__WEBPACK_IMPORTED_MODULE_12__["NgForOf"], _angular_material_button_toggle__WEBPACK_IMPORTED_MODULE_18__["MatButtonToggle"], _components_tool_directive__WEBPACK_IMPORTED_MODULE_19__["ToolDirective"], _components_color_form_color_form_component__WEBPACK_IMPORTED_MODULE_20__["ColorFormComponent"], _angular_material_list__WEBPACK_IMPORTED_MODULE_21__["MatList"], _angular_material_list__WEBPACK_IMPORTED_MODULE_21__["MatListItem"], _angular_common__WEBPACK_IMPORTED_MODULE_12__["NgClass"], _angular_flex_layout_extended__WEBPACK_IMPORTED_MODULE_22__["DefaultClassDirective"]], pipes: [_angular_common__WEBPACK_IMPORTED_MODULE_12__["AsyncPipe"]], styles: ["[_nghost-%COMP%] {\n  height: 100%;\n  display: flex;\n  flex-direction: row;\n}\n\n#CanvasContainer[_ngcontent-%COMP%] {\n  overflow: hidden;\n}\n\ncanvas#Workspace[_ngcontent-%COMP%] {\n  outline: solid 10px gray;\n  touch-action: pinch-zoom;\n}\n\nmat-accordion[_ngcontent-%COMP%] {\n  overflow: hidden;\n}\n\nmat-accordion[_ngcontent-%COMP%]:last-child {\n  flex-grow: 1;\n}\n\nform[_ngcontent-%COMP%] {\n  padding: 0;\n  margin: 0;\n}\n\nmat-list-item.active[_ngcontent-%COMP%] {\n  white-space: nowrap;\n  break-inside: avoid;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  outline: solid 3px #0000ff55;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uL2VkaXQtdmVjdG9yLmNvbXBvbmVudC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBR0UsWUFBQTtFQUNBLGFBQUE7RUFDQSxtQkFBQTtBQURGOztBQUlBO0VBQ0UsZ0JBQUE7QUFERjs7QUFJQTtFQUNFLHdCQUFBO0VBQ0Esd0JBQUE7QUFERjs7QUFJQTtFQUNFLGdCQUFBO0FBREY7O0FBRUU7RUFDRSxZQUFBO0FBQUo7O0FBSUE7RUFDRSxVQUFBO0VBQ0EsU0FBQTtBQURGOztBQUlBO0VBQ0UsbUJBQUE7RUFDQSxtQkFBQTtFQUNBLGdCQUFBO0VBQ0EsdUJBQUE7RUFDQSw0QkFBQTtBQURGIiwiZmlsZSI6ImVkaXQtdmVjdG9yLmNvbXBvbmVudC5zY3NzIiwic291cmNlc0NvbnRlbnQiOlsiOmhvc3Qge1xuICAvLyBwb3NpdGlvbjogYWJzb2x1dGU7XG4gIC8vIHdpZHRoOiAxMDAlO1xuICBoZWlnaHQ6IDEwMCU7XG4gIGRpc3BsYXk6IGZsZXg7XG4gIGZsZXgtZGlyZWN0aW9uOiByb3c7XG59XG5cbiNDYW52YXNDb250YWluZXIge1xuICBvdmVyZmxvdzogaGlkZGVuO1xufVxuXG5jYW52YXMjV29ya3NwYWNlIHtcbiAgb3V0bGluZTogc29saWQgMTBweCBncmF5O1xuICB0b3VjaC1hY3Rpb246IHBpbmNoLXpvb207XG59XG5cbm1hdC1hY2NvcmRpb24ge1xuICBvdmVyZmxvdzogaGlkZGVuO1xuICAmOmxhc3QtY2hpbGQge1xuICAgIGZsZXgtZ3JvdzogMTtcbiAgfVxufVxuXG5mb3JtIHtcbiAgcGFkZGluZzogMDtcbiAgbWFyZ2luOiAwO1xufVxuXG5tYXQtbGlzdC1pdGVtLmFjdGl2ZSB7XG4gIHdoaXRlLXNwYWNlOiBub3dyYXA7XG4gIGJyZWFrLWluc2lkZTogYXZvaWQ7XG4gIG92ZXJmbG93OiBoaWRkZW47XG4gIHRleHQtb3ZlcmZsb3c6IGVsbGlwc2lzO1xuICBvdXRsaW5lOiBzb2xpZCAzcHggIzAwMDBmZjU1O1xufVxuIl19 */"] });
+    } }, directives: [_ng_gun_src_lib_chain_directive__WEBPACK_IMPORTED_MODULE_11__["ChainDirective"], _angular_common__WEBPACK_IMPORTED_MODULE_12__["NgIf"], _angular_flex_layout_flex__WEBPACK_IMPORTED_MODULE_13__["DefaultFlexDirective"], _angular_flex_layout_flex__WEBPACK_IMPORTED_MODULE_13__["DefaultLayoutDirective"], _angular_flex_layout_flex__WEBPACK_IMPORTED_MODULE_13__["DefaultLayoutAlignDirective"], _paper_directive__WEBPACK_IMPORTED_MODULE_14__["PaperDirective"], _angular_material_expansion__WEBPACK_IMPORTED_MODULE_15__["MatAccordion"], _angular_material_expansion__WEBPACK_IMPORTED_MODULE_15__["MatExpansionPanel"], _angular_material_expansion__WEBPACK_IMPORTED_MODULE_15__["MatExpansionPanelHeader"], _angular_material_expansion__WEBPACK_IMPORTED_MODULE_15__["MatExpansionPanelContent"], _angular_material_expansion__WEBPACK_IMPORTED_MODULE_15__["MatExpansionPanelActionRow"], _angular_material_button__WEBPACK_IMPORTED_MODULE_16__["MatAnchor"], _angular_material_icon__WEBPACK_IMPORTED_MODULE_17__["MatIcon"], _angular_common__WEBPACK_IMPORTED_MODULE_12__["NgForOf"], _angular_material_button_toggle__WEBPACK_IMPORTED_MODULE_18__["MatButtonToggle"], _components_tool_directive__WEBPACK_IMPORTED_MODULE_19__["ToolDirective"], _components_color_form_color_form_component__WEBPACK_IMPORTED_MODULE_20__["ColorFormComponent"], _angular_material_list__WEBPACK_IMPORTED_MODULE_21__["MatList"], _angular_material_list__WEBPACK_IMPORTED_MODULE_21__["MatListItem"], _angular_common__WEBPACK_IMPORTED_MODULE_12__["NgClass"], _angular_flex_layout_extended__WEBPACK_IMPORTED_MODULE_22__["DefaultClassDirective"]], pipes: [_angular_common__WEBPACK_IMPORTED_MODULE_12__["AsyncPipe"]], styles: ["[_nghost-%COMP%] {\n  height: 100%;\n  display: flex;\n  flex-direction: row;\n}\n\n#CanvasContainer[_ngcontent-%COMP%] {\n  overflow: hidden;\n}\n\ncanvas#Workspace[_ngcontent-%COMP%] {\n  outline: solid 10px gray;\n  touch-action: pinch-zoom;\n}\n\nmat-accordion[_ngcontent-%COMP%] {\n  overflow-y: auto;\n  max-height: 100%;\n}\n\nmat-accordion[_ngcontent-%COMP%]::-webkit-scrollbar {\n  width: 10px;\n}\n\nmat-accordion[_ngcontent-%COMP%]::-webkit-scrollbar-track {\n  background: #fafafa;\n  box-shadow: inset 0 0 3px grey;\n  border-radius: 3px;\n}\n\nmat-accordion[_ngcontent-%COMP%]::-webkit-scrollbar-thumb {\n  background: #f1f1f1;\n  box-shadow: inset 0 0 3px slategray;\n  border-radius: 3px;\n}\n\nmat-accordion[_ngcontent-%COMP%]::-webkit-scrollbar-thumb:hover {\n  background: #d1d1d1;\n}\n\nmat-accordion[_ngcontent-%COMP%]   mat-expansion-panel[_ngcontent-%COMP%] {\n  flex-shrink: 0;\n}\n\nform[_ngcontent-%COMP%] {\n  padding: 0;\n  margin: 0;\n}\n\nmat-list-item.active[_ngcontent-%COMP%] {\n  white-space: nowrap;\n  break-inside: avoid;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  outline: solid 3px #0000ff55;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uL2VkaXQtdmVjdG9yLmNvbXBvbmVudC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBR0UsWUFBQTtFQUNBLGFBQUE7RUFDQSxtQkFBQTtBQURGOztBQUlBO0VBQ0UsZ0JBQUE7QUFERjs7QUFJQTtFQUNFLHdCQUFBO0VBQ0Esd0JBQUE7QUFERjs7QUFJQTtFQUNFLGdCQUFBO0VBbUJBLGdCQUFBO0FBbkJGOztBQUVFO0VBQ0UsV0FBQTtBQUFKOztBQUVFO0VBQ0UsbUJBQUE7RUFDQSw4QkFBQTtFQUNBLGtCQUFBO0FBQUo7O0FBRUU7RUFDRSxtQkFBQTtFQUNBLG1DQUFBO0VBQ0Esa0JBQUE7QUFBSjs7QUFFRTtFQUNFLG1CQUFBO0FBQUo7O0FBSUU7RUFDRSxjQUFBO0FBRko7O0FBTUE7RUFDRSxVQUFBO0VBQ0EsU0FBQTtBQUhGOztBQU1BO0VBQ0UsbUJBQUE7RUFDQSxtQkFBQTtFQUNBLGdCQUFBO0VBQ0EsdUJBQUE7RUFDQSw0QkFBQTtBQUhGIiwiZmlsZSI6ImVkaXQtdmVjdG9yLmNvbXBvbmVudC5zY3NzIiwic291cmNlc0NvbnRlbnQiOlsiOmhvc3Qge1xuICAvLyBwb3NpdGlvbjogYWJzb2x1dGU7XG4gIC8vIHdpZHRoOiAxMDAlO1xuICBoZWlnaHQ6IDEwMCU7XG4gIGRpc3BsYXk6IGZsZXg7XG4gIGZsZXgtZGlyZWN0aW9uOiByb3c7XG59XG5cbiNDYW52YXNDb250YWluZXIge1xuICBvdmVyZmxvdzogaGlkZGVuO1xufVxuXG5jYW52YXMjV29ya3NwYWNlIHtcbiAgb3V0bGluZTogc29saWQgMTBweCBncmF5O1xuICB0b3VjaC1hY3Rpb246IHBpbmNoLXpvb207XG59XG5cbm1hdC1hY2NvcmRpb24ge1xuICBvdmVyZmxvdy15OiBhdXRvO1xuXG4gICY6Oi13ZWJraXQtc2Nyb2xsYmFyIHtcbiAgICB3aWR0aDogMTBweDtcbiAgfVxuICAmOjotd2Via2l0LXNjcm9sbGJhci10cmFjayB7XG4gICAgYmFja2dyb3VuZDogI2ZhZmFmYTtcbiAgICBib3gtc2hhZG93OiBpbnNldCAwIDAgM3B4IGdyZXk7XG4gICAgYm9yZGVyLXJhZGl1czogM3B4O1xuICB9XG4gICY6Oi13ZWJraXQtc2Nyb2xsYmFyLXRodW1iIHtcbiAgICBiYWNrZ3JvdW5kOiAjZjFmMWYxO1xuICAgIGJveC1zaGFkb3c6IGluc2V0IDAgMCAzcHggc2xhdGVncmF5O1xuICAgIGJvcmRlci1yYWRpdXM6IDNweDtcbiAgfVxuICAmOjotd2Via2l0LXNjcm9sbGJhci10aHVtYjpob3ZlciB7XG4gICAgYmFja2dyb3VuZDogI2QxZDFkMTtcbiAgfVxuXG4gIG1heC1oZWlnaHQ6IDEwMCU7XG4gIG1hdC1leHBhbnNpb24tcGFuZWwge1xuICAgIGZsZXgtc2hyaW5rOiAwO1xuICB9XG59XG5cbmZvcm0ge1xuICBwYWRkaW5nOiAwO1xuICBtYXJnaW46IDA7XG59XG5cbm1hdC1saXN0LWl0ZW0uYWN0aXZlIHtcbiAgd2hpdGUtc3BhY2U6IG5vd3JhcDtcbiAgYnJlYWstaW5zaWRlOiBhdm9pZDtcbiAgb3ZlcmZsb3c6IGhpZGRlbjtcbiAgdGV4dC1vdmVyZmxvdzogZWxsaXBzaXM7XG4gIG91dGxpbmU6IHNvbGlkIDNweCAjMDAwMGZmNTU7XG59XG4iXX0= */"] });
 
 
 /***/ }),

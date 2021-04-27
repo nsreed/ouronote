@@ -1,7 +1,6 @@
 import * as i0 from '@angular/core';
-import { Injectable, Optional, Inject, Component, NgModule } from '@angular/core';
-import { Subject } from 'rxjs';
-import { shareReplay, scan } from 'rxjs/operators';
+import { EventEmitter, Injectable, Optional, Inject, SkipSelf, Component, NgModule } from '@angular/core';
+import { scan, shareReplay } from 'rxjs/operators';
 
 var LogLevel;
 (function (LogLevel) {
@@ -11,29 +10,53 @@ var LogLevel;
     LogLevel[LogLevel["ERROR"] = 3] = "ERROR";
 })(LogLevel || (LogLevel = {}));
 class LogService {
-    constructor(name = 'app') {
+    constructor(name = 'app', parent) {
         this.name = name;
+        this.parent = parent;
+        this._out$ = new EventEmitter();
+        this.out$ = this._out$;
+        this.outSub = this.out$.subscribe((m) => {
+            if (this.parent) {
+                this.parent._out$.emit(m);
+            }
+            else {
+                console.log('%s %s %s %s', m.name, new Date(m.timestamp).toISOString(), m.message, JSON.stringify(m.args));
+            }
+        });
         this.level = LogLevel.INFO;
         this.supplementals = new Map();
         this.name = this.name || 'app';
-        // LogService.out$.subscribe((p) => console.log(p.message, ...p.args));
-        LogService.buffer$.subscribe((buffered) => { });
+        if (this.name !== 'root' && !parent) {
+            this.parent = LogService.root;
+        }
+    }
+    static getLogger(name) {
+        return new LogService(name);
+    }
+    verbose(message, ...args) {
+        const packed = this.buildMessage(LogLevel.VERBOSE, message, args);
+        this._out$.emit(packed);
     }
     log(message, ...args) {
         const packed = this.buildMessage(LogLevel.INFO, message, args);
-        LogService._out$.next(packed);
+        this._out$.emit(packed);
     }
     warn(message, ...args) {
         const packed = this.buildMessage(LogLevel.WARN, message, args);
-        LogService._out$.next(packed);
+        this._out$.emit(packed);
     }
     error(message, ...args) {
         const packed = this.buildMessage(LogLevel.ERROR, message, args);
-        LogService._out$.next(packed);
+        this._out$.emit(packed);
     }
     supplemental(name) {
         if (!this.supplementals.has(name)) {
-            this.supplementals.set(name, new LogService(name));
+            const supplementalLog = new LogService(name, this);
+            // supplementalLog.out$.subscribe((msg) => {
+            //   console.log('supplemental message', msg);
+            //   this._out$.emit(msg);
+            // });
+            this.supplementals.set(name, supplementalLog);
         }
         return this.supplementals.get(name);
     }
@@ -47,23 +70,15 @@ class LogService {
         };
     }
 }
-LogService._out$ = new Subject();
-LogService.out$ = LogService._out$.pipe(shareReplay(1)
-// scan((acc, val) => {
-//   acc.push(val as never);
-//   return acc;
-// }, []),
-// shareReplay(1)
-);
-LogService.outSub = LogService.out$.subscribe((p) => console.log(`${new Date(p.timestamp).toISOString()} ${p.name} [${p.level}] ${p.message}`, ...p.args));
-LogService.buffer$ = LogService.out$.pipe(scan((acc, val) => {
+LogService.root = new LogService('root');
+LogService.buffer$ = LogService.root.out$.pipe(scan((acc, val) => {
     acc.push(val);
     if (acc.length > 1000) {
         acc.shift();
     }
     return acc;
 }, []), shareReplay(1));
-LogService.ɵfac = function LogService_Factory(t) { return new (t || LogService)(i0.ɵɵinject('log-name', 8)); };
+LogService.ɵfac = function LogService_Factory(t) { return new (t || LogService)(i0.ɵɵinject('log-name', 8), i0.ɵɵinject(LogService, 12)); };
 LogService.ɵprov = i0.ɵɵdefineInjectable({ token: LogService, factory: LogService.ɵfac, providedIn: 'root' });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(LogService, [{
         type: Injectable,
@@ -75,6 +90,10 @@ LogService.ɵprov = i0.ɵɵdefineInjectable({ token: LogService, factory: LogSer
             }, {
                 type: Inject,
                 args: ['log-name']
+            }] }, { type: LogService, decorators: [{
+                type: Optional
+            }, {
+                type: SkipSelf
             }] }]; }, null); })();
 
 class LogComponent {
