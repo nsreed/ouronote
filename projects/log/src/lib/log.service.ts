@@ -1,4 +1,10 @@
-import { Inject, Injectable, Optional } from '@angular/core';
+import {
+  Inject,
+  Injectable,
+  Optional,
+  EventEmitter,
+  SkipSelf,
+} from '@angular/core';
 import { Subject } from 'rxjs';
 import { scan, shareReplay, take } from 'rxjs/operators';
 export enum LogLevel {
@@ -23,34 +29,20 @@ export class LogService {
   constructor(
     @Optional()
     @Inject('log-name')
-    public name: string = 'app'
+    public name: string = 'app',
+    @Optional()
+    @SkipSelf()
+    public parent?: LogService
   ) {
     this.name = this.name || 'app';
-    // LogService.out$.subscribe((p) => console.log(p.message, ...p.args));
-    LogService.buffer$.subscribe((buffered) => {});
+    if (this.name !== 'root' && !parent) {
+      this.parent = LogService.root;
+    }
   }
 
-  private static _out$ = new Subject<LogMessage>();
-  static out$ = LogService._out$.pipe(
-    shareReplay(1)
+  public static readonly root = new LogService('root');
 
-    // scan((acc, val) => {
-    //   acc.push(val as never);
-    //   return acc;
-    // }, []),
-    // shareReplay(1)
-  );
-
-  private static readonly outSub = LogService.out$.subscribe((p) =>
-    console.log(
-      `${new Date(p.timestamp).toISOString()} ${p.name} [${p.level}] ${
-        p.message
-      }`,
-      ...p.args
-    )
-  );
-
-  static buffer$ = LogService.out$.pipe(
+  static readonly buffer$ = LogService.root.out$.pipe(
     scan((acc, val) => {
       acc.push(val as never);
       if (acc.length > 1000) {
@@ -60,6 +52,22 @@ export class LogService {
     }, []),
     shareReplay(1)
   );
+
+  protected _out$ = new EventEmitter<LogMessage>();
+  out$ = this._out$;
+  outSub = this.out$.subscribe((m) => {
+    if (this.parent) {
+      this.parent._out$.emit(m);
+    } else {
+      console.log(
+        '%s %s %s %s',
+        m.name,
+        new Date(m.timestamp).toISOString(),
+        m.message,
+        JSON.stringify(m.args)
+      );
+    }
+  });
 
   level: LogLevel = LogLevel.INFO;
 
@@ -71,27 +79,32 @@ export class LogService {
 
   verbose(message: string, ...args: any[]) {
     const packed = this.buildMessage(LogLevel.VERBOSE, message, args);
-    LogService._out$.next(packed);
+    this._out$.emit(packed);
   }
 
   log(message: string, ...args: any[]) {
     const packed = this.buildMessage(LogLevel.INFO, message, args);
-    LogService._out$.next(packed);
+    this._out$.emit(packed);
   }
 
   warn(message: string, ...args: any[]) {
     const packed = this.buildMessage(LogLevel.WARN, message, args);
-    LogService._out$.next(packed);
+    this._out$.emit(packed);
   }
 
   error(message: string, ...args: any[]) {
     const packed = this.buildMessage(LogLevel.ERROR, message, args);
-    LogService._out$.next(packed);
+    this._out$.emit(packed);
   }
 
   supplemental(name: string): LogService {
     if (!this.supplementals.has(name)) {
-      this.supplementals.set(name, new LogService(name));
+      const supplementalLog = new LogService(name, this);
+      // supplementalLog.out$.subscribe((msg) => {
+      //   console.log('supplemental message', msg);
+      //   this._out$.emit(msg);
+      // });
+      this.supplementals.set(name, supplementalLog);
     }
     return this.supplementals.get(name) as LogService;
   }

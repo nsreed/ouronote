@@ -49,9 +49,11 @@ export class EditVectorComponent
     private ngZone: NgZone,
     private fb: FormBuilder,
     ngGun: NgGunService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private logger: LogService
   ) {
     super(vectorService, route, ngGun);
+    this.logger = logger.supplemental('edit-vector.component');
   }
 
   ngAfterViewInit(): void {
@@ -121,6 +123,7 @@ export class EditVectorComponent
   onProjectReady(project: paper.Project, gun: GunChain<VectorGraph>) {
     // console.log('setting up project graph');
     // this.paperDirective.tool.activate();
+    this.logger.log('project ready');
     const paperChain: ProjectPair = new ProjectPair(
       gun as any,
       this.paperDirective.project as any,
@@ -130,9 +133,8 @@ export class EditVectorComponent
   }
 
   addLayer() {
-    console.log('adding layer');
+    this.logger.log('adding layer');
     const layer = new paper.Layer();
-    console.log(this.paperDirective.project.layers);
     (layer as any).pair.save();
   }
 }

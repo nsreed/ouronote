@@ -1,23 +1,9 @@
-import {
-  GunChain,
-  GunChainCallbackOptions,
-} from '../../../../../../ng-gun/src/lib/classes/GunChain';
-import { EXPECT_ARRAY, hasRequired } from './constants';
-import * as paper from 'paper';
 import { EventEmitter } from '@angular/core';
-import { serializeValue } from './packaging';
+import * as paper from 'paper';
+import { buffer, bufferTime, filter, map } from 'rxjs/operators';
 import { LogService } from '../../../../../../log/src/lib/log.service';
-import {
-  buffer,
-  debounceTime,
-  reduce,
-  scan,
-  map,
-  filter,
-  distinct,
-  shareReplay,
-  bufferTime,
-} from 'rxjs/operators';
+import { EXPECT_ARRAY, hasRequired } from './constants';
+import { serializeValue } from './packaging';
 
 export class PaperPair {
   childCache = {} as any;
@@ -56,7 +42,6 @@ export class PaperPair {
     if (ctx.pair) {
       this.logger.error('CREATING A DUPLICATE PAIR FOR SCOPE', ctx);
     }
-    // this.logger.log('paper binding created');
     ctx.pair = this;
 
     this.saveBuffer$.subscribe((buf) => {

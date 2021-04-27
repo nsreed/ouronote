@@ -16,9 +16,28 @@ canvas#Workspace {
 }
 
 mat-accordion {
-  overflow: hidden;
-  &:last-child {
-    flex-grow: 1;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #fafafa;
+    box-shadow: inset 0 0 3px grey;
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #f1f1f1;
+    box-shadow: inset 0 0 3px slategray;
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #d1d1d1;
+  }
+
+  max-height: 100%;
+  mat-expansion-panel {
+    flex-shrink: 0;
   }
 }
 

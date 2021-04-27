@@ -6,22 +6,32 @@ export class PenTool extends VectorTool {
   path!: paper.Path;
   name = 'pen';
   @Property()
-  style = new Style({});
-  color = new paper.Color(Math.random(), Math.random(), Math.random());
+  style = new Style({
+    strokeCap: 'round',
+    strokeJoin: 'round',
+    strokeWidth: 3,
+  } as paper.Style);
+  @Property()
+  smoothing = true;
   setup() {
+    // this.style.strokeJoin
     this.down.subscribe((e) => {
+      this.logger.log('pen down', e.point);
       this.path = new paper.Path(e.point) as any;
       (this.path as any).pair.editing = true;
-      this.path.strokeWidth = 3;
-      this.path.strokeColor = this.project.currentStyle.strokeColor;
+      this.path.style = this.style;
     });
     this.drag.subscribe((e) => {
       this.path.add(e.point);
     });
     this.up.subscribe((e) => {
       this.path.strokeColor = this.project.currentStyle.strokeColor;
+      this.path.fillColor = this.project.currentStyle.fillColor;
       // (this.path as any).pair?.save('segments');
       // (this.path as any).pair?.save();
+      if (this.smoothing) {
+        this.path.smooth();
+      }
       (this.path as any).pair?.doSave();
       (this.path as any).pair.editing = false;
     });

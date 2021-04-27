@@ -3,10 +3,17 @@ const { version } = require("./package.json");
 const { resolve, relative } = require("path");
 const { writeFileSync } = require("fs-extra");
 
-const gitInfo = gitDescribeSync({
-  dirtyMark: false,
-  dirtySemver: false,
-});
+const gitInfo = {};
+
+try {
+  gitDescribeSync({
+    dirtyMark: false,
+    dirtySemver: false,
+  });
+} catch (e) {
+  // tslint:disable-next-line: no-console
+  console.warn("problem running gitDescribeSync:", e);
+}
 
 gitInfo.version = version;
 
@@ -30,7 +37,7 @@ export const VERSION = ${JSON.stringify(gitInfo, null, 4)};
 
 // tslint:disable-next-line: no-console
 console.log(
-  `Wrote version info ${gitInfo.raw} to ${relative(
+  `Wrote version info ${JSON.stringify(gitInfo)} to ${relative(
     resolve(__dirname, ".."),
     file
   )}`
