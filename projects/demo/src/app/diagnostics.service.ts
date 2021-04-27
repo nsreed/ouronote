@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { NgGunService } from '../../../ng-gun/src/lib/ng-gun.service';
 import { MatDialog } from '@angular/material/dialog';
 import { GunPeer } from 'projects/ng-gun/src/public-api';
-import { take, shareReplay, map, mapTo } from 'rxjs/operators';
+import { take, shareReplay, map, mapTo, filter } from 'rxjs/operators';
 import { BugReportComponent } from './components/bug-report/bug-report.component';
 import { LogMessage, LogService } from '../../../log/src/lib/log.service';
 import { timer } from 'rxjs';
@@ -21,12 +21,14 @@ export class DiagnosticsService {
       // console.log('got message', buff);
       this.messages = buff;
     });
-    this.disconnectedPeers$.subscribe((peers) => {
-      this.logger.log('attempting to reconnect peers', peers);
-      this.ngGun.gun.opt({
-        peers,
+    this.disconnectedPeers$
+      .pipe(filter((peers) => peers.length > 0))
+      .subscribe((peers) => {
+        this.logger.log('attempting to reconnect peers', peers);
+        this.ngGun.gun.opt({
+          peers,
+        });
       });
-    });
   }
 
   configuredPeers = Array.isArray(this.ngGun.gunOptions.peers)
