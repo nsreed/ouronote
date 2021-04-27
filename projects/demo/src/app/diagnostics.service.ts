@@ -6,6 +6,7 @@ import { take, shareReplay, map, mapTo, filter } from 'rxjs/operators';
 import { BugReportComponent } from './components/bug-report/bug-report.component';
 import { LogMessage, LogService } from '../../../log/src/lib/log.service';
 import { timer } from 'rxjs';
+import { CAPABILITIES } from './system.service';
 
 @Injectable({
   providedIn: 'root',
@@ -30,6 +31,7 @@ export class DiagnosticsService {
         });
         this.ngGun.auth().get('inbox').once().subscribe();
       });
+    this.logger.log('capabilities', CAPABILITIES);
   }
 
   configuredPeers = Array.isArray(this.ngGun.gunOptions.peers)

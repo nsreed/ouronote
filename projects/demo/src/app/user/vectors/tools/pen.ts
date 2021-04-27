@@ -1,4 +1,4 @@
-import { VectorTool } from '../paper-tool';
+import { VectorTool } from './paper-tool';
 import { Path, Style } from 'paper';
 import * as paper from 'paper';
 import { Property } from '../functions/decorators';
@@ -16,12 +16,12 @@ export class PenTool extends VectorTool {
   setup() {
     // this.style.strokeJoin
     this.down.subscribe((e) => {
-      this.logger.log('pen down', e.point);
       this.path = new paper.Path(e.point) as any;
       (this.path as any).pair.editing = true;
       this.path.style = this.style;
     });
     this.drag.subscribe((e) => {
+      // this.logger.log('pen drag', e.point);
       this.path.add(e.point);
     });
     this.up.subscribe((e) => {

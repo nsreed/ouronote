@@ -1,4 +1,4 @@
-import { VectorTool } from '../paper-tool';
+import { VectorTool } from './paper-tool';
 import * as paper from 'paper';
 import { filter, mergeMapTo, switchMapTo, tap } from 'rxjs/operators';
 import { Property } from '../functions/decorators';

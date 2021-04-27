@@ -1,9 +1,9 @@
 import { Tool, ToolEvent } from 'paper';
 import { fromEvent } from 'rxjs';
-import { after$ } from '../../functions/aspect-rx';
+import { after$ } from '../../../functions/aspect-rx';
 import * as paper from 'paper';
 import { filter, switchMapTo, takeUntil, tap } from 'rxjs/operators';
-import { LogService } from '../../../../../log/src/lib/log.service';
+import { LogService } from '../../../../../../log/src/lib/log.service';
 
 export class VectorTool extends Tool {
   get properties() {

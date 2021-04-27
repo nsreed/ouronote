@@ -2,8 +2,8 @@ import { EventEmitter } from '@angular/core';
 import * as paper from 'paper';
 import { buffer, bufferTime, filter, map } from 'rxjs/operators';
 import { LogService } from '../../../../../../log/src/lib/log.service';
-import { EXPECT_ARRAY, hasRequired } from './constants';
-import { serializeValue } from './packaging';
+import { EXPECT_ARRAY, hasRequired } from '../functions/constants';
+import { serializeValue } from '../functions/packaging';
 
 export class PaperPair {
   childCache = {} as any;

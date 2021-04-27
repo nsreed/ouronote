@@ -1,4 +1,4 @@
-import { VectorTool } from '../paper-tool';
+import { VectorTool } from './paper-tool';
 import { filter } from 'rxjs/operators';
 export class PanTool extends VectorTool {
   dragSub = this.drag

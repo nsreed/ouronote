@@ -24,8 +24,8 @@ import {
   MUTATIONS,
   MUTATION_PROPERTIES,
   SAVE_DEBOUNCE,
-} from './constants';
-import { serializeValue } from './packaging';
+} from '../functions/constants';
+import { serializeValue } from '../functions/packaging';
 import { PaperPair } from './PaperPair';
 import { SaveStrategy } from './SaveStrategy';
 

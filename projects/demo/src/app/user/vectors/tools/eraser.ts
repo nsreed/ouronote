@@ -1,4 +1,4 @@
-import { VectorTool } from '../paper-tool';
+import { VectorTool } from './paper-tool';
 import { Path, Point, Style, ToolEvent, Project } from 'paper';
 import * as paper from 'paper';
 export class EraserTool extends VectorTool {
