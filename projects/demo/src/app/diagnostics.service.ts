@@ -28,6 +28,7 @@ export class DiagnosticsService {
         this.ngGun.gun.opt({
           peers,
         });
+        this.ngGun.auth().get('inbox').once().subscribe();
       });
   }
 
