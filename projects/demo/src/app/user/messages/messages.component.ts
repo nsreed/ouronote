@@ -11,7 +11,8 @@ import { NewMessageComponent } from './new-message/new-message.component';
   styleUrls: ['./messages.component.scss'],
 })
 export class MessagesComponent implements OnInit {
-  outbox = this.messageService.messages.reduce();
+  outboxChain = this.messageService.messages;
+  outbox = this.outboxChain.reduce();
   inbox = this.messageService.inbox.reduce();
 
   constructor(
