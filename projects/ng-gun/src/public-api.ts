@@ -15,3 +15,4 @@ export * from './lib/GunPeer';
 export * from './lib/GunPeers';
 export * from './lib/gun-resolver.service';
 export * from './lib/route-chain.directive';
+export * from './lib/gun-map.directive';
