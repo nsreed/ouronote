@@ -23,9 +23,16 @@ mat-accordion {
   }
   &::-webkit-scrollbar-track {
     background: #fafafa;
+    box-shadow: inset 0 0 3px grey;
+    border-radius: 3px;
   }
   &::-webkit-scrollbar-thumb {
     background: #f1f1f1;
+    box-shadow: inset 0 0 3px slategray;
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #d1d1d1;
   }
 
   max-height: 100%;
