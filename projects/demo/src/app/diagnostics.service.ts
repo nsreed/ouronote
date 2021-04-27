@@ -48,7 +48,7 @@ export class DiagnosticsService {
     return peers;
   }
 
-  disconnectedPeers$ = timer(500, 500).pipe(
+  disconnectedPeers$ = timer(1000 * 30, 1000 * 30).pipe(
     map(() => this.disconnectedPeers),
     shareReplay(1)
   );
