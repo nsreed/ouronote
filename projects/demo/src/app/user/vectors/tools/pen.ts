@@ -2,6 +2,7 @@ import { VectorTool } from './paper-tool';
 import { Path, Style } from 'paper';
 import * as paper from 'paper';
 import { Property } from '../functions/decorators';
+import { isMouse, isPen } from '../functions/tool-functions';
 export class PenTool extends VectorTool {
   path!: paper.Path;
   name = 'pen';
@@ -35,5 +36,20 @@ export class PenTool extends VectorTool {
       (this.path as any).pair?.doSave();
       (this.path as any).pair.editing = false;
     });
+  }
+
+  filterEvent(event: any) {
+    if (event.event instanceof PointerEvent) {
+      const te = event.event as PointerEvent;
+      console.log('touch type', te.pointerType);
+    }
+    this.logger.log(
+      'type: %s, pointerType: %s, classname: %s',
+      event.event.type,
+      // tslint:disable-next-line: no-string-literal
+      (window['event'] as any).pointerType,
+      Object.getPrototypeOf(event.event).constructor.name
+    );
+    return isMouse(event) || isPen(event);
   }
 }

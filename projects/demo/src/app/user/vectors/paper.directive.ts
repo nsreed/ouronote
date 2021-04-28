@@ -7,8 +7,8 @@ import {
   Output,
 } from '@angular/core';
 import * as paper from 'paper';
-import { fromEvent, timer } from 'rxjs';
-import { shareReplay, switchMap } from 'rxjs/operators';
+import { fromEvent, timer, from } from 'rxjs';
+import { shareReplay, switchMap, mergeMap, map } from 'rxjs/operators';
 import { propertyChange$ } from './functions/paper-chain';
 import { EraserTool } from './tools/eraser';
 import { EyedropperTool } from './tools/eyedropper';
@@ -98,6 +98,25 @@ export class PaperDirective implements OnInit {
   setupPen() {
     if (CAPABILITIES.POINTER) {
       this.logger.log('setting up pointer events');
+      const events = ['move', 'down', 'up'];
+      const pointerevents = events.map((n) => `pointer${n}`);
+      from(pointerevents)
+        .pipe(
+          mergeMap((n) =>
+            fromEvent(this.el.nativeElement, n).pipe(
+              map((e) => e as PointerEvent)
+            )
+          )
+        )
+        .subscribe((e) => {
+          this.scope.tool.emit(e.type, e);
+        });
+      // this.el.nativeElement.onpointermove = (event: PointerEvent) =>
+      //   this.logger.log('onpointermove', event, event.pointerType);
+      // this.el.nativeElement.onpointerdown = (event: PointerEvent) =>
+      //   this.logger.log('onpointerdown', event);
+      // this.el.nativeElement.onpointerup = (event: PointerEvent) =>
+      //   this.logger.log('onpointerup', event);
     }
   }
 
@@ -107,6 +126,7 @@ export class PaperDirective implements OnInit {
       this.hammer.on('pan', (ev: any) => {
         const srcEvent = ev.srcEvent as PointerEvent;
         console.log('pan', ev);
+        this.logger.log('pan', ev.srcEvent);
         this.snackBar.open(
           `pan ${srcEvent.type} ${srcEvent.pointerType} ${srcEvent.pressure}`
         );

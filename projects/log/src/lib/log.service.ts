@@ -74,7 +74,7 @@ export class LogService {
   private supplementals = new Map<string, LogService>();
 
   static getLogger(name: string) {
-    return new LogService(name);
+    return new LogService(name, LogService.root);
   }
 
   verbose(message: string, ...args: any[]) {

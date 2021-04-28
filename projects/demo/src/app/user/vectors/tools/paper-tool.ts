@@ -4,17 +4,29 @@ import { after$ } from '../../../functions/aspect-rx';
 import * as paper from 'paper';
 import { filter, switchMapTo, takeUntil, tap } from 'rxjs/operators';
 import { LogService } from '../../../../../../log/src/lib/log.service';
+import { EventEmitter } from '@angular/core';
 
 export class VectorTool extends Tool {
   get properties() {
     return Object.getPrototypeOf(this).___PROPERTIES || [];
   }
-  drag = fromEvent<paper.ToolEvent>(this, 'mousedrag');
+  pointerEvent$ = new EventEmitter<PointerEvent>();
+
+  pointer = fromEvent<PointerEvent>(this, 'pointermove');
+
+  drag = fromEvent<paper.ToolEvent>(this, 'mousedrag').pipe(
+    filter((e) => this.filterEvent(e))
+  );
   down = fromEvent<paper.ToolEvent>(this, 'mousedown').pipe(
+    filter((e) => this.filterEvent(e)),
     tap((e) => this.activateDrawLayer())
   );
-  up = fromEvent<paper.ToolEvent>(this, 'mouseup');
-  move = fromEvent<paper.ToolEvent>(this, 'mousemove');
+  up = fromEvent<paper.ToolEvent>(this, 'mouseup').pipe(
+    filter((e) => this.filterEvent(e))
+  );
+  move = fromEvent<paper.ToolEvent>(this, 'mousemove').pipe(
+    filter((e) => this.filterEvent(e))
+  );
 
   wheel = fromEvent<{ event: WheelEvent; point: paper.Point }>(
     this,
@@ -26,6 +38,7 @@ export class VectorTool extends Tool {
 
   click = this.up.pipe(filter((e) => e.delta.length === 0));
 
+  // FIXME class names get mangled by production build, stop being lazy
   name = Object.getPrototypeOf(this).constructor.name.replace(/tool/gi, '');
 
   readonly logger = LogService.getLogger(`${this.name}`);
@@ -54,9 +67,9 @@ export class VectorTool extends Tool {
       (this.scope.view as any).scrollBy(zoomOffset);
     });
     this.setup();
-    // console.log('tool', this.name, this.properties);
-    // this.click.subscribe((e) => console.log('click', e));
-    // TODO touch events should be filterable/reduce()ed in such a way as to allow gesture integration
+    this.pointer.subscribe((e) =>
+      this.logger.log('tool pointer event', e.pointerType)
+    );
   }
   protected setup() {}
 
@@ -78,5 +91,9 @@ export class VectorTool extends Tool {
         const newDrawLayer = new paper.Layer();
       }
     }
+  }
+
+  protected filterEvent(event: any) {
+    return true;
   }
 }
