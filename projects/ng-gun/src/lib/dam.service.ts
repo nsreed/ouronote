@@ -11,4 +11,7 @@ export class DamService {
   disconnect(id: string) {
     this.mesh.bye(id);
   }
+  connect(endpoint: string) {
+    this.mesh.say({ dam: 'opt', opt: { peers: endpoint } });
+  }
 }
