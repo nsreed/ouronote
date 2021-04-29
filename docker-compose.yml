@@ -3,7 +3,7 @@ services:
   ouronote-web:
     image: node
     working_dir: /home/node/app
-    user: "node"
+    # user: "node"
     volumes:
       - ./:/home/node/app
     ports:
@@ -14,7 +14,3 @@ services:
       - HTTPS_PORT=4430
       - TZ=America/New York
     command: "npm start"
-  ouronote-gun:
-    image: gundb/gun
-    ports:
-      - 8765:8765
