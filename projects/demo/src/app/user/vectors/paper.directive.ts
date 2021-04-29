@@ -21,6 +21,8 @@ import * as Hammer from 'hammerjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CAPABILITIES } from '../../system.service';
 import { LogService } from '../../../../../log/src/lib/log.service';
+import { buildToolEvent } from './functions/tool-functions';
+import { PenEvent } from './classes/PenEvent';
 
 @Directive({
   selector: '[appPaper]',
@@ -104,38 +106,48 @@ export class PaperDirective implements OnInit {
         .pipe(
           mergeMap((n) =>
             fromEvent(this.el.nativeElement, n).pipe(
-              map((e) => e as PointerEvent)
+              map((e) => e as PointerEvent),
+              map((event) => new PenEvent(event, this.point(event)))
             )
           )
         )
         .subscribe((e) => {
-          this.scope.tool.emit(e.type, e);
+          this.scope.tool.emit(e.event.type, e);
         });
-      // this.el.nativeElement.onpointermove = (event: PointerEvent) =>
-      //   this.logger.log('onpointermove', event, event.pointerType);
-      // this.el.nativeElement.onpointerdown = (event: PointerEvent) =>
-      //   this.logger.log('onpointerdown', event);
-      // this.el.nativeElement.onpointerup = (event: PointerEvent) =>
-      //   this.logger.log('onpointerup', event);
     }
   }
 
   setupTouch() {
     if (CAPABILITIES.TOUCH) {
       this.logger.log('setting up touch events');
-      this.hammer.on('pan', (ev: any) => {
-        const srcEvent = ev.srcEvent as PointerEvent;
-        console.log('pan', ev);
-        this.logger.log('pan', ev.srcEvent);
-        this.snackBar.open(
-          `pan ${srcEvent.type} ${srcEvent.pointerType} ${srcEvent.pressure}`
-        );
-      });
-      this.hammer.on('pinch', (ev: any) => {
-        const srcEvent = ev.srcEvent as PointerEvent;
-        console.log('pinch', ev);
-        this.snackBar.open(`pinch ${srcEvent.type}`);
-      });
+      const events = ['move', 'down', 'up'];
+      const pointerevents = events.map((n) => `touch${n}`);
+      from(pointerevents)
+        .pipe(
+          mergeMap((n) =>
+            fromEvent(this.el.nativeElement, n).pipe(
+              // TODO map this to a ToolEvent, or touch events can just be handled by the normal paper event listeners
+              map((e) => e as TouchEvent)
+            )
+          )
+        )
+        .subscribe((e) => {
+          this.scope.tool.emit(e.type, e);
+        });
+
+      // this.hammer.on('pan', (ev: any) => {
+      //   const srcEvent = ev.srcEvent as PointerEvent;
+      //   console.log('pan', ev);
+      //   this.logger.log('pan', ev.srcEvent);
+      //   this.snackBar.open(
+      //     `pan ${srcEvent.type} ${srcEvent.pointerType} ${srcEvent.pressure}`
+      //   );
+      // });
+      // this.hammer.on('pinch', (ev: any) => {
+      //   const srcEvent = ev.srcEvent as PointerEvent;
+      //   console.log('pinch', ev);
+      //   this.snackBar.open(`pinch ${srcEvent.type}`);
+      // });
     }
   }
 
@@ -214,5 +226,11 @@ export class PaperDirective implements OnInit {
 
   onViewBounds() {
     // console.log('view bounds');
+  }
+
+  private point(event: { offsetX: number; offsetY: number }) {
+    return this.project.view.viewToProject(
+      new paper.Point(event.offsetX, event.offsetY)
+    );
   }
 }
