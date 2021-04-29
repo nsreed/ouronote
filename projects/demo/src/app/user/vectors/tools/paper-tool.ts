@@ -5,14 +5,33 @@ import * as paper from 'paper';
 import { filter, switchMapTo, takeUntil, tap } from 'rxjs/operators';
 import { LogService } from '../../../../../../log/src/lib/log.service';
 import { EventEmitter } from '@angular/core';
+import { PenEvent } from '../classes/PenEvent';
 
 export class VectorTool extends Tool {
+  private isPointerDown = false;
+
   get properties() {
     return Object.getPrototypeOf(this).___PROPERTIES || [];
   }
-  pointerEvent$ = new EventEmitter<PointerEvent>();
 
-  pointer = fromEvent<PointerEvent>(this, 'pointermove');
+  pointerDown = fromEvent<PenEvent>(this, 'pointerdown').pipe(
+    tap((e) => (this.isPointerDown = true)),
+    filter((e) => this.filterEvent(e))
+  );
+  pointerUp = fromEvent<PenEvent>(this, 'pointerup').pipe(
+    tap((e) => (this.isPointerDown = false)),
+    filter((e) => this.filterEvent(e))
+  );
+  pointerMove = fromEvent<PenEvent>(this, 'pointermove').pipe(
+    filter((e) => this.filterEvent(e))
+  );
+  pointerDrag = this.pointerMove.pipe(
+    filter((e) => this.filterEvent(e) && this.isPointerDown)
+  );
+
+  touchMove = fromEvent<TouchEvent>(this, 'touchdown');
+  touchStart = fromEvent<TouchEvent>(this, 'touchstart');
+  touchEnd = fromEvent<TouchEvent>(this, 'touchend');
 
   drag = fromEvent<paper.ToolEvent>(this, 'mousedrag').pipe(
     filter((e) => this.filterEvent(e))
@@ -67,11 +86,15 @@ export class VectorTool extends Tool {
       (this.scope.view as any).scrollBy(zoomOffset);
     });
     this.setup();
-    this.pointer.subscribe((e) =>
-      this.logger.log('tool pointer event', e.pointerType)
-    );
+    // this.pointerMove.subscribe((e: PenEvent) =>
+    //   this.logger.log('tool pointer event', e.point)
+    // );
+    // this.touch.subscribe((e) => this.logger.log('tool touch event', e.touches));
   }
-  protected setup() {}
+  protected setup() {
+    this.pointerDown.subscribe(() => (this.isPointerDown = true));
+    this.pointerUp.subscribe(() => (this.isPointerDown = false));
+  }
 
   activate() {
     super.activate();
