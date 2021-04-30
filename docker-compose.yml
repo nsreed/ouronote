@@ -14,3 +14,7 @@ services:
       - HTTPS_PORT=4430
       - TZ=America/New York
     command: "npm start"
+  # ouronote-gun:
+  #   image: gundb/gun
+  #   ports:
+  #     - 8765:8765
