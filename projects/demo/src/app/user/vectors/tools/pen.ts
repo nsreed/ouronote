@@ -1,11 +1,10 @@
-import { VectorTool } from './paper-tool';
-import { Path, Style } from 'paper';
 import * as paper from 'paper';
-import { Property } from '../functions/decorators';
-import { isMouse, isPen } from '../functions/tool-functions';
-import { from, Observable } from 'rxjs';
+import { Style } from 'paper';
+import { Observable } from 'rxjs';
 import { CAPABILITIES } from '../../../system.service';
 import { PenEvent } from '../classes/PenEvent';
+import { Property } from '../functions/decorators';
+import { VectorTool } from './paper-tool';
 export class PenTool extends VectorTool {
   path!: paper.Path;
 
@@ -35,7 +34,7 @@ export class PenTool extends VectorTool {
     this.path.style = this.style;
   });
   dragSub = this.penDrag.subscribe((e: any) => {
-    this.logger.log('pen drag', e.event.type, e.event.pointerType);
+    // this.logger.log('pen drag', e.event.type, e.event.pointerType);
     this.path.add(e.point);
   });
   upSub = this.penUp.subscribe((e) => {
@@ -49,18 +48,7 @@ export class PenTool extends VectorTool {
   });
 
   filterEvent(event: any) {
-    // if (event.event instanceof PointerEvent) {
-    //   const te = event.event as PointerEvent;
-    //   console.log('touch type', te.pointerType);
-    // }
-    // this.logger.log(
-    //   'type: %s, pointerType: %s, classname: %s',
-    //   event.event.type,
-    //   // tslint:disable-next-line: no-string-literal
-    //   (window['event'] as any).pointerType,
-    //   Object.getPrototypeOf(event.event).constructor.name
-    // );
-
+    // Respond to pen if pointerType is present, if it isn't assume we're mouse-only
     return ['pen', undefined].includes(event.event.pointerType);
   }
 }
