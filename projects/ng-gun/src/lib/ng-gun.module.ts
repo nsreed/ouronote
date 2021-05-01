@@ -7,8 +7,10 @@ import { UpdatedPipe } from './updated.pipe';
 import { VerifyPipe } from './verify.pipe';
 import { RouteChainDirective } from './route-chain.directive';
 import { GunMapDirective } from './gun-map.directive';
+import { LogModule } from '../../../log/src/lib/log.module';
 
 @NgModule({
+  imports: [LogModule],
   declarations: [
     NgGunComponent,
     SoulPipe,
