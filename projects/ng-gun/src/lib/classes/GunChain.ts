@@ -438,7 +438,7 @@ export class GunChain<
         // TODO allow option to create a new gun instance for this auth call
         this.gun.user().recall({ sessionStorage: true }) as any,
         this as any,
-        this
+        this as any
       );
     }
     return this._auth;
