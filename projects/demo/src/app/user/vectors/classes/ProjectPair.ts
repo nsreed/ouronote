@@ -92,7 +92,7 @@ export class ProjectPair extends PaperPair {
       let lg;
       if (!l.data.soul) {
         // this.logger.log('    no soul');
-        const soul = getUUID(this.chain);
+        const soul = getUUID(this.chain).replace(/~.*/, '');
         lg = this.layers.get(soul);
         l.data.soul = soul;
         // TODO continue implementing set() replacement

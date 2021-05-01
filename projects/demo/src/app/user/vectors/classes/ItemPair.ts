@@ -252,7 +252,7 @@ export class ItemPair extends PaperPair {
       let cg;
       if (!childObj.data.soul) {
         // This is a new child, not yet inserted in the graph
-        const soul = getUUID(this.chain);
+        const soul = getUUID(this.chain).replace(/~.*/, '');
         cg = this.children.get(soul);
         childObj.data.soul = soul;
         // cg = this.children.set(this.getShallow(childObj));
@@ -312,20 +312,15 @@ export class ItemPair extends PaperPair {
     const toInsert = [] as paper.Item[];
     data.forEach((childVK) => {
       const json = childVK[0];
-      if (json === null || json === undefined) {
-        this.logger.error(
-          'onGraphChildren got null value in data array @',
-          childVK[1]
-        );
-        return;
-      }
-      const soul = json._['#'];
-      const child = this.getChild(soul);
+      const key = childVK[1];
+
+      const child = this.getChild(key);
       if (child && !json) {
         // child was removed - this is handled by the child
+        this.logger.verbose(`child ${key} was removed.`);
       } else if (json && !child) {
         // child was added
-        const newChild = this.constructChild(json, soul);
+        const newChild = this.constructChild(json, key);
         if (newChild) {
           // TODO Performance: onLocalChild sets up **everything** on **every** child in this loop, can we suffice for deferred setups???
           this.onLocalChild(newChild);

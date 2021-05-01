@@ -128,7 +128,8 @@ export class GunChain<
           pathCerts$
             .pipe(
               pluck(userPair.pub),
-              filter((c) => c !== null && c !== undefined)
+              filter((c) => c !== null && c !== undefined),
+              take(1)
             )
             .subscribe((store: any) => {
               // this.logger.log('user certificate', store);
@@ -137,7 +138,8 @@ export class GunChain<
           pathCerts$
             .pipe(
               pluck('*'),
-              filter((c) => c !== null && c !== undefined)
+              filter((c) => c !== null && c !== undefined),
+              take(1)
             )
             .subscribe((store: any) => {
               // this.logger.log('public certificate', store);
