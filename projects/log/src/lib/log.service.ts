@@ -59,18 +59,11 @@ export class LogService {
     if (this.parent) {
       this.parent._out$.emit(m);
     } else {
-      let stringy = '';
-      try {
-        stringy = JSON.stringify(m.args);
-      } catch (e: any) {
-        stringy = 'COULD NOT CONVERT ARGS!';
-      }
       console.log(
-        '%s %s %s %s',
+        `%s %s ${m.message}`,
         m.name,
         new Date(m.timestamp).toISOString(),
-        m.message,
-        stringy
+        ...m.args
       );
     }
   });
