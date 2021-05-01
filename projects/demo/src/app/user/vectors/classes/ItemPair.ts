@@ -120,8 +120,8 @@ export class ItemPair extends PaperPair {
     this.setup();
   }
 
-  getShallow() {
-    const raw = this.item.exportJSON({ asString: false });
+  getShallow(item: paper.Item = this.item) {
+    const raw = item.exportJSON({ asString: false });
     const obj = raw[1] as any;
     const shallow = {
       ...obj,
@@ -249,13 +249,23 @@ export class ItemPair extends PaperPair {
     }
     const childObj = localChild as any;
     if (!childObj.pair) {
+      let cg;
       if (!childObj.data.soul) {
-        const soul = getUUID(this.chain as any);
+        // This is a new child, not yet inserted in the graph
+        const soul = getUUID(this.chain);
+        cg = this.children.get(soul);
         childObj.data.soul = soul;
+        // cg = this.children.set(this.getShallow(childObj));
+        // cg.once().subscribe((v) => {
+        //   this.logger.log('exported child', v);
+        //   const soul = Gun.node.soul(v as any);
+        //   childObj.data.soul = soul;
+        // });
+      } else {
+        cg = this.children.get(childObj.data.soul);
       }
-      const childGun = this.children.get(childObj.data.soul);
       const childPair = new ItemPair(
-        childGun,
+        cg,
         localChild,
         this.project,
         this.scope,
@@ -292,17 +302,24 @@ export class ItemPair extends PaperPair {
     if (data.length === 0) {
       return;
     }
-    this.logger.log(
-      'onGraphChildren',
-      data
-        .map((v) => v[0] as Partial<paper.Item>)
-        .filter((i) => i !== null)
-        .map((i) => `${i.className} ${Gun.node.soul(i as any)}`)
-    );
+    // this.logger.log(
+    //   'onGraphChildren',
+    //   data
+    //     .map((v) => v[0] as Partial<paper.Item>)
+    //     .filter((i) => i !== null)
+    //     .map((i) => `${i.className} ${Gun.node.soul(i as any)}`)
+    // );
     const toInsert = [] as paper.Item[];
     data.forEach((childVK) => {
-      const soul = childVK[1];
       const json = childVK[0];
+      if (json === null || json === undefined) {
+        this.logger.error(
+          'onGraphChildren got null value in data array @',
+          childVK[1]
+        );
+        return;
+      }
+      const soul = json._['#'];
       const child = this.getChild(soul);
       if (child && !json) {
         // child was removed - this is handled by the child

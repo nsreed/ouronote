@@ -87,16 +87,26 @@ export class ProjectPair extends PaperPair {
 
   onLocalLayer(layer: paper.Layer) {
     const l = layer as any;
-    if (!l.pair) {
+    if (!l.pair && !l.data.ignore) {
       // this.logger.log('onLocalLayer %s', l.toString());
+      let lg;
       if (!l.data.soul) {
         // this.logger.log('    no soul');
-        const soul = getUUID(this.chain as any);
+        const soul = getUUID(this.chain);
+        lg = this.layers.get(soul);
         l.data.soul = soul;
+        // TODO continue implementing set() replacement
+        // TODO set() may require unset() from parent instead of put(null) from child
+        // lg = this.layers.set({
+        //   className: 'Layer',
+        // } as never);
+        // const soul = lg.gun._['#'];
+        // l.data.soul = soul;
+      } else {
+        lg = this.layers.get(l.data.soul);
       }
-      const layerGun = this.layers.get(l.data.soul);
       const layerPair = new ItemPair(
-        layerGun,
+        lg,
         layer,
         this.project,
         this.scope,
