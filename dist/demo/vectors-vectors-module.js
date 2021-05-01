@@ -1,257 +1,9 @@
 (window["webpackJsonp"] = window["webpackJsonp"] || []).push([["vectors-vectors-module"],{
 
-/***/ "/NF4":
-/*!**********************************************************!*\
-  !*** ./projects/demo/src/app/user/vectors/paper-tool.ts ***!
-  \**********************************************************/
-/*! exports provided: VectorTool */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VectorTool", function() { return VectorTool; });
-/* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! paper */ "IiLU");
-/* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(paper__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs */ "qCKp");
-/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs/operators */ "kU1M");
-/* harmony import */ var _log_src_lib_log_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../../log/src/lib/log.service */ "Naon");
-
-
-
-
-
-class VectorTool extends paper__WEBPACK_IMPORTED_MODULE_0__["Tool"] {
-    constructor(scope) {
-        super();
-        this.scope = scope;
-        this.drag = Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["fromEvent"])(this, 'mousedrag');
-        this.down = Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["fromEvent"])(this, 'mousedown').pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["tap"])((e) => this.activateDrawLayer()));
-        this.up = Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["fromEvent"])(this, 'mouseup');
-        this.move = Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["fromEvent"])(this, 'mousemove');
-        this.wheel = Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["fromEvent"])(this, 'mousewheel');
-        this.keydown = Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["fromEvent"])(this, 'keydown');
-        this.keyup = Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["fromEvent"])(this, 'keyup');
-        this.click = this.up.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((e) => e.delta.length === 0));
-        this.name = Object.getPrototypeOf(this).constructor.name.replace(/tool/gi, '');
-        this.logger = _log_src_lib_log_service__WEBPACK_IMPORTED_MODULE_3__["LogService"].getLogger(`${this.name}`);
-        // this.touchDown.subscribe((e) => {
-        //   console.log('touch down', e);
-        // });
-        this.wheel.subscribe((e) => {
-            const zoomDelta = e.event.deltaY;
-            const viewPoint = this.scope.view.projectToView(e.point);
-            const zoomRate = 0.03 * this.scope.view.zoom;
-            this.scope.view.zoom += zoomDelta > 0 ? -zoomRate : zoomRate;
-            const zoomPoint = this.scope.view.viewToProject(viewPoint);
-            const zoomOffset = e.point
-                .subtract(zoomPoint)
-                .multiply(zoomDelta > 0 ? -1 : 1);
-            // console.log(zoomOffset);
-            this.scope.view.scrollBy(zoomOffset);
-        });
-        this.setup();
-        // console.log('tool', this.name, this.properties);
-        // this.click.subscribe((e) => console.log('click', e));
-        // TODO touch events should be filterable/reduce()ed in such a way as to allow gesture integration
-    }
-    get properties() {
-        return Object.getPrototypeOf(this).___PROPERTIES || [];
-    }
-    // touchDown = this.down.pipe(filter((e: any) => e.event instanceof TouchEvent));
-    get project() {
-        return this.scope.project;
-    }
-    setup() { }
-    activate() {
-        super.activate();
-    }
-    activateDrawLayer() {
-        if (this.scope.project.activeLayer.data.ignore) {
-            const drawLayer = this.project.getItem({
-                className: 'Layer',
-                data: {
-                    ignore: undefined,
-                },
-            });
-            if (drawLayer) {
-                drawLayer.activate();
-            }
-            else {
-                const newDrawLayer = new paper__WEBPACK_IMPORTED_MODULE_0__["Layer"]();
-            }
-        }
-    }
-}
-
-
-/***/ }),
-
-/***/ "00F/":
-/*!************************************************************!*\
-  !*** ./projects/demo/src/app/user/vectors/tools/select.ts ***!
-  \************************************************************/
-/*! exports provided: SelectTool, LassoSelectTool, RectangleSelectTool */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SelectTool", function() { return SelectTool; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LassoSelectTool", function() { return LassoSelectTool; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "RectangleSelectTool", function() { return RectangleSelectTool; });
-/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "mrSG");
-/* harmony import */ var _paper_tool__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../paper-tool */ "/NF4");
-/* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! paper */ "IiLU");
-/* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(paper__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs/operators */ "kU1M");
-/* harmony import */ var _functions_decorators__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../functions/decorators */ "efV2");
-
-
-
-
-
-class SelectTool extends _paper_tool__WEBPACK_IMPORTED_MODULE_1__["VectorTool"] {
-    constructor() {
-        super(...arguments);
-        this.mode = 'new';
-        this.name = 'select';
-        this.selecting = false;
-        this.clickSub = this.click.subscribe((e) => this.project.deselectAll());
-        //#region sources
-        this.selectDown = this.down.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["filter"])((e) => e.modifiers.shift ||
-            this.scope.project.getItems({
-                selected: true,
-                match: (i) => i.className !== 'Layer',
-            }).length === 0), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["tap"])((e) => {
-            this.selecting = true;
-        }));
-        this.selectDrag = this.drag.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["filter"])((e) => this.selecting));
-        this.selectUp = this.up.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["filter"])((e) => this.selecting), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["tap"])((e) => (this.selecting = false)));
-        this.keyEsc = this.keyup.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["filter"])((e) => e.key === 'escape'));
-        this.keyDel = this.keyup.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["filter"])((e) => e.key === 'delete'));
-        //#endregion
-        //#region subscribers
-        this.keyEscSub = this.keyEsc.subscribe((e) => {
-            this.selecting = false;
-            this.scope.project.deselectAll();
-        });
-        this.keyDelSub = this.keyDel.subscribe((e) => {
-            // console.log('keyup', e);
-            this.scope.project
-                .getItems({
-                selected: true,
-                match: (i) => i.className !== 'Layer',
-            })
-                .forEach((i) => {
-                // console.log('would delete', i.toString());
-                i.remove();
-            });
-        });
-        //#endregion
-    }
-}
-Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
-    Object(_functions_decorators__WEBPACK_IMPORTED_MODULE_4__["Property"])({
-        values: ['new', 'add', 'remove'],
-    })
-], SelectTool.prototype, "mode", void 0);
-class LassoSelectTool extends SelectTool {
-    constructor() {
-        super(...arguments);
-        this.name = 'lasso select';
-        this.sdSub = this.selectDown.subscribe((e) => { });
-        this.sdrSub = this.selectDrag.subscribe((e) => {
-            if (!this.path) {
-                const prev = this.scope.settings.insertItems;
-                this.scope.settings.insertItems = false;
-                this.path = this.path || new paper__WEBPACK_IMPORTED_MODULE_2__["Path"]([e.downPoint]);
-                this.path.data.ignore = true;
-                this.path.dashArray = [12, 12];
-                this.path.closed = true;
-                this.path.fillColor = new paper__WEBPACK_IMPORTED_MODULE_2__["Color"](0, 0, 1, 0.5);
-                this.path.strokeWidth = 1;
-                this.path.strokeColor = new paper__WEBPACK_IMPORTED_MODULE_2__["Color"](0, 0, 1);
-                this.scope.settings.insertItems = prev;
-                this.project.activeLayer.insertChild(0, this.path);
-            }
-            this.path.add(e.point);
-        });
-        this.sduSub = this.selectUp.subscribe((e) => {
-            console.log('select up');
-            if (this.path) {
-                const intersected = this.scope.project.getItems({
-                    match: (item) => { var _a; return item.className !== 'Layer' && ((_a = this.path) === null || _a === void 0 ? void 0 : _a.intersects(item)); },
-                });
-                // this.scope.project.deselectAll();
-                intersected.forEach((i) => (i.selected = true));
-                this.path.remove();
-                this.path = null;
-            }
-            else {
-                // this.scope.project.deselectAll();
-            }
-        });
-    }
-}
-class RectangleSelectTool extends SelectTool {
-    constructor() {
-        super(...arguments);
-        this.name = 'area select';
-        this.sdSub = this.selectDown.subscribe((e) => { });
-        this.sdrSub = this.selectDrag.subscribe((e) => {
-            var _a;
-            // if (!this.rect) {
-            (_a = this.rect) === null || _a === void 0 ? void 0 : _a.remove();
-            const prev = this.scope.settings.insertItems;
-            this.scope.settings.insertItems = false;
-            this.rect = new paper__WEBPACK_IMPORTED_MODULE_2__["Shape"].Rectangle(e.downPoint, e.point);
-            this.rect.pivot = new paper__WEBPACK_IMPORTED_MODULE_2__["Point"](0, 0);
-            this.rect.data.ignore = true;
-            this.rect.dashArray = [12, 12];
-            this.rect.fillColor = new paper__WEBPACK_IMPORTED_MODULE_2__["Color"](0, 0, 1, 0.5);
-            this.rect.strokeWidth = 1;
-            this.rect.strokeColor = new paper__WEBPACK_IMPORTED_MODULE_2__["Color"](0, 0, 1);
-            this.scope.settings.insertItems = prev;
-            this.project.activeLayer.insertChild(this.project.activeLayer.children.length, this.rect);
-            // }
-            // this.rect.position = e.downPoint;
-            // this.rect.size.width = Math.abs(e.downPoint.x - e.point.x);
-            // this.rect.size.height = Math.abs(e.downPoint.y - e.point.y);
-        });
-        this.suSub = this.selectUp.subscribe((e) => {
-            if (this.rect) {
-                const intersected = this.scope.project.getItems({
-                    match: (item) => { var _a; return item.className !== 'Layer' && ((_a = this.rect) === null || _a === void 0 ? void 0 : _a.intersects(item)); },
-                });
-                // this.scope.project.deselectAll();
-                intersected.forEach((i) => (i.selected = true));
-                this.rect.remove();
-                this.rect = null;
-            }
-            else {
-                // this.scope.project.deselectAll();
-            }
-        });
-    }
-}
-
-
-/***/ }),
-
-/***/ 2:
-/*!********************************!*\
-  !*** ./node/self.js (ignored) ***!
-  \********************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-/* (ignored) */
-
-/***/ }),
-
-/***/ "2ZFv":
-/*!*******************************************************************!*\
-  !*** ./projects/demo/src/app/user/vectors/classes/paper-chain.ts ***!
-  \*******************************************************************/
+/***/ "/v0b":
+/*!*********************************************************************!*\
+  !*** ./projects/demo/src/app/user/vectors/functions/paper-chain.ts ***!
+  \*********************************************************************/
 /*! exports provided: propertyChange$, getAllSettable, setupAllEmitters */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -374,6 +126,172 @@ function setupAllEmitters(item) {
 
 /***/ }),
 
+/***/ "00F/":
+/*!************************************************************!*\
+  !*** ./projects/demo/src/app/user/vectors/tools/select.ts ***!
+  \************************************************************/
+/*! exports provided: SelectTool, LassoSelectTool, RectangleSelectTool */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SelectTool", function() { return SelectTool; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LassoSelectTool", function() { return LassoSelectTool; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "RectangleSelectTool", function() { return RectangleSelectTool; });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "mrSG");
+/* harmony import */ var _paper_tool__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./paper-tool */ "u/6k");
+/* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! paper */ "IiLU");
+/* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(paper__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs/operators */ "kU1M");
+/* harmony import */ var _functions_decorators__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../functions/decorators */ "efV2");
+
+
+
+
+
+class SelectTool extends _paper_tool__WEBPACK_IMPORTED_MODULE_1__["VectorTool"] {
+    constructor() {
+        super(...arguments);
+        this.mode = 'new';
+        this.name = 'select';
+        this.selecting = false;
+        this.clickSub = this.click.subscribe((e) => this.project.deselectAll());
+        //#region sources
+        this.selectDown = this.down.pipe(
+        // filter(
+        //   (e) =>
+        //     e.modifiers.shift ||
+        //     this.scope.project.getItems({
+        //       selected: true,
+        //       match: (i: paper.Item) => i.className !== 'Layer',
+        //     }).length === 0
+        // ),
+        Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["tap"])((e) => {
+            this.selecting = true;
+            if (!e.modifiers.shift) {
+                this.scope.project.deselectAll();
+            }
+        }));
+        this.selectDrag = this.drag.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["filter"])((e) =>  true || false));
+        this.selectUp = this.up.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["filter"])((e) =>  true || false), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["tap"])((e) => (this.selecting = false)));
+        this.keyEsc = this.keyup.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["filter"])((e) => e.key === 'escape'));
+        this.keyDel = this.keyup.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["filter"])((e) => e.key === 'delete'));
+        //#endregion
+        //#region subscribers
+        this.keyEscSub = this.keyEsc.subscribe((e) => {
+            this.selecting = false;
+            this.scope.project.deselectAll();
+        });
+        this.keyDelSub = this.keyDel.subscribe((e) => {
+            // console.log('keyup', e);
+            this.scope.project
+                .getItems({
+                selected: true,
+                match: (i) => i.className !== 'Layer',
+            })
+                .forEach((i) => {
+                // console.log('would delete', i.toString());
+                i.remove();
+            });
+        });
+        //#endregion
+    }
+}
+Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
+    Object(_functions_decorators__WEBPACK_IMPORTED_MODULE_4__["Property"])({
+        values: ['new', 'add', 'remove'],
+    })
+], SelectTool.prototype, "mode", void 0);
+class LassoSelectTool extends SelectTool {
+    constructor() {
+        super(...arguments);
+        this.name = 'lasso select';
+        this.sdSub = this.selectDown.subscribe((e) => { });
+        this.sdrSub = this.selectDrag.subscribe((e) => {
+            if (!this.path) {
+                const prev = this.scope.settings.insertItems;
+                this.scope.settings.insertItems = false;
+                this.path = this.path || new paper__WEBPACK_IMPORTED_MODULE_2__["Path"]([e.downPoint]);
+                this.path.data.ignore = true;
+                this.path.dashArray = [12, 12];
+                this.path.closed = true;
+                this.path.fillColor = new paper__WEBPACK_IMPORTED_MODULE_2__["Color"](0, 0, 1, 0.5);
+                this.path.strokeWidth = 1;
+                this.path.strokeColor = new paper__WEBPACK_IMPORTED_MODULE_2__["Color"](0, 0, 1);
+                this.scope.settings.insertItems = prev;
+                this.project.activeLayer.insertChild(0, this.path);
+            }
+            this.path.add(e.point);
+        });
+        this.sduSub = this.selectUp.subscribe((e) => {
+            // TODO hitTest appears to be able to honor fill, but requires a point, not an item
+            if (this.path) {
+                const intersected = this.scope.project.getItems({
+                    match: (item) => { var _a; return item.className !== 'Layer' && ((_a = this.path) === null || _a === void 0 ? void 0 : _a.intersects(item)); },
+                });
+                intersected.forEach((i) => (i.selected = true));
+                this.path.remove();
+                this.path = null;
+            }
+            else {
+                // this.scope.project.deselectAll();
+            }
+        });
+    }
+}
+class RectangleSelectTool extends SelectTool {
+    constructor() {
+        super(...arguments);
+        this.name = 'area select';
+        this.sdSub = this.selectDown.subscribe((e) => { });
+        this.sdrSub = this.selectDrag.subscribe((e) => {
+            var _a;
+            (_a = this.rect) === null || _a === void 0 ? void 0 : _a.remove();
+            const prev = this.scope.settings.insertItems;
+            this.scope.settings.insertItems = false;
+            this.rect = new paper__WEBPACK_IMPORTED_MODULE_2__["Shape"].Rectangle(e.downPoint, e.point);
+            this.rect.pivot = new paper__WEBPACK_IMPORTED_MODULE_2__["Point"](0, 0);
+            this.rect.data.ignore = true;
+            this.rect.dashArray = [12, 12];
+            this.rect.fillColor = new paper__WEBPACK_IMPORTED_MODULE_2__["Color"](0, 0, 1, 0.5);
+            this.rect.strokeWidth = 1;
+            this.rect.strokeColor = new paper__WEBPACK_IMPORTED_MODULE_2__["Color"](0, 0, 1);
+            this.scope.settings.insertItems = prev;
+            this.project.activeLayer.insertChild(this.project.activeLayer.children.length, this.rect);
+        });
+        this.suSub = this.selectUp.subscribe((e) => {
+            if (this.rect) {
+                // FIXME this is also selecting Shape.Rectangles OUTSIDE the selection rectangle
+                const intersected = this.scope.project.getItems({
+                    inside: this.rect.bounds,
+                    // overlapping: this.rect.bounds,
+                    match: (item) => item.className !== 'Layer',
+                });
+                intersected.forEach((i) => (i.selected = true));
+                this.rect.remove();
+                this.rect = null;
+            }
+            else {
+                // this.scope.project.deselectAll();
+            }
+        });
+    }
+}
+
+
+/***/ }),
+
+/***/ 2:
+/*!********************************!*\
+  !*** ./node/self.js (ignored) ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+/* (ignored) */
+
+/***/ }),
+
 /***/ 3:
 /*!**********************************!*\
   !*** ./node/extend.js (ignored) ***!
@@ -458,8 +376,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! paper */ "IiLU");
 /* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(paper__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs/operators */ "kU1M");
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./constants */ "631e");
-/* harmony import */ var _packaging__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./packaging */ "E6wO");
+/* harmony import */ var _functions_constants__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../functions/constants */ "DI4w");
+/* harmony import */ var _functions_packaging__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../functions/packaging */ "Y0J3");
 
 
 
@@ -479,13 +397,13 @@ class PaperPair {
         this.saveProperty$ = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"](); // TODO document this...
         this.saveBuffer$ = this.saveProperty$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["buffer"])(this.debouncedSave$), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((v) => v.length > 0), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["map"])((v) => v.reduce((propertyBuffer, val) => {
             const propertyName = val[0];
-            const propertyValue = val.length > 1 ? val[1] : Object(_packaging__WEBPACK_IMPORTED_MODULE_4__["serializeValue"])(this.ctx[propertyName]);
+            const propertyValue = val.length > 1 ? val[1] : Object(_functions_packaging__WEBPACK_IMPORTED_MODULE_4__["serializeValue"])(this.ctx[propertyName]);
             propertyBuffer[propertyName] = Array.isArray(propertyValue)
                 ? JSON.stringify(propertyValue)
                 : propertyValue;
             return propertyBuffer;
         }, {})));
-        this.logger = logger.supplemental(Object.getPrototypeOf(this).constructor.name);
+        this.logger = logger.supplemental(Object.getPrototypeOf(this).constructor.name + ' ' + this.ctx.toString());
         if (ctx.pair) {
             this.logger.error('CREATING A DUPLICATE PAIR FOR SCOPE', ctx);
         }
@@ -521,7 +439,7 @@ class PaperPair {
             soul: key,
         };
         Object.keys(scrubbed).forEach((k) => {
-            if (_constants__WEBPACK_IMPORTED_MODULE_3__["EXPECT_ARRAY"].includes(k)) {
+            if (_functions_constants__WEBPACK_IMPORTED_MODULE_3__["EXPECT_ARRAY"].includes(k)) {
                 // this.logger.log('  deserializing %s', k, scrubbed[k]);
                 scrubbed[k] = JSON.parse(scrubbed[k]);
             }
@@ -537,7 +455,7 @@ class PaperPair {
             }
             return;
         }
-        if (!Object(_constants__WEBPACK_IMPORTED_MODULE_3__["hasRequired"])(childJSON)) {
+        if (!Object(_functions_constants__WEBPACK_IMPORTED_MODULE_3__["hasRequired"])(childJSON)) {
             this.logger.error('child does not have required fields', childJSON);
             return;
         }
@@ -552,7 +470,7 @@ class PaperPair {
             soul: key,
         };
         Object.keys(scrubbed).forEach((k) => {
-            if (_constants__WEBPACK_IMPORTED_MODULE_3__["EXPECT_ARRAY"].includes(k)) {
+            if (_functions_constants__WEBPACK_IMPORTED_MODULE_3__["EXPECT_ARRAY"].includes(k)) {
                 scrubbed[k] = JSON.parse(scrubbed[k]);
             }
         });
@@ -595,73 +513,6 @@ class PaperPair {
         // ...
     }
 }
-
-
-/***/ }),
-
-/***/ "631e":
-/*!*****************************************************************!*\
-  !*** ./projects/demo/src/app/user/vectors/classes/constants.ts ***!
-  \*****************************************************************/
-/*! exports provided: EXPECT_ARRAY, REQUIRED_BY, REQUIRES, hasRequired, MUTATION_METHODS, MUTATIONS, MUTATION_PROPERTIES, INCOMING_DEBOUNCE, SAVE_DEBOUNCE */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EXPECT_ARRAY", function() { return EXPECT_ARRAY; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "REQUIRED_BY", function() { return REQUIRED_BY; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "REQUIRES", function() { return REQUIRES; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hasRequired", function() { return hasRequired; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MUTATION_METHODS", function() { return MUTATION_METHODS; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MUTATIONS", function() { return MUTATIONS; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MUTATION_PROPERTIES", function() { return MUTATION_PROPERTIES; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "INCOMING_DEBOUNCE", function() { return INCOMING_DEBOUNCE; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SAVE_DEBOUNCE", function() { return SAVE_DEBOUNCE; });
-const EXPECT_ARRAY = [
-    'matrix',
-    'size',
-    'strokeColor',
-    'radius',
-    'segments',
-    'position',
-];
-const REQUIRED_BY = {
-    size: ['Shape'],
-};
-const REQUIRES = {
-    Shape: ['size'],
-};
-function hasRequired(json) {
-    if (!json) {
-        // console.warn('hasRequired() NULL VALUE');
-        return false;
-    }
-    if (!json.className) {
-        return false;
-    }
-    const required = REQUIRES[json.className] || [];
-    const missing = required.filter((r) => !Object.keys(json).includes(r));
-    if (missing.length > 0) {
-        console.warn('item lacks required fields', missing);
-        return false;
-    }
-    return true;
-}
-const MUTATION_METHODS = [
-    'add',
-    'lineTo',
-    'lineBy',
-    'curveTo',
-    'curveBy',
-];
-const MUTATIONS = {
-    Path: MUTATION_METHODS,
-};
-const MUTATION_PROPERTIES = {
-    add: ['segments'],
-};
-const INCOMING_DEBOUNCE = 25;
-const SAVE_DEBOUNCE = 1000;
 
 
 /***/ }),
@@ -1028,6 +879,111 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "CPdU":
+/*!************************************************************************!*\
+  !*** ./projects/demo/src/app/user/vectors/functions/tool-functions.ts ***!
+  \************************************************************************/
+/*! exports provided: byEventType, isMouse, isPen, isTouch, buildToolEvent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "byEventType", function() { return byEventType; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isMouse", function() { return isMouse; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isPen", function() { return isPen; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isTouch", function() { return isTouch; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "buildToolEvent", function() { return buildToolEvent; });
+/* harmony import */ var _system_service__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../system.service */ "+9ow");
+/* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! paper */ "IiLU");
+/* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(paper__WEBPACK_IMPORTED_MODULE_1__);
+
+
+const byEventType = (type) => (event) => event.event.pointerType === type;
+const isMouse = (event) => event.event.type.startsWith('mouse');
+const isPen = _system_service__WEBPACK_IMPORTED_MODULE_0__["CAPABILITIES"].POINTER
+    ? (e) => e instanceof window.PointerEvent ||
+        e.event.pointerType === 'pen' ||
+        e.event.type.startsWith('pen')
+    : () => false;
+const isTouch = _system_service__WEBPACK_IMPORTED_MODULE_0__["CAPABILITIES"].TOUCH
+    ? (e) => e instanceof window.TouchEvent ||
+        e.event.pointerType === 'touch' ||
+        e.event.type.startsWith('touch')
+    : () => false;
+const buildToolEvent = (source, view) => ({
+    point: view.viewToProject(new paper__WEBPACK_IMPORTED_MODULE_1__["Point"](source.offsetX, source.offsetY)),
+});
+
+
+/***/ }),
+
+/***/ "DI4w":
+/*!*******************************************************************!*\
+  !*** ./projects/demo/src/app/user/vectors/functions/constants.ts ***!
+  \*******************************************************************/
+/*! exports provided: EXPECT_ARRAY, REQUIRED_BY, REQUIRES, hasRequired, MUTATION_METHODS, MUTATIONS, MUTATION_PROPERTIES, INCOMING_DEBOUNCE, SAVE_DEBOUNCE */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EXPECT_ARRAY", function() { return EXPECT_ARRAY; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "REQUIRED_BY", function() { return REQUIRED_BY; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "REQUIRES", function() { return REQUIRES; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hasRequired", function() { return hasRequired; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MUTATION_METHODS", function() { return MUTATION_METHODS; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MUTATIONS", function() { return MUTATIONS; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MUTATION_PROPERTIES", function() { return MUTATION_PROPERTIES; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "INCOMING_DEBOUNCE", function() { return INCOMING_DEBOUNCE; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SAVE_DEBOUNCE", function() { return SAVE_DEBOUNCE; });
+const EXPECT_ARRAY = [
+    'matrix',
+    'size',
+    'strokeColor',
+    'radius',
+    'segments',
+    'position',
+];
+const REQUIRED_BY = {
+    size: ['Shape'],
+};
+const REQUIRES = {
+    Shape: ['size'],
+};
+function hasRequired(json) {
+    if (!json) {
+        // console.warn('hasRequired() NULL VALUE');
+        return false;
+    }
+    if (!json.className) {
+        return false;
+    }
+    const required = REQUIRES[json.className] || [];
+    const missing = required.filter((r) => !Object.keys(json).includes(r));
+    if (missing.length > 0) {
+        console.warn('item lacks required fields', missing);
+        return false;
+    }
+    return true;
+}
+const MUTATION_METHODS = [
+    'add',
+    'lineTo',
+    'lineBy',
+    'curveTo',
+    'curveBy',
+];
+const MUTATIONS = {
+    Path: MUTATION_METHODS,
+};
+const MUTATION_PROPERTIES = {
+    add: ['segments'],
+};
+const INCOMING_DEBOUNCE = 25;
+const SAVE_DEBOUNCE = 1000;
+
+
+/***/ }),
+
 /***/ "DKW5":
 /*!******************************************************************************************!*\
   !*** ./projects/demo/src/app/user/vectors/components/layer-list/layer-list.component.ts ***!
@@ -1213,85 +1169,6 @@ VectorsComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineC
         _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵadvance"](6);
         _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵproperty"]("ngForOf", _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵpipeBind1"](7, 1, ctx.vectors));
     } }, directives: [_angular_material_toolbar__WEBPACK_IMPORTED_MODULE_7__["MatToolbar"], _angular_flex_layout_flex__WEBPACK_IMPORTED_MODULE_8__["DefaultFlexDirective"], _angular_material_button__WEBPACK_IMPORTED_MODULE_9__["MatButton"], _angular_flex_layout_grid__WEBPACK_IMPORTED_MODULE_10__["ɵgrid_privatex"], _angular_common__WEBPACK_IMPORTED_MODULE_11__["NgForOf"], _angular_material_button__WEBPACK_IMPORTED_MODULE_9__["MatAnchor"], _angular_router__WEBPACK_IMPORTED_MODULE_12__["RouterLinkWithHref"], _angular_material_icon__WEBPACK_IMPORTED_MODULE_13__["MatIcon"], _angular_router__WEBPACK_IMPORTED_MODULE_12__["RouterLink"]], pipes: [_angular_common__WEBPACK_IMPORTED_MODULE_11__["AsyncPipe"], _ng_gun_src_lib_soul_pipe__WEBPACK_IMPORTED_MODULE_14__["SoulPipe"], _angular_common__WEBPACK_IMPORTED_MODULE_11__["DatePipe"], _ng_gun_src_lib_updated_pipe__WEBPACK_IMPORTED_MODULE_15__["UpdatedPipe"]], styles: ["div[_ngcontent-%COMP%]   [mat-flat-button][_ngcontent-%COMP%] {\n  text-align: left;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uL3ZlY3RvcnMuY29tcG9uZW50LnNjc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDRSxnQkFBQTtBQUNGIiwiZmlsZSI6InZlY3RvcnMuY29tcG9uZW50LnNjc3MiLCJzb3VyY2VzQ29udGVudCI6WyJkaXYgW21hdC1mbGF0LWJ1dHRvbl0ge1xuICB0ZXh0LWFsaWduOiBsZWZ0O1xufVxuIl19 */"] });
-
-
-/***/ }),
-
-/***/ "E6wO":
-/*!*****************************************************************!*\
-  !*** ./projects/demo/src/app/user/vectors/classes/packaging.ts ***!
-  \*****************************************************************/
-/*! exports provided: unpack, serializeValue */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "unpack", function() { return unpack; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "serializeValue", function() { return serializeValue; });
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "631e");
-
-function unpack(value, soul) {
-    var _a;
-    if (soul === void 0) { soul = (_a = value.data) === null || _a === void 0 ? void 0 : _a.soul; }
-    // console.log('unpacking value');
-    // console.dir(value);
-    return value.className ? unpackObject(value) : unpackArray(value);
-}
-function unpackObject(item, soul) {
-    var _a;
-    if (soul === void 0) { soul = (_a = item.data) === null || _a === void 0 ? void 0 : _a.soul; }
-    if (!item) {
-        return null;
-    }
-    const scrubbed = Object.assign({}, item);
-    const className = item.className;
-    scrubbed.data = {
-        soul,
-    };
-    delete scrubbed.className;
-    if (scrubbed.children) {
-        console.warn('  unpacking children (UNTESTED)');
-        scrubbed.children = unpack(scrubbed.children);
-    }
-    Object.keys(scrubbed)
-        .filter((k) => _constants__WEBPACK_IMPORTED_MODULE_0__["EXPECT_ARRAY"].includes(k))
-        .forEach((k) => (scrubbed[k] = JSON.parse(scrubbed[k])));
-    const unpacked = [className, scrubbed];
-    return unpacked;
-}
-function unpackArray(value) {
-    const items = [];
-    // tslint:disable-next-line: forin
-    for (const key in value) {
-        const item = value[key];
-        if (item === null || !item.className) {
-            continue;
-        }
-        // console.log(key, JSON.stringify(item));
-        // console.log('would unpack', unpacked);
-        const unpacked = unpackObject(item, key);
-        if (!unpacked) {
-            continue;
-        }
-        items.push(unpacked);
-    }
-    return items;
-}
-function serializeValue(value) {
-    if (Array.isArray(value)) {
-        return value.map((e) => serializeValue(e));
-    }
-    if (typeof value === 'object' && value.className === 'Point') {
-        return [value.x, value.y];
-    }
-    const serialized = typeof value === 'object' && value._serialize
-        ? value._serialize.call(value)
-        : value;
-    if (Array.isArray(serialized) && serialized[0] === 'Point') {
-        serialized.shift();
-    }
-    return serialized;
-}
 
 
 /***/ }),
@@ -18989,15 +18866,26 @@ class ProjectPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_5__["PaperPair"] {
     }
     onLocalLayer(layer) {
         const l = layer;
-        if (!l.pair) {
+        if (!l.pair && !l.data.ignore) {
             // this.logger.log('onLocalLayer %s', l.toString());
+            let lg;
             if (!l.data.soul) {
                 // this.logger.log('    no soul');
-                const soul = Object(_edit_vector_converter_functions__WEBPACK_IMPORTED_MODULE_3__["getUUID"])(this.chain);
+                const soul = Object(_edit_vector_converter_functions__WEBPACK_IMPORTED_MODULE_3__["getUUID"])(this.chain).replace(/~.*/, '');
+                lg = this.layers.get(soul);
                 l.data.soul = soul;
+                // TODO continue implementing set() replacement
+                // TODO set() may require unset() from parent instead of put(null) from child
+                // lg = this.layers.set({
+                //   className: 'Layer',
+                // } as never);
+                // const soul = lg.gun._['#'];
+                // l.data.soul = soul;
             }
-            const layerGun = this.layers.get(l.data.soul);
-            const layerPair = new _ItemPair__WEBPACK_IMPORTED_MODULE_4__["ItemPair"](layerGun, layer, this.project, this.scope, this.logger);
+            else {
+                lg = this.layers.get(l.data.soul);
+            }
+            const layerPair = new _ItemPair__WEBPACK_IMPORTED_MODULE_4__["ItemPair"](lg, layer, this.project, this.scope, this.logger);
         }
     }
     setupProject() {
@@ -19022,49 +18910,60 @@ class ProjectPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_5__["PaperPair"] {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PenTool", function() { return PenTool; });
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "mrSG");
-/* harmony import */ var _paper_tool__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../paper-tool */ "/NF4");
-/* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! paper */ "IiLU");
-/* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(paper__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! paper */ "IiLU");
+/* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(paper__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _system_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../system.service */ "+9ow");
 /* harmony import */ var _functions_decorators__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../functions/decorators */ "efV2");
+/* harmony import */ var _paper_tool__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./paper-tool */ "u/6k");
 
 
 
 
 
-class PenTool extends _paper_tool__WEBPACK_IMPORTED_MODULE_1__["VectorTool"] {
+
+class PenTool extends _paper_tool__WEBPACK_IMPORTED_MODULE_4__["VectorTool"] {
     constructor() {
         super(...arguments);
         this.name = 'pen';
-        this.style = new paper__WEBPACK_IMPORTED_MODULE_2__["Style"]({
+        this.style = new paper__WEBPACK_IMPORTED_MODULE_1__["Style"]({
             strokeCap: 'round',
             strokeJoin: 'round',
             strokeWidth: 3,
         });
         this.smoothing = true;
-    }
-    setup() {
-        // this.style.strokeJoin
-        this.down.subscribe((e) => {
-            this.logger.log('pen down', e.point);
-            this.path = new paper__WEBPACK_IMPORTED_MODULE_2__["Path"](e.point);
+        this.penDown = _system_service__WEBPACK_IMPORTED_MODULE_2__["CAPABILITIES"].POINTER
+            ? this.pointerDown
+            : this.down;
+        this.penDrag = _system_service__WEBPACK_IMPORTED_MODULE_2__["CAPABILITIES"].POINTER
+            ? this.pointerDrag
+            : this.drag;
+        this.penUp = _system_service__WEBPACK_IMPORTED_MODULE_2__["CAPABILITIES"].POINTER
+            ? this.pointerUp
+            : this.up;
+        this.downSub = this.penDown.subscribe((e) => {
+            this.activateDrawLayer();
+            this.path = new paper__WEBPACK_IMPORTED_MODULE_1__["Path"](e.point);
             this.path.pair.editing = true;
             this.path.style = this.style;
         });
-        this.drag.subscribe((e) => {
+        this.dragSub = this.penDrag.subscribe((e) => {
+            // this.logger.log('pen drag', e.event.type, e.event.pointerType);
             this.path.add(e.point);
         });
-        this.up.subscribe((e) => {
+        this.upSub = this.penUp.subscribe((e) => {
             var _a;
             this.path.strokeColor = this.project.currentStyle.strokeColor;
             this.path.fillColor = this.project.currentStyle.fillColor;
-            // (this.path as any).pair?.save('segments');
-            // (this.path as any).pair?.save();
             if (this.smoothing) {
                 this.path.smooth();
             }
             (_a = this.path.pair) === null || _a === void 0 ? void 0 : _a.doSave();
             this.path.pair.editing = false;
         });
+    }
+    filterEvent(event) {
+        // Respond to pen if pointerType is present, if it isn't assume we're mouse-only
+        return ['pen', undefined].includes(event.event.pointerType);
     }
 }
 Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([
@@ -19130,6 +19029,85 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
+/***/ }),
+
+/***/ "Y0J3":
+/*!*******************************************************************!*\
+  !*** ./projects/demo/src/app/user/vectors/functions/packaging.ts ***!
+  \*******************************************************************/
+/*! exports provided: unpack, serializeValue */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "unpack", function() { return unpack; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "serializeValue", function() { return serializeValue; });
+/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./constants */ "DI4w");
+
+function unpack(value, soul) {
+    var _a;
+    if (soul === void 0) { soul = (_a = value.data) === null || _a === void 0 ? void 0 : _a.soul; }
+    // console.log('unpacking value');
+    // console.dir(value);
+    return value.className ? unpackObject(value) : unpackArray(value);
+}
+function unpackObject(item, soul) {
+    var _a;
+    if (soul === void 0) { soul = (_a = item.data) === null || _a === void 0 ? void 0 : _a.soul; }
+    if (!item) {
+        return null;
+    }
+    const scrubbed = Object.assign({}, item);
+    const className = item.className;
+    scrubbed.data = {
+        soul,
+    };
+    delete scrubbed.className;
+    if (scrubbed.children) {
+        console.warn('  unpacking children (UNTESTED)');
+        scrubbed.children = unpack(scrubbed.children);
+    }
+    Object.keys(scrubbed)
+        .filter((k) => _constants__WEBPACK_IMPORTED_MODULE_0__["EXPECT_ARRAY"].includes(k))
+        .forEach((k) => (scrubbed[k] = JSON.parse(scrubbed[k])));
+    const unpacked = [className, scrubbed];
+    return unpacked;
+}
+function unpackArray(value) {
+    const items = [];
+    // tslint:disable-next-line: forin
+    for (const key in value) {
+        const item = value[key];
+        if (item === null || !item.className) {
+            continue;
+        }
+        // console.log(key, JSON.stringify(item));
+        // console.log('would unpack', unpacked);
+        const unpacked = unpackObject(item, key);
+        if (!unpacked) {
+            continue;
+        }
+        items.push(unpacked);
+    }
+    return items;
+}
+function serializeValue(value) {
+    if (Array.isArray(value)) {
+        return value.map((e) => serializeValue(e));
+    }
+    if (typeof value === 'object' && value.className === 'Point') {
+        return [value.x, value.y];
+    }
+    const serialized = typeof value === 'object' && value._serialize
+        ? value._serialize.call(value)
+        : value;
+    if (Array.isArray(serialized) && serialized[0] === 'Point') {
+        serialized.shift();
+    }
+    return serialized;
+}
 
 
 /***/ }),
@@ -19327,7 +19305,7 @@ const Property = (config) => (target, name, ...args) => {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MoveTool", function() { return MoveTool; });
-/* harmony import */ var _paper_tool__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../paper-tool */ "/NF4");
+/* harmony import */ var _paper_tool__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./paper-tool */ "u/6k");
 
 class MoveTool extends _paper_tool__WEBPACK_IMPORTED_MODULE_0__["VectorTool"] {
     constructor() {
@@ -19372,8 +19350,10 @@ class MoveTool extends _paper_tool__WEBPACK_IMPORTED_MODULE_0__["VectorTool"] {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PanTool", function() { return PanTool; });
-/* harmony import */ var _paper_tool__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../paper-tool */ "/NF4");
+/* harmony import */ var _paper_tool__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./paper-tool */ "u/6k");
 /* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs/operators */ "kU1M");
+/* harmony import */ var _functions_tool_functions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../functions/tool-functions */ "CPdU");
+
 
 
 class PanTool extends _paper_tool__WEBPACK_IMPORTED_MODULE_0__["VectorTool"] {
@@ -19384,6 +19364,9 @@ class PanTool extends _paper_tool__WEBPACK_IMPORTED_MODULE_0__["VectorTool"] {
             .subscribe((e) => {
             this.project.view.scrollBy(e.delta.multiply(-1));
         });
+    }
+    filterEvent(event) {
+        return Object(_functions_tool_functions__WEBPACK_IMPORTED_MODULE_2__["isMouse"])(event) || Object(_functions_tool_functions__WEBPACK_IMPORTED_MODULE_2__["isTouch"])(event);
     }
 }
 
@@ -19400,7 +19383,7 @@ class PanTool extends _paper_tool__WEBPACK_IMPORTED_MODULE_0__["VectorTool"] {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EraserTool", function() { return EraserTool; });
-/* harmony import */ var _paper_tool__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../paper-tool */ "/NF4");
+/* harmony import */ var _paper_tool__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./paper-tool */ "u/6k");
 /* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! paper */ "IiLU");
 /* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(paper__WEBPACK_IMPORTED_MODULE_1__);
 
@@ -19413,11 +19396,8 @@ class EraserTool extends _paper_tool__WEBPACK_IMPORTED_MODULE_0__["VectorTool"] 
             // console.log('eraser drag');
             const prev = this.scope.settings.insertItems;
             this.scope.settings.insertItems = false;
-            if (!this.path) {
-                this.path = new paper__WEBPACK_IMPORTED_MODULE_1__["Path"]([e.downPoint]);
-                this.path.data.ignore = true;
-            }
-            this.path.add(e.point);
+            this.path = new paper__WEBPACK_IMPORTED_MODULE_1__["Path"]([e.lastPoint, e.point]);
+            this.path.data.ignore = true;
             const intersects = this.project.getItems({
                 match: (i) => i !== this.path &&
                     i.className !== 'Layer' &&
@@ -19561,16 +19541,14 @@ StyleFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefin
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ItemPair", function() { return ItemPair; });
-/* harmony import */ var gun__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gun */ "U+kO");
-/* harmony import */ var gun__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(gun__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs */ "qCKp");
-/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs/operators */ "kU1M");
-/* harmony import */ var _functions_aspect_rx__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../functions/aspect-rx */ "4Dgj");
-/* harmony import */ var _edit_vector_converter_functions__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../edit-vector/converter-functions */ "qI0X");
-/* harmony import */ var _constants__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./constants */ "631e");
-/* harmony import */ var _packaging__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./packaging */ "E6wO");
-/* harmony import */ var _PaperPair__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./PaperPair */ "5jeY");
-/* harmony import */ var _SaveStrategy__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./SaveStrategy */ "8Ro7");
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! rxjs */ "qCKp");
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs/operators */ "kU1M");
+/* harmony import */ var _functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../functions/aspect-rx */ "4Dgj");
+/* harmony import */ var _edit_vector_converter_functions__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../edit-vector/converter-functions */ "qI0X");
+/* harmony import */ var _functions_constants__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../functions/constants */ "DI4w");
+/* harmony import */ var _functions_packaging__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../functions/packaging */ "Y0J3");
+/* harmony import */ var _PaperPair__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./PaperPair */ "5jeY");
+/* harmony import */ var _SaveStrategy__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./SaveStrategy */ "8Ro7");
 
 
 
@@ -19579,19 +19557,18 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
-class ItemPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_7__["PaperPair"] {
+class ItemPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_6__["PaperPair"] {
     constructor(chain, item, project, scope, logger) {
         super(item, project, scope, logger);
         this.chain = chain;
         this.item = item;
         this.graph$ = this.chain
             .on({ changes: true, bypassZone: true })
-            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["shareReplay"])(1));
-        this.graphValue$ = this.graph$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((json) => Object(_constants__WEBPACK_IMPORTED_MODULE_5__["hasRequired"])(json)), 
+            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["shareReplay"])(1));
+        this.graphValue$ = this.graph$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["filter"])((json) => Object(_functions_constants__WEBPACK_IMPORTED_MODULE_4__["hasRequired"])(json)), 
         // distinct((v) => JSON.stringify(v)),
-        Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["tap"])((value) => (this.graphValue = value)));
-        this.graphRemove$ = this.graph$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((json) => json === null));
+        Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["tap"])((value) => (this.graphValue = value)));
+        this.graphRemove$ = this.graph$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["filter"])((json) => json === null));
         // Graph Methods
         this.childSouls = new Set();
         this.children = this.chain.get('children');
@@ -19605,24 +19582,24 @@ class ItemPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_7__["PaperPair"] {
             .pipe();
         // FIXME find a better way to buffer by time window -
         // bufferTime() continuously emits, causing expensive filtering for thousands of objects!
-        this.childrenBuffer$ = this.children$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((childVK) => !this.childSouls.has(childVK[1])), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["tap"])((childVK) => {
+        this.childrenBuffer$ = this.children$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["filter"])((childVK) => !this.childSouls.has(childVK[1])), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["tap"])((childVK) => {
             this.childSouls.add(childVK[1]);
-        }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["bufferTime"])(_constants__WEBPACK_IMPORTED_MODULE_5__["SAVE_DEBOUNCE"]), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((children) => children.length > 0));
-        this.afterRemove$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_3__["after$"])(this.item, 'remove');
+        }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["bufferTime"])(_functions_constants__WEBPACK_IMPORTED_MODULE_4__["SAVE_DEBOUNCE"]), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["filter"])((children) => children.length > 0));
+        this.afterRemove$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["after$"])(this.item, 'remove');
         // Local Methods
         this.isInsertingFromGraph = false;
-        this.beforeImportJSON$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_3__["before$"])(this.item, 'importJSON');
-        this.afterImportJSON$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_3__["after$"])(this.item, 'importJSON');
-        this.afterInsertChild$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_3__["after$"])(this.item, 'insertChild').pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["map"])(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_3__["returned"]), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["tap"])((item) => this.isInsertingFromGraph
+        this.beforeImportJSON$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["before$"])(this.item, 'importJSON');
+        this.afterImportJSON$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["after$"])(this.item, 'importJSON');
+        this.afterInsertChild$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["after$"])(this.item, 'insertChild').pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["map"])(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["returned"]), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["tap"])((item) => this.isInsertingFromGraph
             ? this.logger.log('ignored %o because children are being imported')
-            : {}), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((item) => !this.item.data.ignore && !item.data.ignore), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((item) => !this.isInsertingFromGraph && item !== null && item !== undefined), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["switchMap"])((item) => this.isImportingJSON ? this.afterImportJSON$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["mapTo"])(item)) : Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["of"])(item)));
-        this.afterAddChild$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_3__["after$"])(this.item, 'addChild').pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["map"])(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_3__["returned"]), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((item) => !this.isInsertingFromGraph && item !== null && item !== undefined), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["switchMap"])((item) => this.isImportingJSON ? this.afterImportJSON$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["mapTo"])(item)) : Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["of"])(item)));
-        this.localChange$ = Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["from"])((_constants__WEBPACK_IMPORTED_MODULE_5__["MUTATIONS"][this.item.className] || [])).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["mergeMap"])((method) => Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_3__["after$"])(this.item, method).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["map"])((v) => _constants__WEBPACK_IMPORTED_MODULE_5__["MUTATION_PROPERTIES"][method]))));
+            : {}), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["filter"])((item) => !this.item.data.ignore && !item.data.ignore), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["filter"])((item) => !this.isInsertingFromGraph && item !== null && item !== undefined), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["switchMap"])((item) => this.isImportingJSON ? this.afterImportJSON$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["mapTo"])(item)) : Object(rxjs__WEBPACK_IMPORTED_MODULE_0__["of"])(item)));
+        this.afterAddChild$ = Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["after$"])(this.item, 'addChild').pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["map"])(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["returned"]), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["filter"])((item) => !this.isInsertingFromGraph && item !== null && item !== undefined), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["switchMap"])((item) => this.isImportingJSON ? this.afterImportJSON$.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["mapTo"])(item)) : Object(rxjs__WEBPACK_IMPORTED_MODULE_0__["of"])(item)));
+        this.localChange$ = Object(rxjs__WEBPACK_IMPORTED_MODULE_0__["from"])((_functions_constants__WEBPACK_IMPORTED_MODULE_4__["MUTATIONS"][this.item.className] || [])).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["mergeMap"])((method) => Object(_functions_aspect_rx__WEBPACK_IMPORTED_MODULE_2__["after$"])(this.item, method).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["map"])((v) => _functions_constants__WEBPACK_IMPORTED_MODULE_4__["MUTATION_PROPERTIES"][method]))));
         this.editing = false;
         this.setup();
     }
-    getShallow() {
-        const raw = this.item.exportJSON({ asString: false });
+    getShallow(item = this.item) {
+        const raw = item.exportJSON({ asString: false });
         const obj = raw[1];
         const shallow = Object.assign(Object.assign({}, obj), { className: this.item.className });
         // remove complex sub-objects
@@ -19632,7 +19609,7 @@ class ItemPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_7__["PaperPair"] {
         Object.keys(shallow).forEach((k) => {
             const value = shallow[k];
             if (Array.isArray(value)) {
-                if (!_constants__WEBPACK_IMPORTED_MODULE_5__["EXPECT_ARRAY"].includes(k)) {
+                if (!_functions_constants__WEBPACK_IMPORTED_MODULE_4__["EXPECT_ARRAY"].includes(k)) {
                     console.warn('UNEXPECTED ARRAY %s, NOT SERIALIZING!!!', k);
                     console.warn('  value', value);
                     // continue;
@@ -19687,20 +19664,20 @@ class ItemPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_7__["PaperPair"] {
         //     this.logger.verbose('ignoring local change because importing JSON');
         //   }
         // }),
-        Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((v) => this.project.pair.saveStrategy === _SaveStrategy__WEBPACK_IMPORTED_MODULE_8__["SaveStrategy"].AUTOMATIC), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((v) => !this.isImportingJSON))
+        Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["filter"])((v) => this.project.pair.saveStrategy === _SaveStrategy__WEBPACK_IMPORTED_MODULE_7__["SaveStrategy"].AUTOMATIC), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["filter"])((v) => !this.isImportingJSON))
             .subscribe((change) => {
             this.logger.verbose('%s %s change', this.item.toString(), change[0]);
             const value = change[1];
-            this.saveProperty$.emit([change[0], Object(_packaging__WEBPACK_IMPORTED_MODULE_6__["serializeValue"])(value)]);
+            this.saveProperty$.emit([change[0], Object(_functions_packaging__WEBPACK_IMPORTED_MODULE_5__["serializeValue"])(value)]);
             this.save();
         });
         this.localChange$
-            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((v) => this.project.pair.saveStrategy === _SaveStrategy__WEBPACK_IMPORTED_MODULE_8__["SaveStrategy"].AUTOMATIC))
+            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_1__["filter"])((v) => this.project.pair.saveStrategy === _SaveStrategy__WEBPACK_IMPORTED_MODULE_7__["SaveStrategy"].AUTOMATIC))
             .subscribe((data) => {
             this.logger.verbose('localChange$', data);
             if (Array.isArray(data)) {
                 data.forEach((propName) => {
-                    const serializedValue = Object(_packaging__WEBPACK_IMPORTED_MODULE_6__["serializeValue"])(this.item[propName]);
+                    const serializedValue = Object(_functions_packaging__WEBPACK_IMPORTED_MODULE_5__["serializeValue"])(this.item[propName]);
                     this.saveProperty$.emit([propName, serializedValue]);
                 });
                 this.save();
@@ -19728,12 +19705,23 @@ class ItemPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_7__["PaperPair"] {
         }
         const childObj = localChild;
         if (!childObj.pair) {
+            let cg;
             if (!childObj.data.soul) {
-                const soul = Object(_edit_vector_converter_functions__WEBPACK_IMPORTED_MODULE_4__["getUUID"])(this.chain);
+                // This is a new child, not yet inserted in the graph
+                const soul = Object(_edit_vector_converter_functions__WEBPACK_IMPORTED_MODULE_3__["getUUID"])(this.chain).replace(/~.*/, '');
+                cg = this.children.get(soul);
                 childObj.data.soul = soul;
+                // cg = this.children.set(this.getShallow(childObj));
+                // cg.once().subscribe((v) => {
+                //   this.logger.log('exported child', v);
+                //   const soul = Gun.node.soul(v as any);
+                //   childObj.data.soul = soul;
+                // });
             }
-            const childGun = this.children.get(childObj.data.soul);
-            const childPair = new ItemPair(childGun, localChild, this.project, this.scope, this.logger);
+            else {
+                cg = this.children.get(childObj.data.soul);
+            }
+            const childPair = new ItemPair(cg, localChild, this.project, this.scope, this.logger);
             childObj.pair = childPair;
         }
     }
@@ -19763,21 +19751,25 @@ class ItemPair extends _PaperPair__WEBPACK_IMPORTED_MODULE_7__["PaperPair"] {
         if (data.length === 0) {
             return;
         }
-        this.logger.log('onGraphChildren', data
-            .map((v) => v[0])
-            .filter((i) => i !== null)
-            .map((i) => `${i.className} ${gun__WEBPACK_IMPORTED_MODULE_0__["node"].soul(i)}`));
+        // this.logger.log(
+        //   'onGraphChildren',
+        //   data
+        //     .map((v) => v[0] as Partial<paper.Item>)
+        //     .filter((i) => i !== null)
+        //     .map((i) => `${i.className} ${Gun.node.soul(i as any)}`)
+        // );
         const toInsert = [];
         data.forEach((childVK) => {
-            const soul = childVK[1];
             const json = childVK[0];
-            const child = this.getChild(soul);
+            const key = childVK[1];
+            const child = this.getChild(key);
             if (child && !json) {
                 // child was removed - this is handled by the child
+                this.logger.verbose(`child ${key} was removed.`);
             }
             else if (json && !child) {
                 // child was added
-                const newChild = this.constructChild(json, soul);
+                const newChild = this.constructChild(json, key);
                 if (newChild) {
                     // TODO Performance: onLocalChild sets up **everything** on **every** child in this loop, can we suffice for deferred setups???
                     this.onLocalChild(newChild);
@@ -19847,7 +19839,7 @@ VectorFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefi
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ShapeTool", function() { return ShapeTool; });
-/* harmony import */ var _paper_tool__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../paper-tool */ "/NF4");
+/* harmony import */ var _paper_tool__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./paper-tool */ "u/6k");
 /* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! paper */ "IiLU");
 /* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(paper__WEBPACK_IMPORTED_MODULE_1__);
 
@@ -19941,7 +19933,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deGunifyLoaded", function() { return deGunifyLoaded; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deGunifyProject", function() { return deGunifyProject; });
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "mrSG");
-/* harmony import */ var gun__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! gun */ "U+kO");
+/* harmony import */ var gun__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! gun */ "fJS/");
 /* harmony import */ var gun__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(gun__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs/operators */ "kU1M");
 /* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs */ "qCKp");
@@ -20168,6 +20160,26 @@ function deGunifyProject(node, project) {
         }
     });
     // loadNode(node).subscribe((toImport) => console.log('to import', toImport));
+}
+
+
+/***/ }),
+
+/***/ "qLiU":
+/*!****************************************************************!*\
+  !*** ./projects/demo/src/app/user/vectors/classes/PenEvent.ts ***!
+  \****************************************************************/
+/*! exports provided: PenEvent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PenEvent", function() { return PenEvent; });
+class PenEvent {
+    constructor(event, point) {
+        this.event = event;
+        this.point = point;
+    }
 }
 
 
@@ -25456,11 +25468,113 @@ ToolDirective.ɵdir = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDire
 
 /***/ }),
 
+/***/ "u/6k":
+/*!****************************************************************!*\
+  !*** ./projects/demo/src/app/user/vectors/tools/paper-tool.ts ***!
+  \****************************************************************/
+/*! exports provided: VectorTool */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VectorTool", function() { return VectorTool; });
+/* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! paper */ "IiLU");
+/* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(paper__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs */ "qCKp");
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs/operators */ "kU1M");
+/* harmony import */ var _log_src_lib_log_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../../../log/src/lib/log.service */ "Naon");
+
+
+
+
+
+class VectorTool extends paper__WEBPACK_IMPORTED_MODULE_0__["Tool"] {
+    constructor(scope) {
+        super();
+        this.scope = scope;
+        this.isPointerDown = false;
+        this.pointerDown = Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["fromEvent"])(this, 'pointerdown').pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["tap"])((e) => (this.isPointerDown = true)), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((e) => this.filterEvent(e)));
+        this.pointerUp = Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["fromEvent"])(this, 'pointerup').pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["tap"])((e) => (this.isPointerDown = false)), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((e) => this.filterEvent(e)));
+        this.pointerMove = Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["fromEvent"])(this, 'pointermove').pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((e) => this.filterEvent(e)));
+        this.pointerDrag = this.pointerMove.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((e) => this.filterEvent(e) && this.isPointerDown));
+        this.touchMove = Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["fromEvent"])(this, 'touchdown');
+        this.touchStart = Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["fromEvent"])(this, 'touchstart');
+        this.touchEnd = Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["fromEvent"])(this, 'touchend');
+        this.drag = Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["fromEvent"])(this, 'mousedrag').pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((e) => this.filterEvent(e)));
+        this.down = Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["fromEvent"])(this, 'mousedown').pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((e) => this.filterEvent(e)), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["tap"])((e) => this.activateDrawLayer()));
+        this.up = Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["fromEvent"])(this, 'mouseup').pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((e) => this.filterEvent(e)));
+        this.move = Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["fromEvent"])(this, 'mousemove').pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((e) => this.filterEvent(e)));
+        this.wheel = Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["fromEvent"])(this, 'mousewheel');
+        this.keydown = Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["fromEvent"])(this, 'keydown');
+        this.keyup = Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["fromEvent"])(this, 'keyup');
+        this.click = this.up.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["filter"])((e) => e.delta.length === 0));
+        // FIXME class names get mangled by production build, stop being lazy
+        this.name = Object.getPrototypeOf(this).constructor.name.replace(/tool/gi, '');
+        this.logger = _log_src_lib_log_service__WEBPACK_IMPORTED_MODULE_3__["LogService"].getLogger(`${this.name}`);
+        // this.touchDown.subscribe((e) => {
+        //   console.log('touch down', e);
+        // });
+        this.wheel.subscribe((e) => {
+            const zoomDelta = e.event.deltaY;
+            const viewPoint = this.scope.view.projectToView(e.point);
+            const zoomRate = 0.03 * this.scope.view.zoom;
+            this.scope.view.zoom += zoomDelta > 0 ? -zoomRate : zoomRate;
+            const zoomPoint = this.scope.view.viewToProject(viewPoint);
+            const zoomOffset = e.point
+                .subtract(zoomPoint)
+                .multiply(zoomDelta > 0 ? -1 : 1);
+            // console.log(zoomOffset);
+            this.scope.view.scrollBy(zoomOffset);
+        });
+        this.setup();
+        // this.pointerMove.subscribe((e: PenEvent) =>
+        //   this.logger.log('tool pointer event', e.point)
+        // );
+        // this.touch.subscribe((e) => this.logger.log('tool touch event', e.touches));
+    }
+    get properties() {
+        return Object.getPrototypeOf(this).___PROPERTIES || [];
+    }
+    // touchDown = this.down.pipe(filter((e: any) => e.event instanceof TouchEvent));
+    get project() {
+        return this.scope.project;
+    }
+    setup() {
+        this.pointerDown.subscribe(() => (this.isPointerDown = true));
+        this.pointerUp.subscribe(() => (this.isPointerDown = false));
+    }
+    activate() {
+        super.activate();
+    }
+    activateDrawLayer() {
+        if (this.scope.project.activeLayer.data.ignore) {
+            const drawLayer = this.project.getItem({
+                className: 'Layer',
+                data: {
+                    ignore: undefined,
+                },
+            });
+            if (drawLayer) {
+                drawLayer.activate();
+            }
+            else {
+                const newDrawLayer = new paper__WEBPACK_IMPORTED_MODULE_0__["Layer"]();
+            }
+        }
+    }
+    filterEvent(event) {
+        return true;
+    }
+}
+
+
+/***/ }),
+
 /***/ "uXa4":
 /*!*******************************************!*\
   !*** ./projects/ng-gun/src/public-api.ts ***!
   \*******************************************/
-/*! exports provided: GunOptions, NgGunService, NgGunComponent, NgGunModule, GUN_NODE, GunChain, GunAuthChain, GunCertChain, SoulPipe, UpdatedPipe, ChainDirective, AliasPipe, VerifyPipe, GunResolverService, RouteChainDirective */
+/*! exports provided: GunOptions, NgGunService, NgGunComponent, NgGunModule, GUN_NODE, GunChain, GunAuthChain, GunCertChain, SoulPipe, UpdatedPipe, ChainDirective, AliasPipe, VerifyPipe, GunResolverService, RouteChainDirective, GunMapContext, GunMapDirective */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -25508,9 +25622,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _lib_route_chain_directive__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./lib/route-chain.directive */ "wqjN");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RouteChainDirective", function() { return _lib_route_chain_directive__WEBPACK_IMPORTED_MODULE_12__["RouteChainDirective"]; });
 
+/* harmony import */ var _lib_gun_map_directive__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./lib/gun-map.directive */ "6AHW");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GunMapContext", function() { return _lib_gun_map_directive__WEBPACK_IMPORTED_MODULE_13__["GunMapContext"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "GunMapDirective", function() { return _lib_gun_map_directive__WEBPACK_IMPORTED_MODULE_13__["GunMapDirective"]; });
+
 /*
  * Public API Surface of ng-gun
  */
+
 
 
 
@@ -25539,7 +25659,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VectorService", function() { return VectorService; });
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "mrSG");
-/* harmony import */ var gun__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! gun */ "U+kO");
+/* harmony import */ var gun__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! gun */ "fJS/");
 /* harmony import */ var gun__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(gun__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/core */ "fXoL");
 /* harmony import */ var _user_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../user.service */ "DlYp");
@@ -25602,6 +25722,2657 @@ VectorService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdefineInj
 
 /***/ }),
 
+/***/ "yLV6":
+/*!*****************************************!*\
+  !*** ./node_modules/hammerjs/hammer.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_RESULT__;/*! Hammer.JS - v2.0.7 - 2016-04-22
+ * http://hammerjs.github.io/
+ *
+ * Copyright (c) 2016 Jorik Tangelder;
+ * Licensed under the MIT license */
+(function(window, document, exportName, undefined) {
+  'use strict';
+
+var VENDOR_PREFIXES = ['', 'webkit', 'Moz', 'MS', 'ms', 'o'];
+var TEST_ELEMENT = document.createElement('div');
+
+var TYPE_FUNCTION = 'function';
+
+var round = Math.round;
+var abs = Math.abs;
+var now = Date.now;
+
+/**
+ * set a timeout with a given scope
+ * @param {Function} fn
+ * @param {Number} timeout
+ * @param {Object} context
+ * @returns {number}
+ */
+function setTimeoutContext(fn, timeout, context) {
+    return setTimeout(bindFn(fn, context), timeout);
+}
+
+/**
+ * if the argument is an array, we want to execute the fn on each entry
+ * if it aint an array we don't want to do a thing.
+ * this is used by all the methods that accept a single and array argument.
+ * @param {*|Array} arg
+ * @param {String} fn
+ * @param {Object} [context]
+ * @returns {Boolean}
+ */
+function invokeArrayArg(arg, fn, context) {
+    if (Array.isArray(arg)) {
+        each(arg, context[fn], context);
+        return true;
+    }
+    return false;
+}
+
+/**
+ * walk objects and arrays
+ * @param {Object} obj
+ * @param {Function} iterator
+ * @param {Object} context
+ */
+function each(obj, iterator, context) {
+    var i;
+
+    if (!obj) {
+        return;
+    }
+
+    if (obj.forEach) {
+        obj.forEach(iterator, context);
+    } else if (obj.length !== undefined) {
+        i = 0;
+        while (i < obj.length) {
+            iterator.call(context, obj[i], i, obj);
+            i++;
+        }
+    } else {
+        for (i in obj) {
+            obj.hasOwnProperty(i) && iterator.call(context, obj[i], i, obj);
+        }
+    }
+}
+
+/**
+ * wrap a method with a deprecation warning and stack trace
+ * @param {Function} method
+ * @param {String} name
+ * @param {String} message
+ * @returns {Function} A new function wrapping the supplied method.
+ */
+function deprecate(method, name, message) {
+    var deprecationMessage = 'DEPRECATED METHOD: ' + name + '\n' + message + ' AT \n';
+    return function() {
+        var e = new Error('get-stack-trace');
+        var stack = e && e.stack ? e.stack.replace(/^[^\(]+?[\n$]/gm, '')
+            .replace(/^\s+at\s+/gm, '')
+            .replace(/^Object.<anonymous>\s*\(/gm, '{anonymous}()@') : 'Unknown Stack Trace';
+
+        var log = window.console && (window.console.warn || window.console.log);
+        if (log) {
+            log.call(window.console, deprecationMessage, stack);
+        }
+        return method.apply(this, arguments);
+    };
+}
+
+/**
+ * extend object.
+ * means that properties in dest will be overwritten by the ones in src.
+ * @param {Object} target
+ * @param {...Object} objects_to_assign
+ * @returns {Object} target
+ */
+var assign;
+if (typeof Object.assign !== 'function') {
+    assign = function assign(target) {
+        if (target === undefined || target === null) {
+            throw new TypeError('Cannot convert undefined or null to object');
+        }
+
+        var output = Object(target);
+        for (var index = 1; index < arguments.length; index++) {
+            var source = arguments[index];
+            if (source !== undefined && source !== null) {
+                for (var nextKey in source) {
+                    if (source.hasOwnProperty(nextKey)) {
+                        output[nextKey] = source[nextKey];
+                    }
+                }
+            }
+        }
+        return output;
+    };
+} else {
+    assign = Object.assign;
+}
+
+/**
+ * extend object.
+ * means that properties in dest will be overwritten by the ones in src.
+ * @param {Object} dest
+ * @param {Object} src
+ * @param {Boolean} [merge=false]
+ * @returns {Object} dest
+ */
+var extend = deprecate(function extend(dest, src, merge) {
+    var keys = Object.keys(src);
+    var i = 0;
+    while (i < keys.length) {
+        if (!merge || (merge && dest[keys[i]] === undefined)) {
+            dest[keys[i]] = src[keys[i]];
+        }
+        i++;
+    }
+    return dest;
+}, 'extend', 'Use `assign`.');
+
+/**
+ * merge the values from src in the dest.
+ * means that properties that exist in dest will not be overwritten by src
+ * @param {Object} dest
+ * @param {Object} src
+ * @returns {Object} dest
+ */
+var merge = deprecate(function merge(dest, src) {
+    return extend(dest, src, true);
+}, 'merge', 'Use `assign`.');
+
+/**
+ * simple class inheritance
+ * @param {Function} child
+ * @param {Function} base
+ * @param {Object} [properties]
+ */
+function inherit(child, base, properties) {
+    var baseP = base.prototype,
+        childP;
+
+    childP = child.prototype = Object.create(baseP);
+    childP.constructor = child;
+    childP._super = baseP;
+
+    if (properties) {
+        assign(childP, properties);
+    }
+}
+
+/**
+ * simple function bind
+ * @param {Function} fn
+ * @param {Object} context
+ * @returns {Function}
+ */
+function bindFn(fn, context) {
+    return function boundFn() {
+        return fn.apply(context, arguments);
+    };
+}
+
+/**
+ * let a boolean value also be a function that must return a boolean
+ * this first item in args will be used as the context
+ * @param {Boolean|Function} val
+ * @param {Array} [args]
+ * @returns {Boolean}
+ */
+function boolOrFn(val, args) {
+    if (typeof val == TYPE_FUNCTION) {
+        return val.apply(args ? args[0] || undefined : undefined, args);
+    }
+    return val;
+}
+
+/**
+ * use the val2 when val1 is undefined
+ * @param {*} val1
+ * @param {*} val2
+ * @returns {*}
+ */
+function ifUndefined(val1, val2) {
+    return (val1 === undefined) ? val2 : val1;
+}
+
+/**
+ * addEventListener with multiple events at once
+ * @param {EventTarget} target
+ * @param {String} types
+ * @param {Function} handler
+ */
+function addEventListeners(target, types, handler) {
+    each(splitStr(types), function(type) {
+        target.addEventListener(type, handler, false);
+    });
+}
+
+/**
+ * removeEventListener with multiple events at once
+ * @param {EventTarget} target
+ * @param {String} types
+ * @param {Function} handler
+ */
+function removeEventListeners(target, types, handler) {
+    each(splitStr(types), function(type) {
+        target.removeEventListener(type, handler, false);
+    });
+}
+
+/**
+ * find if a node is in the given parent
+ * @method hasParent
+ * @param {HTMLElement} node
+ * @param {HTMLElement} parent
+ * @return {Boolean} found
+ */
+function hasParent(node, parent) {
+    while (node) {
+        if (node == parent) {
+            return true;
+        }
+        node = node.parentNode;
+    }
+    return false;
+}
+
+/**
+ * small indexOf wrapper
+ * @param {String} str
+ * @param {String} find
+ * @returns {Boolean} found
+ */
+function inStr(str, find) {
+    return str.indexOf(find) > -1;
+}
+
+/**
+ * split string on whitespace
+ * @param {String} str
+ * @returns {Array} words
+ */
+function splitStr(str) {
+    return str.trim().split(/\s+/g);
+}
+
+/**
+ * find if a array contains the object using indexOf or a simple polyFill
+ * @param {Array} src
+ * @param {String} find
+ * @param {String} [findByKey]
+ * @return {Boolean|Number} false when not found, or the index
+ */
+function inArray(src, find, findByKey) {
+    if (src.indexOf && !findByKey) {
+        return src.indexOf(find);
+    } else {
+        var i = 0;
+        while (i < src.length) {
+            if ((findByKey && src[i][findByKey] == find) || (!findByKey && src[i] === find)) {
+                return i;
+            }
+            i++;
+        }
+        return -1;
+    }
+}
+
+/**
+ * convert array-like objects to real arrays
+ * @param {Object} obj
+ * @returns {Array}
+ */
+function toArray(obj) {
+    return Array.prototype.slice.call(obj, 0);
+}
+
+/**
+ * unique array with objects based on a key (like 'id') or just by the array's value
+ * @param {Array} src [{id:1},{id:2},{id:1}]
+ * @param {String} [key]
+ * @param {Boolean} [sort=False]
+ * @returns {Array} [{id:1},{id:2}]
+ */
+function uniqueArray(src, key, sort) {
+    var results = [];
+    var values = [];
+    var i = 0;
+
+    while (i < src.length) {
+        var val = key ? src[i][key] : src[i];
+        if (inArray(values, val) < 0) {
+            results.push(src[i]);
+        }
+        values[i] = val;
+        i++;
+    }
+
+    if (sort) {
+        if (!key) {
+            results = results.sort();
+        } else {
+            results = results.sort(function sortUniqueArray(a, b) {
+                return a[key] > b[key];
+            });
+        }
+    }
+
+    return results;
+}
+
+/**
+ * get the prefixed property
+ * @param {Object} obj
+ * @param {String} property
+ * @returns {String|Undefined} prefixed
+ */
+function prefixed(obj, property) {
+    var prefix, prop;
+    var camelProp = property[0].toUpperCase() + property.slice(1);
+
+    var i = 0;
+    while (i < VENDOR_PREFIXES.length) {
+        prefix = VENDOR_PREFIXES[i];
+        prop = (prefix) ? prefix + camelProp : property;
+
+        if (prop in obj) {
+            return prop;
+        }
+        i++;
+    }
+    return undefined;
+}
+
+/**
+ * get a unique id
+ * @returns {number} uniqueId
+ */
+var _uniqueId = 1;
+function uniqueId() {
+    return _uniqueId++;
+}
+
+/**
+ * get the window object of an element
+ * @param {HTMLElement} element
+ * @returns {DocumentView|Window}
+ */
+function getWindowForElement(element) {
+    var doc = element.ownerDocument || element;
+    return (doc.defaultView || doc.parentWindow || window);
+}
+
+var MOBILE_REGEX = /mobile|tablet|ip(ad|hone|od)|android/i;
+
+var SUPPORT_TOUCH = ('ontouchstart' in window);
+var SUPPORT_POINTER_EVENTS = prefixed(window, 'PointerEvent') !== undefined;
+var SUPPORT_ONLY_TOUCH = SUPPORT_TOUCH && MOBILE_REGEX.test(navigator.userAgent);
+
+var INPUT_TYPE_TOUCH = 'touch';
+var INPUT_TYPE_PEN = 'pen';
+var INPUT_TYPE_MOUSE = 'mouse';
+var INPUT_TYPE_KINECT = 'kinect';
+
+var COMPUTE_INTERVAL = 25;
+
+var INPUT_START = 1;
+var INPUT_MOVE = 2;
+var INPUT_END = 4;
+var INPUT_CANCEL = 8;
+
+var DIRECTION_NONE = 1;
+var DIRECTION_LEFT = 2;
+var DIRECTION_RIGHT = 4;
+var DIRECTION_UP = 8;
+var DIRECTION_DOWN = 16;
+
+var DIRECTION_HORIZONTAL = DIRECTION_LEFT | DIRECTION_RIGHT;
+var DIRECTION_VERTICAL = DIRECTION_UP | DIRECTION_DOWN;
+var DIRECTION_ALL = DIRECTION_HORIZONTAL | DIRECTION_VERTICAL;
+
+var PROPS_XY = ['x', 'y'];
+var PROPS_CLIENT_XY = ['clientX', 'clientY'];
+
+/**
+ * create new input type manager
+ * @param {Manager} manager
+ * @param {Function} callback
+ * @returns {Input}
+ * @constructor
+ */
+function Input(manager, callback) {
+    var self = this;
+    this.manager = manager;
+    this.callback = callback;
+    this.element = manager.element;
+    this.target = manager.options.inputTarget;
+
+    // smaller wrapper around the handler, for the scope and the enabled state of the manager,
+    // so when disabled the input events are completely bypassed.
+    this.domHandler = function(ev) {
+        if (boolOrFn(manager.options.enable, [manager])) {
+            self.handler(ev);
+        }
+    };
+
+    this.init();
+
+}
+
+Input.prototype = {
+    /**
+     * should handle the inputEvent data and trigger the callback
+     * @virtual
+     */
+    handler: function() { },
+
+    /**
+     * bind the events
+     */
+    init: function() {
+        this.evEl && addEventListeners(this.element, this.evEl, this.domHandler);
+        this.evTarget && addEventListeners(this.target, this.evTarget, this.domHandler);
+        this.evWin && addEventListeners(getWindowForElement(this.element), this.evWin, this.domHandler);
+    },
+
+    /**
+     * unbind the events
+     */
+    destroy: function() {
+        this.evEl && removeEventListeners(this.element, this.evEl, this.domHandler);
+        this.evTarget && removeEventListeners(this.target, this.evTarget, this.domHandler);
+        this.evWin && removeEventListeners(getWindowForElement(this.element), this.evWin, this.domHandler);
+    }
+};
+
+/**
+ * create new input type manager
+ * called by the Manager constructor
+ * @param {Hammer} manager
+ * @returns {Input}
+ */
+function createInputInstance(manager) {
+    var Type;
+    var inputClass = manager.options.inputClass;
+
+    if (inputClass) {
+        Type = inputClass;
+    } else if (SUPPORT_POINTER_EVENTS) {
+        Type = PointerEventInput;
+    } else if (SUPPORT_ONLY_TOUCH) {
+        Type = TouchInput;
+    } else if (!SUPPORT_TOUCH) {
+        Type = MouseInput;
+    } else {
+        Type = TouchMouseInput;
+    }
+    return new (Type)(manager, inputHandler);
+}
+
+/**
+ * handle input events
+ * @param {Manager} manager
+ * @param {String} eventType
+ * @param {Object} input
+ */
+function inputHandler(manager, eventType, input) {
+    var pointersLen = input.pointers.length;
+    var changedPointersLen = input.changedPointers.length;
+    var isFirst = (eventType & INPUT_START && (pointersLen - changedPointersLen === 0));
+    var isFinal = (eventType & (INPUT_END | INPUT_CANCEL) && (pointersLen - changedPointersLen === 0));
+
+    input.isFirst = !!isFirst;
+    input.isFinal = !!isFinal;
+
+    if (isFirst) {
+        manager.session = {};
+    }
+
+    // source event is the normalized value of the domEvents
+    // like 'touchstart, mouseup, pointerdown'
+    input.eventType = eventType;
+
+    // compute scale, rotation etc
+    computeInputData(manager, input);
+
+    // emit secret event
+    manager.emit('hammer.input', input);
+
+    manager.recognize(input);
+    manager.session.prevInput = input;
+}
+
+/**
+ * extend the data with some usable properties like scale, rotate, velocity etc
+ * @param {Object} manager
+ * @param {Object} input
+ */
+function computeInputData(manager, input) {
+    var session = manager.session;
+    var pointers = input.pointers;
+    var pointersLength = pointers.length;
+
+    // store the first input to calculate the distance and direction
+    if (!session.firstInput) {
+        session.firstInput = simpleCloneInputData(input);
+    }
+
+    // to compute scale and rotation we need to store the multiple touches
+    if (pointersLength > 1 && !session.firstMultiple) {
+        session.firstMultiple = simpleCloneInputData(input);
+    } else if (pointersLength === 1) {
+        session.firstMultiple = false;
+    }
+
+    var firstInput = session.firstInput;
+    var firstMultiple = session.firstMultiple;
+    var offsetCenter = firstMultiple ? firstMultiple.center : firstInput.center;
+
+    var center = input.center = getCenter(pointers);
+    input.timeStamp = now();
+    input.deltaTime = input.timeStamp - firstInput.timeStamp;
+
+    input.angle = getAngle(offsetCenter, center);
+    input.distance = getDistance(offsetCenter, center);
+
+    computeDeltaXY(session, input);
+    input.offsetDirection = getDirection(input.deltaX, input.deltaY);
+
+    var overallVelocity = getVelocity(input.deltaTime, input.deltaX, input.deltaY);
+    input.overallVelocityX = overallVelocity.x;
+    input.overallVelocityY = overallVelocity.y;
+    input.overallVelocity = (abs(overallVelocity.x) > abs(overallVelocity.y)) ? overallVelocity.x : overallVelocity.y;
+
+    input.scale = firstMultiple ? getScale(firstMultiple.pointers, pointers) : 1;
+    input.rotation = firstMultiple ? getRotation(firstMultiple.pointers, pointers) : 0;
+
+    input.maxPointers = !session.prevInput ? input.pointers.length : ((input.pointers.length >
+        session.prevInput.maxPointers) ? input.pointers.length : session.prevInput.maxPointers);
+
+    computeIntervalInputData(session, input);
+
+    // find the correct target
+    var target = manager.element;
+    if (hasParent(input.srcEvent.target, target)) {
+        target = input.srcEvent.target;
+    }
+    input.target = target;
+}
+
+function computeDeltaXY(session, input) {
+    var center = input.center;
+    var offset = session.offsetDelta || {};
+    var prevDelta = session.prevDelta || {};
+    var prevInput = session.prevInput || {};
+
+    if (input.eventType === INPUT_START || prevInput.eventType === INPUT_END) {
+        prevDelta = session.prevDelta = {
+            x: prevInput.deltaX || 0,
+            y: prevInput.deltaY || 0
+        };
+
+        offset = session.offsetDelta = {
+            x: center.x,
+            y: center.y
+        };
+    }
+
+    input.deltaX = prevDelta.x + (center.x - offset.x);
+    input.deltaY = prevDelta.y + (center.y - offset.y);
+}
+
+/**
+ * velocity is calculated every x ms
+ * @param {Object} session
+ * @param {Object} input
+ */
+function computeIntervalInputData(session, input) {
+    var last = session.lastInterval || input,
+        deltaTime = input.timeStamp - last.timeStamp,
+        velocity, velocityX, velocityY, direction;
+
+    if (input.eventType != INPUT_CANCEL && (deltaTime > COMPUTE_INTERVAL || last.velocity === undefined)) {
+        var deltaX = input.deltaX - last.deltaX;
+        var deltaY = input.deltaY - last.deltaY;
+
+        var v = getVelocity(deltaTime, deltaX, deltaY);
+        velocityX = v.x;
+        velocityY = v.y;
+        velocity = (abs(v.x) > abs(v.y)) ? v.x : v.y;
+        direction = getDirection(deltaX, deltaY);
+
+        session.lastInterval = input;
+    } else {
+        // use latest velocity info if it doesn't overtake a minimum period
+        velocity = last.velocity;
+        velocityX = last.velocityX;
+        velocityY = last.velocityY;
+        direction = last.direction;
+    }
+
+    input.velocity = velocity;
+    input.velocityX = velocityX;
+    input.velocityY = velocityY;
+    input.direction = direction;
+}
+
+/**
+ * create a simple clone from the input used for storage of firstInput and firstMultiple
+ * @param {Object} input
+ * @returns {Object} clonedInputData
+ */
+function simpleCloneInputData(input) {
+    // make a simple copy of the pointers because we will get a reference if we don't
+    // we only need clientXY for the calculations
+    var pointers = [];
+    var i = 0;
+    while (i < input.pointers.length) {
+        pointers[i] = {
+            clientX: round(input.pointers[i].clientX),
+            clientY: round(input.pointers[i].clientY)
+        };
+        i++;
+    }
+
+    return {
+        timeStamp: now(),
+        pointers: pointers,
+        center: getCenter(pointers),
+        deltaX: input.deltaX,
+        deltaY: input.deltaY
+    };
+}
+
+/**
+ * get the center of all the pointers
+ * @param {Array} pointers
+ * @return {Object} center contains `x` and `y` properties
+ */
+function getCenter(pointers) {
+    var pointersLength = pointers.length;
+
+    // no need to loop when only one touch
+    if (pointersLength === 1) {
+        return {
+            x: round(pointers[0].clientX),
+            y: round(pointers[0].clientY)
+        };
+    }
+
+    var x = 0, y = 0, i = 0;
+    while (i < pointersLength) {
+        x += pointers[i].clientX;
+        y += pointers[i].clientY;
+        i++;
+    }
+
+    return {
+        x: round(x / pointersLength),
+        y: round(y / pointersLength)
+    };
+}
+
+/**
+ * calculate the velocity between two points. unit is in px per ms.
+ * @param {Number} deltaTime
+ * @param {Number} x
+ * @param {Number} y
+ * @return {Object} velocity `x` and `y`
+ */
+function getVelocity(deltaTime, x, y) {
+    return {
+        x: x / deltaTime || 0,
+        y: y / deltaTime || 0
+    };
+}
+
+/**
+ * get the direction between two points
+ * @param {Number} x
+ * @param {Number} y
+ * @return {Number} direction
+ */
+function getDirection(x, y) {
+    if (x === y) {
+        return DIRECTION_NONE;
+    }
+
+    if (abs(x) >= abs(y)) {
+        return x < 0 ? DIRECTION_LEFT : DIRECTION_RIGHT;
+    }
+    return y < 0 ? DIRECTION_UP : DIRECTION_DOWN;
+}
+
+/**
+ * calculate the absolute distance between two points
+ * @param {Object} p1 {x, y}
+ * @param {Object} p2 {x, y}
+ * @param {Array} [props] containing x and y keys
+ * @return {Number} distance
+ */
+function getDistance(p1, p2, props) {
+    if (!props) {
+        props = PROPS_XY;
+    }
+    var x = p2[props[0]] - p1[props[0]],
+        y = p2[props[1]] - p1[props[1]];
+
+    return Math.sqrt((x * x) + (y * y));
+}
+
+/**
+ * calculate the angle between two coordinates
+ * @param {Object} p1
+ * @param {Object} p2
+ * @param {Array} [props] containing x and y keys
+ * @return {Number} angle
+ */
+function getAngle(p1, p2, props) {
+    if (!props) {
+        props = PROPS_XY;
+    }
+    var x = p2[props[0]] - p1[props[0]],
+        y = p2[props[1]] - p1[props[1]];
+    return Math.atan2(y, x) * 180 / Math.PI;
+}
+
+/**
+ * calculate the rotation degrees between two pointersets
+ * @param {Array} start array of pointers
+ * @param {Array} end array of pointers
+ * @return {Number} rotation
+ */
+function getRotation(start, end) {
+    return getAngle(end[1], end[0], PROPS_CLIENT_XY) + getAngle(start[1], start[0], PROPS_CLIENT_XY);
+}
+
+/**
+ * calculate the scale factor between two pointersets
+ * no scale is 1, and goes down to 0 when pinched together, and bigger when pinched out
+ * @param {Array} start array of pointers
+ * @param {Array} end array of pointers
+ * @return {Number} scale
+ */
+function getScale(start, end) {
+    return getDistance(end[0], end[1], PROPS_CLIENT_XY) / getDistance(start[0], start[1], PROPS_CLIENT_XY);
+}
+
+var MOUSE_INPUT_MAP = {
+    mousedown: INPUT_START,
+    mousemove: INPUT_MOVE,
+    mouseup: INPUT_END
+};
+
+var MOUSE_ELEMENT_EVENTS = 'mousedown';
+var MOUSE_WINDOW_EVENTS = 'mousemove mouseup';
+
+/**
+ * Mouse events input
+ * @constructor
+ * @extends Input
+ */
+function MouseInput() {
+    this.evEl = MOUSE_ELEMENT_EVENTS;
+    this.evWin = MOUSE_WINDOW_EVENTS;
+
+    this.pressed = false; // mousedown state
+
+    Input.apply(this, arguments);
+}
+
+inherit(MouseInput, Input, {
+    /**
+     * handle mouse events
+     * @param {Object} ev
+     */
+    handler: function MEhandler(ev) {
+        var eventType = MOUSE_INPUT_MAP[ev.type];
+
+        // on start we want to have the left mouse button down
+        if (eventType & INPUT_START && ev.button === 0) {
+            this.pressed = true;
+        }
+
+        if (eventType & INPUT_MOVE && ev.which !== 1) {
+            eventType = INPUT_END;
+        }
+
+        // mouse must be down
+        if (!this.pressed) {
+            return;
+        }
+
+        if (eventType & INPUT_END) {
+            this.pressed = false;
+        }
+
+        this.callback(this.manager, eventType, {
+            pointers: [ev],
+            changedPointers: [ev],
+            pointerType: INPUT_TYPE_MOUSE,
+            srcEvent: ev
+        });
+    }
+});
+
+var POINTER_INPUT_MAP = {
+    pointerdown: INPUT_START,
+    pointermove: INPUT_MOVE,
+    pointerup: INPUT_END,
+    pointercancel: INPUT_CANCEL,
+    pointerout: INPUT_CANCEL
+};
+
+// in IE10 the pointer types is defined as an enum
+var IE10_POINTER_TYPE_ENUM = {
+    2: INPUT_TYPE_TOUCH,
+    3: INPUT_TYPE_PEN,
+    4: INPUT_TYPE_MOUSE,
+    5: INPUT_TYPE_KINECT // see https://twitter.com/jacobrossi/status/480596438489890816
+};
+
+var POINTER_ELEMENT_EVENTS = 'pointerdown';
+var POINTER_WINDOW_EVENTS = 'pointermove pointerup pointercancel';
+
+// IE10 has prefixed support, and case-sensitive
+if (window.MSPointerEvent && !window.PointerEvent) {
+    POINTER_ELEMENT_EVENTS = 'MSPointerDown';
+    POINTER_WINDOW_EVENTS = 'MSPointerMove MSPointerUp MSPointerCancel';
+}
+
+/**
+ * Pointer events input
+ * @constructor
+ * @extends Input
+ */
+function PointerEventInput() {
+    this.evEl = POINTER_ELEMENT_EVENTS;
+    this.evWin = POINTER_WINDOW_EVENTS;
+
+    Input.apply(this, arguments);
+
+    this.store = (this.manager.session.pointerEvents = []);
+}
+
+inherit(PointerEventInput, Input, {
+    /**
+     * handle mouse events
+     * @param {Object} ev
+     */
+    handler: function PEhandler(ev) {
+        var store = this.store;
+        var removePointer = false;
+
+        var eventTypeNormalized = ev.type.toLowerCase().replace('ms', '');
+        var eventType = POINTER_INPUT_MAP[eventTypeNormalized];
+        var pointerType = IE10_POINTER_TYPE_ENUM[ev.pointerType] || ev.pointerType;
+
+        var isTouch = (pointerType == INPUT_TYPE_TOUCH);
+
+        // get index of the event in the store
+        var storeIndex = inArray(store, ev.pointerId, 'pointerId');
+
+        // start and mouse must be down
+        if (eventType & INPUT_START && (ev.button === 0 || isTouch)) {
+            if (storeIndex < 0) {
+                store.push(ev);
+                storeIndex = store.length - 1;
+            }
+        } else if (eventType & (INPUT_END | INPUT_CANCEL)) {
+            removePointer = true;
+        }
+
+        // it not found, so the pointer hasn't been down (so it's probably a hover)
+        if (storeIndex < 0) {
+            return;
+        }
+
+        // update the event in the store
+        store[storeIndex] = ev;
+
+        this.callback(this.manager, eventType, {
+            pointers: store,
+            changedPointers: [ev],
+            pointerType: pointerType,
+            srcEvent: ev
+        });
+
+        if (removePointer) {
+            // remove from the store
+            store.splice(storeIndex, 1);
+        }
+    }
+});
+
+var SINGLE_TOUCH_INPUT_MAP = {
+    touchstart: INPUT_START,
+    touchmove: INPUT_MOVE,
+    touchend: INPUT_END,
+    touchcancel: INPUT_CANCEL
+};
+
+var SINGLE_TOUCH_TARGET_EVENTS = 'touchstart';
+var SINGLE_TOUCH_WINDOW_EVENTS = 'touchstart touchmove touchend touchcancel';
+
+/**
+ * Touch events input
+ * @constructor
+ * @extends Input
+ */
+function SingleTouchInput() {
+    this.evTarget = SINGLE_TOUCH_TARGET_EVENTS;
+    this.evWin = SINGLE_TOUCH_WINDOW_EVENTS;
+    this.started = false;
+
+    Input.apply(this, arguments);
+}
+
+inherit(SingleTouchInput, Input, {
+    handler: function TEhandler(ev) {
+        var type = SINGLE_TOUCH_INPUT_MAP[ev.type];
+
+        // should we handle the touch events?
+        if (type === INPUT_START) {
+            this.started = true;
+        }
+
+        if (!this.started) {
+            return;
+        }
+
+        var touches = normalizeSingleTouches.call(this, ev, type);
+
+        // when done, reset the started state
+        if (type & (INPUT_END | INPUT_CANCEL) && touches[0].length - touches[1].length === 0) {
+            this.started = false;
+        }
+
+        this.callback(this.manager, type, {
+            pointers: touches[0],
+            changedPointers: touches[1],
+            pointerType: INPUT_TYPE_TOUCH,
+            srcEvent: ev
+        });
+    }
+});
+
+/**
+ * @this {TouchInput}
+ * @param {Object} ev
+ * @param {Number} type flag
+ * @returns {undefined|Array} [all, changed]
+ */
+function normalizeSingleTouches(ev, type) {
+    var all = toArray(ev.touches);
+    var changed = toArray(ev.changedTouches);
+
+    if (type & (INPUT_END | INPUT_CANCEL)) {
+        all = uniqueArray(all.concat(changed), 'identifier', true);
+    }
+
+    return [all, changed];
+}
+
+var TOUCH_INPUT_MAP = {
+    touchstart: INPUT_START,
+    touchmove: INPUT_MOVE,
+    touchend: INPUT_END,
+    touchcancel: INPUT_CANCEL
+};
+
+var TOUCH_TARGET_EVENTS = 'touchstart touchmove touchend touchcancel';
+
+/**
+ * Multi-user touch events input
+ * @constructor
+ * @extends Input
+ */
+function TouchInput() {
+    this.evTarget = TOUCH_TARGET_EVENTS;
+    this.targetIds = {};
+
+    Input.apply(this, arguments);
+}
+
+inherit(TouchInput, Input, {
+    handler: function MTEhandler(ev) {
+        var type = TOUCH_INPUT_MAP[ev.type];
+        var touches = getTouches.call(this, ev, type);
+        if (!touches) {
+            return;
+        }
+
+        this.callback(this.manager, type, {
+            pointers: touches[0],
+            changedPointers: touches[1],
+            pointerType: INPUT_TYPE_TOUCH,
+            srcEvent: ev
+        });
+    }
+});
+
+/**
+ * @this {TouchInput}
+ * @param {Object} ev
+ * @param {Number} type flag
+ * @returns {undefined|Array} [all, changed]
+ */
+function getTouches(ev, type) {
+    var allTouches = toArray(ev.touches);
+    var targetIds = this.targetIds;
+
+    // when there is only one touch, the process can be simplified
+    if (type & (INPUT_START | INPUT_MOVE) && allTouches.length === 1) {
+        targetIds[allTouches[0].identifier] = true;
+        return [allTouches, allTouches];
+    }
+
+    var i,
+        targetTouches,
+        changedTouches = toArray(ev.changedTouches),
+        changedTargetTouches = [],
+        target = this.target;
+
+    // get target touches from touches
+    targetTouches = allTouches.filter(function(touch) {
+        return hasParent(touch.target, target);
+    });
+
+    // collect touches
+    if (type === INPUT_START) {
+        i = 0;
+        while (i < targetTouches.length) {
+            targetIds[targetTouches[i].identifier] = true;
+            i++;
+        }
+    }
+
+    // filter changed touches to only contain touches that exist in the collected target ids
+    i = 0;
+    while (i < changedTouches.length) {
+        if (targetIds[changedTouches[i].identifier]) {
+            changedTargetTouches.push(changedTouches[i]);
+        }
+
+        // cleanup removed touches
+        if (type & (INPUT_END | INPUT_CANCEL)) {
+            delete targetIds[changedTouches[i].identifier];
+        }
+        i++;
+    }
+
+    if (!changedTargetTouches.length) {
+        return;
+    }
+
+    return [
+        // merge targetTouches with changedTargetTouches so it contains ALL touches, including 'end' and 'cancel'
+        uniqueArray(targetTouches.concat(changedTargetTouches), 'identifier', true),
+        changedTargetTouches
+    ];
+}
+
+/**
+ * Combined touch and mouse input
+ *
+ * Touch has a higher priority then mouse, and while touching no mouse events are allowed.
+ * This because touch devices also emit mouse events while doing a touch.
+ *
+ * @constructor
+ * @extends Input
+ */
+
+var DEDUP_TIMEOUT = 2500;
+var DEDUP_DISTANCE = 25;
+
+function TouchMouseInput() {
+    Input.apply(this, arguments);
+
+    var handler = bindFn(this.handler, this);
+    this.touch = new TouchInput(this.manager, handler);
+    this.mouse = new MouseInput(this.manager, handler);
+
+    this.primaryTouch = null;
+    this.lastTouches = [];
+}
+
+inherit(TouchMouseInput, Input, {
+    /**
+     * handle mouse and touch events
+     * @param {Hammer} manager
+     * @param {String} inputEvent
+     * @param {Object} inputData
+     */
+    handler: function TMEhandler(manager, inputEvent, inputData) {
+        var isTouch = (inputData.pointerType == INPUT_TYPE_TOUCH),
+            isMouse = (inputData.pointerType == INPUT_TYPE_MOUSE);
+
+        if (isMouse && inputData.sourceCapabilities && inputData.sourceCapabilities.firesTouchEvents) {
+            return;
+        }
+
+        // when we're in a touch event, record touches to  de-dupe synthetic mouse event
+        if (isTouch) {
+            recordTouches.call(this, inputEvent, inputData);
+        } else if (isMouse && isSyntheticEvent.call(this, inputData)) {
+            return;
+        }
+
+        this.callback(manager, inputEvent, inputData);
+    },
+
+    /**
+     * remove the event listeners
+     */
+    destroy: function destroy() {
+        this.touch.destroy();
+        this.mouse.destroy();
+    }
+});
+
+function recordTouches(eventType, eventData) {
+    if (eventType & INPUT_START) {
+        this.primaryTouch = eventData.changedPointers[0].identifier;
+        setLastTouch.call(this, eventData);
+    } else if (eventType & (INPUT_END | INPUT_CANCEL)) {
+        setLastTouch.call(this, eventData);
+    }
+}
+
+function setLastTouch(eventData) {
+    var touch = eventData.changedPointers[0];
+
+    if (touch.identifier === this.primaryTouch) {
+        var lastTouch = {x: touch.clientX, y: touch.clientY};
+        this.lastTouches.push(lastTouch);
+        var lts = this.lastTouches;
+        var removeLastTouch = function() {
+            var i = lts.indexOf(lastTouch);
+            if (i > -1) {
+                lts.splice(i, 1);
+            }
+        };
+        setTimeout(removeLastTouch, DEDUP_TIMEOUT);
+    }
+}
+
+function isSyntheticEvent(eventData) {
+    var x = eventData.srcEvent.clientX, y = eventData.srcEvent.clientY;
+    for (var i = 0; i < this.lastTouches.length; i++) {
+        var t = this.lastTouches[i];
+        var dx = Math.abs(x - t.x), dy = Math.abs(y - t.y);
+        if (dx <= DEDUP_DISTANCE && dy <= DEDUP_DISTANCE) {
+            return true;
+        }
+    }
+    return false;
+}
+
+var PREFIXED_TOUCH_ACTION = prefixed(TEST_ELEMENT.style, 'touchAction');
+var NATIVE_TOUCH_ACTION = PREFIXED_TOUCH_ACTION !== undefined;
+
+// magical touchAction value
+var TOUCH_ACTION_COMPUTE = 'compute';
+var TOUCH_ACTION_AUTO = 'auto';
+var TOUCH_ACTION_MANIPULATION = 'manipulation'; // not implemented
+var TOUCH_ACTION_NONE = 'none';
+var TOUCH_ACTION_PAN_X = 'pan-x';
+var TOUCH_ACTION_PAN_Y = 'pan-y';
+var TOUCH_ACTION_MAP = getTouchActionProps();
+
+/**
+ * Touch Action
+ * sets the touchAction property or uses the js alternative
+ * @param {Manager} manager
+ * @param {String} value
+ * @constructor
+ */
+function TouchAction(manager, value) {
+    this.manager = manager;
+    this.set(value);
+}
+
+TouchAction.prototype = {
+    /**
+     * set the touchAction value on the element or enable the polyfill
+     * @param {String} value
+     */
+    set: function(value) {
+        // find out the touch-action by the event handlers
+        if (value == TOUCH_ACTION_COMPUTE) {
+            value = this.compute();
+        }
+
+        if (NATIVE_TOUCH_ACTION && this.manager.element.style && TOUCH_ACTION_MAP[value]) {
+            this.manager.element.style[PREFIXED_TOUCH_ACTION] = value;
+        }
+        this.actions = value.toLowerCase().trim();
+    },
+
+    /**
+     * just re-set the touchAction value
+     */
+    update: function() {
+        this.set(this.manager.options.touchAction);
+    },
+
+    /**
+     * compute the value for the touchAction property based on the recognizer's settings
+     * @returns {String} value
+     */
+    compute: function() {
+        var actions = [];
+        each(this.manager.recognizers, function(recognizer) {
+            if (boolOrFn(recognizer.options.enable, [recognizer])) {
+                actions = actions.concat(recognizer.getTouchAction());
+            }
+        });
+        return cleanTouchActions(actions.join(' '));
+    },
+
+    /**
+     * this method is called on each input cycle and provides the preventing of the browser behavior
+     * @param {Object} input
+     */
+    preventDefaults: function(input) {
+        var srcEvent = input.srcEvent;
+        var direction = input.offsetDirection;
+
+        // if the touch action did prevented once this session
+        if (this.manager.session.prevented) {
+            srcEvent.preventDefault();
+            return;
+        }
+
+        var actions = this.actions;
+        var hasNone = inStr(actions, TOUCH_ACTION_NONE) && !TOUCH_ACTION_MAP[TOUCH_ACTION_NONE];
+        var hasPanY = inStr(actions, TOUCH_ACTION_PAN_Y) && !TOUCH_ACTION_MAP[TOUCH_ACTION_PAN_Y];
+        var hasPanX = inStr(actions, TOUCH_ACTION_PAN_X) && !TOUCH_ACTION_MAP[TOUCH_ACTION_PAN_X];
+
+        if (hasNone) {
+            //do not prevent defaults if this is a tap gesture
+
+            var isTapPointer = input.pointers.length === 1;
+            var isTapMovement = input.distance < 2;
+            var isTapTouchTime = input.deltaTime < 250;
+
+            if (isTapPointer && isTapMovement && isTapTouchTime) {
+                return;
+            }
+        }
+
+        if (hasPanX && hasPanY) {
+            // `pan-x pan-y` means browser handles all scrolling/panning, do not prevent
+            return;
+        }
+
+        if (hasNone ||
+            (hasPanY && direction & DIRECTION_HORIZONTAL) ||
+            (hasPanX && direction & DIRECTION_VERTICAL)) {
+            return this.preventSrc(srcEvent);
+        }
+    },
+
+    /**
+     * call preventDefault to prevent the browser's default behavior (scrolling in most cases)
+     * @param {Object} srcEvent
+     */
+    preventSrc: function(srcEvent) {
+        this.manager.session.prevented = true;
+        srcEvent.preventDefault();
+    }
+};
+
+/**
+ * when the touchActions are collected they are not a valid value, so we need to clean things up. *
+ * @param {String} actions
+ * @returns {*}
+ */
+function cleanTouchActions(actions) {
+    // none
+    if (inStr(actions, TOUCH_ACTION_NONE)) {
+        return TOUCH_ACTION_NONE;
+    }
+
+    var hasPanX = inStr(actions, TOUCH_ACTION_PAN_X);
+    var hasPanY = inStr(actions, TOUCH_ACTION_PAN_Y);
+
+    // if both pan-x and pan-y are set (different recognizers
+    // for different directions, e.g. horizontal pan but vertical swipe?)
+    // we need none (as otherwise with pan-x pan-y combined none of these
+    // recognizers will work, since the browser would handle all panning
+    if (hasPanX && hasPanY) {
+        return TOUCH_ACTION_NONE;
+    }
+
+    // pan-x OR pan-y
+    if (hasPanX || hasPanY) {
+        return hasPanX ? TOUCH_ACTION_PAN_X : TOUCH_ACTION_PAN_Y;
+    }
+
+    // manipulation
+    if (inStr(actions, TOUCH_ACTION_MANIPULATION)) {
+        return TOUCH_ACTION_MANIPULATION;
+    }
+
+    return TOUCH_ACTION_AUTO;
+}
+
+function getTouchActionProps() {
+    if (!NATIVE_TOUCH_ACTION) {
+        return false;
+    }
+    var touchMap = {};
+    var cssSupports = window.CSS && window.CSS.supports;
+    ['auto', 'manipulation', 'pan-y', 'pan-x', 'pan-x pan-y', 'none'].forEach(function(val) {
+
+        // If css.supports is not supported but there is native touch-action assume it supports
+        // all values. This is the case for IE 10 and 11.
+        touchMap[val] = cssSupports ? window.CSS.supports('touch-action', val) : true;
+    });
+    return touchMap;
+}
+
+/**
+ * Recognizer flow explained; *
+ * All recognizers have the initial state of POSSIBLE when a input session starts.
+ * The definition of a input session is from the first input until the last input, with all it's movement in it. *
+ * Example session for mouse-input: mousedown -> mousemove -> mouseup
+ *
+ * On each recognizing cycle (see Manager.recognize) the .recognize() method is executed
+ * which determines with state it should be.
+ *
+ * If the recognizer has the state FAILED, CANCELLED or RECOGNIZED (equals ENDED), it is reset to
+ * POSSIBLE to give it another change on the next cycle.
+ *
+ *               Possible
+ *                  |
+ *            +-----+---------------+
+ *            |                     |
+ *      +-----+-----+               |
+ *      |           |               |
+ *   Failed      Cancelled          |
+ *                          +-------+------+
+ *                          |              |
+ *                      Recognized       Began
+ *                                         |
+ *                                      Changed
+ *                                         |
+ *                                  Ended/Recognized
+ */
+var STATE_POSSIBLE = 1;
+var STATE_BEGAN = 2;
+var STATE_CHANGED = 4;
+var STATE_ENDED = 8;
+var STATE_RECOGNIZED = STATE_ENDED;
+var STATE_CANCELLED = 16;
+var STATE_FAILED = 32;
+
+/**
+ * Recognizer
+ * Every recognizer needs to extend from this class.
+ * @constructor
+ * @param {Object} options
+ */
+function Recognizer(options) {
+    this.options = assign({}, this.defaults, options || {});
+
+    this.id = uniqueId();
+
+    this.manager = null;
+
+    // default is enable true
+    this.options.enable = ifUndefined(this.options.enable, true);
+
+    this.state = STATE_POSSIBLE;
+
+    this.simultaneous = {};
+    this.requireFail = [];
+}
+
+Recognizer.prototype = {
+    /**
+     * @virtual
+     * @type {Object}
+     */
+    defaults: {},
+
+    /**
+     * set options
+     * @param {Object} options
+     * @return {Recognizer}
+     */
+    set: function(options) {
+        assign(this.options, options);
+
+        // also update the touchAction, in case something changed about the directions/enabled state
+        this.manager && this.manager.touchAction.update();
+        return this;
+    },
+
+    /**
+     * recognize simultaneous with an other recognizer.
+     * @param {Recognizer} otherRecognizer
+     * @returns {Recognizer} this
+     */
+    recognizeWith: function(otherRecognizer) {
+        if (invokeArrayArg(otherRecognizer, 'recognizeWith', this)) {
+            return this;
+        }
+
+        var simultaneous = this.simultaneous;
+        otherRecognizer = getRecognizerByNameIfManager(otherRecognizer, this);
+        if (!simultaneous[otherRecognizer.id]) {
+            simultaneous[otherRecognizer.id] = otherRecognizer;
+            otherRecognizer.recognizeWith(this);
+        }
+        return this;
+    },
+
+    /**
+     * drop the simultaneous link. it doesnt remove the link on the other recognizer.
+     * @param {Recognizer} otherRecognizer
+     * @returns {Recognizer} this
+     */
+    dropRecognizeWith: function(otherRecognizer) {
+        if (invokeArrayArg(otherRecognizer, 'dropRecognizeWith', this)) {
+            return this;
+        }
+
+        otherRecognizer = getRecognizerByNameIfManager(otherRecognizer, this);
+        delete this.simultaneous[otherRecognizer.id];
+        return this;
+    },
+
+    /**
+     * recognizer can only run when an other is failing
+     * @param {Recognizer} otherRecognizer
+     * @returns {Recognizer} this
+     */
+    requireFailure: function(otherRecognizer) {
+        if (invokeArrayArg(otherRecognizer, 'requireFailure', this)) {
+            return this;
+        }
+
+        var requireFail = this.requireFail;
+        otherRecognizer = getRecognizerByNameIfManager(otherRecognizer, this);
+        if (inArray(requireFail, otherRecognizer) === -1) {
+            requireFail.push(otherRecognizer);
+            otherRecognizer.requireFailure(this);
+        }
+        return this;
+    },
+
+    /**
+     * drop the requireFailure link. it does not remove the link on the other recognizer.
+     * @param {Recognizer} otherRecognizer
+     * @returns {Recognizer} this
+     */
+    dropRequireFailure: function(otherRecognizer) {
+        if (invokeArrayArg(otherRecognizer, 'dropRequireFailure', this)) {
+            return this;
+        }
+
+        otherRecognizer = getRecognizerByNameIfManager(otherRecognizer, this);
+        var index = inArray(this.requireFail, otherRecognizer);
+        if (index > -1) {
+            this.requireFail.splice(index, 1);
+        }
+        return this;
+    },
+
+    /**
+     * has require failures boolean
+     * @returns {boolean}
+     */
+    hasRequireFailures: function() {
+        return this.requireFail.length > 0;
+    },
+
+    /**
+     * if the recognizer can recognize simultaneous with an other recognizer
+     * @param {Recognizer} otherRecognizer
+     * @returns {Boolean}
+     */
+    canRecognizeWith: function(otherRecognizer) {
+        return !!this.simultaneous[otherRecognizer.id];
+    },
+
+    /**
+     * You should use `tryEmit` instead of `emit` directly to check
+     * that all the needed recognizers has failed before emitting.
+     * @param {Object} input
+     */
+    emit: function(input) {
+        var self = this;
+        var state = this.state;
+
+        function emit(event) {
+            self.manager.emit(event, input);
+        }
+
+        // 'panstart' and 'panmove'
+        if (state < STATE_ENDED) {
+            emit(self.options.event + stateStr(state));
+        }
+
+        emit(self.options.event); // simple 'eventName' events
+
+        if (input.additionalEvent) { // additional event(panleft, panright, pinchin, pinchout...)
+            emit(input.additionalEvent);
+        }
+
+        // panend and pancancel
+        if (state >= STATE_ENDED) {
+            emit(self.options.event + stateStr(state));
+        }
+    },
+
+    /**
+     * Check that all the require failure recognizers has failed,
+     * if true, it emits a gesture event,
+     * otherwise, setup the state to FAILED.
+     * @param {Object} input
+     */
+    tryEmit: function(input) {
+        if (this.canEmit()) {
+            return this.emit(input);
+        }
+        // it's failing anyway
+        this.state = STATE_FAILED;
+    },
+
+    /**
+     * can we emit?
+     * @returns {boolean}
+     */
+    canEmit: function() {
+        var i = 0;
+        while (i < this.requireFail.length) {
+            if (!(this.requireFail[i].state & (STATE_FAILED | STATE_POSSIBLE))) {
+                return false;
+            }
+            i++;
+        }
+        return true;
+    },
+
+    /**
+     * update the recognizer
+     * @param {Object} inputData
+     */
+    recognize: function(inputData) {
+        // make a new copy of the inputData
+        // so we can change the inputData without messing up the other recognizers
+        var inputDataClone = assign({}, inputData);
+
+        // is is enabled and allow recognizing?
+        if (!boolOrFn(this.options.enable, [this, inputDataClone])) {
+            this.reset();
+            this.state = STATE_FAILED;
+            return;
+        }
+
+        // reset when we've reached the end
+        if (this.state & (STATE_RECOGNIZED | STATE_CANCELLED | STATE_FAILED)) {
+            this.state = STATE_POSSIBLE;
+        }
+
+        this.state = this.process(inputDataClone);
+
+        // the recognizer has recognized a gesture
+        // so trigger an event
+        if (this.state & (STATE_BEGAN | STATE_CHANGED | STATE_ENDED | STATE_CANCELLED)) {
+            this.tryEmit(inputDataClone);
+        }
+    },
+
+    /**
+     * return the state of the recognizer
+     * the actual recognizing happens in this method
+     * @virtual
+     * @param {Object} inputData
+     * @returns {Const} STATE
+     */
+    process: function(inputData) { }, // jshint ignore:line
+
+    /**
+     * return the preferred touch-action
+     * @virtual
+     * @returns {Array}
+     */
+    getTouchAction: function() { },
+
+    /**
+     * called when the gesture isn't allowed to recognize
+     * like when another is being recognized or it is disabled
+     * @virtual
+     */
+    reset: function() { }
+};
+
+/**
+ * get a usable string, used as event postfix
+ * @param {Const} state
+ * @returns {String} state
+ */
+function stateStr(state) {
+    if (state & STATE_CANCELLED) {
+        return 'cancel';
+    } else if (state & STATE_ENDED) {
+        return 'end';
+    } else if (state & STATE_CHANGED) {
+        return 'move';
+    } else if (state & STATE_BEGAN) {
+        return 'start';
+    }
+    return '';
+}
+
+/**
+ * direction cons to string
+ * @param {Const} direction
+ * @returns {String}
+ */
+function directionStr(direction) {
+    if (direction == DIRECTION_DOWN) {
+        return 'down';
+    } else if (direction == DIRECTION_UP) {
+        return 'up';
+    } else if (direction == DIRECTION_LEFT) {
+        return 'left';
+    } else if (direction == DIRECTION_RIGHT) {
+        return 'right';
+    }
+    return '';
+}
+
+/**
+ * get a recognizer by name if it is bound to a manager
+ * @param {Recognizer|String} otherRecognizer
+ * @param {Recognizer} recognizer
+ * @returns {Recognizer}
+ */
+function getRecognizerByNameIfManager(otherRecognizer, recognizer) {
+    var manager = recognizer.manager;
+    if (manager) {
+        return manager.get(otherRecognizer);
+    }
+    return otherRecognizer;
+}
+
+/**
+ * This recognizer is just used as a base for the simple attribute recognizers.
+ * @constructor
+ * @extends Recognizer
+ */
+function AttrRecognizer() {
+    Recognizer.apply(this, arguments);
+}
+
+inherit(AttrRecognizer, Recognizer, {
+    /**
+     * @namespace
+     * @memberof AttrRecognizer
+     */
+    defaults: {
+        /**
+         * @type {Number}
+         * @default 1
+         */
+        pointers: 1
+    },
+
+    /**
+     * Used to check if it the recognizer receives valid input, like input.distance > 10.
+     * @memberof AttrRecognizer
+     * @param {Object} input
+     * @returns {Boolean} recognized
+     */
+    attrTest: function(input) {
+        var optionPointers = this.options.pointers;
+        return optionPointers === 0 || input.pointers.length === optionPointers;
+    },
+
+    /**
+     * Process the input and return the state for the recognizer
+     * @memberof AttrRecognizer
+     * @param {Object} input
+     * @returns {*} State
+     */
+    process: function(input) {
+        var state = this.state;
+        var eventType = input.eventType;
+
+        var isRecognized = state & (STATE_BEGAN | STATE_CHANGED);
+        var isValid = this.attrTest(input);
+
+        // on cancel input and we've recognized before, return STATE_CANCELLED
+        if (isRecognized && (eventType & INPUT_CANCEL || !isValid)) {
+            return state | STATE_CANCELLED;
+        } else if (isRecognized || isValid) {
+            if (eventType & INPUT_END) {
+                return state | STATE_ENDED;
+            } else if (!(state & STATE_BEGAN)) {
+                return STATE_BEGAN;
+            }
+            return state | STATE_CHANGED;
+        }
+        return STATE_FAILED;
+    }
+});
+
+/**
+ * Pan
+ * Recognized when the pointer is down and moved in the allowed direction.
+ * @constructor
+ * @extends AttrRecognizer
+ */
+function PanRecognizer() {
+    AttrRecognizer.apply(this, arguments);
+
+    this.pX = null;
+    this.pY = null;
+}
+
+inherit(PanRecognizer, AttrRecognizer, {
+    /**
+     * @namespace
+     * @memberof PanRecognizer
+     */
+    defaults: {
+        event: 'pan',
+        threshold: 10,
+        pointers: 1,
+        direction: DIRECTION_ALL
+    },
+
+    getTouchAction: function() {
+        var direction = this.options.direction;
+        var actions = [];
+        if (direction & DIRECTION_HORIZONTAL) {
+            actions.push(TOUCH_ACTION_PAN_Y);
+        }
+        if (direction & DIRECTION_VERTICAL) {
+            actions.push(TOUCH_ACTION_PAN_X);
+        }
+        return actions;
+    },
+
+    directionTest: function(input) {
+        var options = this.options;
+        var hasMoved = true;
+        var distance = input.distance;
+        var direction = input.direction;
+        var x = input.deltaX;
+        var y = input.deltaY;
+
+        // lock to axis?
+        if (!(direction & options.direction)) {
+            if (options.direction & DIRECTION_HORIZONTAL) {
+                direction = (x === 0) ? DIRECTION_NONE : (x < 0) ? DIRECTION_LEFT : DIRECTION_RIGHT;
+                hasMoved = x != this.pX;
+                distance = Math.abs(input.deltaX);
+            } else {
+                direction = (y === 0) ? DIRECTION_NONE : (y < 0) ? DIRECTION_UP : DIRECTION_DOWN;
+                hasMoved = y != this.pY;
+                distance = Math.abs(input.deltaY);
+            }
+        }
+        input.direction = direction;
+        return hasMoved && distance > options.threshold && direction & options.direction;
+    },
+
+    attrTest: function(input) {
+        return AttrRecognizer.prototype.attrTest.call(this, input) &&
+            (this.state & STATE_BEGAN || (!(this.state & STATE_BEGAN) && this.directionTest(input)));
+    },
+
+    emit: function(input) {
+
+        this.pX = input.deltaX;
+        this.pY = input.deltaY;
+
+        var direction = directionStr(input.direction);
+
+        if (direction) {
+            input.additionalEvent = this.options.event + direction;
+        }
+        this._super.emit.call(this, input);
+    }
+});
+
+/**
+ * Pinch
+ * Recognized when two or more pointers are moving toward (zoom-in) or away from each other (zoom-out).
+ * @constructor
+ * @extends AttrRecognizer
+ */
+function PinchRecognizer() {
+    AttrRecognizer.apply(this, arguments);
+}
+
+inherit(PinchRecognizer, AttrRecognizer, {
+    /**
+     * @namespace
+     * @memberof PinchRecognizer
+     */
+    defaults: {
+        event: 'pinch',
+        threshold: 0,
+        pointers: 2
+    },
+
+    getTouchAction: function() {
+        return [TOUCH_ACTION_NONE];
+    },
+
+    attrTest: function(input) {
+        return this._super.attrTest.call(this, input) &&
+            (Math.abs(input.scale - 1) > this.options.threshold || this.state & STATE_BEGAN);
+    },
+
+    emit: function(input) {
+        if (input.scale !== 1) {
+            var inOut = input.scale < 1 ? 'in' : 'out';
+            input.additionalEvent = this.options.event + inOut;
+        }
+        this._super.emit.call(this, input);
+    }
+});
+
+/**
+ * Press
+ * Recognized when the pointer is down for x ms without any movement.
+ * @constructor
+ * @extends Recognizer
+ */
+function PressRecognizer() {
+    Recognizer.apply(this, arguments);
+
+    this._timer = null;
+    this._input = null;
+}
+
+inherit(PressRecognizer, Recognizer, {
+    /**
+     * @namespace
+     * @memberof PressRecognizer
+     */
+    defaults: {
+        event: 'press',
+        pointers: 1,
+        time: 251, // minimal time of the pointer to be pressed
+        threshold: 9 // a minimal movement is ok, but keep it low
+    },
+
+    getTouchAction: function() {
+        return [TOUCH_ACTION_AUTO];
+    },
+
+    process: function(input) {
+        var options = this.options;
+        var validPointers = input.pointers.length === options.pointers;
+        var validMovement = input.distance < options.threshold;
+        var validTime = input.deltaTime > options.time;
+
+        this._input = input;
+
+        // we only allow little movement
+        // and we've reached an end event, so a tap is possible
+        if (!validMovement || !validPointers || (input.eventType & (INPUT_END | INPUT_CANCEL) && !validTime)) {
+            this.reset();
+        } else if (input.eventType & INPUT_START) {
+            this.reset();
+            this._timer = setTimeoutContext(function() {
+                this.state = STATE_RECOGNIZED;
+                this.tryEmit();
+            }, options.time, this);
+        } else if (input.eventType & INPUT_END) {
+            return STATE_RECOGNIZED;
+        }
+        return STATE_FAILED;
+    },
+
+    reset: function() {
+        clearTimeout(this._timer);
+    },
+
+    emit: function(input) {
+        if (this.state !== STATE_RECOGNIZED) {
+            return;
+        }
+
+        if (input && (input.eventType & INPUT_END)) {
+            this.manager.emit(this.options.event + 'up', input);
+        } else {
+            this._input.timeStamp = now();
+            this.manager.emit(this.options.event, this._input);
+        }
+    }
+});
+
+/**
+ * Rotate
+ * Recognized when two or more pointer are moving in a circular motion.
+ * @constructor
+ * @extends AttrRecognizer
+ */
+function RotateRecognizer() {
+    AttrRecognizer.apply(this, arguments);
+}
+
+inherit(RotateRecognizer, AttrRecognizer, {
+    /**
+     * @namespace
+     * @memberof RotateRecognizer
+     */
+    defaults: {
+        event: 'rotate',
+        threshold: 0,
+        pointers: 2
+    },
+
+    getTouchAction: function() {
+        return [TOUCH_ACTION_NONE];
+    },
+
+    attrTest: function(input) {
+        return this._super.attrTest.call(this, input) &&
+            (Math.abs(input.rotation) > this.options.threshold || this.state & STATE_BEGAN);
+    }
+});
+
+/**
+ * Swipe
+ * Recognized when the pointer is moving fast (velocity), with enough distance in the allowed direction.
+ * @constructor
+ * @extends AttrRecognizer
+ */
+function SwipeRecognizer() {
+    AttrRecognizer.apply(this, arguments);
+}
+
+inherit(SwipeRecognizer, AttrRecognizer, {
+    /**
+     * @namespace
+     * @memberof SwipeRecognizer
+     */
+    defaults: {
+        event: 'swipe',
+        threshold: 10,
+        velocity: 0.3,
+        direction: DIRECTION_HORIZONTAL | DIRECTION_VERTICAL,
+        pointers: 1
+    },
+
+    getTouchAction: function() {
+        return PanRecognizer.prototype.getTouchAction.call(this);
+    },
+
+    attrTest: function(input) {
+        var direction = this.options.direction;
+        var velocity;
+
+        if (direction & (DIRECTION_HORIZONTAL | DIRECTION_VERTICAL)) {
+            velocity = input.overallVelocity;
+        } else if (direction & DIRECTION_HORIZONTAL) {
+            velocity = input.overallVelocityX;
+        } else if (direction & DIRECTION_VERTICAL) {
+            velocity = input.overallVelocityY;
+        }
+
+        return this._super.attrTest.call(this, input) &&
+            direction & input.offsetDirection &&
+            input.distance > this.options.threshold &&
+            input.maxPointers == this.options.pointers &&
+            abs(velocity) > this.options.velocity && input.eventType & INPUT_END;
+    },
+
+    emit: function(input) {
+        var direction = directionStr(input.offsetDirection);
+        if (direction) {
+            this.manager.emit(this.options.event + direction, input);
+        }
+
+        this.manager.emit(this.options.event, input);
+    }
+});
+
+/**
+ * A tap is ecognized when the pointer is doing a small tap/click. Multiple taps are recognized if they occur
+ * between the given interval and position. The delay option can be used to recognize multi-taps without firing
+ * a single tap.
+ *
+ * The eventData from the emitted event contains the property `tapCount`, which contains the amount of
+ * multi-taps being recognized.
+ * @constructor
+ * @extends Recognizer
+ */
+function TapRecognizer() {
+    Recognizer.apply(this, arguments);
+
+    // previous time and center,
+    // used for tap counting
+    this.pTime = false;
+    this.pCenter = false;
+
+    this._timer = null;
+    this._input = null;
+    this.count = 0;
+}
+
+inherit(TapRecognizer, Recognizer, {
+    /**
+     * @namespace
+     * @memberof PinchRecognizer
+     */
+    defaults: {
+        event: 'tap',
+        pointers: 1,
+        taps: 1,
+        interval: 300, // max time between the multi-tap taps
+        time: 250, // max time of the pointer to be down (like finger on the screen)
+        threshold: 9, // a minimal movement is ok, but keep it low
+        posThreshold: 10 // a multi-tap can be a bit off the initial position
+    },
+
+    getTouchAction: function() {
+        return [TOUCH_ACTION_MANIPULATION];
+    },
+
+    process: function(input) {
+        var options = this.options;
+
+        var validPointers = input.pointers.length === options.pointers;
+        var validMovement = input.distance < options.threshold;
+        var validTouchTime = input.deltaTime < options.time;
+
+        this.reset();
+
+        if ((input.eventType & INPUT_START) && (this.count === 0)) {
+            return this.failTimeout();
+        }
+
+        // we only allow little movement
+        // and we've reached an end event, so a tap is possible
+        if (validMovement && validTouchTime && validPointers) {
+            if (input.eventType != INPUT_END) {
+                return this.failTimeout();
+            }
+
+            var validInterval = this.pTime ? (input.timeStamp - this.pTime < options.interval) : true;
+            var validMultiTap = !this.pCenter || getDistance(this.pCenter, input.center) < options.posThreshold;
+
+            this.pTime = input.timeStamp;
+            this.pCenter = input.center;
+
+            if (!validMultiTap || !validInterval) {
+                this.count = 1;
+            } else {
+                this.count += 1;
+            }
+
+            this._input = input;
+
+            // if tap count matches we have recognized it,
+            // else it has began recognizing...
+            var tapCount = this.count % options.taps;
+            if (tapCount === 0) {
+                // no failing requirements, immediately trigger the tap event
+                // or wait as long as the multitap interval to trigger
+                if (!this.hasRequireFailures()) {
+                    return STATE_RECOGNIZED;
+                } else {
+                    this._timer = setTimeoutContext(function() {
+                        this.state = STATE_RECOGNIZED;
+                        this.tryEmit();
+                    }, options.interval, this);
+                    return STATE_BEGAN;
+                }
+            }
+        }
+        return STATE_FAILED;
+    },
+
+    failTimeout: function() {
+        this._timer = setTimeoutContext(function() {
+            this.state = STATE_FAILED;
+        }, this.options.interval, this);
+        return STATE_FAILED;
+    },
+
+    reset: function() {
+        clearTimeout(this._timer);
+    },
+
+    emit: function() {
+        if (this.state == STATE_RECOGNIZED) {
+            this._input.tapCount = this.count;
+            this.manager.emit(this.options.event, this._input);
+        }
+    }
+});
+
+/**
+ * Simple way to create a manager with a default set of recognizers.
+ * @param {HTMLElement} element
+ * @param {Object} [options]
+ * @constructor
+ */
+function Hammer(element, options) {
+    options = options || {};
+    options.recognizers = ifUndefined(options.recognizers, Hammer.defaults.preset);
+    return new Manager(element, options);
+}
+
+/**
+ * @const {string}
+ */
+Hammer.VERSION = '2.0.7';
+
+/**
+ * default settings
+ * @namespace
+ */
+Hammer.defaults = {
+    /**
+     * set if DOM events are being triggered.
+     * But this is slower and unused by simple implementations, so disabled by default.
+     * @type {Boolean}
+     * @default false
+     */
+    domEvents: false,
+
+    /**
+     * The value for the touchAction property/fallback.
+     * When set to `compute` it will magically set the correct value based on the added recognizers.
+     * @type {String}
+     * @default compute
+     */
+    touchAction: TOUCH_ACTION_COMPUTE,
+
+    /**
+     * @type {Boolean}
+     * @default true
+     */
+    enable: true,
+
+    /**
+     * EXPERIMENTAL FEATURE -- can be removed/changed
+     * Change the parent input target element.
+     * If Null, then it is being set the to main element.
+     * @type {Null|EventTarget}
+     * @default null
+     */
+    inputTarget: null,
+
+    /**
+     * force an input class
+     * @type {Null|Function}
+     * @default null
+     */
+    inputClass: null,
+
+    /**
+     * Default recognizer setup when calling `Hammer()`
+     * When creating a new Manager these will be skipped.
+     * @type {Array}
+     */
+    preset: [
+        // RecognizerClass, options, [recognizeWith, ...], [requireFailure, ...]
+        [RotateRecognizer, {enable: false}],
+        [PinchRecognizer, {enable: false}, ['rotate']],
+        [SwipeRecognizer, {direction: DIRECTION_HORIZONTAL}],
+        [PanRecognizer, {direction: DIRECTION_HORIZONTAL}, ['swipe']],
+        [TapRecognizer],
+        [TapRecognizer, {event: 'doubletap', taps: 2}, ['tap']],
+        [PressRecognizer]
+    ],
+
+    /**
+     * Some CSS properties can be used to improve the working of Hammer.
+     * Add them to this method and they will be set when creating a new Manager.
+     * @namespace
+     */
+    cssProps: {
+        /**
+         * Disables text selection to improve the dragging gesture. Mainly for desktop browsers.
+         * @type {String}
+         * @default 'none'
+         */
+        userSelect: 'none',
+
+        /**
+         * Disable the Windows Phone grippers when pressing an element.
+         * @type {String}
+         * @default 'none'
+         */
+        touchSelect: 'none',
+
+        /**
+         * Disables the default callout shown when you touch and hold a touch target.
+         * On iOS, when you touch and hold a touch target such as a link, Safari displays
+         * a callout containing information about the link. This property allows you to disable that callout.
+         * @type {String}
+         * @default 'none'
+         */
+        touchCallout: 'none',
+
+        /**
+         * Specifies whether zooming is enabled. Used by IE10>
+         * @type {String}
+         * @default 'none'
+         */
+        contentZooming: 'none',
+
+        /**
+         * Specifies that an entire element should be draggable instead of its contents. Mainly for desktop browsers.
+         * @type {String}
+         * @default 'none'
+         */
+        userDrag: 'none',
+
+        /**
+         * Overrides the highlight color shown when the user taps a link or a JavaScript
+         * clickable element in iOS. This property obeys the alpha value, if specified.
+         * @type {String}
+         * @default 'rgba(0,0,0,0)'
+         */
+        tapHighlightColor: 'rgba(0,0,0,0)'
+    }
+};
+
+var STOP = 1;
+var FORCED_STOP = 2;
+
+/**
+ * Manager
+ * @param {HTMLElement} element
+ * @param {Object} [options]
+ * @constructor
+ */
+function Manager(element, options) {
+    this.options = assign({}, Hammer.defaults, options || {});
+
+    this.options.inputTarget = this.options.inputTarget || element;
+
+    this.handlers = {};
+    this.session = {};
+    this.recognizers = [];
+    this.oldCssProps = {};
+
+    this.element = element;
+    this.input = createInputInstance(this);
+    this.touchAction = new TouchAction(this, this.options.touchAction);
+
+    toggleCssProps(this, true);
+
+    each(this.options.recognizers, function(item) {
+        var recognizer = this.add(new (item[0])(item[1]));
+        item[2] && recognizer.recognizeWith(item[2]);
+        item[3] && recognizer.requireFailure(item[3]);
+    }, this);
+}
+
+Manager.prototype = {
+    /**
+     * set options
+     * @param {Object} options
+     * @returns {Manager}
+     */
+    set: function(options) {
+        assign(this.options, options);
+
+        // Options that need a little more setup
+        if (options.touchAction) {
+            this.touchAction.update();
+        }
+        if (options.inputTarget) {
+            // Clean up existing event listeners and reinitialize
+            this.input.destroy();
+            this.input.target = options.inputTarget;
+            this.input.init();
+        }
+        return this;
+    },
+
+    /**
+     * stop recognizing for this session.
+     * This session will be discarded, when a new [input]start event is fired.
+     * When forced, the recognizer cycle is stopped immediately.
+     * @param {Boolean} [force]
+     */
+    stop: function(force) {
+        this.session.stopped = force ? FORCED_STOP : STOP;
+    },
+
+    /**
+     * run the recognizers!
+     * called by the inputHandler function on every movement of the pointers (touches)
+     * it walks through all the recognizers and tries to detect the gesture that is being made
+     * @param {Object} inputData
+     */
+    recognize: function(inputData) {
+        var session = this.session;
+        if (session.stopped) {
+            return;
+        }
+
+        // run the touch-action polyfill
+        this.touchAction.preventDefaults(inputData);
+
+        var recognizer;
+        var recognizers = this.recognizers;
+
+        // this holds the recognizer that is being recognized.
+        // so the recognizer's state needs to be BEGAN, CHANGED, ENDED or RECOGNIZED
+        // if no recognizer is detecting a thing, it is set to `null`
+        var curRecognizer = session.curRecognizer;
+
+        // reset when the last recognizer is recognized
+        // or when we're in a new session
+        if (!curRecognizer || (curRecognizer && curRecognizer.state & STATE_RECOGNIZED)) {
+            curRecognizer = session.curRecognizer = null;
+        }
+
+        var i = 0;
+        while (i < recognizers.length) {
+            recognizer = recognizers[i];
+
+            // find out if we are allowed try to recognize the input for this one.
+            // 1.   allow if the session is NOT forced stopped (see the .stop() method)
+            // 2.   allow if we still haven't recognized a gesture in this session, or the this recognizer is the one
+            //      that is being recognized.
+            // 3.   allow if the recognizer is allowed to run simultaneous with the current recognized recognizer.
+            //      this can be setup with the `recognizeWith()` method on the recognizer.
+            if (session.stopped !== FORCED_STOP && ( // 1
+                    !curRecognizer || recognizer == curRecognizer || // 2
+                    recognizer.canRecognizeWith(curRecognizer))) { // 3
+                recognizer.recognize(inputData);
+            } else {
+                recognizer.reset();
+            }
+
+            // if the recognizer has been recognizing the input as a valid gesture, we want to store this one as the
+            // current active recognizer. but only if we don't already have an active recognizer
+            if (!curRecognizer && recognizer.state & (STATE_BEGAN | STATE_CHANGED | STATE_ENDED)) {
+                curRecognizer = session.curRecognizer = recognizer;
+            }
+            i++;
+        }
+    },
+
+    /**
+     * get a recognizer by its event name.
+     * @param {Recognizer|String} recognizer
+     * @returns {Recognizer|Null}
+     */
+    get: function(recognizer) {
+        if (recognizer instanceof Recognizer) {
+            return recognizer;
+        }
+
+        var recognizers = this.recognizers;
+        for (var i = 0; i < recognizers.length; i++) {
+            if (recognizers[i].options.event == recognizer) {
+                return recognizers[i];
+            }
+        }
+        return null;
+    },
+
+    /**
+     * add a recognizer to the manager
+     * existing recognizers with the same event name will be removed
+     * @param {Recognizer} recognizer
+     * @returns {Recognizer|Manager}
+     */
+    add: function(recognizer) {
+        if (invokeArrayArg(recognizer, 'add', this)) {
+            return this;
+        }
+
+        // remove existing
+        var existing = this.get(recognizer.options.event);
+        if (existing) {
+            this.remove(existing);
+        }
+
+        this.recognizers.push(recognizer);
+        recognizer.manager = this;
+
+        this.touchAction.update();
+        return recognizer;
+    },
+
+    /**
+     * remove a recognizer by name or instance
+     * @param {Recognizer|String} recognizer
+     * @returns {Manager}
+     */
+    remove: function(recognizer) {
+        if (invokeArrayArg(recognizer, 'remove', this)) {
+            return this;
+        }
+
+        recognizer = this.get(recognizer);
+
+        // let's make sure this recognizer exists
+        if (recognizer) {
+            var recognizers = this.recognizers;
+            var index = inArray(recognizers, recognizer);
+
+            if (index !== -1) {
+                recognizers.splice(index, 1);
+                this.touchAction.update();
+            }
+        }
+
+        return this;
+    },
+
+    /**
+     * bind event
+     * @param {String} events
+     * @param {Function} handler
+     * @returns {EventEmitter} this
+     */
+    on: function(events, handler) {
+        if (events === undefined) {
+            return;
+        }
+        if (handler === undefined) {
+            return;
+        }
+
+        var handlers = this.handlers;
+        each(splitStr(events), function(event) {
+            handlers[event] = handlers[event] || [];
+            handlers[event].push(handler);
+        });
+        return this;
+    },
+
+    /**
+     * unbind event, leave emit blank to remove all handlers
+     * @param {String} events
+     * @param {Function} [handler]
+     * @returns {EventEmitter} this
+     */
+    off: function(events, handler) {
+        if (events === undefined) {
+            return;
+        }
+
+        var handlers = this.handlers;
+        each(splitStr(events), function(event) {
+            if (!handler) {
+                delete handlers[event];
+            } else {
+                handlers[event] && handlers[event].splice(inArray(handlers[event], handler), 1);
+            }
+        });
+        return this;
+    },
+
+    /**
+     * emit event to the listeners
+     * @param {String} event
+     * @param {Object} data
+     */
+    emit: function(event, data) {
+        // we also want to trigger dom events
+        if (this.options.domEvents) {
+            triggerDomEvent(event, data);
+        }
+
+        // no handlers, so skip it all
+        var handlers = this.handlers[event] && this.handlers[event].slice();
+        if (!handlers || !handlers.length) {
+            return;
+        }
+
+        data.type = event;
+        data.preventDefault = function() {
+            data.srcEvent.preventDefault();
+        };
+
+        var i = 0;
+        while (i < handlers.length) {
+            handlers[i](data);
+            i++;
+        }
+    },
+
+    /**
+     * destroy the manager and unbinds all events
+     * it doesn't unbind dom events, that is the user own responsibility
+     */
+    destroy: function() {
+        this.element && toggleCssProps(this, false);
+
+        this.handlers = {};
+        this.session = {};
+        this.input.destroy();
+        this.element = null;
+    }
+};
+
+/**
+ * add/remove the css properties as defined in manager.options.cssProps
+ * @param {Manager} manager
+ * @param {Boolean} add
+ */
+function toggleCssProps(manager, add) {
+    var element = manager.element;
+    if (!element.style) {
+        return;
+    }
+    var prop;
+    each(manager.options.cssProps, function(value, name) {
+        prop = prefixed(element.style, name);
+        if (add) {
+            manager.oldCssProps[prop] = element.style[prop];
+            element.style[prop] = value;
+        } else {
+            element.style[prop] = manager.oldCssProps[prop] || '';
+        }
+    });
+    if (!add) {
+        manager.oldCssProps = {};
+    }
+}
+
+/**
+ * trigger dom event
+ * @param {String} event
+ * @param {Object} data
+ */
+function triggerDomEvent(event, data) {
+    var gestureEvent = document.createEvent('Event');
+    gestureEvent.initEvent(event, true, true);
+    gestureEvent.gesture = data;
+    data.target.dispatchEvent(gestureEvent);
+}
+
+assign(Hammer, {
+    INPUT_START: INPUT_START,
+    INPUT_MOVE: INPUT_MOVE,
+    INPUT_END: INPUT_END,
+    INPUT_CANCEL: INPUT_CANCEL,
+
+    STATE_POSSIBLE: STATE_POSSIBLE,
+    STATE_BEGAN: STATE_BEGAN,
+    STATE_CHANGED: STATE_CHANGED,
+    STATE_ENDED: STATE_ENDED,
+    STATE_RECOGNIZED: STATE_RECOGNIZED,
+    STATE_CANCELLED: STATE_CANCELLED,
+    STATE_FAILED: STATE_FAILED,
+
+    DIRECTION_NONE: DIRECTION_NONE,
+    DIRECTION_LEFT: DIRECTION_LEFT,
+    DIRECTION_RIGHT: DIRECTION_RIGHT,
+    DIRECTION_UP: DIRECTION_UP,
+    DIRECTION_DOWN: DIRECTION_DOWN,
+    DIRECTION_HORIZONTAL: DIRECTION_HORIZONTAL,
+    DIRECTION_VERTICAL: DIRECTION_VERTICAL,
+    DIRECTION_ALL: DIRECTION_ALL,
+
+    Manager: Manager,
+    Input: Input,
+    TouchAction: TouchAction,
+
+    TouchInput: TouchInput,
+    MouseInput: MouseInput,
+    PointerEventInput: PointerEventInput,
+    TouchMouseInput: TouchMouseInput,
+    SingleTouchInput: SingleTouchInput,
+
+    Recognizer: Recognizer,
+    AttrRecognizer: AttrRecognizer,
+    Tap: TapRecognizer,
+    Pan: PanRecognizer,
+    Swipe: SwipeRecognizer,
+    Pinch: PinchRecognizer,
+    Rotate: RotateRecognizer,
+    Press: PressRecognizer,
+
+    on: addEventListeners,
+    off: removeEventListeners,
+    each: each,
+    merge: merge,
+    extend: extend,
+    assign: assign,
+    inherit: inherit,
+    bindFn: bindFn,
+    prefixed: prefixed
+});
+
+// this prevents errors when Hammer is loaded in the presence of an AMD
+//  style loader but by script tag, not by the loader.
+var freeGlobal = (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : {})); // jshint ignore:line
+freeGlobal.Hammer = Hammer;
+
+if (true) {
+    !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() {
+        return Hammer;
+    }).call(exports, __webpack_require__, exports, module),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+} else {}
+
+})(window, document, 'Hammer');
+
+
+/***/ }),
+
 /***/ "zEIa":
 /*!***************************************************************!*\
   !*** ./projects/demo/src/app/user/vectors/paper.directive.ts ***!
@@ -25617,13 +28388,24 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var paper__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(paper__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs */ "qCKp");
 /* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs/operators */ "kU1M");
-/* harmony import */ var _classes_paper_chain__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./classes/paper-chain */ "2ZFv");
+/* harmony import */ var _functions_paper_chain__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./functions/paper-chain */ "/v0b");
 /* harmony import */ var _tools_eraser__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./tools/eraser */ "hImi");
 /* harmony import */ var _tools_move__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./tools/move */ "erja");
 /* harmony import */ var _tools_pan__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./tools/pan */ "fYSZ");
 /* harmony import */ var _tools_pen__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./tools/pen */ "M9g4");
 /* harmony import */ var _tools_select__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./tools/select */ "00F/");
 /* harmony import */ var _tools_shape__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./tools/shape */ "ljHS");
+/* harmony import */ var hammerjs__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! hammerjs */ "yLV6");
+/* harmony import */ var hammerjs__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(hammerjs__WEBPACK_IMPORTED_MODULE_11__);
+/* harmony import */ var _system_service__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../../system.service */ "+9ow");
+/* harmony import */ var _classes_PenEvent__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./classes/PenEvent */ "qLiU");
+/* harmony import */ var _angular_material_snack_bar__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @angular/material/snack-bar */ "dNgK");
+/* harmony import */ var _log_src_lib_log_service__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../../../../../log/src/lib/log.service */ "Naon");
+
+
+
+
+
 
 
 
@@ -25637,17 +28419,19 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class PaperDirective {
-    constructor(el) {
+    constructor(el, snackBar, logger) {
         this.el = el;
+        this.snackBar = snackBar;
+        this.logger = logger;
         this.appPaperChange = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
         this.projectChange = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
         this.resize$ = this.projectChange.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["switchMap"])((project) => Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["fromEvent"])(project.view, 'resize')));
         this.scope = new paper__WEBPACK_IMPORTED_MODULE_1__["PaperScope"]();
-        this.tool$ = Object(_classes_paper_chain__WEBPACK_IMPORTED_MODULE_4__["propertyChange$"])(this.scope, 'tool').pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["shareReplay"])(1));
+        this.tool$ = Object(_functions_paper_chain__WEBPACK_IMPORTED_MODULE_4__["propertyChange$"])(this.scope, 'tool').pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["shareReplay"])(1));
         this.pen = new _tools_pen__WEBPACK_IMPORTED_MODULE_8__["PenTool"](this.scope);
         this.shape = new _tools_shape__WEBPACK_IMPORTED_MODULE_10__["ShapeTool"](this.scope);
         this.eraser = new _tools_eraser__WEBPACK_IMPORTED_MODULE_5__["EraserTool"](this.scope);
-        this.select = new _tools_select__WEBPACK_IMPORTED_MODULE_9__["LassoSelectTool"](this.scope);
+        // public select = new LassoSelectTool(this.scope as any); // FIXME fix lasso select
         this.areaSelect = new _tools_select__WEBPACK_IMPORTED_MODULE_9__["RectangleSelectTool"](this.scope);
         this.pan = new _tools_pan__WEBPACK_IMPORTED_MODULE_7__["PanTool"](this.scope);
         this.move = new _tools_move__WEBPACK_IMPORTED_MODULE_6__["MoveTool"](this.scope);
@@ -25682,8 +28466,56 @@ class PaperDirective {
             }
         }
     }
+    setupHammer() {
+        this.logger.log('setting up hammer.js');
+        this.hammer = new hammerjs__WEBPACK_IMPORTED_MODULE_11__(this.el.nativeElement);
+        this.hammer.get('pinch').set({ enable: true });
+        this.setupPen();
+        this.setupTouch();
+    }
+    setupPen() {
+        if (_system_service__WEBPACK_IMPORTED_MODULE_12__["CAPABILITIES"].POINTER) {
+            this.logger.log('setting up pointer events');
+            const events = ['move', 'down', 'up'];
+            const pointerevents = events.map((n) => `pointer${n}`);
+            Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["from"])(pointerevents)
+                .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["mergeMap"])((n) => Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["fromEvent"])(this.el.nativeElement, n).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["map"])((e) => e), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["map"])((event) => new _classes_PenEvent__WEBPACK_IMPORTED_MODULE_13__["PenEvent"](event, this.point(event))))))
+                .subscribe((e) => {
+                this.scope.tool.emit(e.event.type, e);
+            });
+        }
+    }
+    setupTouch() {
+        if (_system_service__WEBPACK_IMPORTED_MODULE_12__["CAPABILITIES"].TOUCH) {
+            this.logger.log('setting up touch events');
+            const events = ['move', 'down', 'up'];
+            const pointerevents = events.map((n) => `touch${n}`);
+            Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["from"])(pointerevents)
+                .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["mergeMap"])((n) => Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["fromEvent"])(this.el.nativeElement, n).pipe(
+            // TODO map this to a ToolEvent, or touch events can just be handled by the normal paper event listeners
+            Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["map"])((e) => e))))
+                .subscribe((e) => {
+                this.scope.tool.emit(e.type, e);
+            });
+            // this.hammer.on('pan', (ev: any) => {
+            //   const srcEvent = ev.srcEvent as PointerEvent;
+            //   console.log('pan', ev);
+            //   this.logger.log('pan', ev.srcEvent);
+            //   this.snackBar.open(
+            //     `pan ${srcEvent.type} ${srcEvent.pointerType} ${srcEvent.pressure}`
+            //   );
+            // });
+            // this.hammer.on('pinch', (ev: any) => {
+            //   const srcEvent = ev.srcEvent as PointerEvent;
+            //   console.log('pinch', ev);
+            //   this.snackBar.open(`pinch ${srcEvent.type}`);
+            // });
+        }
+    }
     ngOnInit() {
+        this.setupHammer();
         this.scope.setup(this.el.nativeElement);
+        // const hammer = new Hammer(this.el.nativeElement);
         this.project = this.scope.project;
         this.project.activate();
         this.scope.project = this.project;
@@ -25728,7 +28560,6 @@ class PaperDirective {
         // this.project.activate();
     }
     onMouseWheel(event) {
-        // FIXME firefox does not respond to this event
         const point = this.scope.view.viewToProject(new paper__WEBPACK_IMPORTED_MODULE_1__["Point"](event.offsetX, event.offsetY));
         this.scope.view.emit('mousewheel', { event, point });
         this.scope.tool.emit('mousewheel', { event, point });
@@ -25737,8 +28568,11 @@ class PaperDirective {
     onViewBounds() {
         // console.log('view bounds');
     }
+    point(event) {
+        return this.project.view.viewToProject(new paper__WEBPACK_IMPORTED_MODULE_1__["Point"](event.offsetX, event.offsetY));
+    }
 }
-PaperDirective.ɵfac = function PaperDirective_Factory(t) { return new (t || PaperDirective)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["ElementRef"])); };
+PaperDirective.ɵfac = function PaperDirective_Factory(t) { return new (t || PaperDirective)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["ElementRef"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_material_snack_bar__WEBPACK_IMPORTED_MODULE_14__["MatSnackBar"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_log_src_lib_log_service__WEBPACK_IMPORTED_MODULE_15__["LogService"])); };
 PaperDirective.ɵdir = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({ type: PaperDirective, selectors: [["", "appPaper", ""]], hostBindings: function PaperDirective_HostBindings(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("resize", function PaperDirective_resize_HostBindingHandler($event) { return ctx.onHostResize($event); }, false, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵresolveWindow"])("mouseenter", function PaperDirective_mouseenter_HostBindingHandler() { return ctx.onHostMouseEnter(); })("wheel", function PaperDirective_wheel_HostBindingHandler($event) { return ctx.onMouseWheel($event); })("mousewheel", function PaperDirective_mousewheel_HostBindingHandler($event) { return ctx.onMouseWheel($event); });
     } }, outputs: { appPaperChange: "appPaperChange" }, exportAs: ["appPaper"] });

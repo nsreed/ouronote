@@ -20,7 +20,7 @@ class LogService {
                 this.parent._out$.emit(m);
             }
             else {
-                console.log('%s %s %s %s', m.name, new Date(m.timestamp).toISOString(), m.message, JSON.stringify(m.args));
+                console.log(`%s %s ${m.message}`, m.name, new Date(m.timestamp).toISOString(), ...m.args);
             }
         });
         this.level = LogLevel.INFO;
@@ -31,7 +31,7 @@ class LogService {
         }
     }
     static getLogger(name) {
-        return new LogService(name);
+        return new LogService(name, LogService.root);
     }
     verbose(message, ...args) {
         const packed = this.buildMessage(LogLevel.VERBOSE, message, args);

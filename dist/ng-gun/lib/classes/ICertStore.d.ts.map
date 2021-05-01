@@ -1,1 +1,0 @@
-{"version":3,"file":"ICertStore.d.ts","sourceRoot":"","sources":["../../../../projects/ng-gun/src/lib/classes/ICertStore.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,UAAU;IACzB,CAAC,GAAG,EAAE,MAAM,GAAG;QACb,CAAC,GAAG,EAAE,MAAM,GAAG,MAAM,GAAG,IAAI,GAAG,SAAS,CAAC;KAC1C,CAAC;CACH"}
