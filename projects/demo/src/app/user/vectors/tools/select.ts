@@ -18,23 +18,26 @@ export class SelectTool extends VectorTool {
 
   //#region sources
   selectDown = this.down.pipe(
-    filter(
-      (e) =>
-        e.modifiers.shift ||
-        this.scope.project.getItems({
-          selected: true,
-          match: (i: paper.Item) => i.className !== 'Layer',
-        }).length === 0
-    ),
+    // filter(
+    //   (e) =>
+    //     e.modifiers.shift ||
+    //     this.scope.project.getItems({
+    //       selected: true,
+    //       match: (i: paper.Item) => i.className !== 'Layer',
+    //     }).length === 0
+    // ),
     tap((e) => {
       this.selecting = true;
+      if (!e.modifiers.shift) {
+        this.scope.project.deselectAll();
+      }
     })
   );
 
-  selectDrag = this.drag.pipe(filter((e) => this.selecting));
+  selectDrag = this.drag.pipe(filter((e) => true || this.selecting));
 
   selectUp = this.up.pipe(
-    filter((e) => this.selecting),
+    filter((e) => true || this.selecting),
     tap((e) => (this.selecting = false))
   );
 
@@ -81,13 +84,12 @@ export class LassoSelectTool extends SelectTool {
     this.path.add(e.point);
   });
   sduSub = this.selectUp.subscribe((e) => {
-    console.log('select up');
+    // TODO hitTest appears to be able to honor fill, but requires a point, not an item
     if (this.path) {
       const intersected = this.scope.project.getItems({
         match: (item: paper.Item) =>
           item.className !== 'Layer' && this.path?.intersects(item),
       });
-      // this.scope.project.deselectAll();
       intersected.forEach((i) => (i.selected = true));
 
       this.path.remove();
@@ -103,7 +105,6 @@ export class RectangleSelectTool extends SelectTool {
   rect!: paper.Shape;
   sdSub = this.selectDown.subscribe((e) => {});
   sdrSub = this.selectDrag.subscribe((e) => {
-    // if (!this.rect) {
     this.rect?.remove();
     const prev = (this.scope.settings as any).insertItems;
     (this.scope.settings as any).insertItems = false;
@@ -119,19 +120,15 @@ export class RectangleSelectTool extends SelectTool {
       this.project.activeLayer.children.length,
       this.rect
     );
-    // }
-    // this.rect.position = e.downPoint;
-    // this.rect.size.width = Math.abs(e.downPoint.x - e.point.x);
-    // this.rect.size.height = Math.abs(e.downPoint.y - e.point.y);
   });
   suSub = this.selectUp.subscribe((e) => {
     if (this.rect) {
+      // FIXME this is also selecting Shape.Rectangles OUTSIDE the selection rectangle
       const intersected = this.scope.project.getItems({
         inside: this.rect.bounds,
-        overlapping: this.rect.bounds,
+        // overlapping: this.rect.bounds,
         match: (item: paper.Item) => item.className !== 'Layer',
       });
-      // this.scope.project.deselectAll();
       intersected.forEach((i) => (i.selected = true));
 
       this.rect.remove();
