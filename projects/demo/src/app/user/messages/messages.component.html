@@ -8,6 +8,7 @@
       <mat-icon class="example-tab-icon">inbox</mat-icon>
       Inbox
     </ng-template>
+    <!-- <div *gunMap="let message of outboxChain">{{message?.text|json}}</div> -->
     <div id="Messages" gdColumns="auto repeat(1, max-content)">
       <ng-container *ngFor="let message of inbox|async">
         <ng-container *ngIf="message && message._">

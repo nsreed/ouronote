@@ -13,6 +13,7 @@ import {
   fromEventPattern,
   Observable,
   of,
+  ReplaySubject,
   Subject,
   throwError,
 } from 'rxjs';
@@ -35,6 +36,8 @@ import { GunRuntimeOpts } from '../GunRuntimeOpts';
 import { ICertStore } from './ICertStore';
 import { LexicalQuery } from './LexicalQuery';
 import { SEA } from 'gun';
+import { LogService } from '../../../../log/src/lib/log.service';
+import { pluck } from 'rxjs/operators';
 
 export const GUN_NODE = Symbol('GUN_NODE');
 
@@ -66,10 +69,10 @@ export class GunChain<
 > {
   path!: string[];
   isNested = false;
+  isSubRoot = false;
+  logger = LogService.getLogger('gun-chain');
   recordPub!: any;
   record?: any;
-  certificate!: string;
-  certificate$ = new Subject<string>();
 
   private _gun!: IGunChainReference<DataType, ReferenceKey, IsTop> &
     GunChainFunctions &
@@ -107,53 +110,41 @@ export class GunChain<
       if (this.recordPub.indexOf(userPub) < 0) {
         this.isNested = true;
         const pathFromRecord = [...path];
+        const keyInRecord = pathFromRecord[0];
+        // this.logger.log(myKey, 'foreign key', keyInRecord, path.join(' > '));
         const recordPath = pathFromRecord.splice(firstPub).reverse();
         pathFromRecord.reverse();
 
         if (myKey === this.recordPub) {
-          // console.log('sub root', myKey);
+          this.isSubRoot = true;
+          this.record?.get('certs').open((certs: any) => {
+            this.certificates = certs;
+          });
         } else {
-          // console.log('foreign key', myKey);
-          const keyInRecord = pathFromRecord[0];
-          const record = chainArray[firstPub];
-          // console.log('record', record);
-
-          this.record = record;
-          const recordCerts = record.get('certs');
-          const pathCerts = recordCerts.get(keyInRecord);
-          const searchKeys = [userPair.pub, '*'];
-          const myCert = pathCerts.get(userPair.pub);
-          myCert.not(() => {
-            // console.log('no cert found');
-            pathCerts.get('*').once((pubCert: any) => {
-              if (!pubCert) {
-                // console.warn('no public cert found either');
-              }
-              this.certificate = pubCert;
-              this.certificate$.next(pubCert);
+          const pathCerts$ = this.closestRoot.certificates$.pipe(
+            pluck(keyInRecord),
+            filter((pathStore) => pathStore !== null && pathStore !== undefined)
+          );
+          pathCerts$
+            .pipe(
+              pluck(userPair.pub),
+              filter((c) => c !== null && c !== undefined),
+              take(1)
+            )
+            .subscribe((store: any) => {
+              // this.logger.log('user certificate', store);
+              this.certificate = store;
             });
-          });
-          // console.log('  %s', keyInRecord);
-          myCert.once(async (cert: any) => {
-            if (cert === null || cert === undefined) {
-              console.log('no user cert found, checking for public cert');
-              return;
-            }
-            // console.log('cert', cert);
-            // TODO verify cert later, the await causes chained put() calls to fail
-            // const verified = await SEA.verify(
-            //   cert,
-            //   this.recordPub.replace('~', '')
-            // );
-            this.certificate = cert;
-            this.certificate$.next(cert);
-            // console.log(
-            //   'verified cert for %s.%s',
-            //   this.recordPub,
-            //   keyInRecord,
-            //   pathFromRecord.join('.')
-            // );
-          });
+          pathCerts$
+            .pipe(
+              pluck('*'),
+              filter((c) => c !== null && c !== undefined),
+              take(1)
+            )
+            .subscribe((store: any) => {
+              // this.logger.log('public certificate', store);
+              this.certificate = this.certificate || store;
+            });
         }
       }
     }
@@ -163,13 +154,32 @@ export class GunChain<
     return this.certificate !== null && this.certificate !== undefined;
   }
 
+  private _closestRoot: any;
+  get closestRoot(): GunChain {
+    if (this._closestRoot) {
+      return this._closestRoot;
+    }
+    let c: any = this;
+    do {
+      if (c.isSubRoot) {
+        break;
+      }
+      c = c.back;
+    } while (c !== null);
+    this._closestRoot = c;
+    return c;
+  }
+
   constructor(
     protected ngZone: NgZone,
     @Optional()
     @Inject(GUN_NODE)
     gun: IGunChainReference<DataType, ReferenceKey, IsTop> &
       GunChainFunctions &
-      GunChainMeta
+      GunChainMeta,
+    @Optional()
+    @SkipSelf()
+    protected back: GunChain<any>
   ) {
     if (!gun) {
       this.gun = new Gun() as any;
@@ -177,12 +187,29 @@ export class GunChain<
       this.gun = gun;
     }
   }
-  certificates: ICertStore = {};
+
+  certificate?: string = this.back?.certificate;
+  certificate$ = new ReplaySubject<string>(1);
+
+  certificates$ = new ReplaySubject<ICertStore>(1);
+  private _certificates: ICertStore = {};
+  public get certificates(): ICertStore {
+    if (!this.isSubRoot && this.closestRoot?.certificates) {
+      return this.closestRoot.certificates;
+    }
+    return this._certificates;
+  }
+  public set certificates(value: ICertStore) {
+    if (value !== this._certificates) {
+      this._certificates = value;
+      this.certificates$.next(value);
+    }
+  }
   private sources = new Map<string, Observable<any>>();
   private _auth: GunAuthChain<DataType, ReferenceKey> | null = null;
 
-  from<T>(gun: IGunChainReference<T>) {
-    return new GunChain<T>(this.ngZone, gun as any);
+  from<T>(gun: IGunChainReference<T>): GunChain<T> {
+    return new GunChain<T>(this.ngZone, gun as any, this);
   }
 
   get<K extends keyof DataType>(
@@ -198,17 +225,19 @@ export class GunChain<
     data: Partial<
       AlwaysDisallowedType<DisallowPrimitives<IsTop, DisallowArray<DataType>>>
     >,
-    certificate: string = this.certificate
+    certificate = this.certificate
   ) {
     // FIXME "unverified data" - certified put values must be signed?
 
     if (this.isNested && !certificate) {
-      console.warn('NO CERTIFICATE FOUND FOR FOREIGN RECORD!');
+      this.logger.warn('NO CERTIFICATE FOUND FOR FOREIGN RECORD!');
     }
     (this.gun.put as any)(
       data,
       (...putAck: any[]) => {
-        console.log('putAck', putAck);
+        if (putAck[0].err) {
+          this.logger.error('putAck', putAck);
+        }
       },
       certificate ? { opt: { cert: certificate } } : undefined
     );
@@ -226,14 +255,8 @@ export class GunChain<
           : never
         : never
     >,
-    certificate: string = this.certificate
+    certificate = this.certificate
   ) {
-    if (this.isNested && !certificate) {
-      console.warn('NO CERTIFICATE FOUND FOR FOREIGN RECORD!');
-      this.record?.get('certs').load((certs: any) => {
-        console.log('all certs:', certs);
-      });
-    }
     return this.from(
       this.gun.set(
         data,
@@ -414,6 +437,7 @@ export class GunChain<
         //// no fix for this... gun.user.is is static! can't have multiple logins on a single gun instance
         // TODO allow option to create a new gun instance for this auth call
         this.gun.user().recall({ sessionStorage: true }) as any,
+        this as any,
         this as any
       );
     }
@@ -427,7 +451,7 @@ export class GunChain<
   onEvent(event: string, node = this.gun): Observable<any> {
     if (!this.sources.has(event)) {
       const source = fromEventPattern((handler) => {
-        // console.log('add handler');
+        // this.logger.log('add handler');
         (node as any).on(event, (...args: any) => {
           this.ngZone.run(() => {
             handler(...args);
@@ -452,6 +476,7 @@ export class GunAuthChain<
   ReferenceKey = any,
   IsTop = false
 > extends GunChain<DataType, ReferenceKey, false> {
+  logger = LogService.getLogger('gun-auth-chain');
   private _is: any;
   set is(value: any) {
     this._is = value;
@@ -486,9 +511,10 @@ export class GunAuthChain<
     gun: IGunChainReference<DataType, ReferenceKey, false> &
       Partial<GunChainFunctions> &
       Partial<GunChainMeta>,
-    @Optional() @SkipSelf() public root: GunChain
+    @Optional() @SkipSelf() public root: GunChain,
+    @Optional() @SkipSelf() back: GunChain
   ) {
-    super(ngZone, gun as any);
+    super(ngZone, gun as any, back);
     this.is = (gun as any).is;
   }
 
@@ -541,7 +567,7 @@ export class GunAuthChain<
   }
 
   from<T>(gun: IGunChainReference<T>) {
-    return new GunAuthChain<T>(this.ngZone, gun, this.root);
+    return new GunAuthChain<T>(this.ngZone, gun, this.root, this as any);
   }
 
   recall() {
@@ -556,7 +582,7 @@ export class GunAuthChain<
     data: Partial<
       AlwaysDisallowedType<DisallowPrimitives<IsTop, DisallowArray<DataType>>>
     >,
-    certificate: string = this.certificate
+    certificate = this.certificate
   ) {
     // SEA.sign(data, this.is.alias);
     super.put(data, certificate);

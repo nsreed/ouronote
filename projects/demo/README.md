@@ -42,3 +42,11 @@ In no partifular order, these are some ideas about improving this project:
 
 - Generated Items
 - Hierarchy Actions (cut/copy/clone/paste etc.)
+
+#### Touch/Pen support
+
+Canvas -> Hammer -> Paper Tool
+
+Hammer doesn't 'recognize' a gesture until several events have passed, which paper has already had time to respond to.
+
+Easiest (hackiest) way to fix this is, on systems with touch/pen support, the paper tool needs to make these decisions. Essentially, paper can ignore touch events entirely, responding only to pen. Touch events/gestures can be fed into the paper tool by hammer.

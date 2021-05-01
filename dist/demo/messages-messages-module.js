@@ -116,7 +116,8 @@ class MessagesComponent {
         this.userService = userService;
         this.messageService = messageService;
         this.dialog = dialog;
-        this.outbox = this.messageService.messages.reduce();
+        this.outboxChain = this.messageService.messages;
+        this.outbox = this.outboxChain.reduce();
         this.inbox = this.messageService.inbox.reduce();
     }
     ngOnInit() { }
@@ -175,7 +176,7 @@ MessagesComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefine
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MessageService", function() { return MessageService; });
-/* harmony import */ var gun__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gun */ "U+kO");
+/* harmony import */ var gun__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gun */ "fJS/");
 /* harmony import */ var gun__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(gun__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "fXoL");
 /* harmony import */ var _user_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../user.service */ "DlYp");

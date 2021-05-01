@@ -1,14 +1,15 @@
 import { Directive, Inject, Optional, Output } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NgGunService } from './ng-gun.service';
-import { map, switchMap } from 'rxjs/operators';
+import { map, switchMap, shareReplay } from 'rxjs/operators';
 import * as Gun from 'gun';
 import { Observable } from 'rxjs';
+import { ChainDirective } from './chain.directive';
 
 @Directive({
   selector: '[libRouteGun]',
 })
-export class RouteChainDirective<T = any> {
+export class RouteChainDirective<T = any> extends ChainDirective<T> {
   @Output()
   chain$ = this.route.data.pipe(
     map((data) => {
@@ -16,7 +17,8 @@ export class RouteChainDirective<T = any> {
       const soul = Gun.node.soul(d);
       // console.log('route data', this.dataKey);
       return this.ngGun.auth().root.get(soul);
-    })
+    }),
+    shareReplay(1)
   );
   @Output()
   data$: Observable<T> = this.chain$.pipe(
@@ -24,11 +26,12 @@ export class RouteChainDirective<T = any> {
   );
   constructor(
     private route: ActivatedRoute,
-    protected ngGun: NgGunService,
+    ngGun: NgGunService,
     @Optional()
     @Inject('gun-route-data-key')
     private dataKey: string = 'chain'
   ) {
+    super(ngGun);
     this.data$.subscribe((data) => console.log({ data }));
   }
 }

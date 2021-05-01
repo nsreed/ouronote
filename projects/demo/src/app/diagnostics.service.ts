@@ -2,10 +2,12 @@ import { Injectable } from '@angular/core';
 import { NgGunService } from '../../../ng-gun/src/lib/ng-gun.service';
 import { MatDialog } from '@angular/material/dialog';
 import { GunPeer } from 'projects/ng-gun/src/public-api';
-import { take, shareReplay, map, mapTo } from 'rxjs/operators';
+import { take, shareReplay, map, mapTo, filter } from 'rxjs/operators';
 import { BugReportComponent } from './components/bug-report/bug-report.component';
 import { LogMessage, LogService } from '../../../log/src/lib/log.service';
 import { timer } from 'rxjs';
+import { CAPABILITIES } from './system.service';
+import { DamService } from '../../../ng-gun/src/lib/dam.service';
 
 @Injectable({
   providedIn: 'root',
@@ -15,18 +17,21 @@ export class DiagnosticsService {
   constructor(
     private ngGun: NgGunService,
     private dialog: MatDialog,
-    private logger: LogService
+    private logger: LogService,
+    private dam: DamService
   ) {
     LogService.buffer$.subscribe((buff: LogMessage[]) => {
       // console.log('got message', buff);
       this.messages = buff;
     });
-    this.disconnectedPeers$.subscribe((peers) => {
-      this.logger.log('attempting to reconnect peers', peers);
-      this.ngGun.gun.opt({
-        peers,
+    this.disconnectedPeers$
+      .pipe(filter((peers) => peers.length > 0))
+      .subscribe((peers) => {
+        this.logger.log('attempting to reconnect peers', peers);
+        peers.forEach((peer) => this.dam.connect(peer));
+        this.ngGun.auth().get('inbox').once().subscribe();
       });
-    });
+    this.logger.log('capabilities', CAPABILITIES);
   }
 
   configuredPeers = Array.isArray(this.ngGun.gunOptions.peers)

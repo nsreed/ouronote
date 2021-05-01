@@ -8,21 +8,21 @@ import { shareReplay } from 'rxjs/operators';
   selector: '[gunChain]',
   exportAs: 'gunChain',
 })
-export class ChainDirective {
-  private _chain?: GunChain | undefined;
-  public get chain(): GunChain | undefined {
+export class ChainDirective<T = any> {
+  private _chain?: GunChain<T> | undefined;
+  public get chain(): GunChain<T> | undefined {
     return this._chain;
   }
   @Input('gunChain')
-  public set chain(value: GunChain | undefined) {
+  public set chain(value: GunChain<T> | undefined) {
     if (value !== this._chain) {
       this._chain = value;
       this._chain$.emit(value);
     }
   }
 
-  private _chain$ = new EventEmitter<GunChain>();
+  private _chain$ = new EventEmitter<GunChain<T>>();
   chain$ = this._chain$.pipe(shareReplay(1));
 
-  constructor(private ngGun: NgGunService) {}
+  constructor(protected ngGun: NgGunService) {}
 }

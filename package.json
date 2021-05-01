@@ -35,6 +35,7 @@
     "express": "^4.17.1",
     "file-saver": "^2.0.5",
     "gun": "https://github.com/amark/gun.git",
+    "hammerjs": "^2.0.8",
     "ngx-clipboard": "^14.0.1",
     "nodemon": "^2.0.7",
     "paper": "^0.12.11",
@@ -47,6 +48,7 @@
     "@angular/cli": "~11.1.1",
     "@angular/compiler-cli": "~11.1.0",
     "@types/file-saver": "^2.0.2",
+    "@types/hammerjs": "^2.0.39",
     "@types/jasmine": "~3.6.0",
     "@types/node": "^12.11.1",
     "codelyzer": "^6.0.0",
@@ -63,5 +65,10 @@
     "ts-node": "~8.3.0",
     "tslint": "~6.1.0",
     "typescript": "~4.1.2"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "radata/*"
+    ]
   }
 }

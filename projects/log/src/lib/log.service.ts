@@ -60,11 +60,10 @@ export class LogService {
       this.parent._out$.emit(m);
     } else {
       console.log(
-        '%s %s %s %s',
+        `%s %s ${m.message}`,
         m.name,
         new Date(m.timestamp).toISOString(),
-        m.message,
-        JSON.stringify(m.args)
+        ...m.args
       );
     }
   });
@@ -74,7 +73,7 @@ export class LogService {
   private supplementals = new Map<string, LogService>();
 
   static getLogger(name: string) {
-    return new LogService(name);
+    return new LogService(name, LogService.root);
   }
 
   verbose(message: string, ...args: any[]) {

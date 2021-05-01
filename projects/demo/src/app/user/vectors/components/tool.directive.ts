@@ -1,5 +1,5 @@
 import { Directive, Input } from '@angular/core';
-import { VectorTool } from '../paper-tool';
+import { VectorTool } from '../tools/paper-tool';
 
 @Directive({
   selector: '[appTool]',

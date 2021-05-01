@@ -6,8 +6,11 @@ import { SoulPipe } from './soul.pipe';
 import { UpdatedPipe } from './updated.pipe';
 import { VerifyPipe } from './verify.pipe';
 import { RouteChainDirective } from './route-chain.directive';
+import { GunMapDirective } from './gun-map.directive';
+import { LogModule } from '../../../log/src/lib/log.module';
 
 @NgModule({
+  imports: [LogModule],
   declarations: [
     NgGunComponent,
     SoulPipe,
@@ -16,6 +19,7 @@ import { RouteChainDirective } from './route-chain.directive';
     AliasPipe,
     VerifyPipe,
     RouteChainDirective,
+    GunMapDirective,
   ],
   exports: [
     NgGunComponent,
@@ -25,6 +29,7 @@ import { RouteChainDirective } from './route-chain.directive';
     AliasPipe,
     VerifyPipe,
     RouteChainDirective,
+    GunMapDirective,
   ],
   providers: [{ provide: 'gun-route-data-key', useValue: 'chain' }],
 })

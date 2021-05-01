@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import * as paper from 'paper';
 import { FormBuilder } from '@angular/forms';
-import { serializeValue } from '../../classes/packaging';
+import { serializeValue } from '../../functions/packaging';
 
 @Component({
   selector: 'app-style-form',

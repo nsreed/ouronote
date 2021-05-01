@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('rxjs'), require('rxjs/operators')) :
-    typeof define === 'function' && define.amd ? define('log', ['exports', '@angular/core', 'rxjs', 'rxjs/operators'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.log = {}, global.ng.core, global.rxjs, global.rxjs.operators));
-}(this, (function (exports, i0, rxjs, operators) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('rxjs/operators')) :
+    typeof define === 'function' && define.amd ? define('log', ['exports', '@angular/core', 'rxjs/operators'], factory) :
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.log = {}, global.ng.core, global.rxjs.operators));
+}(this, (function (exports, i0, operators) { 'use strict';
 
     function _interopNamespace(e) {
         if (e && e.__esModule) return e;
@@ -343,22 +343,46 @@
         LogLevel[LogLevel["ERROR"] = 3] = "ERROR";
     })(exports.LogLevel || (exports.LogLevel = {}));
     var LogService = /** @class */ (function () {
-        function LogService(name) {
+        function LogService(name, parent) {
+            var _this = this;
             if (name === void 0) { name = 'app'; }
             this.name = name;
+            this.parent = parent;
+            this._out$ = new i0.EventEmitter();
+            this.out$ = this._out$;
+            this.outSub = this.out$.subscribe(function (m) {
+                if (_this.parent) {
+                    _this.parent._out$.emit(m);
+                }
+                else {
+                    console.log.apply(console, __spread(["%s %s " + m.message, m.name, new Date(m.timestamp).toISOString()], m.args));
+                }
+            });
             this.level = exports.LogLevel.INFO;
             this.supplementals = new Map();
             this.name = this.name || 'app';
-            // LogService.out$.subscribe((p) => console.log(p.message, ...p.args));
-            LogService.buffer$.subscribe(function (buffered) { });
+            if (this.name !== 'root' && !parent) {
+                this.parent = LogService.root;
+            }
         }
+        LogService.getLogger = function (name) {
+            return new LogService(name, LogService.root);
+        };
+        LogService.prototype.verbose = function (message) {
+            var args = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                args[_i - 1] = arguments[_i];
+            }
+            var packed = this.buildMessage(exports.LogLevel.VERBOSE, message, args);
+            this._out$.emit(packed);
+        };
         LogService.prototype.log = function (message) {
             var args = [];
             for (var _i = 1; _i < arguments.length; _i++) {
                 args[_i - 1] = arguments[_i];
             }
             var packed = this.buildMessage(exports.LogLevel.INFO, message, args);
-            LogService._out$.next(packed);
+            this._out$.emit(packed);
         };
         LogService.prototype.warn = function (message) {
             var args = [];
@@ -366,7 +390,7 @@
                 args[_i - 1] = arguments[_i];
             }
             var packed = this.buildMessage(exports.LogLevel.WARN, message, args);
-            LogService._out$.next(packed);
+            this._out$.emit(packed);
         };
         LogService.prototype.error = function (message) {
             var args = [];
@@ -374,11 +398,16 @@
                 args[_i - 1] = arguments[_i];
             }
             var packed = this.buildMessage(exports.LogLevel.ERROR, message, args);
-            LogService._out$.next(packed);
+            this._out$.emit(packed);
         };
         LogService.prototype.supplemental = function (name) {
             if (!this.supplementals.has(name)) {
-                this.supplementals.set(name, new LogService(name));
+                var supplementalLog = new LogService(name, this);
+                // supplementalLog.out$.subscribe((msg) => {
+                //   console.log('supplemental message', msg);
+                //   this._out$.emit(msg);
+                // });
+                this.supplementals.set(name, supplementalLog);
             }
             return this.supplementals.get(name);
         };
@@ -393,23 +422,15 @@
         };
         return LogService;
     }());
-    LogService._out$ = new rxjs.Subject();
-    LogService.out$ = LogService._out$.pipe(operators.shareReplay(1)
-    // scan((acc, val) => {
-    //   acc.push(val as never);
-    //   return acc;
-    // }, []),
-    // shareReplay(1)
-    );
-    LogService.outSub = LogService.out$.subscribe(function (p) { return console.log.apply(console, __spread([new Date(p.timestamp).toISOString() + " " + p.name + " [" + p.level + "] " + p.message], p.args)); });
-    LogService.buffer$ = LogService.out$.pipe(operators.scan(function (acc, val) {
+    LogService.root = new LogService('root');
+    LogService.buffer$ = LogService.root.out$.pipe(operators.scan(function (acc, val) {
         acc.push(val);
         if (acc.length > 1000) {
             acc.shift();
         }
         return acc;
     }, []), operators.shareReplay(1));
-    LogService.ɵfac = function LogService_Factory(t) { return new (t || LogService)(i0__namespace.ɵɵinject('log-name', 8)); };
+    LogService.ɵfac = function LogService_Factory(t) { return new (t || LogService)(i0__namespace.ɵɵinject('log-name', 8), i0__namespace.ɵɵinject(LogService, 12)); };
     LogService.ɵprov = i0__namespace.ɵɵdefineInjectable({ token: LogService, factory: LogService.ɵfac, providedIn: 'root' });
     (function () {
         (typeof ngDevMode === "undefined" || ngDevMode) && i0__namespace.ɵsetClassMetadata(LogService, [{
@@ -423,6 +444,10 @@
                         }, {
                             type: i0.Inject,
                             args: ['log-name']
+                        }] }, { type: LogService, decorators: [{
+                            type: i0.Optional
+                        }, {
+                            type: i0.SkipSelf
                         }] }];
         }, null);
     })();

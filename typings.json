@@ -1,6 +1,7 @@
 {
   "globalDependencies": {
     "file-saver": "registry:dt/file-saver#0.0.0+20161106021201",
+    "hammerjs": "registry:dt/hammerjs#2.0.8+20161224203613",
     "paper": "registry:dt/paper#0.9.22+20170310065207"
   },
   "globalDevDependencies": {

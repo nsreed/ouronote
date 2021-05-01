@@ -45,3 +45,5 @@ testem.log
 Thumbs.db
 
 /radata
+ouronote-dev.key
+ouronote-dev.crt

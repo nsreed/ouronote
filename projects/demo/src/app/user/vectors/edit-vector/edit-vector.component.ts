@@ -17,7 +17,7 @@ import { VectorService } from '../vector.service';
 import { gunifyProject as gunifyProject } from './converter-functions';
 import { FormBuilder, Validators } from '@angular/forms';
 import { NgGunService } from '../../../../../../ng-gun/src/lib/ng-gun.service';
-import { unpack } from '../classes/packaging';
+import { unpack } from '../functions/packaging';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { LogService } from 'projects/log/src/public-api';
 

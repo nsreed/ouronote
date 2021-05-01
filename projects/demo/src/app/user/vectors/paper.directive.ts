@@ -7,9 +7,9 @@ import {
   Output,
 } from '@angular/core';
 import * as paper from 'paper';
-import { fromEvent, timer } from 'rxjs';
-import { shareReplay, switchMap } from 'rxjs/operators';
-import { propertyChange$ } from './classes/paper-chain';
+import { fromEvent, timer, from } from 'rxjs';
+import { shareReplay, switchMap, mergeMap, map } from 'rxjs/operators';
+import { propertyChange$ } from './functions/paper-chain';
 import { EraserTool } from './tools/eraser';
 import { EyedropperTool } from './tools/eyedropper';
 import { MoveTool } from './tools/move';
@@ -17,12 +17,23 @@ import { PanTool } from './tools/pan';
 import { PenTool } from './tools/pen';
 import { LassoSelectTool, RectangleSelectTool } from './tools/select';
 import { ShapeTool } from './tools/shape';
+import * as Hammer from 'hammerjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { CAPABILITIES } from '../../system.service';
+import { LogService } from '../../../../../log/src/lib/log.service';
+import { buildToolEvent } from './functions/tool-functions';
+import { PenEvent } from './classes/PenEvent';
+
 @Directive({
   selector: '[appPaper]',
   exportAs: 'appPaper',
 })
 export class PaperDirective implements OnInit {
-  constructor(private el: ElementRef<HTMLCanvasElement>) {}
+  constructor(
+    private el: ElementRef<HTMLCanvasElement>,
+    private snackBar: MatSnackBar,
+    private logger: LogService
+  ) {}
   @Output()
   appPaperChange = new EventEmitter();
 
@@ -41,6 +52,8 @@ export class PaperDirective implements OnInit {
 
   backgroundLayer!: paper.Layer;
 
+  hammer!: HammerManager;
+
   resize$ = this.projectChange.pipe(
     switchMap((project) => fromEvent(project.view, 'resize'))
   );
@@ -51,7 +64,7 @@ export class PaperDirective implements OnInit {
   public pen = new PenTool(this.scope as any);
   public shape = new ShapeTool(this.scope as any);
   public eraser = new EraserTool(this.scope as any);
-  public select = new LassoSelectTool(this.scope as any);
+  // public select = new LassoSelectTool(this.scope as any); // FIXME fix lasso select
   public areaSelect = new RectangleSelectTool(this.scope as any);
   public pan = new PanTool(this.scope as any);
   public move = new MoveTool(this.scope as any);
@@ -76,8 +89,72 @@ export class PaperDirective implements OnInit {
     }
   }
 
+  setupHammer() {
+    this.logger.log('setting up hammer.js');
+    this.hammer = new Hammer(this.el.nativeElement);
+    this.hammer.get('pinch').set({ enable: true });
+    this.setupPen();
+    this.setupTouch();
+  }
+
+  setupPen() {
+    if (CAPABILITIES.POINTER) {
+      this.logger.log('setting up pointer events');
+      const events = ['move', 'down', 'up'];
+      const pointerevents = events.map((n) => `pointer${n}`);
+      from(pointerevents)
+        .pipe(
+          mergeMap((n) =>
+            fromEvent(this.el.nativeElement, n).pipe(
+              map((e) => e as PointerEvent),
+              map((event) => new PenEvent(event, this.point(event)))
+            )
+          )
+        )
+        .subscribe((e) => {
+          this.scope.tool.emit(e.event.type, e);
+        });
+    }
+  }
+
+  setupTouch() {
+    if (CAPABILITIES.TOUCH) {
+      this.logger.log('setting up touch events');
+      const events = ['move', 'down', 'up'];
+      const pointerevents = events.map((n) => `touch${n}`);
+      from(pointerevents)
+        .pipe(
+          mergeMap((n) =>
+            fromEvent(this.el.nativeElement, n).pipe(
+              // TODO map this to a ToolEvent, or touch events can just be handled by the normal paper event listeners
+              map((e) => e as TouchEvent)
+            )
+          )
+        )
+        .subscribe((e) => {
+          this.scope.tool.emit(e.type, e);
+        });
+
+      // this.hammer.on('pan', (ev: any) => {
+      //   const srcEvent = ev.srcEvent as PointerEvent;
+      //   console.log('pan', ev);
+      //   this.logger.log('pan', ev.srcEvent);
+      //   this.snackBar.open(
+      //     `pan ${srcEvent.type} ${srcEvent.pointerType} ${srcEvent.pressure}`
+      //   );
+      // });
+      // this.hammer.on('pinch', (ev: any) => {
+      //   const srcEvent = ev.srcEvent as PointerEvent;
+      //   console.log('pinch', ev);
+      //   this.snackBar.open(`pinch ${srcEvent.type}`);
+      // });
+    }
+  }
+
   ngOnInit(): void {
+    this.setupHammer();
     this.scope.setup(this.el.nativeElement);
+    // const hammer = new Hammer(this.el.nativeElement);
 
     this.project = this.scope.project as any;
 
@@ -138,7 +215,6 @@ export class PaperDirective implements OnInit {
   @HostListener('wheel', ['$event'])
   @HostListener('mousewheel', ['$event'])
   onMouseWheel(event: any) {
-    // FIXME firefox does not respond to this event
     const point = this.scope.view.viewToProject(
       new paper.Point(event.offsetX, event.offsetY)
     );
@@ -150,5 +226,11 @@ export class PaperDirective implements OnInit {
 
   onViewBounds() {
     // console.log('view bounds');
+  }
+
+  private point(event: { offsetX: number; offsetY: number }) {
+    return this.project.view.viewToProject(
+      new paper.Point(event.offsetX, event.offsetY)
+    );
   }
 }
