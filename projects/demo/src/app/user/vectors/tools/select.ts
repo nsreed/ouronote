@@ -127,8 +127,9 @@ export class RectangleSelectTool extends SelectTool {
   suSub = this.selectUp.subscribe((e) => {
     if (this.rect) {
       const intersected = this.scope.project.getItems({
-        match: (item: paper.Item) =>
-          item.className !== 'Layer' && this.rect?.intersects(item),
+        inside: this.rect.bounds,
+        overlapping: this.rect.bounds,
+        match: (item: paper.Item) => item.className !== 'Layer',
       });
       // this.scope.project.deselectAll();
       intersected.forEach((i) => (i.selected = true));
