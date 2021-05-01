@@ -70,5 +70,8 @@
     "ignore": [
       "radata/*"
     ]
+  },
+  "engines": {
+    "node": "14.x"
   }
 }
