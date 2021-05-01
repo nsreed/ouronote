@@ -64,7 +64,7 @@ export class PaperDirective implements OnInit {
   public pen = new PenTool(this.scope as any);
   public shape = new ShapeTool(this.scope as any);
   public eraser = new EraserTool(this.scope as any);
-  public select = new LassoSelectTool(this.scope as any);
+  // public select = new LassoSelectTool(this.scope as any); // FIXME fix lasso select
   public areaSelect = new RectangleSelectTool(this.scope as any);
   public pan = new PanTool(this.scope as any);
   public move = new MoveTool(this.scope as any);
