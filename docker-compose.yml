@@ -1,11 +1,11 @@
 version: "3"
 services:
   ouronote-web:
-    image: node
-    working_dir: /home/node/app
+    build: .
+    working_dir: /usr/src/app
     # user: "node"
     volumes:
-      - ./:/home/node/app
+      - ./:/usr/src/app
     ports:
       - 8080:8081
       - 4430:4430

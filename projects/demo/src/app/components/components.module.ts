@@ -20,12 +20,14 @@ import { GunPeersComponent } from './gun-peers/gun-peers.component';
 import { AliasAutocompleteComponent } from './alias-autocomplete/alias-autocomplete.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { AboutComponent } from './about/about.component';
 
 @NgModule({
   declarations: [
     BugReportComponent,
     GunPeersComponent,
     AliasAutocompleteComponent,
+    AboutComponent,
   ],
   imports: [
     CommonModule,

@@ -1,19 +1,8 @@
-const { gitDescribeSync } = require("git-describe");
 const { version } = require("./package.json");
 const { resolve, relative } = require("path");
 const { writeFileSync } = require("fs-extra");
 
 const gitInfo = {};
-
-try {
-  gitDescribeSync({
-    dirtyMark: false,
-    dirtySemver: false,
-  });
-} catch (e) {
-  // tslint:disable-next-line: no-console
-  console.warn("problem running gitDescribeSync:", e);
-}
 
 gitInfo.version = version;
 

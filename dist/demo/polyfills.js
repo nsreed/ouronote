@@ -67093,7 +67093,7 @@ class WindowCountSubscriber extends _Subscriber__WEBPACK_IMPORTED_MODULE_0__["Su
 					});
 					console.STAT && console.STAT(S, +new Date - S, "rad check");
 				}
-				r.find(key, g.find);
+				r.find(key, g.find); 
 			}
 			function rev(a,b){ return b }
 			var revo = {reverse: true};
@@ -67157,7 +67157,7 @@ class WindowCountSubscriber extends _Subscriber__WEBPACK_IMPORTED_MODULE_0__["Su
 					var err = p.err, data = p.not? u : p.disk;
 					var i = 0, ack; while(i < 9 && (ack = q[i++])){ ack(err, data, info) } // too much?
 					console.STAT && console.STAT(S, +new Date - S, 'rad packs', ename(file));
-					console.STAT && console.STAT(S, i, 'rad packs #', ename(file));
+					console.STAT && console.STAT(S, i, 'rad packs #', ename(file)); 
 					if(!(q = q.slice(i)).length){ return }
 					puff(p.map, 0);
 				}
@@ -67175,7 +67175,7 @@ class WindowCountSubscriber extends _Subscriber__WEBPACK_IMPORTED_MODULE_0__["Su
 					if(!tmp || 0 !== tmp[1]){
 						p.err = "File '"+file+"' does not have root radix! ";
 						p.map(q, p.ack);
-						return;
+						return; 
 					}
 					while(tmp){
 						k = v = u;
@@ -67338,7 +67338,7 @@ class WindowCountSubscriber extends _Subscriber__WEBPACK_IMPORTED_MODULE_0__["Su
 	  var Gun = window.Gun;
 	  var Radix = window.Radix;
 	  window.Radisk = Radisk;
-	} else {
+	} else { 
 	  var Gun = __webpack_require__(/*! ../gun */ "JZNI");
 		var Radix = __webpack_require__(/*! ./radix */ "iOjN");
 		//var Radix = require('./radix2'); Radisk = require('./radisk2');
@@ -67348,7 +67348,6 @@ class WindowCountSubscriber extends _Subscriber__WEBPACK_IMPORTED_MODULE_0__["Su
 	Radisk.Radix = Radix;
 
 }());
-
 
 /***/ }),
 
