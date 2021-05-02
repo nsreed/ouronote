@@ -1,7 +1,0 @@
-/*
- * Public API Surface of log
- */
-export * from './lib/log.service';
-export * from './lib/log.component';
-export * from './lib/log.module';
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHVibGljLWFwaS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3Byb2plY3RzL2xvZy9zcmMvcHVibGljLWFwaS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7R0FFRztBQUVILGNBQWMsbUJBQW1CLENBQUM7QUFDbEMsY0FBYyxxQkFBcUIsQ0FBQztBQUNwQyxjQUFjLGtCQUFrQixDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLypcbiAqIFB1YmxpYyBBUEkgU3VyZmFjZSBvZiBsb2dcbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL2xpYi9sb2cuc2VydmljZSc7XG5leHBvcnQgKiBmcm9tICcuL2xpYi9sb2cuY29tcG9uZW50JztcbmV4cG9ydCAqIGZyb20gJy4vbGliL2xvZy5tb2R1bGUnO1xuIl19

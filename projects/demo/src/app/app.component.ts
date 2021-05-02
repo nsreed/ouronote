@@ -14,6 +14,7 @@ import { VERSION } from '../environments/version';
 import { GunPeersComponent } from './components/gun-peers/gun-peers.component';
 import { DiagnosticsService } from './diagnostics.service';
 import { User } from './user/model';
+import { AboutComponent } from './components/about/about.component';
 
 @Component({
   selector: 'app-root',
@@ -71,5 +72,9 @@ export class AppComponent {
   bugReport() {
     this.logger.log('generating bug report...');
     this.diagnosticsService.bugReport();
+  }
+
+  about() {
+    this.dialog.open(AboutComponent);
   }
 }
