@@ -14,6 +14,8 @@ export const isTouch = CAPABILITIES.TOUCH
       e instanceof window.TouchEvent ||
       e.event.pointerType === 'touch' ||
       e.event.type.startsWith('touch')
+  : CAPABILITIES.POINTER
+  ? (e: any) => e.event.pointerType === 'touch'
   : () => false;
 
 export const buildToolEvent = (source: PointerEvent, view: paper.View) =>
