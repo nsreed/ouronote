@@ -71,7 +71,8 @@
               "aspect-ts",
               "file-saver",
               "gun",
-              "paper"
+              "paper",
+              "hammerjs"
             ]
           },
           "configurations": {

@@ -97,7 +97,10 @@ export class GunChain<
     const userPair = (this.gun.user() as any).is;
     if (!userPair) {
       // TODO figure out how to handle this case
-
+      this.logger.warn(
+        'User is not logged in, certificates for %s will not be loaded.',
+        myKey
+      );
       return;
     }
     const userPub = `~${(this.gun.user() as any).is?.pub}`;
@@ -110,10 +113,10 @@ export class GunChain<
       if (this.recordPub.indexOf(userPub) < 0) {
         this.isNested = true;
         const pathFromRecord = [...path];
-        const keyInRecord = pathFromRecord[0];
-        // this.logger.log(myKey, 'foreign key', keyInRecord, path.join(' > '));
         const recordPath = pathFromRecord.splice(firstPub).reverse();
         pathFromRecord.reverse();
+        const keyInRecord = pathFromRecord[0];
+        this.logger.verbose('foreign key', path.join(' > '));
 
         if (myKey === this.recordPub) {
           this.isSubRoot = true;
@@ -122,6 +125,13 @@ export class GunChain<
           });
         } else {
           const pathCerts$ = this.closestRoot.certificates$.pipe(
+            tap((store) =>
+              this.logger.verbose(
+                'closestRoot cert store looking for',
+                keyInRecord,
+                store
+              )
+            ),
             pluck(keyInRecord),
             filter((pathStore) => pathStore !== null && pathStore !== undefined)
           );
@@ -132,7 +142,7 @@ export class GunChain<
               take(1)
             )
             .subscribe((store: any) => {
-              // this.logger.log('user certificate', store);
+              this.logger.verbose('user certificate', store);
               this.certificate = store;
             });
           pathCerts$
@@ -142,9 +152,13 @@ export class GunChain<
               take(1)
             )
             .subscribe((store: any) => {
-              // this.logger.log('public certificate', store);
+              this.logger.verbose('public certificate', store);
               this.certificate = this.certificate || store;
             });
+          this.back?.certificate$.subscribe((c) => {
+            this.logger.verbose('certificate from back emitter', c);
+            this.certificate = this.certificate || c;
+          });
         }
       }
     }
@@ -188,7 +202,13 @@ export class GunChain<
     }
   }
 
-  certificate?: string = this.back?.certificate;
+  private _certificate?: string | undefined;
+  public get certificate(): string | undefined {
+    return this._certificate || this.back?.certificate;
+  }
+  public set certificate(value: string | undefined) {
+    this._certificate = value;
+  }
   certificate$ = new ReplaySubject<string>(1);
 
   certificates$ = new ReplaySubject<ICertStore>(1);
@@ -201,6 +221,7 @@ export class GunChain<
   }
   public set certificates(value: ICertStore) {
     if (value !== this._certificates) {
+      this.logger.log('loaded certificate store', value);
       this._certificates = value;
       this.certificates$.next(value);
     }

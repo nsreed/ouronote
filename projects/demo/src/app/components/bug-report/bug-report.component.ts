@@ -4,11 +4,11 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import host from '@jsdevtools/host-environment';
+import { saveAs } from 'file-saver';
 import { ClipboardService } from 'ngx-clipboard';
 import { VERSION } from 'projects/demo/src/environments/version';
-import { debounceTime } from 'rxjs/operators';
-import { saveAs } from 'file-saver';
 import { NgGunService } from 'projects/ng-gun/src/lib/ng-gun.service';
+import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-bug-report',
