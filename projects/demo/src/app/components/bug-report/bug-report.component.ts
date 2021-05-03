@@ -9,6 +9,7 @@ import { ClipboardService } from 'ngx-clipboard';
 import { VERSION } from 'projects/demo/src/environments/version';
 import { NgGunService } from 'projects/ng-gun/src/lib/ng-gun.service';
 import { debounceTime } from 'rxjs/operators';
+import stringify from 'safe-stable-stringify';
 
 @Component({
   selector: 'app-bug-report',
@@ -59,7 +60,7 @@ export class BugReportComponent implements OnInit {
       timestamp: Date.now(),
       version: VERSION,
       system: host.browser,
-      // log: this.data.messages,
+      log: this.data.messages,
       // log: messages,
     };
     this.report = report;
@@ -69,7 +70,7 @@ export class BugReportComponent implements OnInit {
 
   updatePreview() {
     // FIXME crashing with circular references in messages
-    this.reportStr = JSON.stringify(this.report, null, 2);
+    this.reportStr = stringify(this.report, null, 2);
   }
 
   copy() {
