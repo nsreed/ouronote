@@ -5,9 +5,9 @@ export interface VectorGraph extends ICertChain {
   title: string;
   data?: string;
   project?: any;
-  graph?: LayerGraph[];
   layers?: LayerGraph[];
   styles?: any[];
   palette?: string[];
+  backgroundColor?: string;
   [key: string]: any;
 }
