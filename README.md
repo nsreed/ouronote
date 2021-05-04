@@ -37,8 +37,7 @@ yarn install
 **Build Projects**
 
 ```
-yarn ng build
-yarn ng build demo
+yarn build
 ```
 
 **docker-compose**
