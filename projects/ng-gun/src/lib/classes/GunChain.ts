@@ -38,6 +38,7 @@ import { LexicalQuery } from './LexicalQuery';
 import { SEA } from 'gun';
 import { LogService } from '../../../../log/src/lib/log.service';
 import { pluck } from 'rxjs/operators';
+import { timer } from 'rxjs';
 
 export const GUN_NODE = Symbol('GUN_NODE');
 
@@ -227,7 +228,7 @@ export class GunChain<
     }
   }
   private sources = new Map<string, Observable<any>>();
-  private _auth: GunAuthChain<DataType, ReferenceKey> | null = null;
+  protected _auth: GunAuthChain<DataType, ReferenceKey> | null = null;
 
   from<T>(gun: IGunChainReference<T>): GunChain<T> {
     return new GunChain<T>(this.ngZone, gun as any, this);
@@ -461,8 +462,13 @@ export class GunChain<
         this as any,
         this as any
       );
+      // this._auth.logout$.subscribe(()=>this._auth = null);
     }
     return this._auth;
+  }
+
+  logout() {
+    this._auth = null;
   }
 
   user(pubKey?: string) {
@@ -597,7 +603,10 @@ export class GunAuthChain<
   }
 
   logout() {
+    this.is = null;
     this.gun.leave();
+    // TODO find a better way to clear current user graph
+    timer(750).subscribe(() => (document.location = document.location));
   }
   put(
     data: Partial<
