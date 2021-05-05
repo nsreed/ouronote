@@ -1,8 +1,8 @@
 # ouronote
 
-Real-time collaborative whiteboard web app built with Angular, GUN, and paper.js.
+Real-time collaborative whiteboard web app built with [Angular](https://angular.io/), [GUN](https://gun.eco/), and [paper.js](http://paperjs.org/).
 
-![til](./docs/sync-permissions-demo.gif)
+![per-user permissions](./docs/sync-permissions-demo.gif)
 
 Drawings are publicly accessible (between your peers), but only users you invite may edit them.
 
@@ -42,6 +42,12 @@ yarn build
 
 **docker-compose**
 
+docker-compose.yml will use the project directory as a volume. This means you must have the project built before hosting.
+
+```
+yarn build demo
+```
+
 Generate self-signed certs (not required for localhost)
 
 ```
@@ -52,18 +58,21 @@ openssl req -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out ouronote-dev.cr
 docker-compose up -d
 ```
 
-Navigate to http://localhost:8080
+Navigate to https://localhost:4430 or http://localhost:8080
 
 ### Development
 
-#### 1. Run a GUN peer
+#### Without live reloading (recommended)
+
+1. Run the above steps for docker-compose.
+2. Run `yarn build:watch`
+
+#### Angular CLI
 
 For the time being, a GUN relay peer is required on `localhost:8765`.
 
 - To run a local peer using Docker, you may either follow the instructions for docker-compose above, or run `docker run -p 8765:8765 gundb/gun`
 - Or follow the [GUN Installation documentation](https://gun.eco/docs/Installation#node)
-
-#### 2. Angular development server
 
 Run `ng serve`. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
