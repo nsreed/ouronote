@@ -68,19 +68,25 @@ import 'zone.js/dist/zone'; // Included with Angular CLI.
 // These are here to make sure they're done before the app loads
 import 'gun';
 import 'gun/nts';
-import 'gun/lib/radix';
-import 'gun/lib/radisk';
-import 'gun/lib/store';
-import 'gun/lib/rindexed';
 import 'gun/sea';
 
+// if (RADISK_ENABLE) {
+// import 'gun/lib/radix';
+// import 'gun/lib/radisk';
+import 'gun/lib/store';
+// }
+
+import 'gun/lib/rindexed';
 import 'gun/lib/load';
 import 'gun/lib/open';
 import 'gun/lib/then';
 import 'gun/lib/time';
 import 'gun/lib/not';
 import 'gun/lib/unset';
-import 'gun/lib/webrtc';
+
+// if (WEBRTC_ENABLE) {
+// import 'gun/lib/webrtc';
+// }
 
 /* PAPER.JS OVERRIDES
  * Injects rxjs-style property change observables into paper.js

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 const POINTER = window.PointerEvent && navigator.maxTouchPoints > 0;
 const TOUCH =
   window.TouchEvent &&
@@ -12,6 +12,4 @@ export const CAPABILITIES = {
 @Injectable({
   providedIn: 'root',
 })
-export class SystemService {
-  constructor() {}
-}
+export class SystemService {}

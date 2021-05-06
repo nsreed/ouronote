@@ -6,9 +6,7 @@ import { IGunConstructorOptions } from 'gun/types/options';
 import { GunChain } from './classes/GunChain';
 import { GunPeers } from './GunPeers';
 export const GunOptions = 'gun-options';
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class NgGunService<
   DataType = Record<string, any>,
   ReferenceKey = any
