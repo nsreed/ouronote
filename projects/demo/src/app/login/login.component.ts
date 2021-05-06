@@ -8,6 +8,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
+  error: any;
+
   form = this.fb.group({
     alias: [null, Validators.required],
     password: [null, Validators.required],
@@ -32,11 +34,13 @@ export class LoginComponent implements OnInit {
     if (this.form.invalid) {
       return;
     }
+    this.error = null;
     // console.log('create', this.form.value);
     this.ngGun
       .auth()
       .create(this.form.value.alias, this.form.value.password)
       .subscribe((data) => {
+        this.error = data.err;
         // console.log('create result', data)
       });
   }
@@ -45,12 +49,14 @@ export class LoginComponent implements OnInit {
     if (!this.form.valid) {
       return;
     }
+    this.error = null;
     // console.log('login', this.form.value);
     this.ngGun
       .auth()
       .login(this.form.value.alias, this.form.value.password)
       .subscribe((data) => {
         // console.log('login result', data);
+        this.error = data.err;
       });
   }
 }

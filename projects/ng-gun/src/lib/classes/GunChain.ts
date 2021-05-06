@@ -1,4 +1,11 @@
-import { Inject, Injectable, NgZone, Optional, SkipSelf } from '@angular/core';
+import {
+  Inject,
+  Injectable,
+  NgZone,
+  Optional,
+  SkipSelf,
+  EventEmitter,
+} from '@angular/core';
 import * as Gun from 'gun';
 import { IGunChainReference } from 'gun/types/chain';
 import {
@@ -579,11 +586,18 @@ export class GunAuthChain<
     const auth$ = this.root.onEvent('auth').pipe(
       filter((ack) => {
         return ack.put.alias === alias;
-      }),
-      take(1)
+      })
     );
-    this.gun.create(alias, pass);
-    return auth$;
+    const ack$ = new EventEmitter();
+    try {
+      return from([ack$, auth$]).pipe(mergeAll(), take(1));
+    } catch (e) {
+      return from([ack$, auth$]).pipe(mergeAll(), take(1));
+    } finally {
+      this.gun.create(alias, pass, (ack) => {
+        ack$.emit(ack);
+      });
+    }
   }
 
   secret(value: any) {
