@@ -40,6 +40,14 @@ import { FormsUiModule } from './forms-ui/forms-ui.module';
 import { LoginComponent } from './login/login.component';
 import { SessionInfoComponent } from './session-info/session-info.component';
 import { WelcomeComponent } from './welcome/welcome.component';
+import { NgGunService } from '../../../ng-gun/src/lib/ng-gun.service';
+import { GunWebrtcImporterService } from './services/gun-webrtc-importer.service';
+import { GunRadImporterService } from './services/gun-rad-importer.service';
+
+const RADISK_LOCAL = localStorage.getItem('RADISK_ENABLE');
+const RADISK_ENABLE = RADISK_LOCAL === null ? true : !!JSON.parse(RADISK_LOCAL);
+const WEBRTC_LOCAL = localStorage.getItem('WEBRTC_ENABLE');
+const WEBRTC_ENABLE = WEBRTC_LOCAL === null ? true : !!JSON.parse(WEBRTC_LOCAL);
 
 @NgModule({
   declarations: [
@@ -90,7 +98,7 @@ import { WelcomeComponent } from './welcome/welcome.component';
     {
       provide: 'gun-options',
       useValue: {
-        localStorage: false,
+        localStorage: !RADISK_ENABLE,
         peers: [
           location.origin.match(/localhost/)
             ? 'http://localhost:8765/gun'
@@ -101,6 +109,23 @@ import { WelcomeComponent } from './welcome/welcome.component';
     {
       provide: LogService,
       useClass: LogService,
+    },
+    NgGunService,
+    {
+      provide: GunWebrtcImporterService,
+      useFactory: () => (WEBRTC_ENABLE ? new GunWebrtcImporterService() : null),
+    },
+    {
+      provide: GunRadImporterService,
+      useFactory: () => (RADISK_ENABLE ? new GunRadImporterService() : null),
+    },
+    {
+      provide: 'enable-webrtc',
+      useValue: WEBRTC_ENABLE,
+    },
+    {
+      provide: 'enable-radisk',
+      useValue: RADISK_ENABLE,
     },
   ],
   exports: [CertificatesComponent],

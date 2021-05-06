@@ -27,17 +27,17 @@ export class PenTool extends VectorTool {
   penUp: Observable<PenEvent | paper.ToolEvent> = CAPABILITIES.POINTER
     ? this.pointerUp
     : this.up;
-  downSub = this.penDown.subscribe((e) => {
+  downSub = this.down.subscribe((e) => {
     this.activateDrawLayer();
     this.path = new paper.Path(e.point) as any;
     (this.path as any).pair.editing = true;
     this.path.style = this.style;
   });
-  dragSub = this.penDrag.subscribe((e: any) => {
+  dragSub = this.drag.subscribe((e: any) => {
     // this.logger.log('pen drag', e.event.type, e.event.pointerType);
     this.path.add(e.point);
   });
-  upSub = this.penUp.subscribe((e) => {
+  upSub = this.up.subscribe((e) => {
     this.path.strokeColor = this.project.currentStyle.strokeColor;
     this.path.fillColor = this.project.currentStyle.fillColor;
     if (this.smoothing) {
@@ -49,6 +49,6 @@ export class PenTool extends VectorTool {
 
   filterEvent(event: any) {
     // Respond to pen if pointerType is present, if it isn't assume we're mouse-only
-    return ['pen', undefined].includes(event.event.pointerType);
+    return true; // ['pen', undefined].includes(event.event.pointerType); // TODO re-enable me when ready to tackle digitizer support
   }
 }

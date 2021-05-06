@@ -21,6 +21,7 @@ import { AliasAutocompleteComponent } from './alias-autocomplete/alias-autocompl
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { AboutComponent } from './about/about.component';
+import { SystemSettingsComponent } from './system-settings/system-settings.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { AboutComponent } from './about/about.component';
     GunPeersComponent,
     AliasAutocompleteComponent,
     AboutComponent,
+    SystemSettingsComponent,
   ],
   imports: [
     CommonModule,
@@ -48,6 +50,6 @@ import { AboutComponent } from './about/about.component';
     NgGunModule,
     ReactiveFormsModule,
   ],
-  exports: [BugReportComponent, GunPeersComponent, AliasAutocompleteComponent],
+  exports: [BugReportComponent, GunPeersComponent, AliasAutocompleteComponent, SystemSettingsComponent],
 })
 export class ComponentsModule {}

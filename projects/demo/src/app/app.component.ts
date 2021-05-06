@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Optional } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
   ActivatedRoute,
@@ -15,6 +15,8 @@ import { GunPeersComponent } from './components/gun-peers/gun-peers.component';
 import { DiagnosticsService } from './diagnostics.service';
 import { User } from './user/model';
 import { AboutComponent } from './components/about/about.component';
+import { GunRadImporterService } from './services/gun-rad-importer.service';
+import { GunWebrtcImporterService } from './services/gun-webrtc-importer.service';
 
 @Component({
   selector: 'app-root',
@@ -31,10 +33,18 @@ export class AppComponent {
     private cb: ClipboardService,
     private logger: LogService,
     private dialog: MatDialog,
-    public diagnosticsService: DiagnosticsService
+    public diagnosticsService: DiagnosticsService,
+    @Optional()
+    private radImporter: GunRadImporterService,
+    @Optional()
+    private webRtcImporter: GunWebrtcImporterService
   ) {
     // logger.out$.subscribe(console.log);
     logger.log('app started');
+    logger.log('Gun Imports', {
+      radImporter,
+      webRtcImporter,
+    });
     this.user = this.ngGun.auth();
     window.document.title = `ouronote version ${VERSION.version}`;
 

@@ -4,6 +4,7 @@ import { GunAuthGuard } from '../../../ng-gun/src/lib/gun-auth.guard';
 import { LoginComponent } from './login/login.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { AboutComponent } from './components/about/about.component';
+import { SystemSettingsComponent } from './components/system-settings/system-settings.component';
 
 const routes: Routes = [
   {
@@ -23,6 +24,10 @@ const routes: Routes = [
   {
     path: 'about',
     component: AboutComponent,
+  },
+  {
+    path: 'settings',
+    component: SystemSettingsComponent,
   },
   {
     path: '',

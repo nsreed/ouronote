@@ -9,4 +9,9 @@
   </mat-form-field>
   <button mat-button color="primary" (click)="login()" [disabled]="form.invalid">Log In</button>
   <button mat-button color="primary" (click)="create()" [disabled]="form.invalid">Create</button>
+  <mat-error *ngIf="error">{{error}}</mat-error>
+  <a mat-icon-button routerLink="/settings">
+    <mat-icon>settings</mat-icon>
+    System Settings
+  </a>
 </form>

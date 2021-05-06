@@ -69,20 +69,18 @@ export class BugReportComponent implements OnInit {
   }
 
   updatePreview() {
-    // FIXME crashing with circular references in messages
     this.reportStr = stringify(this.report, null, 2);
   }
 
   copy() {
     this.cb.copy(this.reportStr);
     this.toaster.open('copied to clipboard!', 'dismiss', {
-      duration: 5000
+      duration: 5000,
     });
   }
 
   download() {
-    const reportStr = JSON.stringify(this.report, null, 2);
-    const graphBlob = new Blob([reportStr], {
+    const graphBlob = new Blob([this.reportStr], {
       type: 'text/plain;charset=utf-8',
     });
     saveAs(graphBlob, `ouronote-bugreport-${Date.now()}.json`);
