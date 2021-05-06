@@ -6,7 +6,7 @@ import {
   SkipSelf,
 } from '@angular/core';
 import { Subject } from 'rxjs';
-import { scan, shareReplay, take } from 'rxjs/operators';
+import { scan, shareReplay, take, filter } from 'rxjs/operators';
 export enum LogLevel {
   VERBOSE,
   INFO,
@@ -55,7 +55,7 @@ export class LogService {
 
   protected _out$ = new EventEmitter<LogMessage>();
   out$ = this._out$;
-  outSub = this.out$.subscribe((m) => {
+  outSub = this.out$.pipe(filter((msg) => msg.level >= 1)).subscribe((m) => {
     if (this.parent) {
       this.parent._out$.emit(m);
     } else {
