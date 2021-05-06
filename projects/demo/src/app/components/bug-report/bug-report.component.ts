@@ -74,7 +74,9 @@ export class BugReportComponent implements OnInit {
 
   copy() {
     this.cb.copy(this.reportStr);
-    this.toaster.open('copied to clipboard!', undefined, { duration: 2000 });
+    this.toaster.open('copied to clipboard!', 'dismiss', {
+      duration: 5000,
+    });
   }
 
   download() {
