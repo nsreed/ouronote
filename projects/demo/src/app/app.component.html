@@ -5,25 +5,43 @@
         <mat-icon>chevron_left</mat-icon>
       </button>
     </mat-toolbar> -->
-    <mat-action-list>
-      <mat-list-item routerLinkActive="active" routerLink="/user/vectors" matTooltip="Vectors">
+    <mat-action-list style="padding-top: 0; height: 100%" fxLayout="column">
+      <mat-list-item
+        routerLinkActive="active"
+        routerLink="/user/vectors"
+        matTooltip="Vectors"
+      >
         <mat-icon mat-list-icon>note</mat-icon>
       </mat-list-item>
-      <mat-list-item routerLinkActive="active" routerLink="/user/messages" matTooltip="Messages">
+      <mat-list-item
+        routerLinkActive="active"
+        routerLink="/user/messages"
+        matTooltip="Messages"
+      >
         <mat-icon mat-list-icon>message</mat-icon>
       </mat-list-item>
+      <div fxFlex="1 0 auto"></div>
       <mat-divider></mat-divider>
       <mat-list-item (click)="bugReport()" matTooltip="Open bug report dialog">
         <mat-icon mat-list-icon>bug_report</mat-icon>
       </mat-list-item>
       <mat-list-item (click)="peers()" matTooltip="Open peer statistics">
-        <mat-icon mat-list-icon [matBadge]="(diagnosticsService.disconnectedPeers$|async)?.length||null"
-          matBadgeColor="warn" matBadgeSize="small">
+        <mat-icon
+          mat-list-icon
+          [matBadge]="
+            (diagnosticsService.disconnectedPeers$ | async)?.length || null
+          "
+          matBadgeColor="warn"
+          matBadgeSize="small"
+        >
           signal_wifi_4_bar
         </mat-icon>
       </mat-list-item>
       <mat-divider></mat-divider>
-      <mat-list-item [matMenuTriggerFor]=" sessionMenu" [matTooltip]="'@'+ngGun.auth().alias">
+      <mat-list-item
+        [matMenuTriggerFor]="sessionMenu"
+        [matTooltip]="'@' + ngGun.auth().alias"
+      >
         <mat-icon mat-list-icon color="primary">account_circle</mat-icon>
       </mat-list-item>
       <mat-menu #sessionMenu>
