@@ -1,18 +1,18 @@
 <h1>Peers</h1>
 <div gdColumns="max-content max-content auto repeat(3, max-content)" gdGap="1em" gdAlignRows="stretch">
-  <h2>id</h2>
-  <h2>state</h2>
-  <h2>last</h2>
-  <h2>queue</h2>
-  <h2>tail</h2>
-  <h2>disconnect</h2>
+  <h3>disconnect</h3>
+  <h3>id</h3>
+  <h3>state</h3>
+  <h3>last</h3>
+  <h3>queue</h3>
+  <h3>tail</h3>
   <ng-container *ngFor="let peer of peers|keyvalue">
+    <button mat-button (click)="disconnect(peer.key)">disconnect</button>
     <div>{{peer.key}}</div>
     <div>{{peer.value.wire?.readyState}}</div>
     <div>{{peer.value.last}}</div>
     <div>{{peer.value.queue?.length}}</div>
     <div>{{peer.value.tail}}</div>
-    <button (click)="disconnect(peer.key)">disconnect</button>
   </ng-container>
 </div>
 <button mat-button (click)="logGun()">console.log gun</button>
