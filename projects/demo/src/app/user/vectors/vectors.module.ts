@@ -38,6 +38,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ViewVectorComponent } from './view-vector/view-vector.component';
 import { CertificatesModule } from '../../certificates/certificates.module';
 import { LogModule } from '../../../../../log/src/lib/log.module';
+import { PermissionsComponent } from './permissions/permissions.component';
 
 @NgModule({
   declarations: [
@@ -52,6 +53,7 @@ import { LogModule } from '../../../../../log/src/lib/log.module';
     VectorFormComponent,
     CreateVectorComponent,
     ViewVectorComponent,
+    PermissionsComponent,
   ],
   imports: [
     CertificatesModule,
