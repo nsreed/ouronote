@@ -241,12 +241,20 @@ export class GunChain<
     return new GunChain<T>(this.ngZone, gun as any, this);
   }
 
+  public get updateTime(): number {
+    return (
+      ((Object.values(this.gun._.put._['>']) as number[]) || {}).reduce(
+        (acc: number, v: number) => (v > acc ? v : acc),
+        0
+      ) || 0
+    );
+  }
+
   get<K extends keyof DataType>(
     key: ArrayOf<DataType> extends never ? K : ArrayOf<DataType>
   ) {
-    const soul: ArrayOf<DataType> extends never
-      ? K
-      : ArrayOf<DataType> = this.getSoul(key);
+    const soul: ArrayOf<DataType> extends never ? K : ArrayOf<DataType> =
+      this.getSoul(key);
     return this.from(this.gun.get(soul));
   }
 
