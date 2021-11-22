@@ -20,6 +20,9 @@ import { NgGunService } from '../../../../../../ng-gun/src/lib/ng-gun.service';
 import { unpack } from '../functions/packaging';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { LogService } from 'projects/log/src/public-api';
+import { saveAs } from 'file-saver';
+import { UserService } from '../../user.service';
+import { gunUpdateTime } from 'projects/ng-gun/src/lib/functions/gun-utils';
 
 const VECTOR_PAPER_JSON_KEY = 'graph';
 
@@ -29,7 +32,8 @@ const VECTOR_PAPER_JSON_KEY = 'graph';
 })
 export class EditVectorComponent
   extends RouteVectorDirective
-  implements OnInit, AfterViewInit {
+  implements OnInit, AfterViewInit
+{
   @ViewChild('paper')
   private paperDirective!: PaperDirective;
 
@@ -50,7 +54,8 @@ export class EditVectorComponent
     private fb: FormBuilder,
     ngGun: NgGunService,
     private sanitizer: DomSanitizer,
-    private logger: LogService
+    private logger: LogService,
+    private userService: UserService
   ) {
     super(vectorService, route, ngGun);
     this.logger = logger.supplemental('edit-vector.component');
@@ -100,6 +105,7 @@ export class EditVectorComponent
           // console.log('title change', title);
           this.vectorForm.get('title')?.patchValue(title, { emitEvent: false });
         });
+      this.vectorNode = node;
       this.vectorForm
         .get('title')
         ?.valueChanges.pipe(distinct())
@@ -136,5 +142,15 @@ export class EditVectorComponent
     this.logger.log('adding layer');
     const layer = new paper.Layer();
     (layer as any).pair.save();
+  }
+
+  async download() {
+    const jsonBlob = new Blob([this.project.exportJSON()], {
+      type: 'text/plain;charset=utf-8',
+    });
+    const username = this.userService.user.alias;
+    const title = await this.vectorNode.get('title').once().toPromise();
+    const updated = new Date(this.vectorNode.updateTime).toISOString();
+    saveAs(jsonBlob, `${username}-${title}-${updated}.json`);
   }
 }
