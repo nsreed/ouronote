@@ -268,6 +268,7 @@ export class GunChain<
 
     if (this.isNested && !certificate) {
       this.logger.warn('NO CERTIFICATE FOUND FOR FOREIGN RECORD!');
+      // this.put(data);
     }
     (this.gun.put as any)(
       data,

@@ -2,7 +2,7 @@ import { EventEmitter } from '@angular/core';
 import * as paper from 'paper';
 import { buffer, bufferTime, filter, map } from 'rxjs/operators';
 import { LogService } from '../../../../../../log/src/lib/log.service';
-import { EXPECT_ARRAY, hasRequired } from '../functions/constants';
+import { EXPECT_PRIMITIVE_ARRAY, hasRequired } from '../functions/constants';
 import { serializeValue } from '../functions/packaging';
 
 export class PaperPair {
@@ -10,7 +10,7 @@ export class PaperPair {
   protected isImportingJSON = false;
   save$ = new EventEmitter();
   debouncedSave$ = this.save$.pipe(
-    filter((v) => !this.ctx.data.ignore),
+    filter((v) => !this.ctx.data?.ignore),
     bufferTime(100)
   );
   saveProperty$ = new EventEmitter<[string] | [string, any]>(); // TODO document this...
@@ -78,7 +78,7 @@ export class PaperPair {
       soul: key,
     };
     Object.keys(scrubbed).forEach((k) => {
-      if (EXPECT_ARRAY.includes(k)) {
+      if (EXPECT_PRIMITIVE_ARRAY.includes(k)) {
         // this.logger.log('  deserializing %s', k, scrubbed[k]);
         scrubbed[k] = JSON.parse(scrubbed[k]);
       }
@@ -86,6 +86,12 @@ export class PaperPair {
     return scrubbed;
   }
 
+  /**
+   * Creates a new paper item under this item, given a JSON object describing the child
+   * @param childJSON the JSON from which to construct the child
+   * @param key the soul from whence the child came
+   * @returns the child if one was created, undefined if there was an error
+   */
   constructChild(childJSON: any, key: string) {
     // this.logger.log('constructing child: %o', childJSON);
     if (!childJSON.className) {
@@ -112,7 +118,7 @@ export class PaperPair {
       soul: key,
     };
     Object.keys(scrubbed).forEach((k) => {
-      if (EXPECT_ARRAY.includes(k)) {
+      if (EXPECT_PRIMITIVE_ARRAY.includes(k)) {
         scrubbed[k] = JSON.parse(scrubbed[k]);
       }
     });

@@ -1,13 +1,20 @@
-import { Inject, Injectable, NgZone } from '@angular/core';
+import { Inject, Injectable, NgZone, EventEmitter } from '@angular/core';
 import { UserService } from '../user.service';
 import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
 import { SEA } from 'gun';
 import { NgSeaService } from '../../../../../ng-gun/src/lib/ng-sea.service';
 import { VectorGraph } from '../VectorGraph';
 import { from } from 'rxjs';
-import { mergeAll, takeLast, map, concatMap } from 'rxjs/operators';
+import {
+  mergeAll,
+  takeLast,
+  map,
+  concatMap,
+  take,
+  mapTo,
+} from 'rxjs/operators';
 import { LogService } from '../../../../../log/src/lib/log.service';
-import { unpack } from './functions/packaging';
+import { unpack, getDeep } from './functions/packaging';
 import * as paper from 'paper';
 import { PaperPair } from './classes/PaperPair';
 import { ProjectPair } from './classes/ProjectPair';
@@ -50,11 +57,11 @@ export class VectorService {
   }
 
   async importFile(file: any) {
+    this.logger.log('importing file "%s"', file.name);
     const fr: FileReader = new FileReader();
     fr.readAsText(file);
     fr.onload = () => {
       try {
-        const parsed = JSON.parse(fr.result as any);
         this.import({
           title: file.name,
           data: fr.result,
@@ -64,19 +71,33 @@ export class VectorService {
       }
     };
     fr.onerror = () => {
-      console.error('Error while reading reading file');
+      this.logger.error('Error while reading reading file');
     };
   }
 
   async import(vectorGraph: any) {
     // figure this out
-    this.logger.log('importing %s', vectorGraph);
+    this.logger.log('Importing Vector', vectorGraph);
+    // FIXME this await is broken, probably within the create() call
     const created = await this.create(vectorGraph);
+    const vectorNode = this.vectors.get(created as any);
 
-    this.logger.log('created', created);
-    const p = new paper.Project(new paper.Size(100, 100));
-    p.importJSON(vectorGraph.data);
-    const g = new ProjectPair(created, p, new paper.PaperScope(), this.logger);
+    vectorNode.once().subscribe((vectorRecord: any) => {
+      this.logger.log('new vector loaded from list', vectorRecord);
+      vectorNode.certificates$.subscribe(() => {
+        this.logger.log('vector certs loaded');
+        const p = new paper.Project(new paper.Size(100, 100));
+        p.importJSON(vectorGraph.data);
+        const g = new ProjectPair(
+          vectorNode as any,
+          p,
+          new paper.PaperScope(),
+          this.logger
+        );
+        const deep = getDeep(p);
+        vectorNode.get('layers' as never).put(deep.layers as never);
+      });
+    });
   }
 
   /**
@@ -85,9 +106,7 @@ export class VectorService {
    * @param vectorPair the optional vector pair to use
    */
   async initializeCertificates(value: VectorGraph, vectorPair: any) {
-    // TODO refactor this into a factory/repository
     const userPair = this.ngGun.auth().is;
-    // const vectorPair = (await this.sea.pair().toPromise()) as any;
     const certs = await this.certify(userPair, ['layers', 'title'], vectorPair);
     const vector = {
       ...value,
@@ -107,20 +126,20 @@ export class VectorService {
     const vectorPair: any = await this.sea.pair().toPromise();
     const vector = await this.initializeCertificates(value, vectorPair);
 
-    console.log(vector);
-
-    // TODO follow create-vector
     const vectorAuthRoot = new NgGunService(this.gunOpts, this.ngZone);
+
+    const otp = new EventEmitter();
     vectorAuthRoot.gun.user().auth(
       vectorPair as any,
       (async () => {
+        this.logger.log('vector auth complete');
         const vectorAuth = vectorAuthRoot.gun.user();
-        vectorAuth.put(vector);
         this.vectors.set(vectorAuth as never);
+        vectorAuth.put(vector, (...args) => otp.emit(vectorAuth));
       }) as any
     );
-
-    return await this.ngGun.get('~' + vectorPair.pub);
+    const ready = otp.pipe(take(1));
+    return await ready.pipe(mapTo('~' + vectorPair.pub)).toPromise();
   }
 
   private isVector(value: any) {

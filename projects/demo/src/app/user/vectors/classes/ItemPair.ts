@@ -19,15 +19,17 @@ import { after$, before$, returned } from '../../../functions/aspect-rx';
 import { ItemGraph } from '../../ItemGraph';
 import { getUUID } from '../edit-vector/converter-functions';
 import {
-  EXPECT_ARRAY,
+  EXPECT_PRIMITIVE_ARRAY,
   hasRequired,
   MUTATIONS,
   MUTATION_PROPERTIES,
   SAVE_DEBOUNCE,
 } from '../functions/constants';
-import { serializeValue } from '../functions/packaging';
+import { getDeep, getShallow, serializeValue } from '../functions/packaging';
 import { PaperPair } from './PaperPair';
 import { SaveStrategy } from './SaveStrategy';
+import { isIgnored } from '../functions/paper-functions';
+import { EXPECT_KEYED_ARRAY } from '../functions/constants';
 
 export class ItemPair extends PaperPair {
   graphValue: any;
@@ -120,33 +122,22 @@ export class ItemPair extends PaperPair {
     this.setup();
   }
 
+  /**
+   * Returns a deep copy of the item for persistence to gun
+   * @param item the item to get a deep object representation from
+   * @returns a deep representation of the item
+   */
+  getDeep(item: paper.Item | any = this.item) {
+    return getDeep(item);
+  }
+
+  /**
+   * Returns a shallow copy of the item for persistence to gun
+   * @param item the item to get a shallow object representation from
+   * @returns a shallow representation of the item
+   */
   getShallow(item: paper.Item = this.item) {
-    const raw = item.exportJSON({ asString: false });
-    const obj = raw[1] as any;
-    const shallow = {
-      ...obj,
-      className: this.item.className,
-    };
-
-    // remove complex sub-objects
-    delete shallow.data;
-    delete shallow.children;
-
-    // stringify arrays
-    Object.keys(shallow).forEach((k) => {
-      const value = shallow[k];
-      if (Array.isArray(value)) {
-        if (!EXPECT_ARRAY.includes(k)) {
-          console.warn('UNEXPECTED ARRAY %s, NOT SERIALIZING!!!', k);
-          console.warn('  value', value);
-          // continue;
-          delete shallow[k];
-        } else {
-          shallow[k] = JSON.stringify(value);
-        }
-      }
-    });
-    return shallow;
+    return getShallow(item);
   }
 
   doSave(json: any) {
@@ -175,6 +166,7 @@ export class ItemPair extends PaperPair {
     this.beforeImportJSON$.subscribe(() => (this.isImportingJSON = true));
     this.afterImportJSON$.subscribe(() => (this.isImportingJSON = false));
     // TODO? ignoreInsert causing multiple local child adds to be ignored???
+    this.afterImportJSON$.subscribe(() => this.save());
     this.afterInsertChild$.subscribe((child) => this.onLocalChild(child));
 
     this.graphValue$.subscribe((json) => this.onGraph(json));
@@ -191,11 +183,11 @@ export class ItemPair extends PaperPair {
     // });
     (this.item as any).changes$
       .pipe(
-        // tap(() => {
-        //   if (this.isImportingJSON) {
-        //     this.logger.verbose('ignoring local change because importing JSON');
-        //   }
-        // }),
+        tap(() => {
+          if (this.isImportingJSON) {
+            this.logger.verbose('ignoring local change because importing JSON');
+          }
+        }),
         filter(
           (v) =>
             (this.project as any).pair.saveStrategy === SaveStrategy.AUTOMATIC

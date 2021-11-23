@@ -1,4 +1,4 @@
-export const EXPECT_ARRAY = [
+export const EXPECT_PRIMITIVE_ARRAY = [
   'matrix',
   'size',
   'strokeColor',
@@ -6,6 +6,7 @@ export const EXPECT_ARRAY = [
   'segments',
   'position',
 ];
+export const EXPECT_KEYED_ARRAY = ['children', 'layers'];
 export const REQUIRED_BY = {
   size: ['Shape'],
 };
