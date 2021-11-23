@@ -1,6 +1,9 @@
 import { EXPECT_ARRAY } from './constants';
 import * as paper from 'paper';
-export function unpack(value: any, soul: string | null = value.data?.soul) {
+export function unpack(
+  value: any,
+  soul: string | null = value.data?.soul
+): any {
   // console.log('unpacking value');
   // console.dir(value);
   return value.className ? unpackObject(value) : unpackArray(value);

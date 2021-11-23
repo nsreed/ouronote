@@ -1,0 +1,32 @@
+<div class="container" appFileDnd (fileDropped)="onFileDropped($event)">
+  <input
+    type="file"
+    #fileDropRef
+    id="fileDropRef"
+    multiple
+    (change)="fileBrowseHandler($event.target.files)"
+  />
+  <h3>Drag and drop file here</h3>
+  <mat-icon> file_upload </mat-icon>
+  <h3>or</h3>
+  <label for="fileDropRef">Browse for file</label>
+</div>
+
+<div class="files-list">
+  <div class="single-file" *ngFor="let file of files; let i = index">
+    <div class="info">
+      <h4 class="name">
+        {{ file?.name }}
+      </h4>
+      <p class="size">
+        {{ formatBytes(file?.size) }}
+      </p>
+      <app-progress [progress]="file?.progress"></app-progress>
+    </div>
+    <button mat-icon-button (click)="deleteFile(i)">
+      <mat-icon> remove </mat-icon>
+    </button>
+  </div>
+</div>
+
+<button mat-raised-button (click)="finish()">Finish</button>

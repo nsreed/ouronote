@@ -39,6 +39,7 @@ import { ViewVectorComponent } from './view-vector/view-vector.component';
 import { CertificatesModule } from '../../certificates/certificates.module';
 import { LogModule } from '../../../../../log/src/lib/log.module';
 import { PermissionsComponent } from './permissions/permissions.component';
+import { FilesModule } from '../../files/files.module';
 
 @NgModule({
   declarations: [
@@ -83,6 +84,7 @@ import { PermissionsComponent } from './permissions/permissions.component';
     ReactiveFormsModule,
     ScrollingModule,
     VectorsRoutingModule,
+    FilesModule,
   ],
   exports: [PaperDirective],
 })

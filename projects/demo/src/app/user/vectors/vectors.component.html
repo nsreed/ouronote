@@ -1,11 +1,12 @@
 <mat-toolbar>
   <h1 fxFlex="1 0 auto">Vectors</h1>
+  <button mat-flat-button (click)="importVector()">Import...</button>
   <button mat-raised-button color="primary" (click)="create()">
     New Vector
   </button>
 </mat-toolbar>
 
-<div gdColumns="auto repeat(3, max-content)">
+<div gdColumns="auto repeat(3, max-content)" appFileDnd class="dropzone">
   <ng-container *ngFor="let vector of vectors | async">
     <a mat-flat-button [routerLink]="['/user/vectors', vector | soul, 'edit']">
       <!-- <mat-icon>enhanced_encryption</mat-icon> -->

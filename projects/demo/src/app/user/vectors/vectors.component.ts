@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ConfirmComponent } from '../../components/confirm/confirm.component';
 import { CreateVectorComponent } from './components/create-vector/create-vector.component';
 import { LogService } from '../../../../../log/src/lib/log.service';
+import { FileUploaderComponent } from '../../files/file-uploader/file-uploader.component';
 
 export function buildVectorLogger(parent: LogService) {
   return parent.supplemental('name');
@@ -50,6 +51,18 @@ export class VectorsComponent implements OnInit {
       .pipe(filter((r) => r))
       .subscribe((result) => {
         this.vectorService.vectors.unset(vector);
+      });
+  }
+
+  importVector() {
+    this.dialog
+      .open(FileUploaderComponent)
+      .afterClosed()
+      .subscribe((files) => {
+        console.log(files);
+        for (const item of files) {
+          this.vectorService.importFile(item);
+        }
       });
   }
 }

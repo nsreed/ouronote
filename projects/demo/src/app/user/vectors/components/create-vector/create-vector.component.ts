@@ -57,18 +57,26 @@ export class CreateVectorComponent implements OnInit {
       title: formValue.title,
     };
     this.vectorPair$.subscribe(async (vectorPair) => {
-      const vector = await this.vectorService.create(vg, vectorPair);
+      const vector = await this.vectorService.initializeCertificates(
+        vg,
+        vectorPair
+      );
       this.recordValue = vector;
       console.log({ vector });
 
       if (!formValue.confirm) {
         return;
       }
+
+      // Create a detached gun instance for the vector itself
       const detachedGun = new NgGunService(this.gunOpts, this.ngZone);
 
+      // login as that vector
       (detachedGun.gun.user() as any).auth(vectorPair, async () => {
         const v = detachedGun.gun.user();
+        // save the vector's data
         v.put(vector);
+        // add the vector itself to the user's list of saved vectors
         this.vectorService.vectors.set(v as never);
         this.dialog.closeAll();
       });

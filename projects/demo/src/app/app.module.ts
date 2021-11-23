@@ -43,6 +43,7 @@ import { WelcomeComponent } from './welcome/welcome.component';
 import { NgGunService } from '../../../ng-gun/src/lib/ng-gun.service';
 import { GunWebrtcImporterService } from './services/gun-webrtc-importer.service';
 import { GunRadImporterService } from './services/gun-rad-importer.service';
+import { FilesModule } from './files/files.module';
 
 const RADISK_LOCAL = localStorage.getItem('RADISK_ENABLE');
 const RADISK_ENABLE = RADISK_LOCAL === null ? true : !!JSON.parse(RADISK_LOCAL);
@@ -93,6 +94,7 @@ const WEBRTC_ENABLE = WEBRTC_LOCAL === null ? true : !!JSON.parse(WEBRTC_LOCAL);
     MatTooltipModule,
     ReactiveFormsModule,
     ScrollingModule,
+    FilesModule,
   ],
   providers: [
     {

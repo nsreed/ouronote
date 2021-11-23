@@ -138,6 +138,10 @@ export class EditVectorComponent
     );
   }
 
+  onPaste(e: any) {
+    console.log(e);
+  }
+
   addLayer() {
     this.logger.log('adding layer');
     const layer = new paper.Layer();

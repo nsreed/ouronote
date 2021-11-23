@@ -87,6 +87,7 @@
   </div> -->
 
   <div
+    (paste)="onPaste($event)"
     fxFlex="1 1 auto"
     fxLayout="column"
     fxLayoutAlign="stretch stretch"
@@ -94,21 +95,24 @@
     #Container
   >
     <mat-toolbar>
-      <!-- <a mat-button [matMenuTriggerFor]="menuSelect">Edit</a>
+      <!-- <button mat-icon-button title="Import...">
+        <mat-icon>import_export</mat-icon>
+      </button> -->
+      <a mat-button [matMenuTriggerFor]="menuSelect">Edit</a>
       <mat-menu #menuSelect>
-        <button mat-menu-item>Cut</button>
-        <button mat-menu-item>Copy</button>
-        <button mat-menu-item>Paste</button>
-        <button mat-menu-item>Group Selected</button>
-        <button mat-menu-item>Ungroup Selected</button>
+        <!-- <button mat-menu-item>Cut</button>
+        <button mat-menu-item>Copy</button> -->
+        <button mat-menu-item (click)="onPaste($event)">Paste</button>
+        <!-- <button mat-menu-item>Group Selected</button>
+        <button mat-menu-item>Ungroup Selected</button> -->
       </mat-menu>
-      <button mat-button>
+      <!-- <button mat-button>
         Share
         <mat-icon>
           share
         </mat-icon>
-      </button>
-      <button mat-button *ngIf="((vectorChain.chain$|async)?.isNested)">
+      </button> -->
+      <!-- <button mat-button *ngIf="((vectorChain.chain$|async)?.isNested)">
         Favorite
         <mat-icon>
           favorite
