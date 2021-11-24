@@ -267,6 +267,7 @@ export class GunChain<
     // FIXME "unverified data" - certified put values must be signed?
 
     if (this.isNested && !certificate) {
+      // FIXME This should wait for the certificate and attempt another put?
       this.logger.warn('NO CERTIFICATE FOUND FOR FOREIGN RECORD!');
       // this.put(data);
     }
