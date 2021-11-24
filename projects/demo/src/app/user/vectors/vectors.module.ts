@@ -40,6 +40,9 @@ import { CertificatesModule } from '../../certificates/certificates.module';
 import { LogModule } from '../../../../../log/src/lib/log.module';
 import { PermissionsComponent } from './permissions/permissions.component';
 import { FilesModule } from '../../files/files.module';
+import { VectorPreviewComponent } from './components/vector-preview/vector-preview.component';
+import { PaperEditDirective } from './paper-edit.directive';
+import { VectorExportDialogComponent } from './components/vector-export-dialog/vector-export-dialog.component';
 
 @NgModule({
   declarations: [
@@ -55,6 +58,9 @@ import { FilesModule } from '../../files/files.module';
     CreateVectorComponent,
     ViewVectorComponent,
     PermissionsComponent,
+    VectorPreviewComponent,
+    PaperEditDirective,
+    VectorExportDialogComponent,
   ],
   imports: [
     CertificatesModule,

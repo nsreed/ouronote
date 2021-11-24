@@ -18,6 +18,7 @@ import { unpack, getDeep } from './functions/packaging';
 import * as paper from 'paper';
 import { PaperPair } from './classes/PaperPair';
 import { ProjectPair } from './classes/ProjectPair';
+import { GunChain } from '../../../../../ng-gun/src/lib/classes/GunChain';
 
 @Injectable({
   providedIn: 'root',
@@ -62,9 +63,9 @@ export class VectorService {
     fr.readAsText(file);
     fr.onload = () => {
       try {
-        this.import({
+        // TODO determine file type, and whether content is a paper export or an ononote export
+        this.importFromPaper(fr.result, {
           title: file.name,
-          data: fr.result,
         });
       } catch (e: any) {
         this.logger.error('Error parsing JSON file');
@@ -75,10 +76,8 @@ export class VectorService {
     };
   }
 
-  async import(vectorGraph: any) {
-    // figure this out
+  async importFromPaper(paperJSON: any, vectorGraph: any) {
     this.logger.log('Importing Vector', vectorGraph);
-    // FIXME this await is broken, probably within the create() call
     const created = await this.create(vectorGraph);
     const vectorNode = this.vectors.get(created as any);
 
@@ -87,7 +86,7 @@ export class VectorService {
       vectorNode.certificates$.subscribe(() => {
         this.logger.log('vector certs loaded');
         const p = new paper.Project(new paper.Size(100, 100));
-        p.importJSON(vectorGraph.data);
+        p.importJSON(paperJSON);
         const g = new ProjectPair(
           vectorNode as any,
           p,

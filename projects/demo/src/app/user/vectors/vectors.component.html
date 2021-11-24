@@ -6,7 +6,7 @@
   </button>
 </mat-toolbar>
 
-<div gdColumns="auto repeat(3, max-content)" appFileDnd class="dropzone">
+<div gdColumns="auto repeat(4, max-content)" appFileDnd class="dropzone">
   <ng-container *ngFor="let vector of vectors | async">
     <a mat-flat-button [routerLink]="['/user/vectors', vector | soul, 'edit']">
       <!-- <mat-icon>enhanced_encryption</mat-icon> -->
@@ -25,6 +25,9 @@
       [routerLink]="['/user/vectors', vector | soul, 'permissions']"
     >
       <mat-icon>share</mat-icon>
+    </button>
+    <button mat-icon-button (click)="download(vector)">
+      <mat-icon>file_download</mat-icon>
     </button>
   </ng-container>
 </div>
