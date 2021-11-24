@@ -77,6 +77,7 @@ export class LassoSelectTool extends SelectTool {
       this.path.closed = true;
       this.path.fillColor = new paper.Color(0, 0, 1, 0.5) as any;
       this.path.strokeWidth = 1;
+      this.path.strokeScaling = true;
       this.path.strokeColor = new paper.Color(0, 0, 1) as any;
       (this.scope.settings as any).insertItems = prev;
       this.project.activeLayer.insertChild(0, this.path);
