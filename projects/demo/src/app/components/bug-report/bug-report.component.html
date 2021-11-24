@@ -1,19 +1,26 @@
 <h1 matDialogTitle>Bug Report</h1>
 <div matDialogContent>
-  <mat-accordion [multi]="true">
-    <mat-expansion-panel [expanded]="true">
-      <mat-expansion-panel-header>Description</mat-expansion-panel-header>
-      <mat-form-field fxFlexFill>
-        <textarea matInput
-          placeholder="Please provide a description of the problem and what you were doing/what you expected when you encountered it."
-          [formControl]="descriptionCtl"></textarea>
-      </mat-form-field>
-    </mat-expansion-panel>
-    <mat-expansion-panel>
-      <mat-expansion-panel-header>Preview</mat-expansion-panel-header>
-      <pre>{{reportStr}}</pre>
-    </mat-expansion-panel>
-  </mat-accordion>
+  <div fxLayout="column">
+    <h2>Description</h2>
+    <textarea
+      matInput
+      placeholder="Please provide a description of the problem and what you were doing/what you expected when you encountered it."
+      [formControl]="descriptionCtl"
+    ></textarea>
+    <h2>Options</h2>
+    <form [formGroup]="includeForm">
+      <h3>Include:</h3>
+      <mat-checkbox formControlName="log">Logs</mat-checkbox>
+      <mat-checkbox formControlName="gunOpts"
+        >Database Configuration</mat-checkbox
+      >
+      <mat-checkbox formControlName="graph">Database Contents</mat-checkbox>
+      <mat-checkbox formControlName="is">User Information</mat-checkbox>
+      <mat-checkbox formControlName="peers">Peer Information</mat-checkbox>
+    </form>
+    <h2>Preview</h2>
+    <pre>{{ reportStr }}</pre>
+  </div>
 </div>
 <div matDialogActions>
   <button mat-icon-button (click)="copy()" matTooltip="Copy to clipboard">
@@ -22,5 +29,10 @@
   <button mat-icon-button (click)="download()" matTooltip="Download .json">
     <mat-icon>file_download</mat-icon>
   </button>
-  <a mat-button target="_blank" href="https://www.github.com/nsreed/ouronote/issues">Create a github issue</a>
+  <a
+    mat-button
+    target="_blank"
+    href="https://www.github.com/nsreed/ouronote/issues"
+    >Create a github issue</a
+  >
 </div>

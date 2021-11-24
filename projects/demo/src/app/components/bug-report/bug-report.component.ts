@@ -21,6 +21,36 @@ export class BugReportComponent implements OnInit {
   reportStr = '';
   descriptionCtl = this.fb.control(null);
 
+  includeForm = this.fb.group({
+    is: this.fb.control(false),
+    peers: this.fb.control(false),
+    graph: this.fb.control(false),
+    gunOpts: this.fb.control(false),
+    log: this.fb.control(true),
+  });
+
+  get is() {
+    return this.includeForm.value.is ? { is: this.ngGun.auth().is?.pub } : {};
+  }
+
+  get peers() {
+    return this.includeForm.value.peers ? { peers: this.data.peers } : {};
+  }
+
+  get graph() {
+    return this.includeForm.value.graph ? { graph: this.data.gun._.graph } : {};
+  }
+
+  get log() {
+    return this.includeForm.value.log ? { log: this.data.messages } : {};
+  }
+
+  get gunOpts() {
+    return this.includeForm.value.gunOpts
+      ? { gunConstructorOptions: this.ngGun.gunOptions }
+      : {};
+  }
+
   constructor(
     public ngGun: NgGunService,
     private router: Router,
@@ -41,30 +71,25 @@ export class BugReportComponent implements OnInit {
       // }
       this.updatePreview();
     });
+    this.includeForm.valueChanges.subscribe(() => this.generate());
   }
 
   ngOnInit() {}
 
   generate() {
-    // LogService.buffer$.pipe(take(1)).subscribe((messages) => {
-    //   console.table(messages);
-    const graph = this.data.gun._.graph;
-    const gunConstructorOptions = this.ngGun.gunOptions;
     const report = {
       host: window.location.host,
       route: this.router.url,
-      is: this.ngGun.auth().is?.pub,
-      gunConstructorOptions,
-      peers: this.data.peers,
-      graph,
       timestamp: Date.now(),
       version: VERSION,
       system: host.browser,
-      log: this.data.messages,
-      // log: messages,
+      ...this.gunOpts,
+      ...this.is,
+      ...this.log,
+      ...this.peers,
+      ...this.graph,
     };
     this.report = report;
-    // });
     this.updatePreview();
   }
 
