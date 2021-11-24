@@ -77,6 +77,7 @@ export class BugReportComponent implements OnInit {
   ngOnInit() {}
 
   generate() {
+    // TODO include WEBRTC and INDEXEDDB in the bug report
     const report = {
       host: window.location.host,
       route: this.router.url,
