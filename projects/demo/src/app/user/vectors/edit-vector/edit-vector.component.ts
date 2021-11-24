@@ -17,12 +17,15 @@ import { VectorService } from '../vector.service';
 import { gunifyProject as gunifyProject } from './converter-functions';
 import { FormBuilder, Validators } from '@angular/forms';
 import { NgGunService } from '../../../../../../ng-gun/src/lib/ng-gun.service';
-import { unpack } from '../functions/packaging';
+import { getDeep, unpack } from '../functions/packaging';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { LogService } from 'projects/log/src/public-api';
 import { saveAs } from 'file-saver';
 import { UserService } from '../../user.service';
 import { gunUpdateTime } from 'projects/ng-gun/src/lib/functions/gun-utils';
+import { FileUploaderComponent } from '../../../files/file-uploader/file-uploader.component';
+import { MatDialog } from '@angular/material/dialog';
+import { PaperEditDirective } from '../paper-edit.directive';
 
 const VECTOR_PAPER_JSON_KEY = 'graph';
 
@@ -35,19 +38,18 @@ export class EditVectorComponent
   implements OnInit, AfterViewInit
 {
   @ViewChild('paper')
-  private paperDirective!: PaperDirective;
-
-  @ViewChild('preview')
-  private preview!: PaperDirective;
+  private paperDirective!: PaperEditDirective;
 
   previewSVG?: SafeHtml;
   project!: paper.Project;
+  projectPair!: ProjectPair;
 
   vectorForm = this.fb.group({
     title: [null, Validators.required],
   });
 
   constructor(
+    private dialog: MatDialog,
     vectorService: VectorService,
     route: ActivatedRoute,
     private ngZone: NgZone,
@@ -130,7 +132,7 @@ export class EditVectorComponent
     // console.log('setting up project graph');
     // this.paperDirective.tool.activate();
     this.logger.log('project ready');
-    const paperChain: ProjectPair = new ProjectPair(
+    this.projectPair = new ProjectPair(
       gun as any,
       this.paperDirective.project as any,
       this.paperDirective.scope as any,
@@ -156,5 +158,32 @@ export class EditVectorComponent
     const title = await this.vectorNode.get('title').once().toPromise();
     const updated = new Date(this.vectorNode.updateTime).toISOString();
     saveAs(jsonBlob, `${username}-${title}-${updated}.json`);
+  }
+
+  importPaper() {
+    this.dialog
+      .open(FileUploaderComponent)
+      .afterClosed()
+      .subscribe((files) => {
+        for (const file of files) {
+          const fr: FileReader = new FileReader();
+          fr.readAsText(file);
+          fr.onload = () => {
+            try {
+              // const parsed = JSON.parse(fr.result as any);
+              this.paperDirective.project.importJSON(fr.result as string);
+            } catch (e: any) {
+              this.logger.error('Error parsing JSON file');
+            }
+          };
+          fr.onerror = () => {
+            console.error('Error while reading reading file');
+          };
+        }
+      });
+  }
+
+  logDeep() {
+    console.log(getDeep(this.paperDirective.project));
   }
 }
