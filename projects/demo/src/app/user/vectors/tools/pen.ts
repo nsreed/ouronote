@@ -15,6 +15,7 @@ export class PenTool extends VectorTool {
     strokeJoin: 'round',
     strokeWidth: 3,
   } as paper.Style);
+
   @Property()
   smoothing = true;
 
@@ -34,10 +35,12 @@ export class PenTool extends VectorTool {
     this.path.style = this.style;
   });
   dragSub = this.drag.subscribe((e: any) => {
-    // this.logger.log('pen drag', e.event.type, e.event.pointerType);
     this.path.add(e.point);
   });
   upSub = this.up.subscribe((e) => {
+    if (this.path.length === 0) {
+      this.path.remove();
+    }
     this.path.strokeColor = this.project.currentStyle.strokeColor;
     this.path.fillColor = this.project.currentStyle.fillColor;
     if (this.smoothing) {
