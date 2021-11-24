@@ -30,24 +30,30 @@ export class PenTool extends VectorTool {
     : this.up;
   downSub = this.down.subscribe((e) => {
     this.activateDrawLayer();
-    this.path = new paper.Path(e.point) as any;
-    (this.path as any).pair.editing = true;
-    this.path.style = this.style;
   });
   dragSub = this.drag.subscribe((e: any) => {
+    if (!this.path) {
+      this.path = new paper.Path(e.point) as any;
+      (this.path as any).pair.editing = true;
+      this.path.style = this.style;
+    }
     this.path.add(e.point);
   });
   upSub = this.up.subscribe((e) => {
-    if (this.path.length === 0) {
-      this.path.remove();
+    if (this.path) {
+      if (this.path.length === 0) {
+        this.path.remove();
+        return;
+      }
+      this.path.strokeColor = this.project.currentStyle.strokeColor;
+      this.path.fillColor = this.project.currentStyle.fillColor;
+      // if (this.smoothing) {
+      //   this.path.smooth();
+      // }
+      (this.path as any).pair.doSave();
+      (this.path as any).pair.editing = false;
+      this.path = null as any;
     }
-    this.path.strokeColor = this.project.currentStyle.strokeColor;
-    this.path.fillColor = this.project.currentStyle.fillColor;
-    if (this.smoothing) {
-      this.path.smooth();
-    }
-    (this.path as any).pair.doSave();
-    (this.path as any).pair.editing = false;
   });
 
   filterEvent(event: any) {
