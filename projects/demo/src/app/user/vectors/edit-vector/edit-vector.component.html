@@ -94,8 +94,8 @@
     id="CanvasContainer"
     #Container
   >
-    <mat-toolbar>
-      <!-- <button mat-icon-button title="Import...">
+    <!-- <mat-toolbar>
+      <button mat-icon-button title="Import...">
         <mat-icon>import_export</mat-icon>
       </button>
       <a mat-button [matMenuTriggerFor]="menuSelect">Edit</a>
@@ -114,11 +114,11 @@
       <button mat-button *ngIf="(vectorChain.chain$ | async)?.isNested">
         Favorite
         <mat-icon> favorite </mat-icon>
-      </button> -->
+      </button>
       <button mat-icon-button (click)="download()">
         <mat-icon>file_download</mat-icon>
       </button>
-    </mat-toolbar>
+    </mat-toolbar> -->
     <canvas id="Workspace" appPaperEdit #paper="appPaperEdit"></canvas>
   </div>
 </ng-container>
