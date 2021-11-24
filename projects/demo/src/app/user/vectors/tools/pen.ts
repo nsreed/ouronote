@@ -46,7 +46,7 @@ export class PenTool extends VectorTool {
     if (this.smoothing) {
       this.path.smooth();
     }
-    (this.path as any).pair?.doSave();
+    (this.path as any).pair.doSave();
     (this.path as any).pair.editing = false;
   });
 
