@@ -10,7 +10,7 @@ import {
   MatDialog,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
-import { GunChain } from 'out-tsc/lib/ng-gun/src/public-api';
+import { GunChain } from 'projects/ng-gun/src/lib/classes/GunChain';
 import { LogService } from '../../../../../../../log/src/lib/log.service';
 import { UserService } from '../../../user.service';
 import { PaperEditDirective } from '../../paper-edit.directive';
