@@ -94,11 +94,8 @@
     id="CanvasContainer"
     #Container
   >
-    <!-- <mat-toolbar>
-      <button mat-icon-button title="Import...">
-        <mat-icon>import_export</mat-icon>
-      </button>
-      <a mat-button [matMenuTriggerFor]="menuSelect">Edit</a>
+    <mat-toolbar>
+      <!-- <a mat-button [matMenuTriggerFor]="menuSelect">Edit</a>
       <mat-menu #menuSelect>
         <button mat-menu-item (click)="importPaper()">Import...</button>
         <button mat-menu-item>Cut</button>
@@ -106,19 +103,23 @@
         <button mat-menu-item (click)="onPaste($event)">Paste</button>
         <button mat-menu-item>Group Selected</button>
         <button mat-menu-item>Ungroup Selected</button>
-      </mat-menu>
-      <button mat-button>
+      </mat-menu> -->
+      <!-- <button mat-button>
         Share
-        <mat-icon> share </mat-icon>
+        <mat-icon>share</mat-icon>
+      </button> -->
+      <button mat-button *ngIf="vectorNode && !vectorNode.get('layers').canEdit" (click)="requestAccess()">
+        Request Access
+        <mat-icon>announcement</mat-icon>
       </button>
-      <button mat-button *ngIf="(vectorChain.chain$ | async)?.isNested">
+      <button mat-button (click)="favorite()">
         Favorite
-        <mat-icon> favorite </mat-icon>
+        <mat-icon>favorite</mat-icon>
       </button>
       <button mat-icon-button (click)="download()">
         <mat-icon>file_download</mat-icon>
       </button>
-    </mat-toolbar> -->
+    </mat-toolbar>
     <canvas id="Workspace" appPaperEdit #paper="appPaperEdit"></canvas>
   </div>
 </ng-container>

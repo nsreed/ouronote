@@ -1,3 +1,9 @@
-<div #vector="gunChain" [gunChain]="vectorNode$ | async">
-  <app-certificates></app-certificates>
-</div>
+<mat-tab-group #vector="gunChain" [gunChain]="vectorNode$ | async">
+  <mat-tab label="Invite Requests">
+    <h2>Invite Requests</h2>
+    <app-invite-requests></app-invite-requests>
+  </mat-tab>
+  <mat-tab label="Certificates">
+    <app-certificates></app-certificates>
+  </mat-tab>
+</mat-tab-group>

@@ -36,21 +36,30 @@ export class VectorService {
     private logger: LogService
   ) {}
 
-  async certify(certificant: any, paths: string[], auth: any) {
+  async certify(
+    certificant: any,
+    paths: string[],
+    auth: any,
+    mode: '*' | '+' = '*'
+  ) {
     // console.log('certifying', certificant);
     if (typeof certificant !== 'object') {
-      throw new Error('cannot certify provided certificant');
+      if (typeof certificant === 'string' && certificant === '*') {
+        // public cert
+      } else {
+        throw new Error('cannot certify provided certificant');
+      }
     } else if (!certificant.pub) {
       throw new Error('cannot certify provided certificant');
     }
     const store = {} as any;
     const certPromises = paths.map(async (path: string) => {
-      const policy = { '*': path };
+      const policy = { [mode]: path };
       const cert = await this.sea
         .certify(certificant, policy, auth)
         .toPromise();
       store[path] = {} as any;
-      store[path][certificant.pub] = cert;
+      store[path][certificant.pub || certificant] = cert;
     });
     await Promise.all(certPromises);
     // console.log('certified', store);
@@ -106,7 +115,16 @@ export class VectorService {
    */
   async initializeCertificates(value: VectorGraph, vectorPair: any) {
     const userPair = this.ngGun.auth().is;
-    const certs = await this.certify(userPair, ['layers', 'title'], vectorPair);
+
+    const userCerts = await this.certify(
+      userPair,
+      ['layers', 'title', 'certs'],
+      vectorPair
+    );
+
+    const publicCerts = await this.certify('*', ['inviteRequests'], vectorPair);
+
+    const certs = { ...userCerts, ...publicCerts };
     const vector = {
       ...value,
       owner: {} as any,

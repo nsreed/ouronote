@@ -186,4 +186,15 @@ export class EditVectorComponent
   logDeep() {
     console.log(getDeep(this.paperDirective.project));
   }
+
+  requestAccess() {
+    this.vectorNode
+      .get('inviteRequests')
+      .get(this.userPub)
+      .put(true as never);
+  }
+
+  favorite() {
+    this.userService.user.get('vectors').set(this.vectorNode.gun as never);
+  }
 }

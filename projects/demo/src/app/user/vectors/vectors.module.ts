@@ -43,6 +43,8 @@ import { FilesModule } from '../../files/files.module';
 import { VectorPreviewComponent } from './components/vector-preview/vector-preview.component';
 import { PaperEditDirective } from './paper-edit.directive';
 import { VectorExportDialogComponent } from './components/vector-export-dialog/vector-export-dialog.component';
+import { MatTabsModule } from '@angular/material/tabs';
+import { InviteRequestsComponent } from './components/invite-requests/invite-requests.component';
 
 @NgModule({
   declarations: [
@@ -61,6 +63,7 @@ import { VectorExportDialogComponent } from './components/vector-export-dialog/v
     VectorPreviewComponent,
     PaperEditDirective,
     VectorExportDialogComponent,
+    InviteRequestsComponent,
   ],
   imports: [
     CertificatesModule,
@@ -84,6 +87,7 @@ import { VectorExportDialogComponent } from './components/vector-export-dialog/v
     MatListModule,
     MatMenuModule,
     MatStepperModule,
+    MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
     NgGunModule,

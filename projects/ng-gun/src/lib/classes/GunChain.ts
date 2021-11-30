@@ -210,6 +210,7 @@ export class GunChain<
     }
   }
 
+  certificate$ = new ReplaySubject<string>(1);
   private _certificate?: string | undefined;
   public get certificate(): string | undefined {
     return this._certificate || this.back?.certificate;
@@ -217,7 +218,6 @@ export class GunChain<
   public set certificate(value: string | undefined) {
     this._certificate = value;
   }
-  certificate$ = new ReplaySubject<string>(1);
 
   certificates$ = new ReplaySubject<ICertStore>(1);
   private _certificates: ICertStore = {};
@@ -234,6 +234,7 @@ export class GunChain<
       this.certificates$.next(value);
     }
   }
+
   private sources = new Map<string, Observable<any>>();
   protected _auth: GunAuthChain<DataType, ReferenceKey> | null = null;
 
@@ -341,6 +342,7 @@ export class GunChain<
       }
     ).pipe(take(1));
   }
+
   open() {
     // return this.from((this.gun as any).load((d: any) => d) as any);
     return fromEventPattern(
