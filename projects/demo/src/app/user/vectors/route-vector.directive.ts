@@ -27,6 +27,13 @@ export class RouteVectorDirective {
   vector$: Observable<VectorGraph> = this.vectorNode$.pipe(
     switchMap((node) => node.on())
   );
+  owner$ = this.vectorNode$.pipe(
+    switchMap(
+      (n) => n.get('owner').on({ clean: true })
+      // .pipe(map((o) => ({ ...o, _: undefined })))
+    )
+  );
+  layersNode$ = this.vectorNode$.pipe(map((v) => v.get('layers')));
   constructor(
     protected vectorService: VectorService,
     private route: ActivatedRoute,

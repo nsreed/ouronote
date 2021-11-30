@@ -45,6 +45,7 @@ import { PaperEditDirective } from './paper-edit.directive';
 import { VectorExportDialogComponent } from './components/vector-export-dialog/vector-export-dialog.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { InviteRequestsComponent } from './components/invite-requests/invite-requests.component';
+import { ComponentsModule } from '../../components/components.module';
 
 @NgModule({
   declarations: [
@@ -68,6 +69,8 @@ import { InviteRequestsComponent } from './components/invite-requests/invite-req
   imports: [
     CertificatesModule,
     CommonModule,
+    ComponentsModule,
+    FilesModule,
     FlexLayoutModule,
     LogModule,
     MatButtonModule,
@@ -94,7 +97,6 @@ import { InviteRequestsComponent } from './components/invite-requests/invite-req
     ReactiveFormsModule,
     ScrollingModule,
     VectorsRoutingModule,
-    FilesModule,
   ],
   exports: [PaperDirective],
 })

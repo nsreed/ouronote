@@ -1,21 +1,19 @@
-<h1>
-  <mat-icon>security</mat-icon>
-  Certificates
-</h1>
 <p>Showing certificates for {{pub$|async}}</p>
 <div gdColumns="max-content repeat(3, max-content)" gdGap="1em">
   <span></span>
   <span>Path</span>
   <span>User</span>
   <span>Permissions</span>
-  <ng-container *ngFor="let certPath of (certs$|async)|keyvalue">
-    <ng-container *ngFor="let certUser of certPath.value|keyvalue">
-      <mat-checkbox></mat-checkbox>
-      <code>{{certPath.key}}</code>
-      <span>{{certUser.key|alias|async}}</span>
-      <code>{{(certUser.value|verify|async)?.w | json}}</code>
-    </ng-container>
+  <ng-container *ngFor="let cert of certList">
+    <mat-checkbox [formControl]="cert.select"></mat-checkbox>
+    <code>{{cert.path}}</code>
+    <span>{{cert.user|alias|async}}</span>
+    <code>{{(cert.cert|verify|async)?.w | json}}</code>
   </ng-container>
 </div>
-
+<mat-divider></mat-divider>
+<p>
+{{selectedCerts.length + ' of ' + certList.length}} selected
+</p>
+<button (click)="blacklist()" mat-raised-button color="warn" [disabled]="selectedCerts.length === 0">Blacklist Selected</button>
 <app-create-certificate *ngIf="owner$|async"></app-create-certificate>

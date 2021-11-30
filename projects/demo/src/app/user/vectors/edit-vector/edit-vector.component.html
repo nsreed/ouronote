@@ -94,7 +94,28 @@
     id="CanvasContainer"
     #Container
   >
-    <mat-toolbar>
+    <mat-toolbar *ngIf="vectorNode" fxLayoutAlign="stretch" fxLayout="row">
+    <span>
+      {{ (vector$|async).title }} -
+      <ng-container *ngFor="let owner of (owner$|async)|keyvalue">
+        @{{owner.key|alias|async}}
+      </ng-container>
+    </span>
+    <a mat-icon-button [matMenuTriggerFor]="menuMore" color="primary"><mat-icon>more_horiz</mat-icon></a>
+    <mat-menu #menuMore>
+      <button mat-menu-item *ngIf="vectorNode && !(layersNode$|async).canEdit" (click)="requestAccess()">
+        <mat-icon>announcement</mat-icon>
+        Request Access
+      </button>
+      <button mat-menu-item (click)="favorite()">
+        <mat-icon>favorite</mat-icon>
+        Favorite
+      </button>
+      <button mat-menu-item (click)="download()">
+        <mat-icon>file_download</mat-icon>
+        Download
+      </button>
+    </mat-menu>
       <!-- <a mat-button [matMenuTriggerFor]="menuSelect">Edit</a>
       <mat-menu #menuSelect>
         <button mat-menu-item (click)="importPaper()">Import...</button>
@@ -108,17 +129,6 @@
         Share
         <mat-icon>share</mat-icon>
       </button> -->
-      <button mat-button *ngIf="vectorNode && !vectorNode.get('layers').canEdit" (click)="requestAccess()">
-        Request Access
-        <mat-icon>announcement</mat-icon>
-      </button>
-      <button mat-button (click)="favorite()">
-        Favorite
-        <mat-icon>favorite</mat-icon>
-      </button>
-      <button mat-icon-button (click)="download()">
-        <mat-icon>file_download</mat-icon>
-      </button>
     </mat-toolbar>
     <canvas id="Workspace" appPaperEdit #paper="appPaperEdit"></canvas>
   </div>

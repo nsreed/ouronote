@@ -54,6 +54,7 @@ export interface GunChainCallbackOptions {
   includeNulls?: boolean;
   changes?: boolean;
   bypassZone?: boolean;
+  clean?: boolean;
 }
 
 export interface GunChainFunctions {
@@ -413,6 +414,9 @@ export class GunChain<
           ) => {
             if (signal.stopped) {
               return ev.off();
+            }
+            if (options?.clean) {
+              delete (data as any)['_'];
             }
             const dispatchHandler = () => {
               if (options?.includeKeys) {

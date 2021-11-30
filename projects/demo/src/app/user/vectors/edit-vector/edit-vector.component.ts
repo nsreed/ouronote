@@ -50,7 +50,7 @@ export class EditVectorComponent
 
   constructor(
     private dialog: MatDialog,
-    vectorService: VectorService,
+    protected vectorService: VectorService,
     route: ActivatedRoute,
     private ngZone: NgZone,
     private fb: FormBuilder,
