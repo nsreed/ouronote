@@ -69,7 +69,7 @@
       </mat-action-row>
     </mat-expansion-panel>
 
-    <mat-expansion-panel [gunChain]="vectorNode$ | async">
+    <mat-expansion-panel [gunChain]="vectorNode$ | async" *ngIf="(isOwner$|async)">
       <mat-expansion-panel-header>Requests ({{(requestCount$|async)||0}})</mat-expansion-panel-header>
       <app-invite-requests></app-invite-requests>
     </mat-expansion-panel>

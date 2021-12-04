@@ -7,6 +7,7 @@ import { map, switchMap, tap, shareReplay } from 'rxjs/operators';
 import { GunChain } from '../../../../../ng-gun/src/lib/classes/GunChain';
 import { VectorGraph } from '../VectorGraph';
 import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
+import { UserService } from '../user.service';
 
 @Directive({
   selector: '[appRouteVector]',
@@ -31,14 +32,23 @@ export class RouteVectorDirective {
     switchMap(
       (n) => n.get('owner').on({ clean: true })
       // .pipe(map((o) => ({ ...o, _: undefined })))
-    )
+    ),
+    shareReplay(1)
+  );
+  isOwner$ = this.owner$.pipe(
+    map((owners: any) => {
+      const userPub = this.userService.user.is.pub.replace('~', '');
+      return Object.keys(owners).filter((k) => k === userPub).length > 0;
+    })
   );
   layersNode$ = this.vectorNode$.pipe(map((v) => v.get('layers')));
   constructor(
     protected vectorService: VectorService,
     private route: ActivatedRoute,
-    private ngGun: NgGunService
+    private ngGun: NgGunService,
+    public userService: UserService
   ) {
+    this.isOwner$.subscribe((io) => console.log('is owner?', io));
     // console.log('my soul', ngGun.auth().is.pub);
   }
 }

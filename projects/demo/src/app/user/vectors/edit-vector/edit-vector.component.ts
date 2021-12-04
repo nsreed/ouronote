@@ -63,9 +63,9 @@ export class EditVectorComponent
     ngGun: NgGunService,
     private sanitizer: DomSanitizer,
     private logger: LogService,
-    private userService: UserService
+    public userService: UserService
   ) {
-    super(vectorService, route, ngGun);
+    super(vectorService, route, ngGun, userService);
     this.logger = logger.supplemental('edit-vector.component');
   }
 

@@ -22,9 +22,9 @@ export class PermissionsComponent
     private fb: FormBuilder,
     ngGun: NgGunService,
     private sanitizer: DomSanitizer,
-    private userService: UserService
+    public userService: UserService
   ) {
-    super(vectorService, route, ngGun as any);
+    super(vectorService, route, ngGun as any, userService);
   }
 
   ngOnInit(): void {}
