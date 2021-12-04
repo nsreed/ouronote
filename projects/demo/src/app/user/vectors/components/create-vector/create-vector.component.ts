@@ -25,7 +25,7 @@ export class CreateVectorComponent implements OnInit {
     addToFavorites: false,
     public: false,
     title: ['untitled', Validators.required],
-    confirm: false,
+    confirm: true,
   });
 
   vectorPair$ = this.sea.pair().pipe(shareReplay(1));
