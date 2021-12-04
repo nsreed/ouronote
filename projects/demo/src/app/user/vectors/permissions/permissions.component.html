@@ -1,11 +1,11 @@
 <mat-tab-group #vector="gunChain" [gunChain]="vectorNode$ | async">
-  <mat-tab label="Certificates">
-    <app-certificates></app-certificates>
-  </mat-tab>
   <mat-tab label="Requests">
     <app-invite-requests></app-invite-requests>
   </mat-tab>
-  <mat-tab label="Invites">
-    <app-alias-autocomplete></app-alias-autocomplete>
+  <mat-tab label="Certificates">
+    <app-certificates></app-certificates>
   </mat-tab>
+  <!-- <mat-tab label="Invites">
+    <app-alias-autocomplete></app-alias-autocomplete>
+  </mat-tab> -->
 </mat-tab-group>
