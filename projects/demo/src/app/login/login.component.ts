@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { NgGunService } from '../../../../ng-gun/src/lib/ng-gun.service';
 import { Router } from '@angular/router';
 
@@ -10,9 +10,23 @@ import { Router } from '@angular/router';
 export class LoginComponent implements OnInit {
   error: any;
 
+  mode: 'create' | 'login' = 'login';
+
   form = this.fb.group({
     alias: [null, Validators.required],
     password: [null, Validators.required],
+    password2: [
+      null,
+      (ctl: FormControl) => {
+        if (this.mode === 'login') {
+          return null;
+        }
+        if (ctl.value !== this.form.get('password')?.value) {
+          return { passwordMatch: 'passwords do not match' };
+        }
+        return null;
+      },
+    ],
   });
 
   constructor(
@@ -42,6 +56,9 @@ export class LoginComponent implements OnInit {
       .subscribe((data) => {
         this.error = data.err;
         // console.log('create result', data)
+        if (!this.error) {
+          this.login();
+        }
       });
   }
 
