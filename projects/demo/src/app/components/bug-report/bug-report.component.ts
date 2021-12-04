@@ -42,6 +42,7 @@ export class BugReportComponent implements OnInit {
   }
 
   get log() {
+    // FIXME too many log messages can make stringification fail
     return this.includeForm.value.log ? { log: this.data.messages } : {};
   }
 
@@ -95,7 +96,19 @@ export class BugReportComponent implements OnInit {
   }
 
   updatePreview() {
-    this.reportStr = stringify(this.report, null, 2);
+    try {
+      this.reportStr = stringify(this.report, null, 2);
+    } catch (e: any) {
+      // FIXME Stringifying the report will result in a RangeError: Invalid string length on excessively long reports
+      this.reportStr = stringify({
+        host: window.location.host,
+        route: this.router.url,
+        timestamp: Date.now(),
+        version: VERSION,
+        system: host.browser,
+        reportError: e.message,
+      });
+    }
   }
 
   copy() {
