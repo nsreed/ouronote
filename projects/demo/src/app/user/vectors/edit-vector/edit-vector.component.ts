@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as paper from 'paper';
-import { take, distinct, map } from 'rxjs/operators';
+import { take, distinct, map, shareReplay, switchMap } from 'rxjs/operators';
 import { GunChain } from '../../../../../../ng-gun/src/lib/classes/GunChain';
 import { VectorGraph } from '../../VectorGraph';
 import { ProjectPair } from '../classes/ProjectPair';
@@ -47,6 +47,12 @@ export class EditVectorComponent
   vectorForm = this.fb.group({
     title: [null, Validators.required],
   });
+  requests$ = this.vectorNode$.pipe(
+    switchMap((chain) => chain.get('inviteRequests').open()),
+    map((requests: any) => Object.keys(requests).filter((k) => requests[k])),
+    shareReplay(1)
+  );
+  requestCount$ = this.requests$.pipe(map((r) => r.length));
 
   constructor(
     private dialog: MatDialog,

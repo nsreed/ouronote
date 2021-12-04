@@ -20,7 +20,7 @@ export class InviteRequestsComponent implements OnInit {
     map((requests: any) => Object.keys(requests).filter((k) => requests[k])),
     shareReplay(1)
   );
-  requests: any = {};
+  requests: any = [];
   count$ = this.requests$.pipe(map((r) => r.length));
   constructor(
     private chainDirective: ChainDirective,

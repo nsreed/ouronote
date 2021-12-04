@@ -47,7 +47,7 @@
         </mat-action-row>
       </mat-expansion-panel> -->
 
-    <mat-expansion-panel expanded>
+    <mat-expansion-panel>
       <mat-expansion-panel-header>Layers</mat-expansion-panel-header>
       <ng-template matExpansionPanelContent>
         <mat-action-list dense>
@@ -67,6 +67,11 @@
           <mat-icon>add</mat-icon>
         </a>
       </mat-action-row>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel [gunChain]="vectorNode$ | async">
+      <mat-expansion-panel-header>Requests ({{(requestCount$|async)||0}})</mat-expansion-panel-header>
+      <app-invite-requests></app-invite-requests>
     </mat-expansion-panel>
   </mat-accordion>
   <!-- <mat-accordion multi dense *ngIf="project">

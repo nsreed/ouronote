@@ -46,6 +46,7 @@ import { VectorExportDialogComponent } from './components/vector-export-dialog/v
 import { MatTabsModule } from '@angular/material/tabs';
 import { InviteRequestsComponent } from './components/invite-requests/invite-requests.component';
 import { ComponentsModule } from '../../components/components.module';
+import { MatBadgeModule } from '@angular/material/badge';
 
 @NgModule({
   declarations: [
@@ -73,6 +74,7 @@ import { ComponentsModule } from '../../components/components.module';
     FilesModule,
     FlexLayoutModule,
     LogModule,
+    MatBadgeModule,
     MatButtonModule,
     MatButtonToggleModule,
     MatCardModule,
