@@ -10,6 +10,7 @@ import { VectorService } from '../../vector.service';
 import { VectorGraph } from '../../../VectorGraph';
 import { pluck, shareReplay, switchMapTo, switchMap } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-vector',
@@ -43,7 +44,8 @@ export class CreateVectorComponent implements OnInit {
     @Inject(GunOptions)
     private gunOpts: any,
     private ngZone: NgZone,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private router: Router
   ) {}
 
   ngOnInit(): void {}
@@ -69,7 +71,11 @@ export class CreateVectorComponent implements OnInit {
       }
 
       // Create a detached gun instance for the vector itself
-      const detachedGun = new NgGunService(this.gunOpts, this.ngZone);
+      const detachedGun = new NgGunService(
+        this.gunOpts,
+        this.ngZone,
+        this.router
+      );
 
       // login as that vector
       (detachedGun.gun.user() as any).auth(vectorPair, async () => {

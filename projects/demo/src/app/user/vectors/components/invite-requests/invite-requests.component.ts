@@ -7,6 +7,7 @@ import { VectorService } from '../../vector.service';
 import { NgSeaService } from '../../../../../../../ng-gun/src/lib/ng-sea.service';
 import { SEA } from 'gun';
 import { NgGunService } from '../../../../../../../ng-gun/src/lib/ng-gun.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-invite-requests',
@@ -29,7 +30,8 @@ export class InviteRequestsComponent implements OnInit {
     private sea: NgSeaService,
     private ngZone: NgZone,
     @Inject('gun-options')
-    private gunOpts: any
+    private gunOpts: any,
+    private router: Router
   ) {
     this.requests$.subscribe((requests: any) => {
       console.log(JSON.stringify(requests));
@@ -63,7 +65,11 @@ export class InviteRequestsComponent implements OnInit {
         );
 
         this.logger.log('created certificate %o', certs);
-        const detachedGun = new NgGunService(this.gunOpts, this.ngZone);
+        const detachedGun = new NgGunService(
+          this.gunOpts,
+          this.ngZone,
+          this.router
+        );
         // this.chainDirective.chain?.get('certs').put(certs as never);
         (detachedGun.gun.user() as any).auth(pair, () => {
           this.logger.log('secondary auth succeeded');

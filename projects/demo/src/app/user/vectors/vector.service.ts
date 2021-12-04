@@ -19,6 +19,7 @@ import * as paper from 'paper';
 import { PaperPair } from './classes/PaperPair';
 import { ProjectPair } from './classes/ProjectPair';
 import { GunChain } from '../../../../../ng-gun/src/lib/classes/GunChain';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -33,7 +34,8 @@ export class VectorService {
     private gunOpts: any,
     private ngZone: NgZone,
     private sea: NgSeaService,
-    private logger: LogService
+    private logger: LogService,
+    private router: Router
   ) {}
 
   async certify(
@@ -143,7 +145,11 @@ export class VectorService {
     const vectorPair: any = await this.sea.pair().toPromise();
     const vector = await this.initializeCertificates(value, vectorPair);
 
-    const vectorAuthRoot = new NgGunService(this.gunOpts, this.ngZone);
+    const vectorAuthRoot = new NgGunService(
+      this.gunOpts,
+      this.ngZone,
+      this.router
+    );
 
     const otp = new EventEmitter();
     vectorAuthRoot.gun.user().auth(
