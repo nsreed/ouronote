@@ -1,0 +1,9 @@
+<div gdColumns="auto max-content max-content">
+  <ng-container *ngFor="let r of (requests||[])">
+    <span>{{ r | alias | async }}</span>
+    <button mat-icon-button (click)="accept(r)"><mat-icon>check</mat-icon></button>
+    <button mat-icon-button (click)="reject(r)"><mat-icon>cancel</mat-icon></button>
+  </ng-container>
+</div>
+
+<span>Showing {{ (count$ | async) || 0 }} requests</span>

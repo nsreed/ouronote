@@ -7,6 +7,7 @@ import { NgSeaService } from '../../../../../ng-gun/src/lib/ng-sea.service';
 import { ChainDirective } from '../../../../../ng-gun/src/lib/chain.directive';
 import { from } from 'rxjs';
 import { SEA } from 'gun';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-certificate',
@@ -37,7 +38,8 @@ export class CreateCertificateComponent implements OnInit {
     private chain: ChainDirective,
     private ngZone: NgZone,
     @Inject('gun-options')
-    private gunOpts: any
+    private gunOpts: any,
+    private router: Router
   ) {
     console.log(this.form.value);
     this.form.statusChanges.subscribe((sc) => console.log('status', sc));
@@ -134,7 +136,11 @@ export class CreateCertificateComponent implements OnInit {
             opts
           )
         ).subscribe((certStores: any) => {
-          const detachedGun = new NgGunService(this.gunOpts, this.ngZone);
+          const detachedGun = new NgGunService(
+            this.gunOpts,
+            this.ngZone,
+            this.router
+          );
           (detachedGun.gun.user() as any).auth(recordPair, async () => {
             const v = detachedGun.gun.user();
             const certs = v.get('certs');

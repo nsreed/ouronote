@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as paper from 'paper';
-import { take, distinct, map } from 'rxjs/operators';
+import { take, distinct, map, shareReplay, switchMap } from 'rxjs/operators';
 import { GunChain } from '../../../../../../ng-gun/src/lib/classes/GunChain';
 import { VectorGraph } from '../../VectorGraph';
 import { ProjectPair } from '../classes/ProjectPair';
@@ -17,9 +17,15 @@ import { VectorService } from '../vector.service';
 import { gunifyProject as gunifyProject } from './converter-functions';
 import { FormBuilder, Validators } from '@angular/forms';
 import { NgGunService } from '../../../../../../ng-gun/src/lib/ng-gun.service';
-import { unpack } from '../functions/packaging';
+import { getDeep, unpack } from '../functions/packaging';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { LogService } from 'projects/log/src/public-api';
+import { saveAs } from 'file-saver';
+import { UserService } from '../../user.service';
+import { gunUpdateTime } from 'projects/ng-gun/src/lib/functions/gun-utils';
+import { FileUploaderComponent } from '../../../files/file-uploader/file-uploader.component';
+import { MatDialog } from '@angular/material/dialog';
+import { PaperEditDirective } from '../paper-edit.directive';
 
 const VECTOR_PAPER_JSON_KEY = 'graph';
 
@@ -29,30 +35,37 @@ const VECTOR_PAPER_JSON_KEY = 'graph';
 })
 export class EditVectorComponent
   extends RouteVectorDirective
-  implements OnInit, AfterViewInit {
+  implements OnInit, AfterViewInit
+{
   @ViewChild('paper')
-  private paperDirective!: PaperDirective;
-
-  @ViewChild('preview')
-  private preview!: PaperDirective;
+  private paperDirective!: PaperEditDirective;
 
   previewSVG?: SafeHtml;
   project!: paper.Project;
+  projectPair!: ProjectPair;
 
   vectorForm = this.fb.group({
     title: [null, Validators.required],
   });
+  requests$ = this.vectorNode$.pipe(
+    switchMap((chain) => chain.get('inviteRequests').open()),
+    map((requests: any) => Object.keys(requests).filter((k) => requests[k])),
+    shareReplay(1)
+  );
+  requestCount$ = this.requests$.pipe(map((r) => r.length));
 
   constructor(
-    vectorService: VectorService,
+    private dialog: MatDialog,
+    protected vectorService: VectorService,
     route: ActivatedRoute,
     private ngZone: NgZone,
     private fb: FormBuilder,
     ngGun: NgGunService,
     private sanitizer: DomSanitizer,
-    private logger: LogService
+    private logger: LogService,
+    public userService: UserService
   ) {
-    super(vectorService, route, ngGun);
+    super(vectorService, route, ngGun, userService);
     this.logger = logger.supplemental('edit-vector.component');
   }
 
@@ -100,6 +113,7 @@ export class EditVectorComponent
           // console.log('title change', title);
           this.vectorForm.get('title')?.patchValue(title, { emitEvent: false });
         });
+      this.vectorNode = node;
       this.vectorForm
         .get('title')
         ?.valueChanges.pipe(distinct())
@@ -124,7 +138,7 @@ export class EditVectorComponent
     // console.log('setting up project graph');
     // this.paperDirective.tool.activate();
     this.logger.log('project ready');
-    const paperChain: ProjectPair = new ProjectPair(
+    this.projectPair = new ProjectPair(
       gun as any,
       this.paperDirective.project as any,
       this.paperDirective.scope as any,
@@ -132,9 +146,61 @@ export class EditVectorComponent
     );
   }
 
+  onPaste(e: any) {
+    console.log(e);
+  }
+
   addLayer() {
     this.logger.log('adding layer');
     const layer = new paper.Layer();
     (layer as any).pair.save();
+  }
+
+  async download() {
+    const jsonBlob = new Blob([this.project.exportJSON()], {
+      type: 'text/plain;charset=utf-8',
+    });
+    const username = this.userService.user.alias;
+    const title = await this.vectorNode.get('title').once().toPromise();
+    const updated = new Date(this.vectorNode.updateTime).toISOString();
+    saveAs(jsonBlob, `${username}-${title}-${updated}.json`);
+  }
+
+  importPaper() {
+    this.dialog
+      .open(FileUploaderComponent)
+      .afterClosed()
+      .subscribe((files) => {
+        for (const file of files) {
+          const fr: FileReader = new FileReader();
+          fr.readAsText(file);
+          fr.onload = () => {
+            try {
+              // const parsed = JSON.parse(fr.result as any);
+              this.paperDirective.project.importJSON(fr.result as string);
+            } catch (e: any) {
+              this.logger.error('Error parsing JSON file');
+            }
+          };
+          fr.onerror = () => {
+            console.error('Error while reading reading file');
+          };
+        }
+      });
+  }
+
+  logDeep() {
+    console.log(getDeep(this.paperDirective.project));
+  }
+
+  requestAccess() {
+    this.vectorNode
+      .get('inviteRequests')
+      .get(this.userPub)
+      .put(true as never);
+  }
+
+  favorite() {
+    this.userService.user.get('vectors').set(this.vectorNode.gun as never);
   }
 }

@@ -22,7 +22,8 @@ import { NgGunService } from 'projects/ng-gun/src/public-api';
 })
 export class ViewVectorComponent
   extends RouteVectorDirective
-  implements OnInit, AfterViewInit {
+  implements OnInit, AfterViewInit
+{
   constructor(
     vectorService: VectorService,
     route: ActivatedRoute,
@@ -30,9 +31,9 @@ export class ViewVectorComponent
     private fb: FormBuilder,
     ngGun: NgGunService,
     private sanitizer: DomSanitizer,
-    private userService: UserService
+    public userService: UserService
   ) {
-    super(vectorService, route, ngGun as any);
+    super(vectorService, route, ngGun as any, userService);
   }
 
   ngOnInit(): void {}

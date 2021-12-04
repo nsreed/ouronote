@@ -29,22 +29,18 @@ export class GunAuthGuard implements CanActivateChild {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    // console.log('gunAuthGuard checking...');
     if (this.ngGun.auth().is) {
-      // console.log('OK: auth().is');
-      // this.logger.log('gun-auth guard OK');
       return true;
     }
-    // this.ngGun.auth().recall();
     return this.ngGun.auth().auth$.pipe(
       timeout(5000),
       catchError((err, caught) => {
+        sessionStorage.setItem('redirect', window.location.href);
         this.router.navigateByUrl('/login');
         return of({
           err: 'Session Recall Timeout',
         });
       }),
-      // tap((ack) => console.log('gunAuthGuard auth$', ack)),
       filter((ack) => !ack.err),
       take(1)
     );

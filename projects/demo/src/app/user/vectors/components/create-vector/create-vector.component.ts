@@ -10,6 +10,7 @@ import { VectorService } from '../../vector.service';
 import { VectorGraph } from '../../../VectorGraph';
 import { pluck, shareReplay, switchMapTo, switchMap } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-vector',
@@ -24,7 +25,7 @@ export class CreateVectorComponent implements OnInit {
     addToFavorites: false,
     public: false,
     title: ['untitled', Validators.required],
-    confirm: false,
+    confirm: true,
   });
 
   vectorPair$ = this.sea.pair().pipe(shareReplay(1));
@@ -43,7 +44,8 @@ export class CreateVectorComponent implements OnInit {
     @Inject(GunOptions)
     private gunOpts: any,
     private ngZone: NgZone,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private router: Router
   ) {}
 
   ngOnInit(): void {}
@@ -57,18 +59,30 @@ export class CreateVectorComponent implements OnInit {
       title: formValue.title,
     };
     this.vectorPair$.subscribe(async (vectorPair) => {
-      const vector = await this.vectorService.create(vg, vectorPair);
+      const vector = await this.vectorService.initializeCertificates(
+        vg,
+        vectorPair
+      );
       this.recordValue = vector;
       console.log({ vector });
 
       if (!formValue.confirm) {
         return;
       }
-      const detachedGun = new NgGunService(this.gunOpts, this.ngZone);
 
+      // Create a detached gun instance for the vector itself
+      const detachedGun = new NgGunService(
+        this.gunOpts,
+        this.ngZone,
+        this.router
+      );
+
+      // login as that vector
       (detachedGun.gun.user() as any).auth(vectorPair, async () => {
         const v = detachedGun.gun.user();
+        // save the vector's data
         v.put(vector);
+        // add the vector itself to the user's list of saved vectors
         this.vectorService.vectors.set(v as never);
         this.dialog.closeAll();
       });

@@ -12,10 +12,9 @@
 
     <mat-checkbox formControlName="public" matTooltip="Allows public editing">Public?</mat-checkbox> -->
   </span>
-  <pre> {{vectorPub$ | async}}: {{recordValue | json}}  </pre>
+  <!-- <pre> {{vectorPub$ | async}}: {{recordValue | json}}  </pre> -->
 </form>
 <div fxFlexAlign="center end" mat-dialog-actions [formGroup]="form">
-  <mat-checkbox formControlName="confirm">Confirm</mat-checkbox>
+  <!-- <mat-checkbox formControlName="confirm">Confirm</mat-checkbox> -->
   <button mat-button color="primary" [disabled]="!form.valid" (click)="create()">Create</button>
 </div>
- 

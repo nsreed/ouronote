@@ -8,9 +8,11 @@ import {
 import { after$, before$, returned } from '../../../functions/aspect-rx';
 import { VectorGraph } from '../../VectorGraph';
 import { getUUID } from '../edit-vector/converter-functions';
+import { isIgnored } from '../functions/paper-functions';
 import { ItemPair } from './ItemPair';
 import { PaperPair } from './PaperPair';
 import { SaveStrategy } from './SaveStrategy';
+import { getDeep } from '../functions/packaging';
 
 export class ProjectPair extends PaperPair {
   /* STATE */
@@ -119,12 +121,19 @@ export class ProjectPair extends PaperPair {
     this.beforeProjectImportJSON$.subscribe(
       () => (this.isImportingJSON = true)
     );
-    this.afterProjectImportJSON$.subscribe(
-      () => (this.isImportingJSON = false)
-    );
+    this.afterProjectImportJSON$.subscribe(() => {
+      this.isImportingJSON = false;
+      this.project.layers
+        .filter((c) => !isIgnored(c))
+        .forEach((l: any) => l.pair?.save());
+    });
     this.afterProjectInsertLayer$.subscribe((layer) =>
       this.onLocalLayer(layer)
     );
     this.layers$.subscribe((data) => this.onGraphLayer(data));
+  }
+
+  saveDeep() {
+    this.chain.put(getDeep(this.project));
   }
 }

@@ -1,22 +1,33 @@
 <mat-toolbar>
   <h1 fxFlex="1 0 auto">Vectors</h1>
-  <button mat-raised-button color="primary" (click)="create()">New Vector</button>
+  <button mat-flat-button (click)="importVector()">Import...</button>
+  <button mat-raised-button color="primary" (click)="create()">
+    New Vector
+  </button>
 </mat-toolbar>
 
-<div gdColumns="auto repeat(3, max-content)">
-  <ng-container *ngFor="let vector of vectors|async">
-    <a mat-flat-button [routerLink]="['/user/vectors', vector|soul, 'edit']">
+<div gdColumns="auto repeat(4, max-content)" appFileDnd class="dropzone">
+  <ng-container *ngFor="let vector of vectors | async">
+    <a mat-flat-button [routerLink]="['/user/vectors', vector | soul, 'edit']">
       <!-- <mat-icon>enhanced_encryption</mat-icon> -->
-      {{vector.title}}
+      {{ vector.title }}
     </a>
-    <a mat-flat-button [routerLink]="['/user/vectors', vector|soul, 'edit']">{{vector|updated|date}}</a>
+    <a
+      mat-flat-button
+      [routerLink]="['/user/vectors', vector | soul, 'edit']"
+      >{{ vector | updated | date }}</a
+    >
     <button mat-icon-button (click)="remove(vector)">
       <mat-icon>delete</mat-icon>
     </button>
-    <button mat-icon-button [routerLink]="['/user/vectors', vector|soul]">
-      <mat-icon>settings</mat-icon>
+    <button
+      mat-icon-button
+      [routerLink]="['/user/vectors', vector | soul, 'permissions']"
+    >
+      <mat-icon>share</mat-icon>
     </button>
-
+    <button mat-icon-button (click)="download(vector)">
+      <mat-icon>file_download</mat-icon>
+    </button>
   </ng-container>
-
 </div>

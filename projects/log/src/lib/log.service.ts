@@ -14,6 +14,12 @@ export enum LogLevel {
   ERROR,
 }
 
+const labelLevels = new Map<LogLevel, string>();
+labelLevels.set(LogLevel.VERBOSE, 'verbose');
+labelLevels.set(LogLevel.INFO, 'info');
+labelLevels.set(LogLevel.WARN, 'WARN');
+labelLevels.set(LogLevel.ERROR, 'ERROR');
+
 export interface LogMessage {
   name: string;
   timestamp: number;
@@ -26,19 +32,32 @@ export interface LogMessage {
   providedIn: 'root',
 })
 export class LogService {
+  set name(value: string) {
+    this._name = value;
+    LogService.longestName =
+      value.length > LogService.longestName
+        ? value.length
+        : LogService.longestName;
+  }
+
+  get name(): string {
+    return this._name;
+  }
+
   constructor(
     @Optional()
     @Inject('log-name')
-    public name: string = 'app',
+    name: string = 'app',
     @Optional()
     @SkipSelf()
     public parent?: LogService
   ) {
-    this.name = this.name || 'app';
+    this.name = name || 'app';
     if (this.name !== 'root' && !parent) {
       this.parent = LogService.root;
     }
   }
+  private static longestName = 14;
 
   public static readonly root = new LogService('root');
 
@@ -52,6 +71,7 @@ export class LogService {
     }, []),
     shareReplay(1)
   );
+  private _name!: string;
 
   protected _out$ = new EventEmitter<LogMessage>();
   out$ = this._out$;
@@ -60,9 +80,10 @@ export class LogService {
       this.parent._out$.emit(m);
     } else {
       console.log(
-        `%s %s ${m.message}`,
-        m.name,
+        `%s %s %s ${m.message}`,
         new Date(m.timestamp).toISOString(),
+        m.name.padEnd(LogService.longestName),
+        labelLevels.get(m.level)?.padEnd(7),
         ...m.args
       );
     }

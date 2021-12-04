@@ -54,6 +54,7 @@ export interface GunChainCallbackOptions {
   includeNulls?: boolean;
   changes?: boolean;
   bypassZone?: boolean;
+  clean?: boolean;
 }
 
 export interface GunChainFunctions {
@@ -210,6 +211,7 @@ export class GunChain<
     }
   }
 
+  certificate$ = new ReplaySubject<string>(1);
   private _certificate?: string | undefined;
   public get certificate(): string | undefined {
     return this._certificate || this.back?.certificate;
@@ -217,7 +219,6 @@ export class GunChain<
   public set certificate(value: string | undefined) {
     this._certificate = value;
   }
-  certificate$ = new ReplaySubject<string>(1);
 
   certificates$ = new ReplaySubject<ICertStore>(1);
   private _certificates: ICertStore = {};
@@ -234,6 +235,7 @@ export class GunChain<
       this.certificates$.next(value);
     }
   }
+
   private sources = new Map<string, Observable<any>>();
   protected _auth: GunAuthChain<DataType, ReferenceKey> | null = null;
 
@@ -241,12 +243,20 @@ export class GunChain<
     return new GunChain<T>(this.ngZone, gun as any, this);
   }
 
+  public get updateTime(): number {
+    return (
+      ((Object.values(this.gun._.put._['>']) as number[]) || {}).reduce(
+        (acc: number, v: number) => (v > acc ? v : acc),
+        0
+      ) || 0
+    );
+  }
+
   get<K extends keyof DataType>(
     key: ArrayOf<DataType> extends never ? K : ArrayOf<DataType>
   ) {
-    const soul: ArrayOf<DataType> extends never
-      ? K
-      : ArrayOf<DataType> = this.getSoul(key);
+    const soul: ArrayOf<DataType> extends never ? K : ArrayOf<DataType> =
+      this.getSoul(key);
     return this.from(this.gun.get(soul));
   }
 
@@ -259,7 +269,9 @@ export class GunChain<
     // FIXME "unverified data" - certified put values must be signed?
 
     if (this.isNested && !certificate) {
+      // FIXME This should wait for the certificate and attempt another put?
       this.logger.warn('NO CERTIFICATE FOUND FOR FOREIGN RECORD!');
+      // this.put(data);
     }
     (this.gun.put as any)(
       data,
@@ -331,6 +343,7 @@ export class GunChain<
       }
     ).pipe(take(1));
   }
+
   open() {
     // return this.from((this.gun as any).load((d: any) => d) as any);
     return fromEventPattern(
@@ -401,6 +414,9 @@ export class GunChain<
           ) => {
             if (signal.stopped) {
               return ev.off();
+            }
+            if (options?.clean) {
+              delete (data as any)['_'];
             }
             const dispatchHandler = () => {
               if (options?.includeKeys) {

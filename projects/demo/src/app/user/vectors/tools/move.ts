@@ -1,6 +1,7 @@
 import { VectorTool } from './paper-tool';
 import * as paper from 'paper';
 export class MoveTool extends VectorTool {
+  name = 'move';
   dragSub = this.drag.subscribe((e) => {
     this.scope.project
       .getItems({

@@ -7,11 +7,21 @@
     <input type="password" matInput formControlName="password">
     <mat-label>password</mat-label>
   </mat-form-field>
-  <button mat-button color="primary" (click)="login()" [disabled]="form.invalid">Log In</button>
-  <button mat-button color="primary" (click)="create()" [disabled]="form.invalid">Create</button>
-  <mat-error *ngIf="error">{{error}}</mat-error>
+  <mat-form-field *ngIf="mode === 'create'">
+    <input type="password" matInput formControlName="password2">
+    <mat-label>confirm password</mat-label>
+  </mat-form-field>
+  <ng-container *ngIf="mode === 'login' else Create">
+    <button mat-button color="primary" (click)="login()" [disabled]="form.invalid">Log In</button>
+    or
+    <button mat-button color="primary" (click)="mode = 'create'">Create Account</button>
+    <mat-error *ngIf="error">{{error}}</mat-error>
+  </ng-container>
+  <ng-template #Create>
+    <button mat-button color="primary" (click)="create()" [disabled]="form.invalid">Create & Sign In</button>
+    <button mat-button (click)="mode = 'login'">Cancel</button>
+  </ng-template>
   <a mat-icon-button routerLink="/settings">
     <mat-icon>settings</mat-icon>
-    System Settings
   </a>
 </form>

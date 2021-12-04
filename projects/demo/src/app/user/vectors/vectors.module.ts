@@ -38,6 +38,15 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ViewVectorComponent } from './view-vector/view-vector.component';
 import { CertificatesModule } from '../../certificates/certificates.module';
 import { LogModule } from '../../../../../log/src/lib/log.module';
+import { PermissionsComponent } from './permissions/permissions.component';
+import { FilesModule } from '../../files/files.module';
+import { VectorPreviewComponent } from './components/vector-preview/vector-preview.component';
+import { PaperEditDirective } from './paper-edit.directive';
+import { VectorExportDialogComponent } from './components/vector-export-dialog/vector-export-dialog.component';
+import { MatTabsModule } from '@angular/material/tabs';
+import { InviteRequestsComponent } from './components/invite-requests/invite-requests.component';
+import { ComponentsModule } from '../../components/components.module';
+import { MatBadgeModule } from '@angular/material/badge';
 
 @NgModule({
   declarations: [
@@ -52,12 +61,20 @@ import { LogModule } from '../../../../../log/src/lib/log.module';
     VectorFormComponent,
     CreateVectorComponent,
     ViewVectorComponent,
+    PermissionsComponent,
+    VectorPreviewComponent,
+    PaperEditDirective,
+    VectorExportDialogComponent,
+    InviteRequestsComponent,
   ],
   imports: [
     CertificatesModule,
     CommonModule,
+    ComponentsModule,
+    FilesModule,
     FlexLayoutModule,
     LogModule,
+    MatBadgeModule,
     MatButtonModule,
     MatButtonToggleModule,
     MatCardModule,
@@ -75,6 +92,7 @@ import { LogModule } from '../../../../../log/src/lib/log.module';
     MatListModule,
     MatMenuModule,
     MatStepperModule,
+    MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
     NgGunModule,

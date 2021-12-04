@@ -6,23 +6,15 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import * as paper from 'paper';
-import { fromEvent, timer, from } from 'rxjs';
-import { shareReplay, switchMap, mergeMap, map } from 'rxjs/operators';
-import { propertyChange$ } from './functions/paper-chain';
-import { EraserTool } from './tools/eraser';
-import { EyedropperTool } from './tools/eyedropper';
-import { MoveTool } from './tools/move';
-import { PanTool } from './tools/pan';
-import { PenTool } from './tools/pen';
-import { LassoSelectTool, RectangleSelectTool } from './tools/select';
-import { ShapeTool } from './tools/shape';
-import * as Hammer from 'hammerjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { CAPABILITIES } from '../../system.service';
+import * as Hammer from 'hammerjs';
+import * as paper from 'paper';
+import { from, fromEvent, timer } from 'rxjs';
+import { map, mergeMap, switchMap } from 'rxjs/operators';
 import { LogService } from '../../../../../log/src/lib/log.service';
-import { buildToolEvent } from './functions/tool-functions';
+import { CAPABILITIES } from '../../system.service';
 import { PenEvent } from './classes/PenEvent';
+import { PanTool } from './tools/pan';
 
 @Directive({
   selector: '[appPaper]',
@@ -59,16 +51,8 @@ export class PaperDirective implements OnInit {
   );
 
   scope = new paper.PaperScope();
-  tool$ = propertyChange$(this.scope, 'tool').pipe(shareReplay(1));
 
-  public pen = new PenTool(this.scope as any);
-  public shape = new ShapeTool(this.scope as any);
-  public eraser = new EraserTool(this.scope as any);
-  // public select = new LassoSelectTool(this.scope as any); // FIXME fix lasso select
-  public areaSelect = new RectangleSelectTool(this.scope as any);
   public pan = new PanTool(this.scope as any);
-  public move = new MoveTool(this.scope as any);
-  // public eyedropper = new EyedropperTool(this.scope as any);
 
   ignore(fn: any, ...args: any[]) {
     let item: any;
@@ -220,7 +204,7 @@ export class PaperDirective implements OnInit {
     );
     this.scope.view.emit('mousewheel', { event, point });
 
-    this.scope.tool.emit('mousewheel', { event, point });
+    this.scope.tool?.emit('mousewheel', { event, point });
     event.preventDefault();
   }
 
