@@ -10,28 +10,21 @@
     <mat-expansion-panel expanded>
       <mat-expansion-panel-header>Tools</mat-expansion-panel-header>
       <ng-template matExpansionPanelContent>
-        <div matButtonToggleGroup class="column">
+        <div matButtonToggleGroup gdColumns="auto auto">
           <mat-button-toggle
             [checked]="tool === paper.scope.tool"
             [value]="tool"
             [appTool]="tool"
             *ngFor="let tool of paper.scope.tools"
             (click)="tool.activate()"
+            [matTooltip]="tool.name"
           >
-            {{ tool.name }}
+            <i class="{{ 'fa fa-' + tool.icon }}"></i>
           </mat-button-toggle>
         </div>
-      </ng-template>
-    </mat-expansion-panel>
-
-    <mat-expansion-panel expanded>
-      <mat-expansion-panel-header>Color</mat-expansion-panel-header>
-      <ng-template matExpansionPanelContent>
-        <div [appTool]="paper.scope.tool" *ngIf="paper.scope.tool">
-          <app-color-form
-            [color]="paper.project.currentStyle.strokeColor"
-          ></app-color-form>
-        </div>
+        <app-color-form
+          [color]="paper.project.currentStyle.strokeColor"
+        ></app-color-form>
       </ng-template>
     </mat-expansion-panel>
 

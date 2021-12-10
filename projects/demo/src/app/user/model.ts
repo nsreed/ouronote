@@ -1,6 +1,11 @@
 import { VectorGraph } from './VectorGraph';
 
-export type PaperExport<T> = [string, T];
+/**
+ * Allows a set to store metadata about its members, separate from the members (such as the timestamp when the member was added)
+ */
+export type SetReference<M> = {
+  reference: M;
+};
 
 export interface Post {
   title: string;
@@ -19,6 +24,7 @@ export interface User {
   messages: Message[];
   posts: Post[];
   vectors: VectorGraph[];
+  vectorRefs: SetReference<VectorGraph>[];
   name: string;
   certs: {
     [path: string]: {

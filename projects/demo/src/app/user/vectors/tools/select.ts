@@ -10,6 +10,7 @@ export class SelectTool extends VectorTool {
     values: ['new', 'add', 'remove'],
   })
   mode: ToolSelectionMode = 'new';
+  icon = 'vector-square';
 
   name = 'select';
   selecting = false;

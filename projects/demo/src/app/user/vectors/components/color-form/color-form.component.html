@@ -1,7 +1,20 @@
-<form [formGroup]="form" gdColumns="1fr 1fr 1fr">
-  <mat-form-field *ngFor="let cvp of controlKeys">
-    <input matInput [formControlName]="cvp" type="number" [min]="meta[cvp].min" [max]="meta[cvp].max"
-      [step]="(meta[cvp].max-meta[cvp].min)/100">
-    <mat-label>{{cvp}}</mat-label>
+<form>
+  <mat-form-field>
+    <input matInput [ngxMatColorPicker]="picker" [formControl]="colorCtr" />
+    <ngx-mat-color-toggle matSuffix [for]="picker"></ngx-mat-color-toggle>
+    <ngx-mat-color-picker #picker></ngx-mat-color-picker>
   </mat-form-field>
 </form>
+<!-- <form [formGroup]="form" gdColumns="1fr 1fr 1fr">
+  <mat-form-field *ngFor="let cvp of controlKeys">
+    <input
+      matInput
+      [formControlName]="cvp"
+      type="number"
+      [min]="meta[cvp].min"
+      [max]="meta[cvp].max"
+      [step]="(meta[cvp].max - meta[cvp].min) / 100"
+    />
+    <mat-label>{{ cvp }}</mat-label>
+  </mat-form-field>
+</form> -->

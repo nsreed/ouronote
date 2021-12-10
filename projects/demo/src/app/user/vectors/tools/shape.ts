@@ -2,6 +2,7 @@ import { VectorTool } from './paper-tool';
 import * as paper from 'paper';
 export class ShapeTool extends VectorTool {
   name = 'shapes';
+  icon = 'shapes';
   shape?: paper.Shape;
 
   downSub = this.down.subscribe(() => this.activateDrawLayer());

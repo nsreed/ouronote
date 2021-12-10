@@ -3,6 +3,7 @@ import { filter } from 'rxjs/operators';
 import { isMouse, isTouch } from '../functions/tool-functions';
 export class PanTool extends VectorTool {
   name = 'pan';
+  icon = 'allergies';
   lastDelta?: null | paper.Point;
   downSub = this.down.subscribe(() => {
     this.lastDelta = null;

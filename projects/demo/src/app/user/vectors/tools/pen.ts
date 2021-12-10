@@ -7,6 +7,7 @@ import { Property } from '../functions/decorators';
 import { VectorTool } from './paper-tool';
 export class PenTool extends VectorTool {
   path!: paper.Path;
+  icon = 'marker';
 
   name = 'pen';
   @Property()

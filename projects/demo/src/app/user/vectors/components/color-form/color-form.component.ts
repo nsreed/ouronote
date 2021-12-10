@@ -22,6 +22,7 @@ export class ColorFormComponent implements OnInit {
     alpha: [1, [Validators.min(0), Validators.max(1)]],
   });
   controlKeys = Object.keys(this.form.controls);
+  colorCtr = this.fb.control('#000000');
 
   defaultMinMax = {
     min: 0,
@@ -57,15 +58,20 @@ export class ColorFormComponent implements OnInit {
   constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {
-    for (const key of this.controlKeys) {
-      const control = this.form.get(key);
-      control?.valueChanges
-        .pipe(filter((v) => control.valid))
-        .subscribe((v) => {
-          // console.log('got local change %s: %f', key, control.value);
-          (this.color as any)[key] = control.value;
-        });
-    }
+    // TODO re-enable for rgb/cymk editor
+    // for (const key of this.controlKeys) {
+    //   const control = this.form.get(key);
+    //   control?.valueChanges
+    //     .pipe(filter((v) => control.valid))
+    //     .subscribe((v) => {
+    //       // console.log('got local change %s: %f', key, control.value);
+    //       (this.color as any)[key] = control.value;
+    //     });
+    // }
+
+    this.colorCtr.valueChanges.subscribe((v) => {
+      this.color.set([v.r / 255, v.g / 255, v.b / 255, v.a]);
+    });
   }
 
   updateFromColor() {

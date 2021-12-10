@@ -9,6 +9,7 @@ import { PenEvent } from '../classes/PenEvent';
 
 export class VectorTool extends Tool {
   private isPointerDown = false;
+  icon = 'hand-spock';
 
   get properties() {
     return Object.getPrototypeOf(this).___PROPERTIES || [];

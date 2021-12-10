@@ -45,6 +45,11 @@ import { NgGunService } from '../../../ng-gun/src/lib/ng-gun.service';
 import { GunWebrtcImporterService } from './services/gun-webrtc-importer.service';
 import { GunRadImporterService } from './services/gun-rad-importer.service';
 import { FilesModule } from './files/files.module';
+import {
+  MAT_COLOR_FORMATS,
+  NgxMatColorPickerModule,
+  NGX_MAT_COLOR_FORMATS,
+} from '@angular-material-components/color-picker';
 
 const RADISK_LOCAL = localStorage.getItem('RADISK_ENABLE');
 const RADISK_ENABLE = RADISK_LOCAL === null ? true : !!JSON.parse(RADISK_LOCAL);
@@ -94,11 +99,13 @@ const WEBRTC_ENABLE = WEBRTC_LOCAL === null ? true : !!JSON.parse(WEBRTC_LOCAL);
     MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
+    NgxMatColorPickerModule,
     ReactiveFormsModule,
     ScrollingModule,
     FilesModule,
   ],
   providers: [
+    { provide: MAT_COLOR_FORMATS, useValue: NGX_MAT_COLOR_FORMATS },
     {
       provide: 'gun-options',
       useValue: {

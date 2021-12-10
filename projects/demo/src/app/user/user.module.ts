@@ -11,6 +11,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { LogModule } from '../../../../log/src/lib/log.module';
 import { ComponentsModule } from '../components/components.module';
+import { NgxMatColorPickerModule } from '@angular-material-components/color-picker';
 
 @NgModule({
   declarations: [UserComponent, DashboardComponent],
@@ -22,6 +23,7 @@ import { ComponentsModule } from '../components/components.module';
     MatToolbarModule,
     MatIconModule,
     MatInputModule,
+    NgxMatColorPickerModule,
     FlexLayoutModule,
     ComponentsModule,
   ],

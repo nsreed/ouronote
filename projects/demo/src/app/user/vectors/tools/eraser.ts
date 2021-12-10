@@ -4,6 +4,7 @@ import * as paper from 'paper';
 export class EraserTool extends VectorTool {
   path?: paper.Path | null;
   name = 'eraser';
+  icon = 'eraser';
 
   dragSub = this.drag.subscribe((e: paper.ToolEvent) => {
     // console.log('eraser drag');

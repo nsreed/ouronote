@@ -127,6 +127,13 @@
     ora "5.2.0"
     rxjs "6.6.3"
 
+"@angular-material-components/color-picker@^5.0.1":
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/@angular-material-components/color-picker/-/color-picker-5.0.2.tgz#44fbbb87d2ee666217db855742e55e4bdc475b14"
+  integrity sha512-JT7KUwWHgRKJLbD4zgCV3v4/HkUOFly+QtxCtkcfdG0FDD8dhY3F+W2FTH/VXPVTU5NUNhyfCMTVaGV3iByyXA==
+  dependencies:
+    tslib "^2.0.0"
+
 "@angular/animations@~11.1.0":
   version "11.1.2"
   resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-11.1.2.tgz#df5d5284625e17a4b094a6cf8c420d3c5f187693"
@@ -1121,6 +1128,25 @@
   dependencies:
     "@babel/helper-validator-identifier" "^7.14.0"
     to-fast-properties "^2.0.0"
+
+"@fortawesome/fontawesome-common-types@^0.2.36":
+  version "0.2.36"
+  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-common-types/-/fontawesome-common-types-0.2.36.tgz#b44e52db3b6b20523e0c57ef8c42d315532cb903"
+  integrity sha512-a/7BiSgobHAgBWeN7N0w+lAhInrGxksn13uK7231n2m8EDPE3BMCl9NZLTGrj9ZXfCmC6LM0QLqXidIizVQ6yg==
+
+"@fortawesome/fontawesome-svg-core@^1.2.36":
+  version "1.2.36"
+  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-svg-core/-/fontawesome-svg-core-1.2.36.tgz#4f2ea6f778298e0c47c6524ce2e7fd58eb6930e3"
+  integrity sha512-YUcsLQKYb6DmaJjIHdDWpBIGCcyE/W+p/LMGvjQem55Mm2XWVAP5kWTMKWLv9lwpCVjpLxPyOMOyUocP1GxrtA==
+  dependencies:
+    "@fortawesome/fontawesome-common-types" "^0.2.36"
+
+"@fortawesome/free-solid-svg-icons@^5.15.4":
+  version "5.15.4"
+  resolved "https://registry.yarnpkg.com/@fortawesome/free-solid-svg-icons/-/free-solid-svg-icons-5.15.4.tgz#2a68f3fc3ddda12e52645654142b9e4e8fbb6cc5"
+  integrity sha512-JLmQfz6tdtwxoihXLg6lT78BorrFyCf59SAwBM6qV/0zXyVeDygJVb3fk+j5Qat+Yvcxp1buLTY5iDh1ZSAQ8w==
+  dependencies:
+    "@fortawesome/fontawesome-common-types" "^0.2.36"
 
 "@istanbuljs/schema@^0.1.2":
   version "0.1.3"
@@ -4546,10 +4572,9 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.6.tgz#ff040b2b0853b23c3d31027523706f1885d76bee"
   integrity sha512-nTnJ528pbqxYanhpDYsi4Rd8MAeaBA67+RZ10CM1m3bTAVFEDcd5AuA4a6W5YkGZ1iNXHzZz8T6TBKLeBuNriQ==
 
-gun@^0.2020.1235:
+"gun@https://github.com/amark/gun.git":
   version "0.2020.1235"
-  resolved "https://registry.yarnpkg.com/gun/-/gun-0.2020.1235.tgz#5b6cdfb383b8e7d5e430f12af8cc59621d0b6191"
-  integrity sha512-aba6s0X/MCCOByt0T3VrMzMMUEblfN2aLV2bAmIQWjkB7SKnm07zAZWigljwI69Rb5sOw7C1G116UyvCM2p9kA==
+  resolved "https://github.com/amark/gun.git#77162fcb68eb61f24d980fa3f3653598f56ee593"
   dependencies:
     ws "^7.2.1"
   optionalDependencies:
