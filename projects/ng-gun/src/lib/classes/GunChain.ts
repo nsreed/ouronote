@@ -76,12 +76,75 @@ export class GunChain<
   ReferenceKey = any,
   IsTop extends 'pre_root' | 'root' | false = false
 > {
-  path!: string[];
-  isNested = false;
-  isSubRoot = false;
   logger = LogService.getLogger('gun-chain');
-  recordPub!: any;
-  record?: any;
+
+  protected get userPair() {
+    return (this.gun.user() as any).is;
+  }
+  protected get userPub() {
+    return this.userPair.pub;
+  }
+  protected get myKey() {
+    return (this.gun as any)._.get;
+  }
+  get path() {
+    return gunPath(this.gun as any);
+  }
+  protected get pubs() {
+    return this.path.filter((key) => key.startsWith('~'));
+  }
+  get recordPub() {
+    return this.pubs[0];
+  }
+  get chainArray() {
+    return gunChainArray(this.gun as any);
+  }
+  get record() {
+    const firstPub = this.path.findIndex((k) => k.startsWith('~'));
+    return this.chainArray[firstPub];
+  }
+  get pathFromRecord() {
+    return [...this.path].reverse();
+  }
+  get keyInRecord() {
+    return this.pathFromRecord[1];
+  }
+  get isNested() {
+    return this.pubs.length > 0 && this.recordPub.indexOf(this.userPub) < 0;
+  }
+  get isSubRoot() {
+    return this.myKey === this.recordPub;
+  }
+
+  _allCertificates$!: Observable<ICertStore>;
+  get allCertificates$(): Observable<ICertStore> {
+    if (!this._allCertificates$) {
+      if (this.isNested) {
+        if (this.isSubRoot) {
+          const ac$ = new ReplaySubject(1);
+          this.record.get('certs').open((certs: any) => ac$.next(certs));
+          this._allCertificates$ = ac$ as any;
+        } else {
+          this._allCertificates$ = this.closestRoot.allCertificates$;
+        }
+      } else {
+        this._allCertificates$ = of({});
+      }
+    }
+    return this._allCertificates$;
+  }
+
+  get pathCertificates$(): Observable<any> {
+    const key = this.keyInRecord;
+    return this.allCertificates$.pipe(pluck(this.keyInRecord));
+  }
+
+  get userCertificate$(): Observable<any> {
+    return this.pathCertificates$.pipe(
+      tap((certs) => console.log('looking for user in ', certs)),
+      pluck(this.userPub)
+    );
+  }
 
   private _gun!: IGunChainReference<DataType, ReferenceKey, IsTop> &
     GunChainFunctions &
@@ -97,84 +160,68 @@ export class GunChain<
       GunChainMeta
   ) {
     this._gun = value;
-    const myKey = (value as any)._.get;
-
-    const path = gunPath(value as any);
-    const chainArray = gunChainArray(value as any);
-    this.path = path;
-
     const userPair = (this.gun.user() as any).is;
     if (!userPair) {
       // TODO figure out how to handle this case
       this.logger.warn(
         'User is not logged in, certificates for %s will not be loaded.',
-        myKey
+        this.myKey
       );
       return;
     }
-    const userPub = `~${(this.gun.user() as any).is?.pub}`;
-    const pubs = path.filter((key) => key.startsWith('~'));
-    if (pubs.length > 0) {
-      this.recordPub = pubs[0];
-      const firstPub = path.findIndex((k) => k.startsWith('~'));
-      this.record = chainArray[firstPub];
 
-      if (this.recordPub.indexOf(userPub) < 0) {
-        this.isNested = true;
-        const pathFromRecord = [...path];
-        const recordPath = pathFromRecord.splice(firstPub).reverse();
-        pathFromRecord.reverse();
-        const keyInRecord = pathFromRecord[0];
-        this.logger.verbose('foreign key', path.join(' > '));
+    if (this.isNested) {
+      this.logger.verbose('foreign key', this.path.join(' > '));
 
-        if (myKey === this.recordPub) {
-          this.isSubRoot = true;
-          this.record?.get('certs').open((certs: any) => {
-            this.certificates = certs;
-          });
-        } else {
-          const pathCerts$ = this.closestRoot.certificates$.pipe(
-            tap((store) =>
-              this.logger.verbose(
-                'closestRoot cert store looking for',
-                keyInRecord,
-                store
-              )
-            ),
-            pluck(keyInRecord),
-            filter((pathStore) => pathStore !== null && pathStore !== undefined)
-          );
-          pathCerts$
-            .pipe(
-              pluck(userPair.pub),
-              filter((c) => c !== null && c !== undefined),
-              take(1)
+      if (this.isSubRoot) {
+        this.record?.get('certs').open((certs: any) => {
+          this.certificates = certs;
+        });
+      } else {
+        const pathCerts$ = this.closestRoot.certificates$.pipe(
+          tap((store) =>
+            this.logger.verbose(
+              'closestRoot cert store looking for',
+              this.keyInRecord,
+              store
             )
-            .subscribe((store: any) => {
-              this.logger.verbose('user certificate', store);
-              this.certificate = store;
-            });
-          pathCerts$
-            .pipe(
-              pluck('*'),
-              filter((c) => c !== null && c !== undefined),
-              take(1)
-            )
-            .subscribe((store: any) => {
-              this.logger.verbose('public certificate', store);
-              this.certificate = this.certificate || store;
-            });
-          this.back?.certificate$.subscribe((c) => {
-            this.logger.verbose('certificate from back emitter', c);
-            this.certificate = this.certificate || c;
+          ),
+          pluck(this.keyInRecord),
+          filter((pathStore) => pathStore !== null && pathStore !== undefined)
+        );
+        pathCerts$
+          .pipe(
+            pluck(userPair.pub),
+            filter((c) => c !== null && c !== undefined),
+            take(1)
+          )
+          .subscribe((store: any) => {
+            this.logger.verbose('user certificate', store);
+            this.certificate = store;
           });
-        }
+        pathCerts$
+          .pipe(
+            pluck('*'),
+            filter((c) => c !== null && c !== undefined),
+            take(1)
+          )
+          .subscribe((store: any) => {
+            this.logger.verbose('public certificate', store);
+            this.certificate = this.certificate || store;
+          });
+        this.back?.certificate$.subscribe((c) => {
+          this.logger.verbose('certificate from back emitter', c);
+          this.certificate = this.certificate || c;
+        });
       }
     }
   }
 
   public get canEdit(): boolean {
-    return this.certificate !== null && this.certificate !== undefined;
+    return (
+      !this.isNested ||
+      (this.certificate !== null && this.certificate !== undefined)
+    );
   }
 
   private _closestRoot: any;
@@ -416,7 +463,7 @@ export class GunChain<
               return ev.off();
             }
             if (options?.clean) {
-              delete (data as any)['_'];
+              delete (data as any)._;
             }
             const dispatchHandler = () => {
               if (options?.includeKeys) {
