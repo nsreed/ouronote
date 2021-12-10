@@ -82,7 +82,7 @@ export class VectorTool extends Tool {
       const zoomPoint = this.scope.view.viewToProject(viewPoint);
       const zoomOffset = (e.point as any)
         .subtract(zoomPoint)
-        .multiply(zoomDelta > 0 ? -1 : 1);
+        .multiply(zoomDelta > 0 ? 0 : 1);
       // console.log(zoomOffset);
       (this.scope.view as any).scrollBy(zoomOffset);
     });
