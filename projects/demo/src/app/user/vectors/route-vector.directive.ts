@@ -41,6 +41,18 @@ export class RouteVectorDirective {
       return Object.keys(owners).filter((k) => k === userPub).length > 0;
     })
   );
+  canEdit$ = this.vectorNode$.pipe(
+    switchMap((v) =>
+      v
+        .get('certs')
+        .get('layers')
+        .get(this.userService.user.is.pub.replace('~', ''))
+        .on()
+    ),
+    map((lc) => {
+      return lc !== null && lc !== undefined;
+    })
+  );
   layersNode$ = this.vectorNode$.pipe(map((v) => v.get('layers')));
   constructor(
     protected vectorService: VectorService,
@@ -50,5 +62,6 @@ export class RouteVectorDirective {
   ) {
     this.isOwner$.subscribe((io) => console.log('is owner?', io));
     // console.log('my soul', ngGun.auth().is.pub);
+    this.canEdit$.subscribe((ce) => console.log('can edit?', ce));
   }
 }

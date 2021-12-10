@@ -12,21 +12,14 @@
       <!-- <mat-icon>enhanced_encryption</mat-icon> -->
       {{ vector.title }}
     </a>
-    <a
-      mat-flat-button
-      [routerLink]="['/user/vectors', vector | soul, 'edit']"
-      >{{ vector | updated | date }}</a
-    >
-    <button mat-icon-button (click)="remove(vector)">
+    <a mat-flat-button [routerLink]="['/user/vectors', vector | soul, 'edit']">{{ vector | updated | date }}</a>
+    <button mat-icon-button matTooltip="Remove vector" (click)="remove(vector)">
       <mat-icon>delete</mat-icon>
     </button>
-    <button
-      mat-icon-button
-      [routerLink]="['/user/vectors', vector | soul, 'permissions']"
-    >
-      <mat-icon>share</mat-icon>
+    <button mat-icon-button matTooltip="Settings" [routerLink]="['/user/vectors', vector | soul, 'permissions']">
+      <mat-icon>settings</mat-icon>
     </button>
-    <button mat-icon-button (click)="download(vector)">
+    <button mat-icon-button matTooltip="Download" (click)="download(vector)">
       <mat-icon>file_download</mat-icon>
     </button>
   </ng-container>

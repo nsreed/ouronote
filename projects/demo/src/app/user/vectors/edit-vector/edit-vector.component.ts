@@ -26,6 +26,7 @@ import { gunUpdateTime } from 'projects/ng-gun/src/lib/functions/gun-utils';
 import { FileUploaderComponent } from '../../../files/file-uploader/file-uploader.component';
 import { MatDialog } from '@angular/material/dialog';
 import { PaperEditDirective } from '../paper-edit.directive';
+import { ClipboardService } from 'ngx-clipboard';
 
 const VECTOR_PAPER_JSON_KEY = 'graph';
 
@@ -63,7 +64,8 @@ export class EditVectorComponent
     ngGun: NgGunService,
     private sanitizer: DomSanitizer,
     private logger: LogService,
-    public userService: UserService
+    public userService: UserService,
+    private cb: ClipboardService
   ) {
     super(vectorService, route, ngGun, userService);
     this.logger = logger.supplemental('edit-vector.component');
@@ -144,6 +146,10 @@ export class EditVectorComponent
       this.paperDirective.scope as any,
       new LogService()
     );
+  }
+
+  copyLink() {
+    this.cb.copy(window.location.href);
   }
 
   onPaste(e: any) {
