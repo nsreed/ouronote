@@ -173,17 +173,29 @@ export class PaperDirective implements OnInit {
       console.warn('scope not set on CanvasDirective');
       return;
     }
+    let tempWidth = 0;
+    let tempHeight = 0;
+
     // If we don't change the view size at all, paper.js doesn't seem to update
     // This solves an issue that occurs on first loading a default size canvas
-    this.project.view.viewSize.width += 0.0001;
-    this.project.view.viewSize.width =
+
+    tempWidth =
       this.project.view.element.parentElement?.scrollWidth ||
       this.project.view.element.scrollWidth;
-    this.project.view.viewSize.height += 0.0001;
-    this.project.view.viewSize.height =
+
+    this.project.view.viewSize.width += 0.0001;
+    this.project.view.viewSize.width = tempWidth;
+
+    // if (this.project.view.element.parentElement !== null) {
+    //   tempHeight = this.project.view.element.parentElement.scrollHeight;
+    // } else {
+    //   tempHeight = this.project.view.element.scrollHeight;
+    // }
+    tempHeight =
       this.project.view.element.parentElement?.scrollHeight ||
       this.project.view.element.scrollHeight;
-    this.onViewBounds();
+    this.project.view.viewSize.height += 0.0001;
+    this.project.view.viewSize.height = tempHeight;
   }
 
   @HostListener('window:resize', ['$event'])
