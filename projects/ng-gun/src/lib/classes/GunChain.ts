@@ -594,8 +594,15 @@ export class GunAuthChain<
   alias!: string;
   auth$ = this.root.onEvent('auth').pipe(
     tap((ack) => {
+      this.logger.log(
+        'authentication event. put present? %s; null or undefined? %s',
+        ack.put ? 'yes' : 'no',
+        ack.put === null || ack.put === undefined ? 'yes' : 'no'
+      );
       if (!ack.err) {
         this.is = ack.put;
+      } else {
+        this.logger.warn('authentication error: ', ack.put);
       }
     }),
     shareReplay(1)

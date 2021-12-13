@@ -23,6 +23,9 @@ export class ColorFormComponent implements OnInit {
   });
   controlKeys = Object.keys(this.form.controls);
   colorCtr = this.fb.control('#000000');
+  colorForm = this.fb.group({
+    color: this.fb.control('#000000'),
+  });
 
   defaultMinMax = {
     min: 0,
@@ -86,5 +89,10 @@ export class ColorFormComponent implements OnInit {
       // console.log('  %s: %d', key, colorKeyValue);
       this.form.get(key)?.patchValue(colorKeyValue, { emitEvent: false });
     }
+  }
+
+  onSubmit(evt: Event) {
+    evt.stopPropagation();
+    evt.preventDefault();
   }
 }

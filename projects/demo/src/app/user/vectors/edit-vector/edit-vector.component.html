@@ -25,6 +25,10 @@
         <app-color-form
           [color]="paper.project.currentStyle.strokeColor"
         ></app-color-form>
+        <app-stroke-width-form
+          [tool]="paper.scope.tool"
+          [style]="paper.scope.tool.style"
+        ></app-stroke-width-form>
       </ng-template>
     </mat-expansion-panel>
 
@@ -75,20 +79,6 @@
     </mat-expansion-panel>
   </mat-accordion>
 
-  <!-- <mat-accordion multi dense *ngIf="project">
-      <mat-expansion-panel *ngIf="paper.scope.project.selectedItems.length>0" expanded>
-        <mat-expansion-panel-header>Selected</mat-expansion-panel-header>
-        <ng-template matExpansionPanelContent>
-
-        </ng-template>
-      </mat-expansion-panel>
-    </mat-accordion> -->
-
-  <!-- <div>
-    <div class="svg" [innerHTML]="previewSVG"></div>
-    <canvas id="Preview" #preview="appPaper" appPaper></canvas>
-  </div> -->
-
   <div
     (paste)="onPaste($event)"
     fxFlex="1 1 auto"
@@ -107,7 +97,7 @@
       <a
         mat-icon-button
         (click)="copyLink()"
-        matTooltip="Copy link to clipboard"
+        matTooltip="Copy sharing link to clipboard"
       >
         <mat-icon>share</mat-icon>
       </a>
@@ -132,19 +122,6 @@
           Download
         </button>
       </mat-menu>
-      <!-- <a mat-button [matMenuTriggerFor]="menuSelect">Edit</a>
-      <mat-menu #menuSelect>
-        <button mat-menu-item (click)="importPaper()">Import...</button>
-        <button mat-menu-item>Cut</button>
-        <button mat-menu-item>Copy</button>
-        <button mat-menu-item (click)="onPaste($event)">Paste</button>
-        <button mat-menu-item>Group Selected</button>
-        <button mat-menu-item>Ungroup Selected</button>
-      </mat-menu> -->
-      <!-- <button mat-button>
-        Share
-        <mat-icon>share</mat-icon>
-      </button> -->
     </mat-toolbar>
     <canvas id="Workspace" appPaperEdit #paper="appPaperEdit"></canvas>
   </div>

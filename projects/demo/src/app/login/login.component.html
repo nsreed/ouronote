@@ -1,24 +1,46 @@
 <form [formGroup]="form">
   <mat-form-field>
-    <input matInput formControlName="alias">
-    <mat-label>alias</mat-label>
+    <input matInput formControlName="alias" />
+    <mat-label>username</mat-label>
   </mat-form-field>
   <mat-form-field>
-    <input type="password" matInput formControlName="password">
+    <input type="password" matInput formControlName="password" />
     <mat-label>password</mat-label>
   </mat-form-field>
   <mat-form-field *ngIf="mode === 'create'">
-    <input type="password" matInput formControlName="password2">
+    <input type="password" matInput formControlName="password2" />
     <mat-label>confirm password</mat-label>
   </mat-form-field>
-  <ng-container *ngIf="mode === 'login' else Create">
-    <button mat-button color="primary" (click)="login()" [disabled]="form.invalid">Log In</button>
+  <ng-container *ngIf="mode === 'login'; else Create">
+    <button mat-button color="primary" (click)="login()">Log In</button>
     or
-    <button mat-button color="primary" (click)="mode = 'create'">Create Account</button>
-    <mat-error *ngIf="error">{{error}}</mat-error>
+    <button mat-button color="primary" (click)="mode = 'create'">
+      Create Account
+    </button>
+    <mat-error *ngIf="requiredFields">
+      Username and password are required.
+    </mat-error>
+    <mat-error *ngIf="error">
+      <p>Username or password not found.</p>
+
+      <p>
+        If you have created an account on another device, log in with that
+        device first, then try again.
+      </p></mat-error
+    >
   </ng-container>
   <ng-template #Create>
-    <button mat-button color="primary" (click)="create()" [disabled]="form.invalid">Create & Sign In</button>
+    <mat-error *ngIf="passwordMatch"> Passwords do not match. </mat-error>
+    <button
+      mat-button
+      color="primary"
+      (click)="create()"
+      [disabled]="
+        passwordMatch && form.value.alias !== '' && form.value.password !== ''
+      "
+    >
+      Create & Sign In
+    </button>
     <button mat-button (click)="mode = 'login'">Cancel</button>
   </ng-template>
   <a mat-icon-button routerLink="/settings">

@@ -1,4 +1,4 @@
-<form>
+<form [formGroup]="colorForm" (submit)="onSubmit($event)">
   <mat-form-field>
     <input matInput [ngxMatColorPicker]="picker" [formControl]="colorCtr" />
     <ngx-mat-color-toggle matSuffix [for]="picker"></ngx-mat-color-toggle>

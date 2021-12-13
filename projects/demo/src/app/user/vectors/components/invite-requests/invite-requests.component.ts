@@ -1,6 +1,6 @@
 import { Component, Inject, NgZone, OnInit } from '@angular/core';
 import { ChainDirective } from '../../../../../../../ng-gun/src/lib/chain.directive';
-import { map, switchMap, shareReplay } from 'rxjs/operators';
+import { map, switchMap, shareReplay, delay } from 'rxjs/operators';
 import { UserService } from '../../../user.service';
 import { LogService } from '../../../../../../../log/src/lib/log.service';
 import { VectorService } from '../../vector.service';
@@ -8,6 +8,7 @@ import { NgSeaService } from '../../../../../../../ng-gun/src/lib/ng-sea.service
 import { SEA } from 'gun';
 import { NgGunService } from '../../../../../../../ng-gun/src/lib/ng-gun.service';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-invite-requests',
@@ -64,6 +65,13 @@ export class InviteRequestsComponent implements OnInit {
           pair
         );
 
+        // FIXME this is bad, you should report this behavior to Mark
+        const authPair = sessionStorage.getItem('pair');
+        const pairRestore$ = new Subject();
+        pairRestore$
+          .pipe(delay(1000))
+          .subscribe((a: any) => sessionStorage.setItem('pair', a));
+
         this.logger.log('created certificate %o', certs);
         const detachedGun = new NgGunService(
           this.gunOpts,
@@ -79,6 +87,7 @@ export class InviteRequestsComponent implements OnInit {
             ?.get('inviteRequests')
             .get(request)
             .put(null as never);
+          pairRestore$.next(authPair);
         });
       });
   }

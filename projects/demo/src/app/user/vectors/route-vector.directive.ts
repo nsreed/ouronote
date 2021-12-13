@@ -60,8 +60,7 @@ export class RouteVectorDirective {
     private ngGun: NgGunService,
     public userService: UserService
   ) {
-    this.isOwner$.subscribe((io) => console.log('is owner?', io));
-    // console.log('my soul', ngGun.auth().is.pub);
-    this.canEdit$.subscribe((ce) => console.log('can edit?', ce));
+    // this.isOwner$.subscribe((io) => console.log('is owner?', io));
+    // this.canEdit$.subscribe((ce) => console.log('can edit?', ce));
   }
 }

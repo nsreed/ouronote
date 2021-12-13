@@ -2,10 +2,10 @@ import { Component, OnInit, NgZone, Inject } from '@angular/core';
 import { FormArray, FormBuilder, Validators } from '@angular/forms';
 import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { filter, mergeMap } from 'rxjs/operators';
+import { delay, filter, mergeMap } from 'rxjs/operators';
 import { NgSeaService } from '../../../../../ng-gun/src/lib/ng-sea.service';
 import { ChainDirective } from '../../../../../ng-gun/src/lib/chain.directive';
-import { from } from 'rxjs';
+import { from, Subject } from 'rxjs';
 import { SEA } from 'gun';
 import { Router } from '@angular/router';
 
@@ -136,6 +136,12 @@ export class CreateCertificateComponent implements OnInit {
             opts
           )
         ).subscribe((certStores: any) => {
+          // FIXME this is bad, you should report this behavior to Mark
+          const authPair = sessionStorage.getItem('pair');
+          const pairRestore$ = new Subject();
+          pairRestore$
+            .pipe(delay(1000))
+            .subscribe((a: any) => sessionStorage.setItem('pair', a));
           const detachedGun = new NgGunService(
             this.gunOpts,
             this.ngZone,
@@ -160,6 +166,7 @@ export class CreateCertificateComponent implements OnInit {
             });
             // v.put(vector);
             // this.vectorService.vectors.set(v as never);
+            pairRestore$.next(authPair);
           });
         });
       });

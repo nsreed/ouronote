@@ -12,6 +12,8 @@ export class LoginComponent implements OnInit {
 
   mode: 'create' | 'login' = 'login';
 
+  // FIXME editing password 1 doesn't re-trigger validation
+  // FIXME creating account with existing alias should fail validation
   form = this.fb.group({
     alias: [null, Validators.required],
     password: [null, Validators.required],
@@ -73,7 +75,11 @@ export class LoginComponent implements OnInit {
       .login(this.form.value.alias, this.form.value.password)
       .subscribe((data) => {
         // console.log('login result', data);
-        this.error = data.err;
+        if (data.err) {
+          this.error = true;
+        } else {
+          this.error = undefined;
+        }
       });
   }
 }

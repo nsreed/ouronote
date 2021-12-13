@@ -19,6 +19,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatSliderModule } from '@angular/material/slider';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -45,6 +46,7 @@ import { RouteVectorDirective } from './route-vector.directive';
 import { VectorsRoutingModule } from './vectors-routing.module';
 import { VectorsComponent } from './vectors.component';
 import { ViewVectorComponent } from './view-vector/view-vector.component';
+import { StrokeWidthFormComponent } from './components/stroke-width-form/stroke-width-form.component';
 
 @NgModule({
   declarations: [
@@ -64,6 +66,7 @@ import { ViewVectorComponent } from './view-vector/view-vector.component';
     PaperEditDirective,
     VectorExportDialogComponent,
     InviteRequestsComponent,
+    StrokeWidthFormComponent,
   ],
   imports: [
     CertificatesModule,
@@ -89,6 +92,7 @@ import { ViewVectorComponent } from './view-vector/view-vector.component';
     MatInputModule,
     MatListModule,
     MatMenuModule,
+    MatSliderModule,
     MatStepperModule,
     MatTabsModule,
     MatToolbarModule,
