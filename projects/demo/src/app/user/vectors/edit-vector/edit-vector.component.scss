@@ -6,13 +6,15 @@
   flex-direction: row;
 }
 
-#CanvasContainer {
+#WorkspaceContainer {
   overflow: hidden;
-}
 
-canvas#Workspace {
-  // outline: solid 10px gray;
-  touch-action: pinch-zoom;
+  canvas#Workspace {
+    // outline: solid 10px gray;
+    touch-action: pinch-zoom;
+    position: absolute;
+    height: 100vh;
+  }
 }
 
 mat-accordion {
@@ -53,3 +55,14 @@ mat-list-item.active {
   text-overflow: ellipsis;
   outline: solid 3px #0000ff55;
 }
+
+p {
+  margin-top: -1em;
+  padding-top: 0;
+
+  margin-bottom: .5em;
+  padding-left: 1em;
+  padding-bottom: .15em;
+}
+
+

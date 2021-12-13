@@ -179,6 +179,7 @@ export class PaperDirective implements OnInit {
     this.project.view.viewSize.width =
       this.project.view.element.parentElement?.scrollWidth ||
       this.project.view.element.scrollWidth;
+    this.project.view.viewSize.height += 0.0001;
     this.project.view.viewSize.height =
       this.project.view.element.parentElement?.scrollHeight ||
       this.project.view.element.scrollHeight;

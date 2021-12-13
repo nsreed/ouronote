@@ -29,6 +29,7 @@
           [tool]="paper.scope.tool"
           [style]="paper.scope.tool.style"
         ></app-stroke-width-form>
+        <p>Size</p>
       </ng-template>
     </mat-expansion-panel>
 
@@ -123,6 +124,8 @@
         </button>
       </mat-menu>
     </mat-toolbar>
-    <canvas id="Workspace" appPaperEdit #paper="appPaperEdit"></canvas>
+    <div id="WorkspaceContainer">
+      <canvas id="Workspace" appPaperEdit #paper="appPaperEdit"></canvas>
+    </div>
   </div>
 </ng-container>
