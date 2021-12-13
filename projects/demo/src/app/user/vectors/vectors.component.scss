@@ -4,6 +4,10 @@ div [mat-flat-button] {
 .transparent {
   display: contents;
 }
+mat-card-title a {
+  font-weight: inherit;
+  text-decoration: inherit;
+}
 // .odd {
 //   & > * {
 //     // background-color: lightgray;
