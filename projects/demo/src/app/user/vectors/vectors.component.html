@@ -1,9 +1,8 @@
 <mat-toolbar>
-  <h1 fxFlex="1 0 auto">Vectors</h1>
-  <button mat-flat-button (click)="importVector()">Import...</button>
   <button mat-raised-button color="primary" (click)="create()">
     New Vector
   </button>
+  <button mat-flat-button (click)="importVector()">Import...</button>
 </mat-toolbar>
 
 <div gdColumns="auto repeat(4, max-content)" appFileDnd class="dropzone">
@@ -12,11 +11,19 @@
       <!-- <mat-icon>enhanced_encryption</mat-icon> -->
       {{ vector.title }}
     </a>
-    <a mat-flat-button [routerLink]="['/user/vectors', vector | soul, 'edit']">{{ vector | updated | date }}</a>
+    <a
+      mat-flat-button
+      [routerLink]="['/user/vectors', vector | soul, 'edit']"
+      >{{ vector | updated | date }}</a
+    >
     <button mat-icon-button matTooltip="Remove vector" (click)="remove(vector)">
       <mat-icon>delete</mat-icon>
     </button>
-    <button mat-icon-button matTooltip="Settings" [routerLink]="['/user/vectors', vector | soul, 'permissions']">
+    <button
+      mat-icon-button
+      matTooltip="Settings"
+      [routerLink]="['/user/vectors', vector | soul, 'permissions']"
+    >
       <mat-icon>settings</mat-icon>
     </button>
     <button mat-icon-button matTooltip="Download" (click)="download(vector)">
@@ -24,3 +31,10 @@
     </button>
   </ng-container>
 </div>
+
+<ng-container *ngIf="(count$ | async) === 0; else HasVectors">
+  <button mat-button color="primary" (click)="create()">
+    Create your first vector!
+  </button>
+</ng-container>
+<ng-template #HasVectors> Showing {{ count$ | async }} vectors </ng-template>

@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { VectorService } from './vector.service';
-import { map, filter } from 'rxjs/operators';
+import { map, filter, shareReplay } from 'rxjs/operators';
 import { gunUpdateTime } from '../../../../../ng-gun/src/lib/functions/gun-utils';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmComponent } from '../../components/confirm/confirm.component';
@@ -25,17 +25,25 @@ export function buildVectorLogger(parent: LogService) {
   ],
 })
 export class VectorsComponent implements OnInit {
-  vectors = this.vectorService.vectors
-    .reduce()
-    .pipe(
-      map((v: any[]) => v.sort((a, b) => gunUpdateTime(b) - gunUpdateTime(a)))
-    );
+  vectors = this.vectorService.vectors.reduce().pipe(
+    map((v: any[]) => v.sort((a, b) => gunUpdateTime(b) - gunUpdateTime(a))),
+    shareReplay(1)
+  );
+  count$ = this.vectorService.vectors.on().pipe(
+    map((v) => {
+      const keys = Object.keys(v).filter((k) => k !== '_');
+      const pop = keys.filter((k) => v[k] !== null && v[k] !== undefined);
+      return pop.length;
+    })
+  );
   constructor(
     private vectorService: VectorService,
     private dialog: MatDialog
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.count$.subscribe((c) => console.log(c));
+  }
 
   create() {
     this.dialog.open(CreateVectorComponent, { width: '90%', height: '90%' });
