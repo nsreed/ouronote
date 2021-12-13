@@ -4,31 +4,83 @@
   </button>
   <button mat-flat-button (click)="importVector()">Import...</button>
 </mat-toolbar>
+<!--
+<table>
+  <tr
+    *ngFor="let vector of vectors | async; let i = index"
+    [ngClass]="{ odd: i % 2 === 0 }"
+  >
+    <td>
+      <a mat-button [routerLink]="['/user/vectors', vector | soul, 'edit']">
+        <mat-icon>enhanced_encryption</mat-icon>
+        {{ vector.title }}
+      </a>
+    </td>
+    <td>{{ vector | updated | date }}</td>
+    <td>
+      <button
+        mat-icon-button
+        matTooltip="Remove vector"
+        (click)="remove(vector)"
+      >
+        <mat-icon>delete</mat-icon>
+      </button>
+    </td>
+    <td>
+      <button
+        mat-icon-button
+        matTooltip="Settings"
+        [routerLink]="['/user/vectors', vector | soul, 'permissions']"
+      >
+        <mat-icon>settings</mat-icon>
+      </button>
+    </td>
+    <td>
+      <button mat-icon-button matTooltip="Download" (click)="download(vector)">
+        <mat-icon>file_download</mat-icon>
+      </button>
+    </td>
+  </tr>
+</table> -->
 
-<div gdColumns="auto repeat(4, max-content)" appFileDnd class="dropzone">
-  <ng-container *ngFor="let vector of vectors | async">
-    <a mat-flat-button [routerLink]="['/user/vectors', vector | soul, 'edit']">
-      <!-- <mat-icon>enhanced_encryption</mat-icon> -->
-      {{ vector.title }}
-    </a>
-    <a
-      mat-flat-button
-      [routerLink]="['/user/vectors', vector | soul, 'edit']"
-      >{{ vector | updated | date }}</a
-    >
-    <button mat-icon-button matTooltip="Remove vector" (click)="remove(vector)">
-      <mat-icon>delete</mat-icon>
-    </button>
-    <button
-      mat-icon-button
-      matTooltip="Settings"
-      [routerLink]="['/user/vectors', vector | soul, 'permissions']"
-    >
-      <mat-icon>settings</mat-icon>
-    </button>
-    <button mat-icon-button matTooltip="Download" (click)="download(vector)">
-      <mat-icon>file_download</mat-icon>
-    </button>
+<div
+  id="Vectors"
+  gdColumns="auto repeat(4, max-content)"
+  appFileDnd
+  class="dropzone"
+>
+  <ng-container *ngFor="let vector of vectors | async; let i = index">
+    <div class="transparent" [ngClass]="{ odd: i % 2 === 0 }">
+      <a
+        mat-flat-button
+        [routerLink]="['/user/vectors', vector | soul, 'edit']"
+      >
+        <!-- <mat-icon>enhanced_encryption</mat-icon> -->
+        {{ vector.title }}
+      </a>
+      <a
+        mat-flat-button
+        [routerLink]="['/user/vectors', vector | soul, 'edit']"
+        >{{ vector | updated | date }}</a
+      >
+      <button
+        mat-icon-button
+        matTooltip="Remove vector"
+        (click)="remove(vector)"
+      >
+        <mat-icon>delete</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        matTooltip="Settings"
+        [routerLink]="['/user/vectors', vector | soul, 'permissions']"
+      >
+        <mat-icon>settings</mat-icon>
+      </button>
+      <button mat-icon-button matTooltip="Download" (click)="download(vector)">
+        <mat-icon>file_download</mat-icon>
+      </button>
+    </div>
   </ng-container>
 </div>
 

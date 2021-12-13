@@ -1,3 +1,13 @@
 div [mat-flat-button] {
   text-align: left;
 }
+.transparent {
+  display: contents;
+}
+// .odd {
+//   & > * {
+//     // background-color: lightgray;
+//     // text-decoration: underline;
+//     // font-weight: bolder;
+//   }
+// }
