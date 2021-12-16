@@ -10,18 +10,23 @@
     <mat-expansion-panel expanded>
       <mat-expansion-panel-header>Tools</mat-expansion-panel-header>
       <ng-template matExpansionPanelContent>
-        <div matButtonToggleGroup gdColumns="auto auto">
+        <div gdColumns="auto auto" id="ToolsContainer">
           <ng-container *ngFor="let tool of paper.scope.tools">
             <ng-container *ngIf="tool.enabled$ | async">
-              <mat-button-toggle
+              <button
+                mat-button
                 [checked]="tool === paper.scope.tool"
                 [value]="tool"
                 [appTool]="tool"
                 (click)="tool.activate()"
                 [matTooltip]="tool.name"
+                [ngClass]="{
+                  active: tool === paper.scope.tool
+                }"
+                class="tool"
               >
-                <i class="{{ 'fa fa-' + tool.icon }}"></i>
-              </mat-button-toggle>
+                <mat-icon class="{{ 'fa fa-' + tool.icon }}"></mat-icon>
+              </button>
             </ng-container>
           </ng-container>
         </div>
