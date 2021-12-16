@@ -9,7 +9,7 @@ app-root {
   align-items: stretch;
   overflow: hidden;
   height: 100vh;
-  max-height: 100vh;
+  // max-height: 100vh;
 }
 body > app-root {
   overflow-y: auto;
