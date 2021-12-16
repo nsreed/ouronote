@@ -132,8 +132,15 @@
   </ng-container>
 </div>
 
-<ng-container *ngIf="(count$ | async) === 0; else HasVectors">
-  <button mat-button color="primary" (click)="create()">
+<ng-container
+  *ngIf="[null, undefined, 0, '0'].includes(count$ | async); else HasVectors"
+>
+  <button
+    class="mat-display-1"
+    mat-stroked-button
+    color="primary"
+    (click)="create()"
+  >
     Create your first vector!
   </button>
 </ng-container>

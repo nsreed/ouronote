@@ -34,7 +34,8 @@ export class VectorsComponent implements OnInit {
       const keys = Object.keys(v).filter((k) => k !== '_');
       const pop = keys.filter((k) => v[k] !== null && v[k] !== undefined);
       return pop.length;
-    })
+    }),
+    shareReplay(1)
   );
   constructor(
     private vectorService: VectorService,
