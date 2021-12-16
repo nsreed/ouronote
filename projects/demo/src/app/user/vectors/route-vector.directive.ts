@@ -29,10 +29,7 @@ export class RouteVectorDirective {
     switchMap((node) => node.on())
   );
   owner$ = this.vectorNode$.pipe(
-    switchMap(
-      (n) => n.get('owner').on({ clean: true })
-      // .pipe(map((o) => ({ ...o, _: undefined })))
-    ),
+    switchMap((n) => n.get('owner').on({ clean: true })),
     shareReplay(1)
   );
   isOwner$ = this.owner$.pipe(

@@ -8,6 +8,7 @@ import { VerifyPipe } from './verify.pipe';
 import { RouteChainDirective } from './route-chain.directive';
 import { GunMapDirective } from './gun-map.directive';
 import { LogModule } from '../../../log/src/lib/log.module';
+import { OwnerPipe } from './owner.pipe';
 
 @NgModule({
   imports: [LogModule],
@@ -20,6 +21,7 @@ import { LogModule } from '../../../log/src/lib/log.module';
     VerifyPipe,
     RouteChainDirective,
     GunMapDirective,
+    OwnerPipe,
   ],
   exports: [
     NgGunComponent,
@@ -30,6 +32,7 @@ import { LogModule } from '../../../log/src/lib/log.module';
     VerifyPipe,
     RouteChainDirective,
     GunMapDirective,
+    OwnerPipe,
   ],
   providers: [{ provide: 'gun-route-data-key', useValue: 'chain' }],
 })
