@@ -1,15 +1,30 @@
 import { Tool, ToolEvent } from 'paper';
-import { fromEvent } from 'rxjs';
+import { fromEvent, of, ReplaySubject } from 'rxjs';
 import { after$ } from '../../../functions/aspect-rx';
 import * as paper from 'paper';
-import { filter, switchMapTo, takeUntil, tap } from 'rxjs/operators';
+import {
+  filter,
+  switchMap,
+  switchMapTo,
+  takeUntil,
+  tap,
+  shareReplay,
+} from 'rxjs/operators';
 import { LogService } from '../../../../../../log/src/lib/log.service';
 import { EventEmitter } from '@angular/core';
 import { PenEvent } from '../classes/PenEvent';
+import { propertyChange$ } from '../functions/paper-chain';
 
 export class VectorTool extends Tool {
   private isPointerDown = false;
   icon = 'hand-spock';
+
+  enabled$ = of(true);
+  project$ = propertyChange$(this.scope, 'project').pipe(shareReplay(1));
+  selectedItems$ = this.project$.pipe(
+    switchMap((project) => propertyChange$(project, 'selectedItems')),
+    shareReplay(1)
+  );
 
   get properties() {
     return Object.getPrototypeOf(this).___PROPERTIES || [];
@@ -70,9 +85,7 @@ export class VectorTool extends Tool {
 
   constructor(public readonly scope: paper.PaperScope) {
     super();
-    // this.touchDown.subscribe((e) => {
-    //   console.log('touch down', e);
-    // });
+    console.log(this.properties);
 
     this.wheel.subscribe((e) => {
       const zoomDelta = e.event.deltaY;
@@ -87,6 +100,7 @@ export class VectorTool extends Tool {
       (this.scope.view as any).scrollBy(zoomOffset);
     });
     this.setup();
+    this.selectedItems$.subscribe((si) => console.log(si));
     // this.pointerMove.subscribe((e: PenEvent) =>
     //   this.logger.log('tool pointer event', e.point)
     // );

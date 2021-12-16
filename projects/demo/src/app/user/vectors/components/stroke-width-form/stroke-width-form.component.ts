@@ -33,7 +33,6 @@ export class StrokeWidthFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.widthCtl.valueChanges.subscribe((v) => {
-      // this.style.strokeWidth = v;
       if (this.tool.style) {
         this.tool.style.strokeWidth = v;
       }

@@ -8,8 +8,8 @@ import { VectorTool } from './paper-tool';
 export class PenTool extends VectorTool {
   path!: paper.Path;
   icon = 'marker';
-
   name = 'pen';
+
   @Property()
   style = new Style({
     strokeCap: 'round',
@@ -37,6 +37,9 @@ export class PenTool extends VectorTool {
       this.path = new paper.Path(e.point) as any;
       (this.path as any).pair.editing = true;
       this.path.style = this.style;
+      this.path.strokeWidth = this.style.strokeWidth;
+      this.path.strokeColor = this.project.currentStyle.strokeColor;
+      this.path.fillColor = this.project.currentStyle.fillColor;
     }
     this.path.add(e.point);
   });
@@ -46,8 +49,9 @@ export class PenTool extends VectorTool {
         this.path.remove();
         return;
       }
-      this.path.strokeColor = this.project.currentStyle.strokeColor;
-      this.path.fillColor = this.project.currentStyle.fillColor;
+      // this.path.style.strokeWidth = this.style.strokeWidth;
+      // this.path.strokeColor = this.project.currentStyle.strokeColor;
+      // this.path.fillColor = this.project.currentStyle.fillColor;
       // if (this.smoothing) {
       //   this.path.smooth();
       // }

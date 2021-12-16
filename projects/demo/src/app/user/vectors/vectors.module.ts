@@ -47,6 +47,7 @@ import { VectorsRoutingModule } from './vectors-routing.module';
 import { VectorsComponent } from './vectors.component';
 import { ViewVectorComponent } from './view-vector/view-vector.component';
 import { StrokeWidthFormComponent } from './components/stroke-width-form/stroke-width-form.component';
+import { StyleDirective } from './components/style.directive';
 
 @NgModule({
   declarations: [
@@ -67,6 +68,7 @@ import { StrokeWidthFormComponent } from './components/stroke-width-form/stroke-
     VectorExportDialogComponent,
     InviteRequestsComponent,
     StrokeWidthFormComponent,
+    StyleDirective,
   ],
   imports: [
     CertificatesModule,

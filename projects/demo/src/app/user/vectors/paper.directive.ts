@@ -150,7 +150,7 @@ export class PaperDirective implements OnInit {
       0,
       0
     ) as any;
-    this.project.currentStyle.strokeWidth = 5;
+    // this.project.currentStyle.strokeWidth = 5;
 
     // update the view size after a delay to account for UI loading time
     timer(1000).subscribe(() => this.updateViewSize());

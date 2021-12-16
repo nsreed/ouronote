@@ -1,34 +1,23 @@
 <ng-container [gunChain]="vectorNode$ | async" #vectorChain="gunChain">
-  <mat-accordion
-    multi
-    dense
-    displayMode="flat"
-    *ngIf="project && (canEdit$ | async)"
-    fxLayout="column"
-    fxFlex="0 1 175px"
-  >
+  <mat-accordion multi dense displayMode="flat" *ngIf="project && (canEdit$ | async)" fxLayout="column"
+    fxFlex="0 1 175px">
     <mat-expansion-panel expanded>
       <mat-expansion-panel-header>Tools</mat-expansion-panel-header>
       <ng-template matExpansionPanelContent>
         <div matButtonToggleGroup gdColumns="auto auto">
-          <mat-button-toggle
-            [checked]="tool === paper.scope.tool"
-            [value]="tool"
-            [appTool]="tool"
-            *ngFor="let tool of paper.scope.tools"
-            (click)="tool.activate()"
-            [matTooltip]="tool.name"
-          >
-            <i class="{{ 'fa fa-' + tool.icon }}"></i>
-          </mat-button-toggle>
+          <ng-container *ngFor="let tool of paper.scope.tools">
+            <ng-container *ngIf="tool.enabled$ | async">
+
+              <mat-button-toggle [checked]="tool === paper.scope.tool" [value]="tool" [appTool]="tool"
+                (click)="tool.activate()" [matTooltip]="tool.name">
+                <i class="{{ 'fa fa-' + tool.icon }}"></i>
+              </mat-button-toggle>
+            </ng-container>
+          </ng-container>
         </div>
-        <app-color-form
-          [color]="paper.project.currentStyle.strokeColor"
-        ></app-color-form>
-        <app-stroke-width-form
-          [tool]="paper.scope.tool"
-          [style]="paper.scope.tool.style"
-        ></app-stroke-width-form>
+        <app-color-form [color]="paper.project.currentStyle.strokeColor"></app-color-form>
+        <!-- <app-color-form [color]="paper.project.currentStyle.fillColor"></app-color-form> -->
+        <app-stroke-width-form [tool]="paper.scope.tool" [style]="paper.scope.tool.style"></app-stroke-width-form>
         <p>Size</p>
       </ng-template>
     </mat-expansion-panel>
@@ -49,11 +38,8 @@
       <mat-expansion-panel-header>Layers</mat-expansion-panel-header>
       <ng-template matExpansionPanelContent>
         <mat-action-list dense>
-          <mat-list-item
-            *ngFor="let layer of project?.layers"
-            (click)="layer.activate()"
-            [ngClass]="{ active: layer === project.activeLayer }"
-          >
+          <mat-list-item *ngFor="let layer of project?.layers" (click)="layer.activate()"
+            [ngClass]="{ active: layer === project.activeLayer }">
             {{ layer.toString() }}
             {{ layer === project.activeLayer ? "*" : "" }}
             {{ layer.children?.length }}
@@ -67,27 +53,16 @@
       </mat-action-row>
     </mat-expansion-panel>
 
-    <mat-expansion-panel
-      [gunChain]="vectorNode$ | async"
-      *ngIf="isOwner$ | async"
-    >
-      <mat-expansion-panel-header
-        >Requests ({{
-          (requestCount$ | async) || 0
-        }})</mat-expansion-panel-header
-      >
+    <mat-expansion-panel [gunChain]="vectorNode$ | async" *ngIf="isOwner$ | async">
+      <mat-expansion-panel-header>Requests ({{
+        (requestCount$ | async) || 0
+        }})</mat-expansion-panel-header>
       <app-invite-requests></app-invite-requests>
     </mat-expansion-panel>
   </mat-accordion>
 
-  <div
-    (paste)="onPaste($event)"
-    fxFlex="1 1 auto"
-    fxLayout="column"
-    fxLayoutAlign="stretch stretch"
-    id="CanvasContainer"
-    #Container
-  >
+  <div (paste)="onPaste($event)" fxFlex="1 1 auto" fxLayout="column" fxLayoutAlign="stretch stretch"
+    id="CanvasContainer" #Container>
     <mat-toolbar *ngIf="vectorNode" fxLayoutAlign="stretch" fxLayout="row">
       <span>
         {{ (vector$ | async).title }} -
@@ -95,22 +70,14 @@
           @{{ owner.key | alias | async }}
         </ng-container>
       </span>
-      <a
-        mat-icon-button
-        (click)="copyLink()"
-        matTooltip="Copy sharing link to clipboard"
-      >
+      <a mat-icon-button (click)="copyLink()" matTooltip="Copy sharing link to clipboard">
         <mat-icon>share</mat-icon>
       </a>
       <a mat-icon-button [matMenuTriggerFor]="menuMore" color="primary">
         <mat-icon>more_horiz</mat-icon>
       </a>
       <mat-menu #menuMore>
-        <button
-          mat-menu-item
-          *ngIf="vectorNode && !(layersNode$ | async).canEdit"
-          (click)="requestAccess()"
-        >
+        <button mat-menu-item *ngIf="vectorNode && !(layersNode$ | async).canEdit" (click)="requestAccess()">
           <mat-icon>announcement</mat-icon>
           Request Access
         </button>

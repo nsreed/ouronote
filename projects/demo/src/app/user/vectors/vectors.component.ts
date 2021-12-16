@@ -82,4 +82,8 @@ export class VectorsComponent implements OnInit {
         }
       });
   }
+
+  onClick(e: any) {
+    console.log(e);
+  }
 }

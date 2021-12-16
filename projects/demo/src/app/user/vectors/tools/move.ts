@@ -1,8 +1,10 @@
 import { VectorTool } from './paper-tool';
 import * as paper from 'paper';
+import { of } from 'rxjs';
 export class MoveTool extends VectorTool {
   name = 'move';
   icon = 'arrows-alt';
+  enabled$ = of(true);
   dragSub = this.drag.subscribe((e) => {
     this.scope.project
       .getItems({

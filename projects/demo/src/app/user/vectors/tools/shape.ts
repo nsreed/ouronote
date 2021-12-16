@@ -1,9 +1,18 @@
 import { VectorTool } from './paper-tool';
 import * as paper from 'paper';
+import { Style } from 'paper';
+import { Property } from '../functions/decorators';
 export class ShapeTool extends VectorTool {
   name = 'shapes';
   icon = 'shapes';
   shape?: paper.Shape;
+
+  @Property()
+  style = new Style({
+    strokeCap: 'round',
+    strokeJoin: 'round',
+    strokeWidth: 3,
+  } as paper.Style);
 
   downSub = this.down.subscribe(() => this.activateDrawLayer());
 
@@ -13,7 +22,7 @@ export class ShapeTool extends VectorTool {
     this.shape?.remove();
     this.shape = new paper.Shape.Rectangle(e.downPoint, e.point);
     this.shape.data.ignore = true;
-    this.shape.style = this.project.currentStyle;
+    this.shape.style = this.style;
     (this.scope.settings as any).insertItems = prev;
     this.project.activeLayer.insertChild(0, this.shape);
   });
