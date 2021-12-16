@@ -31,7 +31,6 @@ export class VectorsComponent implements OnInit {
   );
   count$ = this.vectorService.vectors.reduce().pipe(
     map((v) => {
-      console.log(v);
       const keys = Object.keys(v).filter((k) => k !== '_');
       const pop = keys.filter((k) => v[k] !== null && v[k] !== undefined);
       return pop.length;
@@ -42,9 +41,7 @@ export class VectorsComponent implements OnInit {
     private dialog: MatDialog
   ) {}
 
-  ngOnInit(): void {
-    this.count$.subscribe((c) => console.log(c));
-  }
+  ngOnInit(): void {}
 
   create() {
     this.dialog.open(CreateVectorComponent, { width: '90%', height: '90%' });

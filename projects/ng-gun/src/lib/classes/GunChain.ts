@@ -419,7 +419,7 @@ export class GunChain<
 
     return base.on({ includeKeys: true }).pipe(
       scan((acc: any, val: any) => {
-        if (val[0] === null || undefined === val[0]) {
+        if (val[0] === null || val[0] === undefined) {
           delete acc[val[1]];
         } else {
           acc[val[1]] = val[0];
