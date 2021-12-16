@@ -15,12 +15,11 @@ import { ShapeTool } from './tools/shape';
 })
 export class PaperEditDirective extends PaperDirective {
   tool$ = propertyChange$(this.scope, 'tool').pipe(shareReplay(1));
-
-  public pen = new PenTool(this.scope as any);
-  public shape = new ShapeTool(this.scope as any);
-  public eraser = new EraserTool(this.scope as any);
-  // public select = new LassoSelectTool(this.scope as any); // FIXME fix lasso select
   public areaSelect = new RectangleSelectTool(this.scope as any);
+  public pen = new PenTool(this.scope as any);
+  public eraser = new EraserTool(this.scope as any);
+  public shape = new ShapeTool(this.scope as any);
+  // public select = new LassoSelectTool(this.scope as any); // FIXME fix lasso select
   public move = new MoveTool(this.scope as any);
   // public eyedropper = new EyedropperTool(this.scope as any);
 }
