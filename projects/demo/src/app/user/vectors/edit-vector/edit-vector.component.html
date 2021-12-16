@@ -20,6 +20,7 @@
                 [appTool]="tool"
                 (click)="tool.activate()"
                 [matTooltip]="tool.name"
+                [matTooltipShowDelay]="900"
                 [ngClass]="{
                   active: tool === paper.scope.tool
                 }"
