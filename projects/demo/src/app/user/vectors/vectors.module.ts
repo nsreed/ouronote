@@ -33,8 +33,8 @@ import { ColorFormComponent } from './components/color-form/color-form.component
 import { CreateVectorComponent } from './components/create-vector/create-vector.component';
 import { InviteRequestsComponent } from './components/invite-requests/invite-requests.component';
 import { LayerListComponent } from './components/layer-list/layer-list.component';
+import { StrokeWidthFormComponent } from './components/stroke-width-form/stroke-width-form.component';
 import { StyleFormComponent } from './components/style-form/style-form.component';
-import { ToolDirective } from './components/tool.directive';
 import { VectorExportDialogComponent } from './components/vector-export-dialog/vector-export-dialog.component';
 import { VectorFormComponent } from './components/vector-form/vector-form.component';
 import { VectorPreviewComponent } from './components/vector-preview/vector-preview.component';
@@ -46,8 +46,6 @@ import { RouteVectorDirective } from './route-vector.directive';
 import { VectorsRoutingModule } from './vectors-routing.module';
 import { VectorsComponent } from './vectors.component';
 import { ViewVectorComponent } from './view-vector/view-vector.component';
-import { StrokeWidthFormComponent } from './components/stroke-width-form/stroke-width-form.component';
-import { StyleDirective } from './components/style.directive';
 
 @NgModule({
   declarations: [
@@ -57,7 +55,6 @@ import { StyleDirective } from './components/style.directive';
     RouteVectorDirective,
     LayerListComponent,
     StyleFormComponent,
-    ToolDirective,
     ColorFormComponent,
     VectorFormComponent,
     CreateVectorComponent,
@@ -68,7 +65,6 @@ import { StyleDirective } from './components/style.directive';
     VectorExportDialogComponent,
     InviteRequestsComponent,
     StrokeWidthFormComponent,
-    StyleDirective,
   ],
   imports: [
     CertificatesModule,
