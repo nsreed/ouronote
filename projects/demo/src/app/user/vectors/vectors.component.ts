@@ -29,8 +29,9 @@ export class VectorsComponent implements OnInit {
     map((v: any[]) => v.sort((a, b) => gunUpdateTime(b) - gunUpdateTime(a))),
     shareReplay(1)
   );
-  count$ = this.vectorService.vectors.on().pipe(
+  count$ = this.vectorService.vectors.reduce().pipe(
     map((v) => {
+      console.log(v);
       const keys = Object.keys(v).filter((k) => k !== '_');
       const pop = keys.filter((k) => v[k] !== null && v[k] !== undefined);
       return pop.length;

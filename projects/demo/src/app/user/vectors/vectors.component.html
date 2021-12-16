@@ -43,22 +43,40 @@
   </tr>
 </table> -->
 <!-- RESPONSIVE DESIGN -->
-<di gdColumns.lt-sm="auto" gdColumns.lt-md="auto auto" gdColumns.md="auto auto auto"
-  gdColumns.gt-md="auto auto auto auto" gdColumns.gt-lg="auto auto auto auto auto" gdGap="5px">
-  <mat-card class="example-card" *ngFor="let vector of vectors | async; let i = index" (click)="onClick($event)">
-    <mat-card-title><a [routerLink]="['/user/vectors', vector | soul, 'edit']">{{
+<di
+  gdColumns.lt-sm="auto"
+  gdColumns.lt-md="auto auto"
+  gdColumns.md="auto auto auto"
+  gdColumns.gt-md="auto auto auto auto"
+  gdColumns.gt-lg="auto auto auto auto auto"
+  gdGap="5px"
+>
+  <mat-card
+    class="example-card"
+    *ngFor="let vector of vectors | async; let i = index"
+    (click)="onClick($event)"
+  >
+    <mat-card-title
+      ><a [routerLink]="['/user/vectors', vector | soul, 'edit']">{{
         vector.title
-        }}</a></mat-card-title>
+      }}</a></mat-card-title
+    >
     <mat-card-subtitle>{{ vector | updated | date }}</mat-card-subtitle>
     <!-- <mat-card-content> {{ vector | soul }} </mat-card-content> -->
     <mat-card-actions>
-      <button mat-raised-button [routerLink]="['/user/vectors', vector | soul, 'edit']">
+      <button
+        mat-raised-button
+        [routerLink]="['/user/vectors', vector | soul, 'edit']"
+      >
         open
       </button>
       <button mat-icon-button (click)="remove(vector)">
         <mat-icon>delete</mat-icon>
       </button>
-      <button mat-icon-button [routerLink]="['/user/vectors', vector | soul, 'permissions']">
+      <button
+        mat-icon-button
+        [routerLink]="['/user/vectors', vector | soul, 'permissions']"
+      >
         <mat-icon>settings</mat-icon>
       </button>
       <button mat-icon-button (click)="download(vector)">
@@ -68,18 +86,39 @@
   </mat-card>
 </di>
 
-<div *ngIf="false" id="Vectors" gdColumns="auto repeat(4, max-content)" appFileDnd class="dropzone">
+<div
+  *ngIf="false"
+  id="Vectors"
+  gdColumns="auto repeat(4, max-content)"
+  appFileDnd
+  class="dropzone"
+>
   <ng-container *ngFor="let vector of vectors | async; let i = index">
     <div class="transparent" [ngClass]="{ odd: i % 2 === 0 }">
-      <a mat-flat-button [routerLink]="['/user/vectors', vector | soul, 'edit']">
+      <a
+        mat-flat-button
+        [routerLink]="['/user/vectors', vector | soul, 'edit']"
+      >
         <!-- <mat-icon>enhanced_encryption</mat-icon> -->
         {{ vector.title }}
       </a>
-      <a mat-flat-button [routerLink]="['/user/vectors', vector | soul, 'edit']">{{ vector | updated | date }}</a>
-      <button mat-icon-button matTooltip="Remove vector" (click)="remove(vector)">
+      <a
+        mat-flat-button
+        [routerLink]="['/user/vectors', vector | soul, 'edit']"
+        >{{ vector | updated | date }}</a
+      >
+      <button
+        mat-icon-button
+        matTooltip="Remove vector"
+        (click)="remove(vector)"
+      >
         <mat-icon>delete</mat-icon>
       </button>
-      <button mat-icon-button matTooltip="Settings" [routerLink]="['/user/vectors', vector | soul, 'permissions']">
+      <button
+        mat-icon-button
+        matTooltip="Settings"
+        [routerLink]="['/user/vectors', vector | soul, 'permissions']"
+      >
         <mat-icon>settings</mat-icon>
       </button>
       <button mat-icon-button matTooltip="Download" (click)="download(vector)">
