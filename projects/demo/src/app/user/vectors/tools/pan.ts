@@ -18,6 +18,7 @@ export class PanTool extends VectorTool {
       this.lastDelta = actualDelta;
     });
   filterEvent(event: any) {
-    return isMouse(event) || isTouch(event);
+    return true;
+    // isMouse(event) || isTouch(event);
   }
 }
