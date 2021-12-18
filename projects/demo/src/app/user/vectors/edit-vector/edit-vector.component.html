@@ -104,7 +104,7 @@
       fxLayout="row"
     >
       <span>
-        {{ (vector$ | async).title }} -
+        {{ (vector$ | async)?.title }} -
         <ng-container *ngFor="let owner of owner$ | async | keyvalue">
           @{{ owner.key | alias | async }}
         </ng-container>
