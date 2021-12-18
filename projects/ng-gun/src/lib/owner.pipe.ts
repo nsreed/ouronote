@@ -32,7 +32,6 @@ export class OwnerPipe extends AsyncPipe implements PipeTransform {
       }),
       shareReplay(1)
     );
-    ownerAlias$.subscribe(console.log);
     return ownerAlias$;
   }
 }
