@@ -1,0 +1,18 @@
+[
+  {
+    "name": "The Noun Project",
+    "url": "https://thenounproject.com",
+    "licenseURL": "https://creativecommons.org/licenses/by/3.0/",
+    "meta": "The Noun Project lists Creative Commons Attribution 3.0 Unported (CC BY 3.0) as the attribution based licence in https://thenounproject.com/legal/ Under section 3 A \"Icons\" for those provided via their service when presented as free with attribution.",
+    "resources": [
+      {
+        "license": "CC BY 3.0",
+        "licenseURL": "https://creativecommons.org/licenses/by/3.0/",
+        "adapted": true,
+        "file": "/assets/thenounproject/noun-lasso-1471841.svg",
+        "attribution": "Lasso by Éléonore Sabaté from NounProject.com",
+        "modifications": "removed embedded signature line, zoomed in, increased stroke width"
+      }
+    ]
+  }
+]

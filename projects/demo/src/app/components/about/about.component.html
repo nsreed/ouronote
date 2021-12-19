@@ -1,31 +1,50 @@
 <div fxLayout="column">
-  <h1>Ouronote</h1>
+  <h1>ouronote</h1>
   <blockquote>version {{ version.version }}</blockquote>
   <p>
-    Ouronote is a free, open-source, peer-to-peer real-time whiteboard
+    ouronote is a free, open-source, peer-to-peer real-time whiteboard
     application.
   </p>
-  <h2>Support Me:</h2>
+  <h2>Support Me</h2>
   <a mat-flat-button target="_blank" href="https://www.patreon.com/nsreed"
-    >patreon</a
+    ><i class="fab fa-patreon"></i> patreon</a
   >
   <a
     mat-flat-button
     target="_blank"
     href="https://www.paypal.com/paypalme/praetorlabs"
-    >paypal</a
+    ><i class="fab fa-paypal"></i> paypal</a
   >
-  <h2>Contribute to Ouronote:</h2>
+  <h2>ouronote on github</h2>
   <a
     mat-flat-button
     target="_blank"
     href="https://www.github.com/nsreed/ouronote"
-    >github</a
+    ><i class="fab fa-github"></i> github</a
   >
   <a
     mat-flat-button
     target="_blank"
     href="https://www.github.com/nsreed/ouronote/issues"
-    >issues</a
+    ><i class="fab fa-github"></i> issues</a
   >
+  <h2>Attributions</h2>
+  <div *ngFor="let source of attributions">
+    <h3>{{ source.name }}:</h3>
+    <blockquote>{{ source.meta }}</blockquote>
+    <div>
+      <ng-container *ngFor="let resource of source.resources">
+        <a href="{{ resource.file }}" target="_blank">{{
+          resource.attribution
+        }}</a>
+        &mdash;
+        <a
+          href="{{ resource.licenseURL || source.licenseURL }}"
+          target="_blank"
+          >{{ resource.license }}</a
+        >
+        &mdash; ({{ resource.modifications }})
+      </ng-container>
+    </div>
+  </div>
 </div>

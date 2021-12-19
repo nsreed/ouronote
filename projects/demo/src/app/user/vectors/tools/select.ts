@@ -66,6 +66,7 @@ export class SelectTool extends VectorTool {
 }
 export class LassoSelectTool extends SelectTool {
   name = 'lasso select';
+  icon = 'magic';
   path!: paper.Path;
   sdSub = this.selectDown.subscribe((e) => {});
   sdrSub = this.selectDrag.subscribe((e) => {
@@ -89,8 +90,28 @@ export class LassoSelectTool extends SelectTool {
     // TODO hitTest appears to be able to honor fill, but requires a point, not an item
     if (this.path) {
       const intersected = this.scope.project.getItems({
-        match: (item: paper.Item) =>
-          item.className !== 'Layer' && this.path?.intersects(item),
+        match: (item: paper.Item) => {
+          if (item.className === 'Layer') {
+            return false;
+          }
+
+          if (!item.isInside(this.path?.bounds)) {
+            return false;
+          }
+
+          let segmentMatch = false;
+          if (item.className === 'Path') {
+            const iPath = item as paper.Path;
+            const segmentPoints = iPath.segments.map((s) => s.point);
+            segmentPoints.forEach((p) => {
+              if (this.path.contains(p)) {
+                segmentMatch = true;
+              }
+            });
+          }
+
+          return segmentMatch || this.path?.intersects(item);
+        },
       });
       intersected.forEach((i) => (i.selected = true));
 

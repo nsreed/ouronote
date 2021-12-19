@@ -43,7 +43,13 @@
     </button>
     <button mat-button (click)="mode = 'login'">Cancel</button>
   </ng-template>
-  <a mat-icon-button routerLink="/settings">
-    <mat-icon>settings</mat-icon>
-  </a>
+  <div>
+    <a mat-icon-button routerLink="/settings">
+      <mat-icon>settings</mat-icon>
+    </a>
+    <a mat-icon-button (click)="about()">
+      <mat-icon>info</mat-icon>
+    </a>
+  </div>
+  <!-- <button mat-flat-button (click)="about()">About</button> -->
 </form>
