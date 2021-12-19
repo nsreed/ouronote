@@ -83,7 +83,10 @@ export class LassoSelectTool extends SelectTool {
       this.path.strokeScaling = true;
       this.path.strokeColor = new paper.Color(0, 0, 1) as any;
       (this.scope.settings as any).insertItems = prev;
-      this.project.activeLayer.insertChild(0, this.path);
+      this.project.activeLayer.insertChild(
+        this.project.activeLayer.children.length,
+        this.path
+      );
     }
     this.path.add(e.point);
   });
