@@ -139,11 +139,16 @@ export class GunChain<
     return this.allCertificates$.pipe(pluck(this.keyInRecord));
   }
 
+  private _userCertificate$!: Observable<any>;
   get userCertificate$(): Observable<any> {
-    return this.pathCertificates$.pipe(
-      tap((certs) => console.log('looking for user in ', certs)),
-      pluck(this.userPub)
-    );
+    if (!this._userCertificate$) {
+      this._userCertificate$ = this.pathCertificates$.pipe(
+        tap((certs) => console.log('looking for user in ', certs)),
+        pluck(this.userPub),
+        shareReplay(1)
+      );
+    }
+    return this._userCertificate$;
   }
 
   private _gun!: IGunChainReference<DataType, ReferenceKey, IsTop> &

@@ -65,7 +65,7 @@ export class CreateVectorComponent implements OnInit {
     const vg = {
       title: formValue.title,
     };
-    this.vectorPair$.subscribe(async (vectorPair) => {
+    this.vectorPair$.subscribe(async (vectorPair: any) => {
       const vector = await this.vectorService.initializeCertificates(
         vg,
         vectorPair
@@ -101,6 +101,7 @@ export class CreateVectorComponent implements OnInit {
         this.vectorService.vectors.set(v as never);
         this.dialog.closeAll();
         pairRestore$.next(authPair);
+        this.router.navigateByUrl(`/user/vectors/~${vectorPair.pub}/edit`);
       });
     });
   }
