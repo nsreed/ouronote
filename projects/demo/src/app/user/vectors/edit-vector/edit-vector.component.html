@@ -114,25 +114,36 @@
           @{{ owner.key | alias | async }}
         </ng-container>
       </span>
-      <a
+      <ng-container
+        *ngIf="vectorNode && !((layersNode$ | async).userCertificate$ | async)"
+      >
+        <button
+          mat-flat-button
+          (click)="requestAccess()"
+          *ngIf="!(myRequest$ | async); else PendingApproval"
+        >
+          <mat-icon>announcement</mat-icon>
+          Request Access
+        </button>
+        <ng-template #PendingApproval>
+          <button mat-flat-button disabled>
+            <mat-icon>announcement</mat-icon>
+            Pending Approval
+          </button></ng-template
+        >
+      </ng-container>
+      <button
         mat-icon-button
         (click)="copyLink()"
         matTooltip="Copy sharing link to clipboard"
       >
         <mat-icon>share</mat-icon>
-      </a>
+      </button>
       <a mat-icon-button [matMenuTriggerFor]="menuMore" color="primary">
         <mat-icon>more_horiz</mat-icon>
       </a>
+      <div fxFlex></div>
       <mat-menu #menuMore>
-        <button
-          mat-menu-item
-          *ngIf="vectorNode && !(layersNode$ | async).canEdit"
-          (click)="requestAccess()"
-        >
-          <mat-icon>announcement</mat-icon>
-          Request Access
-        </button>
         <button mat-menu-item (click)="favorite()">
           <mat-icon>favorite</mat-icon>
           Favorite

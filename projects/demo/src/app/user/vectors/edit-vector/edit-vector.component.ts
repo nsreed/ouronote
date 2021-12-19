@@ -7,7 +7,14 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as paper from 'paper';
-import { take, distinct, map, shareReplay, switchMap } from 'rxjs/operators';
+import {
+  take,
+  distinct,
+  map,
+  shareReplay,
+  switchMap,
+  filter,
+} from 'rxjs/operators';
 import { GunChain } from '../../../../../../ng-gun/src/lib/classes/GunChain';
 import { VectorGraph } from '../../VectorGraph';
 import { ProjectPair } from '../classes/ProjectPair';
@@ -49,9 +56,16 @@ export class EditVectorComponent
     title: [null, Validators.required],
   });
   requests$ = this.vectorNode$.pipe(
+    // TODO make sure this open() call isn't making the program die
     switchMap((chain) => chain.get('inviteRequests').open()),
     map((requests: any) => Object.keys(requests).filter((k) => requests[k])),
     shareReplay(1)
+  );
+  myRequest$ = this.requests$.pipe(
+    map((pks) => {
+      return pks.includes(this.userService.user.is.pub);
+      // return pks === this.userService.user.is.pub;
+    })
   );
   requestCount$ = this.requests$.pipe(map((r) => r.length));
 

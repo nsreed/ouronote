@@ -1,25 +1,15 @@
-import { Inject, Injectable, NgZone, EventEmitter } from '@angular/core';
-import { UserService } from '../user.service';
-import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
-import { SEA } from 'gun';
-import { NgSeaService } from '../../../../../ng-gun/src/lib/ng-sea.service';
-import { VectorGraph } from '../VectorGraph';
-import { from } from 'rxjs';
-import {
-  mergeAll,
-  takeLast,
-  map,
-  concatMap,
-  take,
-  mapTo,
-} from 'rxjs/operators';
-import { LogService } from '../../../../../log/src/lib/log.service';
-import { unpack, getDeep } from './functions/packaging';
-import * as paper from 'paper';
-import { PaperPair } from './classes/PaperPair';
-import { ProjectPair } from './classes/ProjectPair';
-import { GunChain } from '../../../../../ng-gun/src/lib/classes/GunChain';
+import { EventEmitter, Inject, Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
+import { SEA } from 'gun';
+import * as paper from 'paper';
+import { mapTo, take } from 'rxjs/operators';
+import { LogService } from '../../../../../log/src/lib/log.service';
+import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
+import { NgSeaService } from '../../../../../ng-gun/src/lib/ng-sea.service';
+import { UserService } from '../user.service';
+import { VectorGraph } from '../VectorGraph';
+import { ProjectPair } from './classes/ProjectPair';
+import { getDeep } from './functions/packaging';
 
 @Injectable({
   providedIn: 'root',
@@ -105,7 +95,12 @@ export class VectorService {
           this.logger
         );
         const deep = getDeep(p);
-        vectorNode.get('layers' as never).put(deep.layers as never);
+        const layersNode = vectorNode.get('layers' as never);
+        console.log(layersNode.certificate);
+        layersNode.certificate$.subscribe(() => {
+          this.logger.log('loaded certificate for layers');
+          layersNode.put(deep.layers as never);
+        });
       });
     });
   }
