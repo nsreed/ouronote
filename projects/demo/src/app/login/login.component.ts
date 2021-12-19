@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { NgGunService } from '../../../../ng-gun/src/lib/ng-gun.service';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { AboutComponent } from '../components/about/about.component';
 
 @Component({
   templateUrl: './login.component.html',
@@ -34,7 +36,8 @@ export class LoginComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private ngGun: NgGunService,
-    router: Router
+    router: Router,
+    private dialog: MatDialog
   ) {
     ngGun.auth().auth$.subscribe((data) => {
       // console.log('auth data', data);
@@ -81,5 +84,9 @@ export class LoginComponent implements OnInit {
           this.error = undefined;
         }
       });
+  }
+
+  about() {
+    this.dialog.open(AboutComponent);
   }
 }
