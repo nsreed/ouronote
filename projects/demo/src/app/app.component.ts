@@ -17,6 +17,8 @@ import { User } from './user/model';
 import { AboutComponent } from './components/about/about.component';
 import { GunRadImporterService } from './services/gun-rad-importer.service';
 import { GunWebrtcImporterService } from './services/gun-webrtc-importer.service';
+import { MatIconRegistry } from '@angular/material/icon';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
@@ -37,8 +39,16 @@ export class AppComponent {
     @Optional()
     private radImporter: GunRadImporterService,
     @Optional()
-    private webRtcImporter: GunWebrtcImporterService
+    private webRtcImporter: GunWebrtcImporterService,
+    private matIconRegistry: MatIconRegistry,
+    private domSanitizer: DomSanitizer
   ) {
+    this.matIconRegistry.addSvgIcon(
+      'lasso',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        '/assets/thenounproject/noun-lasso-1471841.svg'
+      )
+    );
     // logger.out$.subscribe(console.log);
     logger.log('app started');
     logger.log('Gun Imports', {

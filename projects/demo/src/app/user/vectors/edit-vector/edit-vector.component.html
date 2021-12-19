@@ -26,7 +26,12 @@
                 }"
                 class="tool"
               >
-                <mat-icon class="{{ 'fa fa-' + tool.icon }}"></mat-icon>
+                <ng-container *ngIf="tool.matIcon; else FaIcon">
+                  <mat-icon [svgIcon]="tool.matIcon"></mat-icon>
+                </ng-container>
+                <ng-template #FaIcon>
+                  <mat-icon class="{{ 'fa fa-' + tool.icon }}"></mat-icon>
+                </ng-template>
               </button>
             </ng-container>
           </ng-container>
