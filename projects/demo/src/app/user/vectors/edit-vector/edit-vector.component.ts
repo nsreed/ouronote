@@ -218,6 +218,7 @@ export class EditVectorComponent
       .get('inviteRequests')
       .get(this.userPub)
       .put(true as never);
+    this.favorite();
   }
 
   favorite() {
