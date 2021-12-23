@@ -92,13 +92,14 @@ export class ItemPair extends PaperPair {
   );
   afterAddChild$ = after$(this.item, 'addChild').pipe(
     map(returned),
-    filter(
-      (item) =>
-        !this.isInsertingFromGraph && item !== null && item !== undefined
-    ),
-    switchMap((item) =>
-      this.isImportingJSON ? this.afterImportJSON$.pipe(mapTo(item)) : of(item)
-    )
+    filter((item) => {
+      return !this.isInsertingFromGraph && item !== null && item !== undefined;
+    }),
+    switchMap((item) => {
+      return this.isImportingJSON
+        ? this.afterImportJSON$.pipe(mapTo(item))
+        : of(item);
+    })
   );
 
   localChange$ = from((MUTATIONS[this.item.className] || []) as string[]).pipe(
@@ -264,6 +265,10 @@ export class ItemPair extends PaperPair {
         this.logger
       );
       childObj.pair = childPair;
+    } else {
+      // What to do when the added child already has an associated pair
+      const chP = childObj.pair as ItemPair;
+      chP.chain.put(chP.getShallow());
     }
   }
 

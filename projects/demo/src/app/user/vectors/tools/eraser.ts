@@ -7,6 +7,8 @@ export class EraserTool extends VectorTool {
   icon = 'eraser';
   allIntersects: paper.Item[] = [];
 
+  downSub = this.down.subscribe((e) => this.activateDrawLayer());
+
   dragSub = this.drag.subscribe((e: paper.ToolEvent) => {
     // console.log('eraser drag');
     const prev = (this.scope.settings as any).insertItems;
@@ -36,7 +38,9 @@ export class EraserTool extends VectorTool {
         undoFn: () => {
           console.log('should re-add', intersects);
           // TODO add these to their original layer
-          intersects.forEach((i) => i.addTo(this.project.activeLayer));
+          intersects.forEach((i) => {
+            this.scope.project.activeLayer.addChild(i);
+          });
         },
       });
     }
