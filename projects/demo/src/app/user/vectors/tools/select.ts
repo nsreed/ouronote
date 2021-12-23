@@ -100,19 +100,29 @@ export class LassoSelectTool extends SelectTool {
             return false;
           }
 
-          let segmentMatch = false;
+          let hasMatch = false;
+          const matchAll = false; // TODO link this to tool setting for selection mode
           if (item.className === 'Path') {
             const iPath = item as paper.Path;
             const segmentPoints = iPath.segments.map((s) => s.point);
             // TODO add mode for matching ALL points, instead of any
-            segmentPoints.forEach((p) => {
-              if (this.path.contains(p)) {
-                segmentMatch = true;
-              }
-            });
+            if (matchAll) {
+              hasMatch = true;
+              segmentPoints.forEach((p) => {
+                if (!this.path.contains(p)) {
+                  hasMatch = false;
+                }
+              });
+            } else {
+              segmentPoints.forEach((p) => {
+                if (this.path.contains(p)) {
+                  hasMatch = true;
+                }
+              });
+            }
           }
 
-          return segmentMatch || this.path?.intersects(item);
+          return hasMatch || (!matchAll && this.path?.intersects(item));
         },
       });
       intersected.forEach((i) => (i.selected = true));
