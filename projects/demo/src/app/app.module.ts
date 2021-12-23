@@ -28,6 +28,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSliderModule } from '@angular/material/slider';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -98,6 +99,7 @@ const WEBRTC_ENABLE = WEBRTC_LOCAL === null ? true : !!JSON.parse(WEBRTC_LOCAL);
     MatRadioModule,
     MatSidenavModule,
     MatSliderModule,
+    MatSlideToggleModule,
     MatSnackBarModule,
     MatStepperModule,
     MatTabsModule,

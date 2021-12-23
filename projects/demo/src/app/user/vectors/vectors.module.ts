@@ -46,6 +46,8 @@ import { RouteVectorDirective } from './route-vector.directive';
 import { VectorsRoutingModule } from './vectors-routing.module';
 import { VectorsComponent } from './vectors.component';
 import { ViewVectorComponent } from './view-vector/view-vector.component';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { SelectionIntersectModeFormComponent } from './components/selection-intersect-mode-form/selection-intersect-mode-form.component';
 
 @NgModule({
   declarations: [
@@ -65,6 +67,7 @@ import { ViewVectorComponent } from './view-vector/view-vector.component';
     VectorExportDialogComponent,
     InviteRequestsComponent,
     StrokeWidthFormComponent,
+    SelectionIntersectModeFormComponent,
   ],
   imports: [
     CertificatesModule,
@@ -91,6 +94,7 @@ import { ViewVectorComponent } from './view-vector/view-vector.component';
     MatListModule,
     MatMenuModule,
     MatSliderModule,
+    MatSlideToggleModule,
     MatStepperModule,
     MatTabsModule,
     MatToolbarModule,

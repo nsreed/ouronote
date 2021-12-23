@@ -11,7 +11,7 @@
       <mat-expansion-panel-header>Tools</mat-expansion-panel-header>
       <ng-template matExpansionPanelContent>
         <div gdColumns="auto auto" id="ToolsContainer">
-          <button mat-icon-button (click)="onUndoClick()">
+          <button mat-button (click)="onUndoClick()">
             <mat-icon>undo</mat-icon>
           </button>
           <ng-container *ngFor="let tool of paper.scope.tools">
@@ -48,6 +48,9 @@
           [style]="paper.scope.tool.style"
         ></app-stroke-width-form>
         <p>Size</p>
+        <app-selection-intersect-mode-form
+          [tool]="paper.scope.tool"
+        ></app-selection-intersect-mode-form>
       </ng-template>
     </mat-expansion-panel>
 

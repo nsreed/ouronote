@@ -69,6 +69,7 @@ export class LassoSelectTool extends SelectTool {
   // icon = 'magic';
   matIcon = 'lasso';
   path!: paper.Path;
+  inclusiveMatch = false;
   sdSub = this.selectDown.subscribe((e) => {});
   sdrSub = this.selectDrag.subscribe((e) => {
     if (!this.path) {
@@ -101,12 +102,11 @@ export class LassoSelectTool extends SelectTool {
           }
 
           let hasMatch = false;
-          const matchAll = false; // TODO link this to tool setting for selection mode
           if (item.className === 'Path') {
             const iPath = item as paper.Path;
             const segmentPoints = iPath.segments.map((s) => s.point);
             // TODO add mode for matching ALL points, instead of any
-            if (matchAll) {
+            if (!this.inclusiveMatch) {
               hasMatch = true;
               segmentPoints.forEach((p) => {
                 if (!this.path.contains(p)) {
@@ -122,7 +122,9 @@ export class LassoSelectTool extends SelectTool {
             }
           }
 
-          return hasMatch || (!matchAll && this.path?.intersects(item));
+          return (
+            hasMatch || (this.inclusiveMatch && this.path?.intersects(item))
+          );
         },
       });
       intersected.forEach((i) => (i.selected = true));
