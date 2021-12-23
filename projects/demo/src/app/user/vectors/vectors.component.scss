@@ -8,6 +8,13 @@ mat-card-title a {
   font-weight: inherit;
   text-decoration: inherit;
 }
+:host {
+  max-height: 100vh;
+  #VectorList {
+    height: 100%;
+    overflow-y: auto;
+  }
+}
 
 // .odd {
 //   & > * {
