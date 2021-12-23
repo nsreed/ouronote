@@ -257,6 +257,7 @@ export class GunChain<
     protected back: GunChain<any>
   ) {
     if (!gun) {
+      this.logger.warn('Constructing gun with no options');
       this.gun = new Gun() as any;
     } else {
       this.gun = gun;
