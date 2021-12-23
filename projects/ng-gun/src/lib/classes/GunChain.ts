@@ -104,7 +104,11 @@ export class GunChain<
     return this.chainArray[firstPub];
   }
   get pathFromRecord() {
-    return [...this.path].reverse();
+    const p = [...this.path];
+    p.reverse();
+    const recordIndex = p.findIndex((v) => v === this.recordPub);
+    const fromRecord = p.slice(recordIndex);
+    return fromRecord;
   }
   get keyInRecord() {
     return this.pathFromRecord[1];
