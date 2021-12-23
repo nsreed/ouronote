@@ -5,6 +5,7 @@ export class EraserTool extends VectorTool {
   path?: paper.Path | null;
   name = 'eraser';
   icon = 'eraser';
+  allIntersects: paper.Item[] = [];
 
   dragSub = this.drag.subscribe((e: paper.ToolEvent) => {
     // console.log('eraser drag');
@@ -20,9 +21,25 @@ export class EraserTool extends VectorTool {
         i.intersects(this.path as any),
     });
     // TODO skip removing items that were added since the beginning of this drag
+
+    this.allIntersects = this.allIntersects.concat(intersects);
     intersects.forEach((i) => i.remove());
     (this.scope.settings as any).insertItems = prev;
   });
 
-  upSub = this.up.subscribe((e) => (this.path = null));
+  upSub = this.up.subscribe((e) => {
+    this.path = null;
+    this.scope.actions = this.scope.actions || [];
+    const intersects = this.allIntersects;
+    if (intersects.length > 0) {
+      this.scope.actions.push({
+        undoFn: () => {
+          console.log('should re-add', intersects);
+          // TODO add these to their original layer
+          intersects.forEach((i) => i.addTo(this.project.activeLayer));
+        },
+      });
+    }
+    this.allIntersects = [];
+  });
 }
