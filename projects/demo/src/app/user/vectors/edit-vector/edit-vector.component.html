@@ -11,6 +11,9 @@
       <mat-expansion-panel-header>Tools</mat-expansion-panel-header>
       <ng-template matExpansionPanelContent>
         <div gdColumns="auto auto" id="ToolsContainer">
+          <button mat-icon-button (click)="onUndoClick()">
+            <mat-icon>undo</mat-icon>
+          </button>
           <ng-container *ngFor="let tool of paper.scope.tools">
             <ng-container *ngIf="tool.enabled$ | async">
               <button
@@ -138,9 +141,6 @@
         matTooltip="Copy sharing link to clipboard"
       >
         <mat-icon>share</mat-icon>
-      </button>
-      <button mat-icon-button (click)="onUndoClick()">
-        <mat-icon>undo</mat-icon>
       </button>
       <a mat-icon-button [matMenuTriggerFor]="menuMore" color="primary">
         <mat-icon>more_horiz</mat-icon>
