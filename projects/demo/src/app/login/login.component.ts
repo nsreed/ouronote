@@ -4,6 +4,7 @@ import { NgGunService } from '../../../../ng-gun/src/lib/ng-gun.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { AboutComponent } from '../components/about/about.component';
+import host from '@jsdevtools/host-environment';
 
 @Component({
   templateUrl: './login.component.html',
@@ -11,6 +12,8 @@ import { AboutComponent } from '../components/about/about.component';
 })
 export class LoginComponent implements OnInit {
   error: any;
+
+  unsupportedBrowser = !(host.browser as any).chrome;
 
   mode: 'create' | 'login' = 'login';
 
