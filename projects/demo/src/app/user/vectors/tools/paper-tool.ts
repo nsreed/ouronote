@@ -14,6 +14,7 @@ import { LogService } from '../../../../../../log/src/lib/log.service';
 import { EventEmitter } from '@angular/core';
 import { PenEvent } from '../classes/PenEvent';
 import { propertyChange$ } from '../functions/paper-chain';
+import { UndoStack } from './undo-stack';
 
 export class VectorTool extends Tool {
   private isPointerDown = false;
@@ -83,7 +84,7 @@ export class VectorTool extends Tool {
     return this.scope.project as paper.Project;
   }
 
-  constructor(public readonly scope: paper.PaperScope) {
+  constructor(public readonly scope: paper.PaperScope & UndoStack) {
     super();
     console.log(this.properties);
 

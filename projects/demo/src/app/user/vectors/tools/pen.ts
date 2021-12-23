@@ -48,6 +48,15 @@ export class PenTool extends VectorTool {
       if (this.path.length === 0) {
         this.path.remove();
         return;
+      } else {
+        const p = this.path;
+        this.scope.actions = this.scope.actions || [];
+        this.scope.actions.push({
+          undoFn: () => {
+            console.log('should remove', p);
+            p.remove();
+          },
+        });
       }
       // this.path.style.strokeWidth = this.style.strokeWidth;
       // this.path.strokeColor = this.project.currentStyle.strokeColor;
@@ -57,6 +66,7 @@ export class PenTool extends VectorTool {
       // }
       (this.path as any).pair.doSave();
       (this.path as any).pair.editing = false;
+      // TODO add this path to the undo stack
       this.path = null as any;
     }
   });

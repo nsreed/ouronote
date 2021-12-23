@@ -224,4 +224,13 @@ export class EditVectorComponent
   favorite() {
     this.userService.user.get('vectors').set(this.vectorNode.gun as never);
   }
+
+  onUndoClick() {
+    this.logger.log('would undo');
+    console.log(this.paperDirective.scope);
+    if (this.paperDirective.scope?.actions) {
+      const undoAction = this.paperDirective.scope.actions.pop();
+      undoAction?.undoFn();
+    }
+  }
 }

@@ -15,6 +15,7 @@ import { LogService } from '../../../../../log/src/lib/log.service';
 import { CAPABILITIES } from '../../system.service';
 import { PenEvent } from './classes/PenEvent';
 import { PanTool } from './tools/pan';
+import { UndoStack } from './tools/undo-stack';
 
 @Directive({
   selector: '[appPaper]',
@@ -50,7 +51,7 @@ export class PaperDirective implements OnInit {
     switchMap((project) => fromEvent(project.view, 'resize'))
   );
 
-  scope = new paper.PaperScope();
+  scope: paper.PaperScope & UndoStack = new paper.PaperScope() as any;
 
   public pan = new PanTool(this.scope as any);
 
