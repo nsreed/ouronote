@@ -1,4 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  ViewChildren,
+  QueryList,
+} from '@angular/core';
 import { ChainDirective } from '../../../../../../../ng-gun/src/lib/chain.directive';
 import { NgGunService } from '../../../../../../../ng-gun/src/lib/ng-gun.service';
 import { UserService } from '../../../user.service';
@@ -39,7 +46,21 @@ export class VectorCardComponent implements OnInit {
     })
   );
 
-  editing = false;
+  private _editing = false;
+  public get editing() {
+    return this._editing;
+  }
+  public set editing(value) {
+    this._editing = value;
+    if (value) {
+      setTimeout(() => {
+        (this.titleInputRefs.first?.nativeElement as HTMLInputElement).focus();
+      }, 10);
+    }
+  }
+
+  @ViewChildren('TitleInput')
+  titleInputRefs!: QueryList<any>;
 
   private _vector!: VectorGraph;
   public get vector(): VectorGraph {

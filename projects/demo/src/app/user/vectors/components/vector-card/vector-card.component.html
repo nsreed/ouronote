@@ -2,7 +2,7 @@
   <mat-card-title>
     <ng-container *ngIf="!editing; else Editing">
       <a
-        fxFlex="1 0 auto"
+        fxFlex="1 1 auto"
         [routerLink]="['/user/vectors', vector | soul, 'edit']"
         >{{ vector.title }}</a
       >
@@ -17,8 +17,9 @@
     <ng-template #Editing>
       <!-- using (keydown) because it can capture focus-changing key events (such as escape)-->
       <input
+        #TitleInput
         [formControl]="titleCtl"
-        fxFlex="1 0 auto"
+        fxFlex="1 1 auto"
         class="mat-card-title"
         id="TitleInput"
         (keydown)="onTitleKey($event)"

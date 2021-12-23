@@ -9,5 +9,7 @@ mat-card-title a {
   margin-top: 0;
   padding-top: 0;
   border: none;
+  min-width: unset;
+  width: 100%;
   outline: solid 1px black;
 }
