@@ -48,6 +48,7 @@ import { VectorsComponent } from './vectors.component';
 import { ViewVectorComponent } from './view-vector/view-vector.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { SelectionIntersectModeFormComponent } from './components/selection-intersect-mode-form/selection-intersect-mode-form.component';
+import { VectorCardComponent } from './components/vector-card/vector-card.component';
 
 @NgModule({
   declarations: [
@@ -68,6 +69,7 @@ import { SelectionIntersectModeFormComponent } from './components/selection-inte
     InviteRequestsComponent,
     StrokeWidthFormComponent,
     SelectionIntersectModeFormComponent,
+    VectorCardComponent,
   ],
   imports: [
     CertificatesModule,

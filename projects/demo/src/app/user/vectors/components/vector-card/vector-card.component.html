@@ -1,0 +1,63 @@
+<mat-card *ngIf="vector">
+  <mat-card-title>
+    <ng-container *ngIf="!editing; else Editing">
+      <a
+        fxFlex="1 0 auto"
+        [routerLink]="['/user/vectors', vector | soul, 'edit']"
+        >{{ vector.title }}</a
+      >
+      <button
+        mat-icon-button
+        (click)="editing = true"
+        [disabled]="!(canEditTitle$ | async)"
+      >
+        <mat-icon>edit</mat-icon>
+      </button></ng-container
+    >
+    <ng-template #Editing>
+      <!-- using (keydown) because it can capture focus-changing key events (such as escape)-->
+      <input
+        [formControl]="titleCtl"
+        fxFlex="1 0 auto"
+        class="mat-card-title"
+        id="TitleInput"
+        (keydown)="onTitleKey($event)"
+      />
+      <button
+        mat-icon-button
+        [disabled]="!titleCtl.valid"
+        (click)="confirmEdit()"
+      >
+        <mat-icon>check</mat-icon>
+      </button>
+      <button mat-icon-button (click)="cancelEdit()">
+        <mat-icon>cancel</mat-icon>
+      </button>
+    </ng-template>
+  </mat-card-title>
+  <mat-card-subtitle
+    >@{{ vector | owner | async }} &mdash;
+    {{ vector | updated | date }}</mat-card-subtitle
+  >
+  <mat-card-actions>
+    <button
+      mat-raised-button
+      [routerLink]="['/user/vectors', vector | soul, 'edit']"
+    >
+      open
+    </button>
+    <button mat-icon-button (click)="remove()">
+      <mat-icon>delete</mat-icon>
+    </button>
+    <button
+      *ngIf="false"
+      mat-icon-button
+      [routerLink]="['/user/vectors', vector | soul, 'permissions']"
+    >
+      <mat-icon>settings</mat-icon>
+    </button>
+    <button mat-icon-button (click)="download()">
+      <mat-icon>file_download</mat-icon>
+    </button>
+  </mat-card-actions>
+</mat-card>

@@ -43,7 +43,7 @@
   </tr>
 </table> -->
 <!-- RESPONSIVE DESIGN -->
-<di
+<div
   gdColumns.lt-sm="auto"
   gdColumns.lt-md="auto auto"
   gdColumns.md="auto auto auto"
@@ -51,44 +51,13 @@
   gdColumns.gt-lg="auto auto auto auto auto"
   gdGap="5px"
 >
-  <mat-card
-    class="example-card"
+  <ng-container
+    [gunChain]="vector"
     *ngFor="let vector of vectors | async; let i = index"
-    (click)="onClick($event)"
   >
-    <mat-card-title
-      ><a [routerLink]="['/user/vectors', vector | soul, 'edit']">{{
-        vector.title
-      }}</a></mat-card-title
-    >
-    <mat-card-subtitle
-      >@{{ vector | owner | async }} &mdash;
-      {{ vector | updated | date }}</mat-card-subtitle
-    >
-    <!-- <mat-card-content> {{ vector | soul }} </mat-card-content> -->
-    <mat-card-actions>
-      <button
-        mat-raised-button
-        [routerLink]="['/user/vectors', vector | soul, 'edit']"
-      >
-        open
-      </button>
-      <button mat-icon-button (click)="remove(vector)">
-        <mat-icon>delete</mat-icon>
-      </button>
-      <button
-        *ngIf="false"
-        mat-icon-button
-        [routerLink]="['/user/vectors', vector | soul, 'permissions']"
-      >
-        <mat-icon>settings</mat-icon>
-      </button>
-      <button mat-icon-button (click)="download(vector)">
-        <mat-icon>file_download</mat-icon>
-      </button>
-    </mat-card-actions>
-  </mat-card>
-</di>
+    <app-vector-card></app-vector-card
+  ></ng-container>
+</div>
 
 <div
   *ngIf="false"
