@@ -59,6 +59,7 @@ export class PaperPair {
   }
 
   getChild(jsonOrKey: any) {
+    // TODO undo + cache invalidation is the hardest problem
     if (!this.childCache[jsonOrKey]) {
       const child = this.ctx.children?.find(
         (i: paper.Item) => i.data.soul === jsonOrKey

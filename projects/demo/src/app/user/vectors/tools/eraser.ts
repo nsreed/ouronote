@@ -37,6 +37,7 @@ export class EraserTool extends VectorTool {
       this.scope.actions.push({
         undoFn: () => {
           console.log('should re-add', intersects);
+          this.activateDrawLayer();
           // TODO add these to their original layer
           intersects.forEach((i) => {
             this.scope.project.activeLayer.addChild(i);

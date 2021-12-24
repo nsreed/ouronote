@@ -60,9 +60,19 @@ export class ItemPair extends PaperPair {
   // FIXME find a better way to buffer by time window -
   // bufferTime() continuously emits, causing expensive filtering for thousands of objects!
   childrenBuffer$ = this.children$.pipe(
-    filter((childVK) => !this.childSouls.has(childVK[1])),
+    filter((childVK) => {
+      return (
+        childVK[0] === null ||
+        childVK[0] === undefined ||
+        !this.childSouls.has(childVK[1])
+      );
+    }),
     tap((childVK) => {
-      this.childSouls.add(childVK[1]);
+      if (childVK[0] === null || childVK[0] === undefined) {
+        this.childSouls.delete(childVK[1]);
+      } else {
+        this.childSouls.add(childVK[1]);
+      }
     }),
     bufferTime(SAVE_DEBOUNCE),
     filter((children) => children.length > 0)
@@ -315,13 +325,27 @@ export class ItemPair extends PaperPair {
       if (child && !json) {
         // child was removed - this is handled by the child
         this.logger.verbose(`child ${key} was removed.`);
+        // this.childSouls.delete(key);
       } else if (json && !child) {
         // child was added
+        this.logger.verbose(`child ${key} was added.`);
         const newChild = this.constructChild(json, key);
         if (newChild) {
           // TODO Performance: onLocalChild sets up **everything** on **every** child in this loop, can we suffice for deferred setups???
           this.onLocalChild(newChild);
           toInsert.push(newChild);
+        }
+      } else if (child) {
+        if (child.parent === null) {
+          // This happens for local followed by remote undo
+          this.logger.verbose(
+            `child ${key} already exists, but does not have a parent`,
+            {
+              child,
+              json,
+            }
+          );
+          this.item.addChild(child);
         }
       }
     });
