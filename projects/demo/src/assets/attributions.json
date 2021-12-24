@@ -19,7 +19,7 @@
     "name": "NPM Sourced Packages",
     "url": "https://www.npmjs.com/package/",
     "licenseURL": "",
-    "meta": "NPM ("Node Package Manager") is a package repository for quickly aquring useful packages from the node/javacript ecosystem. These packages are loaded via the package.json directives in the root of the github project.",
+    "meta": "NPM (\"Node Package Manager\") is a package repository for quickly aquring useful packages from the node/javacript ecosystem. These packages are loaded via the package.json directives in the root of the github project.",
     "resources": [
       
 {"attribution": "@angular-material-components/color-picker",	"license": "MIT License", "licenseURL": "https://opensource.org/licenses/MIT",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/h2qutc/angular-material-components",	},
