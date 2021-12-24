@@ -79,9 +79,11 @@ export class CreateVectorComponent implements OnInit {
       // FIXME this is bad, you should report this behavior to Mark
       const authPair = sessionStorage.getItem('pair');
       const pairRestore$ = new Subject();
-      pairRestore$
-        .pipe(delay(1000))
-        .subscribe((a: any) => sessionStorage.setItem('pair', a));
+      pairRestore$.pipe(delay(1000)).subscribe((a: any) => {
+        sessionStorage.setItem('pair', a);
+
+        this.router.navigateByUrl(`/user/vectors/~${vectorPair.pub}/edit`);
+      });
 
       // Create a detached gun instance for the vector itself
       const detachedGun = new NgGunService(
@@ -101,7 +103,6 @@ export class CreateVectorComponent implements OnInit {
         this.vectorService.vectors.set(v as never);
         this.dialog.closeAll();
         pairRestore$.next(authPair);
-        this.router.navigateByUrl(`/user/vectors/~${vectorPair.pub}/edit`);
       });
     });
   }
