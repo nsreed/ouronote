@@ -30,6 +30,10 @@ export class PenTool extends VectorTool {
     ? this.pointerUp
     : this.up;
   downSub = this.down.subscribe((e) => {
+    if (this.path) {
+      this.logger.warn('pre-existing path on pointer down!');
+      this.path = null as any;
+    }
     this.activateDrawLayer();
   });
   dragSub = this.drag.subscribe((e: any) => {
