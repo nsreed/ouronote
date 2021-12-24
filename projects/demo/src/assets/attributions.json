@@ -14,5 +14,43 @@
         "modifications": "removed embedded signature line, zoomed in, increased stroke width"
       }
     ]
+  },
+  {
+    "name": "NPM Sourced Packages",
+    "url": "https://www.npmjs.com/package/",
+    "licenseURL": "",
+    "meta": "NPM ("Node Package Manager") is a package repository for quickly aquring useful packages from the node/javacript ecosystem. These packages are loaded via the package.json directives in the root of the github project.",
+    "resources": [
+      
+{"attribution": "@angular-material-components/color-picker",	"license": "MIT License", "licenseURL": "https://opensource.org/licenses/MIT",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/h2qutc/angular-material-components",	},
+{"attribution": "@angular/animations",	"license": "MIT License", "licenseURL": "https://opensource.org/licenses/MIT",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/angular/angular",	},
+{"attribution": "@angular/cdk",	"license": "MIT License", "licenseURL": "https://opensource.org/licenses/MIT",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/angular/components",	},
+{"attribution": "@angular/common",	"license": "MIT License", "licenseURL": "https://opensource.org/licenses/MIT",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/angular/angular",	},
+{"attribution": "@angular/compiler",	"license": "MIT License", "licenseURL": "https://opensource.org/licenses/MIT",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/angular/angular",	},
+{"attribution": "@angular/core",	"license": "MIT License", "licenseURL": "https://opensource.org/licenses/MIT",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/angular/angular",	},
+{"attribution": "@angular/flex-layout",	"license": "MIT License", "licenseURL": "https://opensource.org/licenses/MIT",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/angular/flex-layout",	},
+{"attribution": "@angular/forms",	"license": "MIT License", "licenseURL": "https://opensource.org/licenses/MIT",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/angular/angular",	},
+{"attribution": "@angular/material",	"license": "MIT License", "licenseURL": "https://opensource.org/licenses/MIT",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/angular/components",	},
+{"attribution": "@angular/platform-browser",	"license": "MIT License", "licenseURL": "https://opensource.org/licenses/MIT",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/angular/angular",	},
+{"attribution": "@angular/platform-browser-dynamic",	"license": "MIT License", "licenseURL": "https://opensource.org/licenses/MIT",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/angular/angular",	},
+{"attribution": "@angular/router",	"license": "MIT License", "licenseURL": "https://opensource.org/licenses/MIT",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/angular/angular",	},
+{"attribution": "@fortawesome/fontawesome-svg-core",	"license": "MIT License ", "licenseURL": "https://opensource.org/licenses/MIT",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/FortAwesome/Font-Awesome",	},
+{"attribution": "@fortawesome/free-solid-svg-icons",	"license": "CC BY 4.0 License", "licenseURL": "https://creativecommons.org/licenses/by/4.0/",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/FortAwesome/Font-Awesome",	},
+{"attribution": "@jsdevtools/host-environment",	"license": "MIT License", "licenseURL": "https://opensource.org/licenses/MIT",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/JS-DevTools/host-environment",	},
+{"attribution": "@types/gun",,	"license": "MIT license", "licenseURL": "https://opensource.org/licenses/MIT",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/DefinitelyTyped/DefinitelyTyped",	},
+{"attribution": "aspect-ts",	"license": "MIT License", "licenseURL": "https://opensource.org/licenses/MIT",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/ben8p/aspect-ts",	},
+{"attribution": "express",	"license": "MIT License", "licenseURL": "https://opensource.org/licenses/MIT",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/expressjs/express",	},
+{"attribution": "file-saver",	"license": "MIT License", "licenseURL": "https://opensource.org/licenses/MIT",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/eligrey/FileSaver.js",	},
+{"attribution": "gun",	"license": "MIT License", "licenseURL": "https://opensource.org/licenses/MIT",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/amark/gun",	},
+{"attribution": "hammerjs",	"license": "MIT License", "licenseURL": "https://opensource.org/licenses/MIT",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/hammerjs/hammer.js",	},
+{"attribution": "ngx-clipboard",	"license": "MIT License", "licenseURL": "https://opensource.org/licenses/MIT",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/maxisam/ngx-clipboard",	},
+{"attribution": "nodemon",	"license": "MIT License", "licenseURL": "https://opensource.org/licenses/MIT",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/remy/nodemon",	},
+{"attribution": "paper",	"license": "MIT License", "licenseURL": "https://opensource.org/licenses/MIT",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/paperjs/paper.js",	},
+{"attribution": "rxjs",	"license": "Apache License 2.0", "licenseURL": "https://www.apache.org/licenses/LICENSE-2.0",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/reactivex/rxjs",	},
+{"attribution": "safe-stable-stringify",	"license": "MIT License", "licenseURL": "https://opensource.org/licenses/MIT",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/BridgeAR/safe-stable-stringify",	},
+{"attribution": "tslib",	"license": "BSD Zero Clause License", "licenseURL": "https://opensource.org/licenses/0BSD",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/Microsoft/tslib",	},
+{"attribution": "zone.js",	"license": "MIT License", "licenseURL": "https://opensource.org/licenses/MIT",	"adapted": false,	"modifications": "No Modifications",	"fileURL"": "https://github.com/angular/angular",	},
+       
+    ]
   }
 ]
