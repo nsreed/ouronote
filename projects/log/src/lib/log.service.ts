@@ -75,21 +75,25 @@ export class LogService {
 
   protected _out$ = new EventEmitter<LogMessage>();
   out$ = this._out$;
-  outSub = this.out$.pipe(filter((msg) => msg.level >= 1)).subscribe((m) => {
-    if (this.parent) {
-      this.parent._out$.emit(m);
-    } else {
-      console.log(
-        `%s %s %s ${m.message}`,
-        new Date(m.timestamp).toISOString(),
-        m.name.padEnd(LogService.longestName),
-        labelLevels.get(m.level)?.padEnd(7),
-        ...m.args
-      );
-    }
-  });
+  outSub = this.out$
+    .pipe(filter((msg) => msg.level >= this.outLevel))
+    .subscribe((m) => {
+      if (this.parent) {
+        this.parent._out$.emit(m);
+      } else {
+        console.log(
+          `%s %s %s ${m.message}`,
+          new Date(m.timestamp).toISOString(),
+          m.name.padEnd(LogService.longestName),
+          labelLevels.get(m.level)?.padEnd(7),
+          ...m.args
+        );
+      }
+    });
 
   level: LogLevel = LogLevel.INFO;
+
+  outLevel = LogLevel.INFO;
 
   private supplementals = new Map<string, LogService>();
 
