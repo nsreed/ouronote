@@ -2,8 +2,54 @@
 
 ## Roadmap / Ideas
 
-In no partifular order, these are some ideas about improving this project:
+In no particular order, these are some ideas about improving this project:
 
+### Routing Schema Update
+
+To accommodate the game loop, we need public URLs to be loadable by unauthenticated visitors.
+
+Currently, the routing structure of ouronote is as such:
+
+```
+/
+  login/
+  user/ <--- Authentication guarding starts here
+    vectors/
+      [id]/
+        permissions
+        edit
+```
+
+Question: Is the "user" level strictly necessary?
+Problem: The code under the "user" level *assumes* the user is already logged in.
+
+We may exclude the edit workspace from this auth guard, but permissions, settings, etc. should be under auth guard.
+
+Solution 1: Keep the auth guard in place, on a per-page basis. Users who nagivate to `/user/vector/XXXX/edit` will be kicked to `/user/vector/XXXX/view`? **NO THAT'S DUMB**
+
+Solution 2: 
+
+```
+  /login
+  /user <--- All routes under "user" are still guarded
+    /vectors
+      /[id]
+        /permissions
+  /vector
+    /[id] <--- This is the new hybrid view/edit page
+```
+
+Problem?:
+
+Let's suppose we have a vector loaded in the workspace, and no user is logged in. We can't swap in a user() chain once the user logs in. **NOT A PROBLEM, JUST REFRESH THE PAGE ON LOGIN**
+
+Solution 2: 
+
+```
+  /vector
+    /[id] <--- This is the new hybrid view/edit page
+      /permissions <--- Individually guarded
+```
 ### Security
 
 **Certificate Creation** - This should be standardized, instead of requiring users to define their own certificates.
@@ -20,7 +66,7 @@ In no partifular order, these are some ideas about improving this project:
 
 **Paper Graph Hierarchy** - Switch to using set() instead of generating new random keys.
 
-**Paper Graph Metadata**
+**Paper Graph Metadata**:
 
 - Stop using `data.soul` to mean the key in this set, and use real soul (from `Gun.node.soul()`).
 - Stop storing graph metadata in `data`, as that needs additional filtering on clone() and copy/paste type operations. Ideally, chain-related metadata may be stored on paper item prototype itself?
