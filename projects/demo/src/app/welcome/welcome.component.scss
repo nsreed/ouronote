@@ -1,0 +1,7 @@
+#HeaderImage {
+  display: inline-block;
+  align-self: center;
+}
+:host > * {
+  align-self: center;
+}
