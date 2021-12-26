@@ -35,7 +35,8 @@ export class GunAuthGuard implements CanActivateChild {
     return this.ngGun.auth().auth$.pipe(
       timeout(5000),
       catchError((err, caught) => {
-        sessionStorage.setItem('redirect', window.location.href);
+        sessionStorage.setItem('redirect', state.url);
+
         this.router.navigateByUrl('/login');
         return of({
           err: 'Session Recall Timeout',

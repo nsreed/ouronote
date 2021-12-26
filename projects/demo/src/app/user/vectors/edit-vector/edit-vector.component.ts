@@ -169,7 +169,8 @@ export class EditVectorComponent
   }
 
   copyLink() {
-    this.cb.copy(window.location.href);
+    const linkURL = `${window.location.host}/view/${this.vectorNode.recordPub}`;
+    this.cb.copy(linkURL);
   }
 
   onPaste(e: any) {

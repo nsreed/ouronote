@@ -1,1 +1,12 @@
+<mat-toolbar>
+  <span>
+    {{ (vector$ | async)?.title }} -
+    <ng-container *ngFor="let owner of owner$ | async | keyvalue">
+      @{{ owner.key | alias | async }}
+    </ng-container>
+  </span>
+  <a mat-flat-button [routerLink]="['/user/vectors', vectorPub, 'edit']"
+    >Edit</a
+  >
+</mat-toolbar>
 <app-vector-preview [vector]="vectorNode$ | async"></app-vector-preview>
