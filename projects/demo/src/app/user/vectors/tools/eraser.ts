@@ -31,20 +31,21 @@ export class EraserTool extends VectorTool {
 
   upSub = this.up.subscribe((e) => {
     this.path = null;
-    this.scope.actions = this.scope.actions || [];
-    const intersects = this.allIntersects;
-    if (intersects.length > 0) {
-      this.scope.actions.push({
-        undoFn: () => {
-          console.log('should re-add', intersects);
-          this.activateDrawLayer();
-          // TODO add these to their original layer
-          intersects.forEach((i) => {
-            this.scope.project.activeLayer.addChild(i);
-          });
-        },
-      });
-    }
+    // TODO re-enable undo when race condition has been fixed
+    // this.scope.actions = this.scope.actions || [];
+    // const intersects = this.allIntersects;
+    // if (intersects.length > 0) {
+    //   this.scope.actions.push({
+    //     undoFn: () => {
+    //       console.log('should re-add', intersects);
+    //       this.activateDrawLayer();
+    //       // TODO add these to their original layer
+    //       intersects.forEach((i) => {
+    //         this.scope.project.activeLayer.addChild(i);
+    //       });
+    //     },
+    //   });
+    // }
     this.allIntersects = [];
   });
 }
