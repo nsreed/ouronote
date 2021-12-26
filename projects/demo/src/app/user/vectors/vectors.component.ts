@@ -8,6 +8,7 @@ import { CreateVectorComponent } from './components/create-vector/create-vector.
 import { LogService } from '../../../../../log/src/lib/log.service';
 import { FileUploaderComponent } from '../../files/file-uploader/file-uploader.component';
 import { VectorExportDialogComponent } from './components/vector-export-dialog/vector-export-dialog.component';
+import { OURONOTE_DEFAULT_TITLE } from '../../constants';
 
 export function buildVectorLogger(parent: LogService) {
   return parent.supplemental('name');
@@ -43,7 +44,9 @@ export class VectorsComponent implements OnInit {
     private dialog: MatDialog
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    document.title = OURONOTE_DEFAULT_TITLE;
+  }
 
   create() {
     this.dialog.open(CreateVectorComponent, { width: '90%', height: '90%' });

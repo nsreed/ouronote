@@ -19,6 +19,7 @@ import { GunRadImporterService } from './services/gun-rad-importer.service';
 import { GunWebrtcImporterService } from './services/gun-webrtc-importer.service';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
+import { OURONOTE_DEFAULT_TITLE } from './constants';
 
 @Component({
   selector: 'app-root',
@@ -56,7 +57,7 @@ export class AppComponent {
       webRtcImporter,
     });
     this.user = this.ngGun.auth();
-    window.document.title = `ouronote version ${VERSION.version}`;
+    window.document.title = OURONOTE_DEFAULT_TITLE; // `ouronote version ${VERSION.version}`;
 
     let lastActivated: ChildActivationEnd;
     router.events

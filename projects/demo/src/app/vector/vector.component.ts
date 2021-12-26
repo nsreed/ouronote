@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { OURONOTE_DEFAULT_TITLE } from '../constants';
 
 @Component({
   selector: 'app-vector',
@@ -8,5 +9,7 @@ import { Component, OnInit } from '@angular/core';
 export class VectorComponent implements OnInit {
   constructor() {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    document.title = OURONOTE_DEFAULT_TITLE;
+  }
 }

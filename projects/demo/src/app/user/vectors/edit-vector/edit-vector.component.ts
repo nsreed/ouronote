@@ -1,3 +1,4 @@
+import { OURONOTE_DEFAULT_TITLE } from './../../../constants';
 import {
   AfterViewInit,
   Component,
@@ -148,7 +149,12 @@ export class EditVectorComponent
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // TODO display appropriate document title
+    this.vector$.subscribe((v) => {
+      window.document.title = `${v.title} - ${OURONOTE_DEFAULT_TITLE}`;
+    });
+  }
 
   onProjectReady(project: paper.Project, gun: GunChain<VectorGraph>) {
     // console.log('setting up project graph');
