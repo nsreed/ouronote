@@ -11,7 +11,11 @@
       <mat-expansion-panel-header>Tools</mat-expansion-panel-header>
       <ng-template matExpansionPanelContent>
         <div gdColumns="auto auto" id="ToolsContainer">
-          <button mat-button (click)="onUndoClick()">
+          <button
+            mat-button
+            (click)="onUndoClick()"
+            [disabled]="paperDirective.scope?.actions?.length === 0"
+          >
             <mat-icon>undo</mat-icon>
           </button>
           <ng-container *ngFor="let tool of paper.scope.tools">
