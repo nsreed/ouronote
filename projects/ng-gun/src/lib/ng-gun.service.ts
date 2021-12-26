@@ -67,7 +67,7 @@ export class NgGunService<
     });
     const p = node.path.reverse();
     p.shift();
-    const t = p.reduce((prev, c) => prev.get(c), detached.user());
+    const t = p.reduce((prev: any, c: any) => prev.get(c), detached.user());
     return t;
   }
 }
