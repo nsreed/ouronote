@@ -13,7 +13,6 @@ import {
 import { GunChain } from 'projects/ng-gun/src/lib/classes/GunChain';
 import { LogService } from '../../../../../../../log/src/lib/log.service';
 import { UserService } from '../../../user.service';
-import { PaperEditDirective } from '../../paper-edit.directive';
 import { VectorService } from '../../vector.service';
 import { VectorPreviewComponent } from '../vector-preview/vector-preview.component';
 

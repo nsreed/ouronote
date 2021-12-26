@@ -39,8 +39,6 @@ import { VectorExportDialogComponent } from './components/vector-export-dialog/v
 import { VectorFormComponent } from './components/vector-form/vector-form.component';
 import { VectorPreviewComponent } from './components/vector-preview/vector-preview.component';
 import { EditVectorComponent } from './edit-vector/edit-vector.component';
-import { PaperEditDirective } from './paper-edit.directive';
-import { PaperDirective } from './paper.directive';
 import { PermissionsComponent } from './permissions/permissions.component';
 import { RouteVectorDirective } from './route-vector.directive';
 import { VectorsRoutingModule } from './vectors-routing.module';
@@ -49,11 +47,11 @@ import { ViewVectorComponent } from './view-vector/view-vector.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { SelectionIntersectModeFormComponent } from './components/selection-intersect-mode-form/selection-intersect-mode-form.component';
 import { VectorCardComponent } from './components/vector-card/vector-card.component';
+import { VectorModule } from '../../vector/vector.module';
 
 @NgModule({
   declarations: [
     VectorsComponent,
-    PaperDirective,
     EditVectorComponent,
     RouteVectorDirective,
     LayerListComponent,
@@ -64,7 +62,6 @@ import { VectorCardComponent } from './components/vector-card/vector-card.compon
     ViewVectorComponent,
     PermissionsComponent,
     VectorPreviewComponent,
-    PaperEditDirective,
     VectorExportDialogComponent,
     InviteRequestsComponent,
     StrokeWidthFormComponent,
@@ -106,7 +103,8 @@ import { VectorCardComponent } from './components/vector-card/vector-card.compon
     ReactiveFormsModule,
     ScrollingModule,
     VectorsRoutingModule,
+    VectorModule,
   ],
-  exports: [PaperDirective],
+  exports: [],
 })
 export class VectorsModule {}

@@ -5,9 +5,9 @@ import {
   AfterViewInit,
   ViewChild,
 } from '@angular/core';
-import { PaperDirective } from '../../paper.directive';
 import { ProjectPair } from '../../classes/ProjectPair';
 import { LogService } from 'projects/log/src/public-api';
+import { PaperDirective } from 'projects/demo/src/app/vector/paper.directive';
 
 @Component({
   selector: 'app-vector-preview',

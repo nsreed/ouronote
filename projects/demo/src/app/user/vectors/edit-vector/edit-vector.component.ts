@@ -18,7 +18,7 @@ import {
 import { GunChain } from '../../../../../../ng-gun/src/lib/classes/GunChain';
 import { VectorGraph } from '../../VectorGraph';
 import { ProjectPair } from '../classes/ProjectPair';
-import { PaperDirective } from '../paper.directive';
+
 import { RouteVectorDirective } from '../route-vector.directive';
 import { VectorService } from '../vector.service';
 import { gunifyProject as gunifyProject } from './converter-functions';
@@ -32,8 +32,8 @@ import { UserService } from '../../user.service';
 import { gunUpdateTime } from 'projects/ng-gun/src/lib/functions/gun-utils';
 import { FileUploaderComponent } from '../../../files/file-uploader/file-uploader.component';
 import { MatDialog } from '@angular/material/dialog';
-import { PaperEditDirective } from '../paper-edit.directive';
 import { ClipboardService } from 'ngx-clipboard';
+import { PaperEditDirective } from '../../../vector/paper-edit.directive';
 
 const VECTOR_PAPER_JSON_KEY = 'graph';
 

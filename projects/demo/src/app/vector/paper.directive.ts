@@ -8,14 +8,14 @@ import {
 } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as Hammer from 'hammerjs';
+import { LogService } from 'log';
 import * as paper from 'paper';
 import { from, fromEvent, timer } from 'rxjs';
 import { map, mergeMap, switchMap } from 'rxjs/operators';
-import { LogService } from '../../../../../log/src/lib/log.service';
-import { CAPABILITIES } from '../../system.service';
-import { PenEvent } from './classes/PenEvent';
-import { PanTool } from './tools/pan';
-import { UndoStack } from './tools/undo-stack';
+import { CAPABILITIES } from '../system.service';
+import { PenEvent } from '../user/vectors/classes/PenEvent';
+import { PanTool } from '../user/vectors/tools/pan';
+import { UndoStack } from '../user/vectors/tools/undo-stack';
 
 @Directive({
   selector: '[appPaper]',

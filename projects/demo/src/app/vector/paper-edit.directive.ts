@@ -1,12 +1,15 @@
 import { Directive } from '@angular/core';
 import { shareReplay } from 'rxjs/operators';
-import { propertyChange$ } from './functions/paper-chain';
+import { propertyChange$ } from '../user/vectors/functions/paper-chain';
+import { EraserTool } from '../user/vectors/tools/eraser';
+import { MoveTool } from '../user/vectors/tools/move';
+import { PenTool } from '../user/vectors/tools/pen';
+import {
+  RectangleSelectTool,
+  LassoSelectTool,
+} from '../user/vectors/tools/select';
+import { ShapeTool } from '../user/vectors/tools/shape';
 import { PaperDirective } from './paper.directive';
-import { EraserTool } from './tools/eraser';
-import { MoveTool } from './tools/move';
-import { PenTool } from './tools/pen';
-import { RectangleSelectTool, LassoSelectTool } from './tools/select';
-import { ShapeTool } from './tools/shape';
 
 @Directive({
   selector: '[appPaperEdit]',

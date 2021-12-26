@@ -28,6 +28,11 @@ const routes: Routes = [
     path: '',
     component: WelcomeComponent,
   },
+  {
+    path: 'view',
+    loadChildren: () =>
+      import('./vector/vector.module').then((m) => m.VectorModule),
+  },
 ];
 
 @NgModule({
