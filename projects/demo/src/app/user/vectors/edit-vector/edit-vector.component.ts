@@ -180,10 +180,10 @@ export class EditVectorComponent
     const jsonBlob = new Blob([this.project.exportJSON()], {
       type: 'text/plain;charset=utf-8',
     });
-    const username = this.userService.user.alias;
+    const username = this.userService.user.alias + '-' || '';
     const title = await this.vectorNode.get('title').once().toPromise();
     const updated = new Date(this.vectorNode.updateTime).toISOString();
-    saveAs(jsonBlob, `${username}-${title}-${updated}.json`);
+    saveAs(jsonBlob, `${username}${title}-${updated}.json`);
   }
 
   importPaper() {
@@ -226,7 +226,6 @@ export class EditVectorComponent
   }
 
   onUndoClick() {
-    this.logger.log('would undo');
     console.log(this.paperDirective.scope);
     if (this.paperDirective.scope?.actions) {
       const undoAction = this.paperDirective.scope.actions.pop();
