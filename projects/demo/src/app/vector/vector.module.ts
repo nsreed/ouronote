@@ -6,6 +6,9 @@ import { VectorComponent } from './vector.component';
 import { ViewComponent } from './view/view.component';
 import { PaperDirective } from './paper.directive';
 import { PaperEditDirective } from './paper-edit.directive';
+import { VectorPreviewComponent } from './vector-preview/vector-preview.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
   declarations: [
@@ -13,8 +16,14 @@ import { PaperEditDirective } from './paper-edit.directive';
     ViewComponent,
     PaperDirective,
     PaperEditDirective,
+    VectorPreviewComponent,
   ],
-  imports: [CommonModule, VectorRoutingModule],
-  exports: [PaperDirective, PaperEditDirective],
+  imports: [
+    CommonModule,
+    VectorRoutingModule,
+    ReactiveFormsModule,
+    MatInputModule,
+  ],
+  exports: [PaperDirective, PaperEditDirective, VectorPreviewComponent],
 })
 export class VectorModule {}

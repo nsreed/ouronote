@@ -37,7 +37,6 @@ import { StrokeWidthFormComponent } from './components/stroke-width-form/stroke-
 import { StyleFormComponent } from './components/style-form/style-form.component';
 import { VectorExportDialogComponent } from './components/vector-export-dialog/vector-export-dialog.component';
 import { VectorFormComponent } from './components/vector-form/vector-form.component';
-import { VectorPreviewComponent } from './components/vector-preview/vector-preview.component';
 import { EditVectorComponent } from './edit-vector/edit-vector.component';
 import { PermissionsComponent } from './permissions/permissions.component';
 import { RouteVectorDirective } from './route-vector.directive';
@@ -51,22 +50,21 @@ import { VectorModule } from '../../vector/vector.module';
 
 @NgModule({
   declarations: [
-    VectorsComponent,
-    EditVectorComponent,
-    RouteVectorDirective,
-    LayerListComponent,
-    StyleFormComponent,
     ColorFormComponent,
-    VectorFormComponent,
     CreateVectorComponent,
-    ViewVectorComponent,
-    PermissionsComponent,
-    VectorPreviewComponent,
-    VectorExportDialogComponent,
+    EditVectorComponent,
     InviteRequestsComponent,
-    StrokeWidthFormComponent,
+    LayerListComponent,
+    PermissionsComponent,
+    RouteVectorDirective,
     SelectionIntersectModeFormComponent,
+    StrokeWidthFormComponent,
+    StyleFormComponent,
     VectorCardComponent,
+    VectorExportDialogComponent,
+    VectorFormComponent,
+    VectorsComponent,
+    ViewVectorComponent,
   ],
   imports: [
     CertificatesModule,

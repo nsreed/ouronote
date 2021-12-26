@@ -5,7 +5,7 @@ import {
   AfterViewInit,
   ViewChild,
 } from '@angular/core';
-import { ProjectPair } from '../../classes/ProjectPair';
+import { ProjectPair } from '../../user/vectors/classes/ProjectPair';
 import { LogService } from 'projects/log/src/public-api';
 import { PaperDirective } from 'projects/demo/src/app/vector/paper.directive';
 
