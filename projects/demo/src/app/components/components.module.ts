@@ -1,26 +1,25 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CertificatesComponent } from './certificates/certificates.component';
+import { NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { MatButtonModule } from '@angular/material/button';
-import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatStepperModule } from '@angular/material/stepper';
-import { MatListModule } from '@angular/material/list';
-import { NgGunModule } from '../../../../ng-gun/src/lib/ng-gun.module';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { BugReportComponent } from './bug-report/bug-report.component';
-import { NgGunService } from '../../../../ng-gun/src/lib/ng-gun.service';
-import { GunPeersComponent } from './gun-peers/gun-peers.component';
-import { AliasAutocompleteComponent } from './alias-autocomplete/alias-autocomplete.component';
-import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { NgGunModule } from '../../../../ng-gun/src/lib/ng-gun.module';
 import { AboutComponent } from './about/about.component';
+import { AliasAutocompleteComponent } from './alias-autocomplete/alias-autocomplete.component';
+import { BugReportComponent } from './bug-report/bug-report.component';
+import { GunPeersComponent } from './gun-peers/gun-peers.component';
 import { SystemSettingsComponent } from './system-settings/system-settings.component';
 
 @NgModule({
@@ -38,6 +37,7 @@ import { SystemSettingsComponent } from './system-settings/system-settings.compo
     MatButtonModule,
     MatCheckboxModule,
     MatDatepickerModule,
+    MatDialogModule,
     MatExpansionModule,
     MatFormFieldModule,
     MatIconModule,
@@ -50,6 +50,11 @@ import { SystemSettingsComponent } from './system-settings/system-settings.compo
     NgGunModule,
     ReactiveFormsModule,
   ],
-  exports: [BugReportComponent, GunPeersComponent, AliasAutocompleteComponent, SystemSettingsComponent],
+  exports: [
+    BugReportComponent,
+    GunPeersComponent,
+    AliasAutocompleteComponent,
+    SystemSettingsComponent,
+  ],
 })
 export class ComponentsModule {}

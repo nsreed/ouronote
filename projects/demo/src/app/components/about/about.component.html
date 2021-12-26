@@ -1,5 +1,5 @@
-<div fxLayout="column">
-  <h1>ouronote</h1>
+<h1 mat-dialog-title>ouronote</h1>
+<mat-dialog-content>
   <blockquote>version {{ version.version }}</blockquote>
   <p>
     ouronote is a free, open-source, peer-to-peer real-time whiteboard
@@ -47,4 +47,15 @@
       </ng-container>
     </div>
   </div>
-</div>
+  <h2>Licenses</h2>
+  <mat-accordion>
+    <mat-expansion-panel *ngFor="let lkv of licenses | keyvalue">
+      <mat-expansion-panel-header>
+        <mat-panel-title>{{ lkv.value.name }}</mat-panel-title>
+        <mat-panel-description> {{ lkv.value.licenses }}</mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <pre>{{ lkv.value.licenseText }}</pre>
+    </mat-expansion-panel>
+  </mat-accordion>
+</mat-dialog-content>
