@@ -58,7 +58,10 @@
         <mat-panel-title>{{ lkv.value.name }}</mat-panel-title>
         <mat-panel-description> {{ lkv.value.licenses }}</mat-panel-description>
       </mat-expansion-panel-header>
-
+      <a target="_blank" [href]="lkv.value.repository">{{
+        lkv.value.repository
+      }}</a>
+      <mat-divider></mat-divider>
       <pre>{{ lkv.value.licenseText }}</pre>
     </mat-expansion-panel>
   </mat-accordion>
