@@ -139,6 +139,8 @@ export class PaperDirective implements OnInit {
   ngOnInit(): void {
     this.setupHammer();
     this.scope.setup(this.el.nativeElement);
+    this.scope.actions = [];
+
     // const hammer = new Hammer(this.el.nativeElement);
 
     this.project = this.scope.project as any;
