@@ -5,3 +5,12 @@
 :host > * {
   align-self: center;
 }
+sub {
+  text-align: center;
+  padding-bottom: .2em;
+  max-width: 400px;
+}
+header {
+  text-align: center;
+  padding-bottom: 1em;
+}
