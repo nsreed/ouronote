@@ -2,7 +2,12 @@ const { resolve, relative } = require("path");
 const { writeFileSync } = require("fs-extra");
 
 const licenses = require('./licenses.json');
+
 for(const k in licenses) {
+  if(k.startsWith('ouronote')){
+    delete licenses[k];
+    continue;
+  }
   const license = licenses[k];
   delete license['path'];
 }
