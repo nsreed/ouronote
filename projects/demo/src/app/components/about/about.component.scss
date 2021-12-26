@@ -1,3 +1,7 @@
 .mat-expansion-panel-header-description {
   flex-grow: 0;
 }
+[mat-dialog-title] {
+  display: flex;
+  justify-content: space-between;
+}

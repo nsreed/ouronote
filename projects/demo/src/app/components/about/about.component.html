@@ -1,4 +1,8 @@
-<h1 mat-dialog-title>ouronote</h1>
+<h1 mat-dialog-title>
+  <span>About ouronote</span>
+
+  <button mat-raised-button (click)="close()">Close</button>
+</h1>
 <mat-dialog-content>
   <blockquote>version {{ version.version }}</blockquote>
   <p>

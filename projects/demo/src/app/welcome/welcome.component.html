@@ -3,6 +3,10 @@
   id="HeaderImage"
   src="/assets/images/ouronote_header_1500x500.jpg"
 />
-<span class="mat-h1">ouronote</span>
+<span class="mat-h1">Welcome to ouronote</span>
 <span>to get started, </span>
-<a mat-button routerLink="/login">Log In or Create Account</a>
+<a mat-raised-button color="primary" routerLink="/login"
+  >Log In or Create Account</a
+>
+
+<a mat-button (click)="about()"> <mat-icon>info</mat-icon> About ouronote </a>
