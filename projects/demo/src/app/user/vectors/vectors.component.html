@@ -2,7 +2,9 @@
   <button mat-raised-button color="primary" (click)="create()">
     New Vector
   </button>
-  <button mat-flat-button (click)="importVector()">Import...</button>
+  <button mat-flat-button (click)="importVector()" [disabled]="true">
+    Import...
+  </button>
 </mat-toolbar>
 <!--
 <table>
