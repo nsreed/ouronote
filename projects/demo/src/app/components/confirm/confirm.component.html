@@ -1,8 +1,21 @@
-<h1 mat-dialog-title>Confirm</h1>
+<h1 mat-dialog-title>
+  {{ data?.title || "Confirm" }}
+</h1>
 <div mat-dialog-content>
-  Are you sure you want to?
+  {{ data?.prompt || "Are you sure you want to?" }}
 </div>
 <div mat-dialog-actions>
-  <button mat-button (click)="select(false)">No</button>
-  <button mat-button (click)="select(true)">Yes</button>
+  <ng-container *ngIf="data?.options; else YesNo">
+    <button
+      *ngFor="let option of data?.options"
+      mat-button
+      (click)="select(option)"
+    >
+      {{ option.text }}
+    </button>
+  </ng-container>
+  <ng-template #YesNo>
+    <button mat-button (click)="select(false)">No</button>
+    <button mat-button (click)="select(true)">Yes</button>
+  </ng-template>
 </div>
