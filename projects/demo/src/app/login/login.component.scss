@@ -3,7 +3,13 @@
     display: inline-flex;
     align-items: center;
   }
+
+  max-height: 100vh;
+  overflow: auto;
 }
 #HeaderImage {
   align-self: center;
+}
+h1 {
+  text-align: center;
 }
