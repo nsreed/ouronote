@@ -35,6 +35,8 @@ import { FileUploaderComponent } from '../../../files/file-uploader/file-uploade
 import { MatDialog } from '@angular/material/dialog';
 import { ClipboardService } from 'ngx-clipboard';
 import { PaperEditDirective } from '../../../vector/paper-edit.directive';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
+import { timeout } from 'rxjs/operators';
 
 const VECTOR_PAPER_JSON_KEY = 'graph';
 
@@ -80,7 +82,8 @@ export class EditVectorComponent
     private sanitizer: DomSanitizer,
     private logger: LogService,
     public userService: UserService,
-    private cb: ClipboardService
+    private cb: ClipboardService,
+    private snackbar: MatSnackBar
   ) {
     super(vectorService, route, ngGun, userService);
     this.logger = logger.supplemental('edit-vector.component');
@@ -177,6 +180,9 @@ export class EditVectorComponent
   copyLink() {
     const linkURL = `${window.location.host}/view/${this.vectorNode.recordPub}`;
     this.cb.copy(linkURL);
+    this.snackbar.open('Link copied to clipboard!', 'dismiss', {
+      verticalPosition: 'top',
+    } as MatSnackBarConfig);
   }
 
   onPaste(e: any) {
