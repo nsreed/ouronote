@@ -38,8 +38,10 @@
     </ng-template>
   </mat-card-title>
   <mat-card-subtitle
-    >@{{ vector | owner | async }} &mdash;
-    {{ vector | updated | date }}</mat-card-subtitle
+    >@{{
+      vector.owner ? (vector | owner | async) : "(looking up owner)"
+    }}
+    &mdash; {{ vector | updated | date }}</mat-card-subtitle
   >
   <mat-card-actions>
     <button
