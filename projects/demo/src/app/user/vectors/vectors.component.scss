@@ -11,8 +11,8 @@ mat-card-title a {
 :host {
   max-height: 100vh;
   #VectorList {
-    height: 100%;
     overflow-y: auto;
+    padding-bottom: 1em;
   }
 }
 
