@@ -9,7 +9,8 @@
     ouronote is a free, open-source, peer-to-peer real-time whiteboard
     application.
   </p>
-  <h2>Support Me</h2>
+  <mat-divider></mat-divider>
+  <h2>Links</h2>
   <a mat-flat-button target="_blank" href="https://www.patreon.com/nsreed"
     ><i class="fab fa-patreon"></i> patreon</a
   >
@@ -19,7 +20,10 @@
     href="https://www.paypal.com/paypalme/praetorlabs"
     ><i class="fab fa-paypal"></i> paypal</a
   >
-  <h2>ouronote on github</h2>
+  <a mat-flat-button target="_blank" href="https://twitter.com/ouronote">
+    <i class="fab fa-twitter"></i>
+    twitter
+  </a>
   <a
     mat-flat-button
     target="_blank"
@@ -32,6 +36,7 @@
     href="https://www.github.com/nsreed/ouronote/issues"
     ><i class="fab fa-github"></i> issues</a
   >
+  <mat-divider></mat-divider>
   <h2>Attributions</h2>
   <div *ngFor="let source of attributions">
     <h3>{{ source.name }}:</h3>
@@ -51,6 +56,7 @@
       </ng-container>
     </div>
   </div>
+  <mat-divider></mat-divider>
   <h2>Licenses</h2>
   <mat-accordion>
     <mat-expansion-panel *ngFor="let lkv of licenses | keyvalue">
