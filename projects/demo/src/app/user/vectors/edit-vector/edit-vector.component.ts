@@ -145,7 +145,13 @@ export class EditVectorComponent
         return;
       }
       this.project = this.paperDirective.project;
-      this.paperDirective.pen.activate();
+    });
+
+    this.canEdit$.subscribe((ce) => {
+      if (ce) {
+        // TODO don't select pen tool if user has already panned
+        this.paperDirective.pen.activate();
+      }
     });
   }
 
