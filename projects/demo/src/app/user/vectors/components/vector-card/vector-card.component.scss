@@ -13,3 +13,9 @@ mat-card-title a {
   width: 100%;
   outline: solid 1px black;
 }
+
+#Title {
+  max-height: 1.8em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
