@@ -87,8 +87,4 @@ Use at your own discretion!
 
 ## `// TODO`
 
-- [ ] Peerless mode/peer configuration
-- [ ] Cordova (or react native rewrite) for mobile/desktop
-- [ ] Iris integration?
-- [ ] Tests
-- [ ] Non-chromium browser support
+We have a roadmap in the [github wiki](https://github.com/nsreed/ouronote/wiki/Roadmap)
