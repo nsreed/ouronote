@@ -1,4 +1,3 @@
-
 :host {
   // position: absolute;
   // width: 100%;
@@ -21,4 +20,11 @@
 app-vector-preview {
   height: 100%;
   width: 100%;
+}
+mat-toolbar {
+  overflow: hidden;
+}
+#Title {
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
