@@ -86,7 +86,7 @@ export class EditVectorComponent
     private snackbar: MatSnackBar
   ) {
     super(vectorService, route, ngGun, userService);
-    this.logger = logger.supplemental('edit-vector.component');
+    this.logger = logger.supplemental('edit-vector');
   }
 
   ngAfterViewInit(): void {
@@ -178,7 +178,7 @@ export class EditVectorComponent
   }
 
   copyLink() {
-    const linkURL = `${window.location.host}/view/${this.vectorNode.recordPub}`;
+    const linkURL = `${window.location.protocol}//${window.location.host}/view/${this.vectorNode.recordPub}`;
     this.cb.copy(linkURL);
     this.snackbar.open('Link copied to clipboard!', 'dismiss', {
       verticalPosition: 'top',
