@@ -1,3 +1,9 @@
 div[gdColumns] {
   align-items: baseline;
 }
+.username {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  break-inside: avoid;
+  white-space: nowrap;
+}

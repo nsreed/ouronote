@@ -18,6 +18,10 @@
   }
 }
 
+app-invite-requests {
+  max-width: 220px;
+}
+
 mat-accordion {
   overflow-y: auto;
 
@@ -55,10 +59,10 @@ form {
 
 .tool {
   width: 100%;
-  padding: .65em 0;
+  padding: 0.65em 0;
   &.active {
     color: blueviolet;
-    background-color: rgba(0,0,0,.07);
+    background-color: rgba(0, 0, 0, 0.07);
   }
 }
 
@@ -78,13 +82,13 @@ p {
   margin-top: -1em;
   padding-top: 0;
 
-  margin-bottom: .5em;
+  margin-bottom: 0.5em;
   padding-left: 1em;
-  padding-bottom: .15em;
+  padding-bottom: 0.15em;
 }
 
 mat-toolbar {
-  &>span {
+  & > span {
     max-width: calc(100vw - 342px);
     overflow: hidden;
     text-overflow: ellipsis;
