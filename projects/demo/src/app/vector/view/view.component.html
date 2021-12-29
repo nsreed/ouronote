@@ -1,10 +1,15 @@
-<mat-toolbar>
+<mat-toolbar fxLayout="row" fxLayoutGap="1em">
   <span id="Title">
     {{ (vector$ | async)?.title }} -
     <ng-container *ngFor="let owner of owner$ | async | keyvalue">
       @{{ owner.key | alias | async }}
     </ng-container>
   </span>
-  <a mat-flat-button [routerLink]="['/user/vectors', vectorPub, 'edit']">Edit</a>
+  <a mat-flat-button [routerLink]="['/user/vectors', vectorPub, 'edit']"
+    >Edit</a
+  >
+  <button mat-icon-button (click)="about()" *ngIf="!(is$ | async)">
+    <mat-icon>info</mat-icon>
+  </button>
 </mat-toolbar>
 <app-vector-preview [vector]="vectorNode$ | async"></app-vector-preview>

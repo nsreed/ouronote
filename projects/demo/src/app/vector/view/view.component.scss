@@ -21,6 +21,10 @@
 }
 mat-toolbar {
   overflow: hidden;
+  display: flex;
+  &>a, &>button {
+    margin-left: 1em;
+  }
 }
 app-vector-preview {
   height: 100%;
@@ -30,4 +34,5 @@ app-vector-preview {
 #Title {
   text-overflow: ellipsis;
   overflow: hidden;
+  white-space: nowrap;
 }

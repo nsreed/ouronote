@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
-import { pluck, map, shareReplay, switchMap } from 'rxjs/operators';
+import { Observable, timer } from 'rxjs';
+import { pluck, map, shareReplay, switchMap, mapTo } from 'rxjs/operators';
 import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
 import { VectorGraph } from '../../user/VectorGraph';
+import { MatDialog } from '@angular/material/dialog';
+import { AboutComponent } from '../../components/about/about.component';
 
 @Component({
   templateUrl: './view.component.html',
@@ -25,12 +27,23 @@ export class ViewComponent implements OnInit {
     switchMap((n) => n.get('owner').on({ clean: true })),
     shareReplay(1)
   );
+
+  is$ = timer(0, 1000).pipe(map(() => (this.ngGun.gun.user() as any).is));
+
   vectorPub!: string;
-  constructor(private route: ActivatedRoute, private ngGun: NgGunService) {
+  constructor(
+    private route: ActivatedRoute,
+    private ngGun: NgGunService,
+    private dialog: MatDialog
+  ) {
     route.data.pipe(pluck('vector')).subscribe((v) => {
       this.vectorPub = v._['#'];
     });
   }
 
   ngOnInit(): void {}
+
+  about() {
+    this.dialog.open(AboutComponent);
+  }
 }
