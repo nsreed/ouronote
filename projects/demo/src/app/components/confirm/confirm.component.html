@@ -3,6 +3,7 @@
 </h1>
 <div mat-dialog-content>
   {{ data?.prompt || "Are you sure you want to?" }}
+  <sub *ngIf="data?.detail">{{ data?.detail }}</sub>
 </div>
 <div mat-dialog-actions>
   <ng-container *ngIf="data?.options; else YesNo">
