@@ -7,7 +7,7 @@ import { GunChain } from './classes/GunChain';
 import { GunPeers } from './GunPeers';
 import { SEA } from 'gun';
 import { ReplaySubject, Subject } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { shareReplay, take, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 export const GunOptions = 'gun-options';
 @Injectable()
@@ -45,6 +45,26 @@ export class NgGunService<
 
   findAlias(alias: string) {
     return this.get(`~@${alias}` as any).once();
+  }
+
+  findUserAlias(pubKey: string) {
+    this.logger.log('finding alias for', pubKey);
+    return this.get(`~${pubKey.replace('~', '')}` as any)
+      .once()
+      .pipe(
+        map((v: any) => {
+          if (typeof v.alias === 'string') {
+            return v.alias;
+          } else {
+            this.logger.warn(
+              'could not find string alias. Found %o for %s',
+              v.alias,
+              pubKey
+            );
+            return pubKey;
+          }
+        })
+      );
   }
 
   async asOwner(node: GunChain) {
