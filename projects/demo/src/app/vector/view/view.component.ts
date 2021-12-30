@@ -30,6 +30,8 @@ export class ViewComponent implements OnInit {
 
   is$ = timer(0, 1000).pipe(map(() => (this.ngGun.gun.user() as any).is));
 
+  editClicked = false;
+
   vectorPub!: string;
   constructor(
     private route: ActivatedRoute,
