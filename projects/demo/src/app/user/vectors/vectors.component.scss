@@ -13,9 +13,14 @@ mat-card-title a {
   #VectorList {
     overflow-y: auto;
     padding-bottom: 1em;
+    grid-auto-rows: max-content;
   }
 }
-
+.card-container {
+  overflow-x: hidden;
+  overflow-y: visible;
+  padding: 5px;
+}
 // .odd {
 //   & > * {
 //     // background-color: lightgray;

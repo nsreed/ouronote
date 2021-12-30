@@ -5,6 +5,7 @@
         id="Title"
         fxFlex="1 1 auto"
         [routerLink]="['/user/vectors', vector | soul, 'edit']"
+        [matTooltip]="vector.title"
         >{{ vector.title }}</a
       >
       <button

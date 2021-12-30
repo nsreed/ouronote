@@ -51,15 +51,16 @@
   gdColumns.md="repeat(3, 1fr)"
   gdColumns.gt-md="repeat(4, 1fr)"
   gdColumns.gt-lg="repeat(5, 1fr)"
-  gdGap="5px"
   id="VectorList"
 >
   <ng-container
     [gunChain]="vector"
     *ngFor="let vector of vectors | async; let i = index"
   >
-    <app-vector-card></app-vector-card
-  ></ng-container>
+    <div class="card-container">
+      <app-vector-card></app-vector-card>
+    </div>
+  </ng-container>
 </div>
 
 <div
