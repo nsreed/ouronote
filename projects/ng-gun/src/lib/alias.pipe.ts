@@ -27,21 +27,21 @@ export class AliasPipe extends AsyncPipe implements PipeTransform {
     }
     return this.ngGun
       .get(`~${value.replace('~', '')}`)
+      .get('alias')
       .on()
       .pipe(
         map((v: any) => {
-          if (typeof v.alias === 'string') {
-            return v.alias;
+          if (typeof v === 'string') {
+            return v;
           } else {
             this.logger.warn(
               'could not find string alias. Found %o for %s',
-              v.alias,
+              v,
               value
             );
             return value;
           }
-        }),
-        shareReplay(1)
+        })
       );
   }
 }
