@@ -49,6 +49,8 @@ import { VectorCardComponent } from './components/vector-card/vector-card.compon
 import { VectorModule } from '../../vector/vector.module';
 import { SettingsDialogComponent } from './components/settings-dialog/settings-dialog.component';
 import { InvitedUsersComponent } from './components/invited-users/invited-users.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @NgModule({
   declarations: [
@@ -94,6 +96,8 @@ import { InvitedUsersComponent } from './components/invited-users/invited-users.
     MatInputModule,
     MatListModule,
     MatMenuModule,
+    MatProgressSpinnerModule,
+    MatProgressBarModule,
     MatSliderModule,
     MatSlideToggleModule,
     MatStepperModule,
