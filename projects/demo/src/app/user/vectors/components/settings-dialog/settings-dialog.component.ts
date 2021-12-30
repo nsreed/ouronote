@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { VectorGraph } from '../../../VectorGraph';
 import { VectorService } from '../../vector.service';
 import { UserService } from '../../../user.service';
@@ -22,7 +22,8 @@ export class SettingsDialogComponent implements OnInit {
   constructor(
     @Inject(MAT_DIALOG_DATA) public readonly data: VectorSettingsData,
     private vectorService: VectorService,
-    private userService: UserService
+    private userService: UserService,
+    public dialogRef: MatDialogRef<any>
   ) {}
 
   ngOnInit(): void {}

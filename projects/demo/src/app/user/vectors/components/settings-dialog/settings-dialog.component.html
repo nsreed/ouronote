@@ -1,4 +1,7 @@
-<h1 mat-dialog-title>Vector Settings</h1>
+<h1 mat-dialog-title>
+  Vector Settings
+  <button mat-raised-button (click)="dialogRef.close()">Done</button>
+</h1>
 
 <mat-dialog-content fxFlex="1 0 auto" [gunChain]="vector">
   <mat-tab-group [selectedIndex]="data.mode === 'people' ? 1 : 0">
@@ -10,7 +13,3 @@
     </mat-tab>
   </mat-tab-group>
 </mat-dialog-content>
-
-<mat-dialog-actions>
-  <button mat-raised-button>OK</button>
-</mat-dialog-actions>

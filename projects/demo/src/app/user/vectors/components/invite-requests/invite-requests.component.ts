@@ -9,6 +9,8 @@ import { SEA } from 'gun';
 import { NgGunService } from '../../../../../../../ng-gun/src/lib/ng-gun.service';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmComponent } from '../../../../components/confirm/confirm.component';
 
 @Component({
   selector: 'app-invite-requests',
@@ -32,7 +34,9 @@ export class InviteRequestsComponent implements OnInit {
     private ngZone: NgZone,
     @Inject('gun-options')
     private gunOpts: any,
-    private router: Router
+    private router: Router,
+    private dialog: MatDialog,
+    private ngGun: NgGunService
   ) {
     this.requests$.subscribe((requests: any) => {
       console.log(JSON.stringify(requests));
@@ -50,47 +54,79 @@ export class InviteRequestsComponent implements OnInit {
       .put(true as never);
   }
 
-  async accept(request: any) {
-    // TODO pop up confirmation dialog with user's public key
-    this.logger.log('accepting invite request for %s', request);
-    this.chainDirective.chain
-      ?.get('owner')
-      .get(this.userService.user.is.pub)
-      .once()
-      .subscribe(async (ownerPair: any) => {
-        const pair = await SEA.decrypt(ownerPair, this.userService.user.is);
-        // this.logger.log('got owner pair %o', pair);
-        const certs = await this.vectorService.certify(
-          { pub: request.replace('~', '') },
-          ['layers'],
-          pair
-        );
-
-        // FIXME this is bad, you should report this behavior to Mark
-        const authPair = sessionStorage.getItem('pair');
-        const pairRestore$ = new Subject();
-        pairRestore$
-          .pipe(delay(1000))
-          .subscribe((a: any) => sessionStorage.setItem('pair', a));
-
-        this.logger.log('created certificate %o', certs);
-        const detachedGun = new NgGunService(
-          this.gunOpts,
-          this.ngZone,
-          this.router
-        );
-        // this.chainDirective.chain?.get('certs').put(certs as never);
-        (detachedGun.gun.user() as any).auth(pair, () => {
-          this.logger.log('secondary auth succeeded');
-          const v = detachedGun.user().get('certs');
-          v.put(certs as never);
-          this.chainDirective.chain
-            ?.get('inviteRequests')
-            .get(request)
-            .put(null as never);
-          pairRestore$.next(authPair);
-        });
+  info(pubKey: any) {
+    this.ngGun.findUserAlias(pubKey).subscribe((alias) => {
+      this.dialog.open(ConfirmComponent, {
+        data: {
+          title: 'User Public Key',
+          prompt: `@${alias} has the following public key:`,
+          detail: pubKey,
+          options: [{ text: 'OK' }],
+        },
       });
+    });
+  }
+
+  async accept(pubKey: any) {
+    // TODO pop up confirmation dialog with user's public key
+    // console.log(pubKey);
+    this.ngGun.findUserAlias(pubKey).subscribe((alias) => {
+      this.dialog
+        .open(ConfirmComponent, {
+          data: {
+            title: 'Confirm Invite',
+            prompt: `Are you sure you want to permanently invite @${alias}?`,
+          },
+        })
+        .afterClosed()
+        .subscribe((result) => {
+          if (result) {
+            this.logger.log('accepting invite request for %s', pubKey);
+            this.chainDirective.chain
+              ?.get('owner')
+              .get(this.userService.user.is.pub)
+              .once()
+              .subscribe(async (ownerPair: any) => {
+                const pair = await SEA.decrypt(
+                  ownerPair,
+                  this.userService.user.is
+                );
+                // this.logger.log('got owner pair %o', pair);
+                const certs = await this.vectorService.certify(
+                  { pub: pubKey.replace('~', '') },
+                  ['layers'],
+                  pair
+                );
+
+                // FIXME this is bad, you should report this behavior to Mark
+                const authPair = sessionStorage.getItem('pair');
+                const pairRestore$ = new Subject();
+                pairRestore$
+                  .pipe(delay(1000))
+                  .subscribe((a: any) => sessionStorage.setItem('pair', a));
+
+                this.logger.log('created certificate %o', certs);
+                const detachedGun = new NgGunService(
+                  this.gunOpts,
+                  this.ngZone,
+                  this.router
+                );
+                // this.chainDirective.chain?.get('certs').put(certs as never);
+                (detachedGun.gun.user() as any).auth(pair, () => {
+                  this.logger.log('secondary auth succeeded');
+                  const v = detachedGun.user().get('certs');
+                  v.put(certs as never);
+                  this.chainDirective.chain
+                    ?.get('inviteRequests')
+                    .get(pubKey)
+                    .put(null as never);
+                  pairRestore$.next(authPair);
+                });
+              });
+          }
+        });
+    });
+    return;
   }
 
   reject(request: any) {

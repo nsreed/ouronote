@@ -3,3 +3,8 @@
   flex-direction: column;
   height: 100%;
 }
+
+[mat-dialog-title] {
+  display: flex;
+  justify-content: space-between;
+}
