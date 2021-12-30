@@ -37,6 +37,7 @@ import { ClipboardService } from 'ngx-clipboard';
 import { PaperEditDirective } from '../../../vector/paper-edit.directive';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { timeout } from 'rxjs/operators';
+import { SettingsDialogComponent } from '../components/settings-dialog/settings-dialog.component';
 
 const VECTOR_PAPER_JSON_KEY = 'graph';
 
@@ -250,5 +251,18 @@ export class EditVectorComponent
       const undoAction = this.paperDirective.scope.actions.pop();
       undoAction?.undoFn();
     }
+  }
+
+  onPeopleClick() {
+    this.vector$.pipe(take(1)).subscribe((v: any) => {
+      this.dialog.open(SettingsDialogComponent, {
+        width: '80%',
+        height: '80%',
+        data: {
+          vectorPub: v._['#'],
+          mode: 'people',
+        },
+      });
+    });
   }
 }

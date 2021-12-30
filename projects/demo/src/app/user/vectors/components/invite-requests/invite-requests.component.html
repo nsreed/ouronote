@@ -1,6 +1,8 @@
-<div gdColumns="auto max-content max-content">
-  <ng-container *ngFor="let r of (requests||[])">
-    <span class="username" [matTooltip]="r | alias | async">{{ r | alias | async }}</span>
+<div gdColumns="auto max-content max-content max-content">
+  <ng-container *ngFor="let r of requests || []">
+    <span class="username" [matTooltip]="(r | alias | async) + ' ' + r"
+      >@{{ r | alias | async }}</span
+    >
     <button mat-icon-button (click)="accept(r)">
       <mat-icon>check</mat-icon>
     </button>

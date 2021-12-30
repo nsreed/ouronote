@@ -51,6 +51,7 @@ export class InviteRequestsComponent implements OnInit {
   }
 
   async accept(request: any) {
+    // TODO pop up confirmation dialog with user's public key
     this.logger.log('accepting invite request for %s', request);
     this.chainDirective.chain
       ?.get('owner')
