@@ -1,4 +1,4 @@
-<mat-card *ngIf="vector">
+<mat-card *ngIf="vector; else NoVector">
   <mat-card-title>
     <ng-container *ngIf="!editing; else Editing">
       <a
@@ -67,3 +67,8 @@
     </button>
   </mat-card-actions>
 </mat-card>
+<ng-template #NoVector>
+  <mat-card>
+    <mat-progress-bar mode="indeterminate" color="primary"></mat-progress-bar>
+  </mat-card>
+</ng-template>
