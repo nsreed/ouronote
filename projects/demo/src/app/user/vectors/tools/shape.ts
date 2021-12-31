@@ -14,6 +14,8 @@ export class ShapeTool extends VectorTool {
     strokeWidth: 3,
   } as paper.Style);
 
+  propertyNames: string[] = ['style'];
+
   downSub = this.down.subscribe(() => this.activateDrawLayer());
 
   dragSub = this.drag.subscribe((e) => {

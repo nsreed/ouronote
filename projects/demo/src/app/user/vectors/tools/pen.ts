@@ -20,6 +20,8 @@ export class PenTool extends VectorTool {
   @Property()
   smoothing = true;
 
+  propertyNames = ['style', 'smoothing'];
+
   penDown: Observable<PenEvent | paper.ToolEvent> = CAPABILITIES.POINTER
     ? this.pointerDown
     : this.down;

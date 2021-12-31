@@ -19,9 +19,7 @@ export class SelectionIntersectModeFormComponent implements OnInit {
   public set tool(value: VectorTool) {
     this._tool = value;
     if (this.tool instanceof LassoSelectTool) {
-      this.inclusiveCtl.patchValue(
-        (this.tool as LassoSelectTool).inclusiveMatch
-      );
+      this.inclusiveCtl.patchValue((this.tool as LassoSelectTool).greedySelect);
     }
   }
 
@@ -30,7 +28,7 @@ export class SelectionIntersectModeFormComponent implements OnInit {
   ngOnInit(): void {
     this.inclusiveCtl.valueChanges.subscribe((v) => {
       if (this.tool instanceof LassoSelectTool) {
-        this.tool.inclusiveMatch = v;
+        this.tool.greedySelect = v;
       }
     });
   }

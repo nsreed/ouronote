@@ -43,17 +43,24 @@
             </ng-container>
           </ng-container>
         </div>
+        <mat-divider></mat-divider>
         <app-color-form
           [color]="paper.project.currentStyle.strokeColor"
+          *ngIf="paper.scope.tool?.propertyNames?.includes('style')"
         ></app-color-form>
         <!-- <app-color-form [color]="paper.project.currentStyle.fillColor"></app-color-form> -->
-        <app-stroke-width-form
-          [tool]="paper.scope.tool"
-          [style]="paper.scope.tool.style"
-        ></app-stroke-width-form>
-        <p>Size</p>
+        <ng-container
+          *ngIf="paper.scope.tool?.propertyNames?.includes('style')"
+        >
+          <app-stroke-width-form
+            [tool]="paper.scope.tool"
+            [style]="paper.scope.tool.style"
+          ></app-stroke-width-form>
+          <p>Size</p>
+        </ng-container>
         <app-selection-intersect-mode-form
           [tool]="paper.scope.tool"
+          *ngIf="paper.scope.tool?.propertyNames?.includes('greedySelect')"
         ></app-selection-intersect-mode-form>
       </ng-template>
     </mat-expansion-panel>

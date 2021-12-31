@@ -20,7 +20,13 @@ export class VectorTool extends Tool {
   private isPointerDown = false;
   icon = 'hand-spock';
 
+  /** Determines whether the tool can be activated */
   enabled$ = of(true);
+
+  /** Determines whether the tool should be shown */
+  show$ = of(true);
+
+  /** The scope's current project */
   project$ = propertyChange$(this.scope, 'project').pipe(shareReplay(1));
   selectedItems$ = this.project$.pipe(
     switchMap((project) => propertyChange$(project, 'selectedItems')),
@@ -30,6 +36,8 @@ export class VectorTool extends Tool {
   get properties() {
     return Object.getPrototypeOf(this).___PROPERTIES || [];
   }
+
+  propertyNames: string[] = [];
 
   pointerDown = fromEvent<PenEvent>(this, 'pointerdown').pipe(
     tap((e) => (this.isPointerDown = true)),
@@ -78,7 +86,6 @@ export class VectorTool extends Tool {
   name = Object.getPrototypeOf(this).constructor.name.replace(/tool/gi, '');
 
   readonly logger = LogService.getLogger(`${this.name}`);
-  // touchDown = this.down.pipe(filter((e: any) => e.event instanceof TouchEvent));
 
   get project() {
     return this.scope.project as paper.Project;
@@ -87,7 +94,6 @@ export class VectorTool extends Tool {
   constructor(public readonly scope: paper.PaperScope & UndoStack) {
     super();
     console.log(this.properties);
-
     this.wheel.subscribe((e) => {
       const zoomDelta = e.event.deltaY;
       const viewPoint = this.scope.view.projectToView(e.point);
@@ -97,7 +103,6 @@ export class VectorTool extends Tool {
       const zoomOffset = (e.point as any)
         .subtract(zoomPoint)
         .multiply(zoomDelta > 0 ? 0 : 1);
-      // console.log(zoomOffset);
       (this.scope.view as any).scrollBy(zoomOffset);
     });
     this.setup();

@@ -66,10 +66,13 @@ export class SelectTool extends VectorTool {
 }
 export class LassoSelectTool extends SelectTool {
   name = 'lasso select';
-  // icon = 'magic';
   matIcon = 'lasso';
   path!: paper.Path;
-  inclusiveMatch = false;
+  @Property()
+  greedySelect = false;
+
+  propertyNames: string[] = ['greedySelect'];
+
   sdSub = this.selectDown.subscribe((e) => {});
   sdrSub = this.selectDrag.subscribe((e) => {
     if (!this.path) {
@@ -106,7 +109,7 @@ export class LassoSelectTool extends SelectTool {
             const iPath = item as paper.Path;
             const segmentPoints = iPath.segments.map((s) => s.point);
             // TODO add mode for matching ALL points, instead of any
-            if (!this.inclusiveMatch) {
+            if (!this.greedySelect) {
               hasMatch = true;
               segmentPoints.forEach((p) => {
                 if (!this.path.contains(p)) {
@@ -122,9 +125,7 @@ export class LassoSelectTool extends SelectTool {
             }
           }
 
-          return (
-            hasMatch || (this.inclusiveMatch && this.path?.intersects(item))
-          );
+          return hasMatch || (this.greedySelect && this.path?.intersects(item));
         },
       });
       intersected.forEach((i) => (i.selected = true));
