@@ -7,3 +7,22 @@ mat-sidenav-content {
 .mat-drawer-container {
   background-color: white;
 }
+.fas {
+  align-self: center;
+  justify-self: center;
+  text-align: center;
+  width: 100%;
+  font-size: larger;
+}
+.active {
+  font-weight: bolder;
+  color: #673ab7;
+  // .back {
+    // display: inline-block;
+  // }
+}
+.back {
+  display: none;
+
+  margin-left: -12px;
+}
