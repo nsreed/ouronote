@@ -42,7 +42,6 @@ import { PermissionsComponent } from './permissions/permissions.component';
 import { RouteVectorDirective } from './route-vector.directive';
 import { VectorsRoutingModule } from './vectors-routing.module';
 import { VectorsComponent } from './vectors.component';
-import { ViewVectorComponent } from './view-vector/view-vector.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { SelectionIntersectModeFormComponent } from './components/selection-intersect-mode-form/selection-intersect-mode-form.component';
 import { VectorCardComponent } from './components/vector-card/vector-card.component';
@@ -68,7 +67,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     VectorExportDialogComponent,
     VectorFormComponent,
     VectorsComponent,
-    ViewVectorComponent,
     SettingsDialogComponent,
     InvitedUsersComponent,
   ],
