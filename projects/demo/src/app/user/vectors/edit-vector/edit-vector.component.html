@@ -148,6 +148,12 @@
         mat-icon-button
         (click)="onPeopleClick()"
         *ngIf="isOwner$ | async"
+        #EditRequestsTooltip="matTooltip"
+        [matTooltip]="
+          (requestCount$ | async)
+            ? 'There are ' + (requestCount$ | async) + ' edit requests'
+            : null
+        "
       >
         <mat-icon
           [matBadge]="(requestCount$ | async) || null"

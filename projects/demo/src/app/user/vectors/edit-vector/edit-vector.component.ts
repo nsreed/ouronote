@@ -35,9 +35,16 @@ import { FileUploaderComponent } from '../../../files/file-uploader/file-uploade
 import { MatDialog } from '@angular/material/dialog';
 import { ClipboardService } from 'ngx-clipboard';
 import { PaperEditDirective } from '../../../vector/paper-edit.directive';
-import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
+import {
+  MatSnackBar,
+  MatSnackBarConfig,
+  MatSnackBarRef,
+  TextOnlySnackBar,
+} from '@angular/material/snack-bar';
 import { timeout } from 'rxjs/operators';
 import { SettingsDialogComponent } from '../components/settings-dialog/settings-dialog.component';
+import { MatTooltip } from '@angular/material/tooltip';
+import { timer } from 'rxjs';
 
 const VECTOR_PAPER_JSON_KEY = 'graph';
 
@@ -73,6 +80,11 @@ export class EditVectorComponent
   );
   requestCount$ = this.requests$.pipe(map((r) => r.length));
 
+  @ViewChild('EditRequestsTooltip')
+  editRequestsTooltip?: MatTooltip;
+
+  editToast?: MatSnackBarRef<TextOnlySnackBar>;
+
   constructor(
     private dialog: MatDialog,
     protected vectorService: VectorService,
@@ -91,6 +103,14 @@ export class EditVectorComponent
   }
 
   ngAfterViewInit(): void {
+    this.requestCount$.subscribe((count) => {
+      if (count > 0 && this.editRequestsTooltip) {
+        this.editRequestsTooltip.message = `There are ${count} edit requests.`;
+        // this.editRequestsTooltip.hideDelay = 1000;
+        this.editRequestsTooltip.show();
+        timer(5000).subscribe(() => this.editRequestsTooltip?.hide());
+      }
+    });
     this.vectorNode$.subscribe((node) => {
       if (!this.paperDirective.project) {
         console.warn('NO PAPER PROJECT');
@@ -165,28 +185,38 @@ export class EditVectorComponent
       window.document.title = `${v.title} - ${OURONOTE_DEFAULT_TITLE}`;
     });
 
-    this.myRequest$
-      .pipe(filter((myRequest) => !!myRequest))
-      .subscribe((myRequest) => {
-        this.owner$
-          .pipe(
-            map((owners) => Object.keys(owners)),
-            map((ownerKeys) => ownerKeys[0]),
-            switchMap((ownerKey) => this.ngGun.findUserAlias(ownerKey))
-          )
-          .subscribe((owners) => {
-            const editToast = this.snackbar.open(
-              `Edit access has been requested. Waiting for @${owners} to approve access.`,
-              'dismiss',
-              { duration: Infinity }
-            );
-            this.canEdit$.pipe(take(1)).subscribe((canEdit) => {
-              if (canEdit) {
-                editToast.dismiss();
-              }
-            });
-          });
+    this.myRequest$.subscribe((myRequest) => {
+      if (myRequest) {
+        this.showRequestToast();
+      } else {
+        this.hideRequestToast();
+      }
+    });
+  }
+
+  showRequestToast() {
+    this.owner$
+      .pipe(
+        map((owners) => Object.keys(owners)),
+        map((ownerKeys) => ownerKeys[0]),
+        switchMap((ownerKey) => this.ngGun.findUserAlias(ownerKey))
+      )
+      .subscribe((owners) => {
+        this.editToast = this.snackbar.open(
+          `Edit access has been requested. Waiting for @${owners} to approve access.`,
+          'dismiss',
+          { duration: Infinity }
+        );
+        this.canEdit$.pipe(take(1)).subscribe((canEdit) => {
+          if (canEdit) {
+            this.editToast?.dismiss();
+          }
+        });
       });
+  }
+
+  hideRequestToast() {
+    this.editToast?.dismiss();
   }
 
   onProjectReady(project: paper.Project, gun: GunChain<VectorGraph>) {
