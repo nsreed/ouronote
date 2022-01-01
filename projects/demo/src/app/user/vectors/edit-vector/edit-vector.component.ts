@@ -231,8 +231,16 @@ export class EditVectorComponent
     );
   }
 
-  copyLink() {
+  copyViewLink() {
     const linkURL = `${window.location.protocol}//${window.location.host}/view/${this.vectorNode.recordPub}`;
+    this.cb.copy(linkURL);
+    this.snackbar.open('Link copied to clipboard!', 'dismiss', {
+      verticalPosition: 'top',
+    } as MatSnackBarConfig);
+  }
+
+  copyEditLink() {
+    const linkURL = `${window.location.protocol}//${window.location.host}/user/vectors/${this.vectorNode.recordPub}/edit`;
     this.cb.copy(linkURL);
     this.snackbar.open('Link copied to clipboard!', 'dismiss', {
       verticalPosition: 'top',

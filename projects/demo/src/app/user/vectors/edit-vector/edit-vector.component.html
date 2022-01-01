@@ -137,13 +137,25 @@
           </button>
         </ng-template>
       </ng-container>
-      <button
-        mat-icon-button
-        (click)="copyLink()"
-        matTooltip="Copy sharing link to clipboard"
-      >
+      <button mat-icon-button [mat-menu-trigger-for]="ShareMenu">
         <mat-icon>share</mat-icon>
       </button>
+      <mat-menu #ShareMenu>
+        <button
+          mat-menu-item
+          (click)="copyViewLink()"
+          matTooltip="Copy sharing link to clipboard"
+        >
+          Copy View Link
+        </button>
+        <button
+          mat-menu-item
+          (click)="copyEditLink()"
+          matTooltip="Copy sharing link to clipboard"
+        >
+          Copy Edit Link
+        </button>
+      </mat-menu>
       <button
         mat-icon-button
         (click)="onPeopleClick()"
