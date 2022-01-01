@@ -1,13 +1,17 @@
 <div gdColumns="max-content auto max-content max-content">
   <ng-container *ngFor="let r of requests || []">
-    <button mat-icon-button (click)="info(r)">
+    <button
+      mat-icon-button
+      (click)="info(r)"
+      [matTooltip]="'View public key for @' + (r | alias | async)"
+    >
       <mat-icon class="fas fa-key"></mat-icon>
     </button>
     <a
       mat-flat-button
       (click)="info(r)"
       class="username"
-      [matTooltip]="(r | alias | async) + ' ' + r"
+      [matTooltip]="'View public key for @' + (r | alias | async)"
       >@{{ r | alias | async }}</a
     >
     <button mat-mini-fab color="primary" (click)="accept(r)">
