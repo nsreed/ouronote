@@ -93,4 +93,7 @@ mat-toolbar {
     overflow: hidden;
     text-overflow: ellipsis;
   }
+  & > button.request {
+    margin-left: 1em;
+  }
 }

@@ -123,9 +123,12 @@
         *ngIf="vectorNode && !((layersNode$ | async).userCertificate$ | async)"
       >
         <button
-          mat-flat-button
+          color="primary"
+          class="request"
+          mat-raised-button
           (click)="requestAccess()"
           *ngIf="!(myRequest$ | async); else PendingApproval"
+          matTooltip="Request permission to edit this vector."
         >
           <mat-icon>announcement</mat-icon>
           Request Access
