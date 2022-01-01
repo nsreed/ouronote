@@ -1,5 +1,5 @@
 <mat-toolbar fxLayout="row" fxLayoutGap="1em">
-  <span id="Title">
+  <span id="Title" fxFlex="1 0 auto">
     {{ (vector$ | async)?.title }} -
     <ng-container *ngFor="let owner of owner$ | async | keyvalue">
       @{{ owner.key | alias | async }}
@@ -7,6 +7,7 @@
   </span>
   <a
     *ngIf="!editClicked"
+    fxFlex="0 0 auto"
     mat-flat-button
     color="primary"
     (click)="editClicked = true"

@@ -24,6 +24,7 @@ mat-toolbar {
   display: flex;
   &>a, &>button {
     margin-left: 1em;
+    flex: 0 0 auto;
   }
 }
 app-vector-preview {
@@ -35,4 +36,5 @@ app-vector-preview {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+  flex: 1 1 auto;
 }
