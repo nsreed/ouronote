@@ -8,9 +8,17 @@
   <a
     *ngIf="!editClicked"
     mat-flat-button
+    color="primary"
     (click)="editClicked = true"
     [routerLink]="['/user/vectors', vectorPub, 'edit']"
-    >Edit
+    #EditLink="matTooltip"
+    [matTooltip]="
+      (is$ | async)
+        ? 'Go to the editor workspace'
+        : 'You must log in to edit this vector'
+    "
+  >
+    {{ (is$ | async) ? "Go to Editor" : "Log In to Edit" }}
   </a>
   <button mat-icon-button (click)="about()" *ngIf="!(is$ | async)">
     <mat-icon>info</mat-icon>

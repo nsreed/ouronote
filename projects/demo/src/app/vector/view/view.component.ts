@@ -1,7 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, timer } from 'rxjs';
-import { pluck, map, shareReplay, switchMap, mapTo } from 'rxjs/operators';
+import {
+  pluck,
+  map,
+  shareReplay,
+  switchMap,
+  mapTo,
+  delay,
+} from 'rxjs/operators';
 import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
 import { VectorGraph } from '../../user/VectorGraph';
 import { MatDialog } from '@angular/material/dialog';
@@ -11,7 +24,7 @@ import { AboutComponent } from '../../components/about/about.component';
   templateUrl: './view.component.html',
   styleUrls: ['./view.component.scss'],
 })
-export class ViewComponent implements OnInit {
+export class ViewComponent implements OnInit, AfterViewInit {
   vectorShallow$ = this.route.data.pipe(pluck('vector'));
   vectorNode$ = this.vectorShallow$.pipe(
     map((v) => this.ngGun.get(v._['#'])),
@@ -33,6 +46,10 @@ export class ViewComponent implements OnInit {
   editClicked = false;
 
   vectorPub!: string;
+
+  @ViewChild('EditLink')
+  editLink?: ElementRef;
+
   constructor(
     private route: ActivatedRoute,
     private ngGun: NgGunService,
@@ -43,6 +60,15 @@ export class ViewComponent implements OnInit {
     });
   }
 
+  ngAfterViewInit(): void {
+    this.is$.subscribe((is) => {
+      if (!is) {
+        this.vector$.pipe(delay(1000)).subscribe(() => {
+          (this.editLink as any).show();
+        });
+      }
+    });
+  }
   ngOnInit(): void {}
 
   about() {

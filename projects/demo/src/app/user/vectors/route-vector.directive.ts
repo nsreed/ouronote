@@ -54,7 +54,7 @@ export class RouteVectorDirective {
   constructor(
     protected vectorService: VectorService,
     private route: ActivatedRoute,
-    private ngGun: NgGunService,
+    protected ngGun: NgGunService,
     public userService: UserService
   ) {
     // this.isOwner$.subscribe((io) => console.log('is owner?', io));

@@ -15,6 +15,7 @@ import { NgGunModule } from '../../../../ng-gun/src/lib/ng-gun.module';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     MatInputModule,
     MatIconModule,
     NgGunModule,
+    MatTooltipModule,
   ],
   exports: [PaperDirective, PaperEditDirective, VectorPreviewComponent],
 })
