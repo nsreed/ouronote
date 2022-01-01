@@ -164,6 +164,29 @@ export class EditVectorComponent
     this.vector$.subscribe((v) => {
       window.document.title = `${v.title} - ${OURONOTE_DEFAULT_TITLE}`;
     });
+
+    this.myRequest$
+      .pipe(filter((myRequest) => !!myRequest))
+      .subscribe((myRequest) => {
+        this.owner$
+          .pipe(
+            map((owners) => Object.keys(owners)),
+            map((ownerKeys) => ownerKeys[0]),
+            switchMap((ownerKey) => this.ngGun.findUserAlias(ownerKey))
+          )
+          .subscribe((owners) => {
+            const editToast = this.snackbar.open(
+              `Edit access has been requested. Waiting for @${owners} to approve access.`,
+              'dismiss',
+              { duration: Infinity }
+            );
+            this.canEdit$.pipe(take(1)).subscribe((canEdit) => {
+              if (canEdit) {
+                editToast.dismiss();
+              }
+            });
+          });
+      });
   }
 
   onProjectReady(project: paper.Project, gun: GunChain<VectorGraph>) {
