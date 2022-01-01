@@ -1,6 +1,8 @@
 <h1 mat-dialog-title>
   Vector Settings
-  <button mat-raised-button (click)="dialogRef.close()">Done</button>
+  <button mat-raised-button color="primary" (click)="dialogRef.close()">
+    Done
+  </button>
 </h1>
 
 <mat-dialog-content fxFlex="1 0 auto" [gunChain]="vector">
@@ -8,7 +10,15 @@
     <mat-tab label="Collaborators">
       <app-invited-users></app-invited-users>
     </mat-tab>
-    <mat-tab label="Requests">
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span
+          class="tab-label"
+          [matBadge]="(requestCount$ | async) || null"
+          matBadgeColor="warn"
+          >Requests</span
+        >
+      </ng-template>
       <app-invite-requests></app-invite-requests>
     </mat-tab>
   </mat-tab-group>

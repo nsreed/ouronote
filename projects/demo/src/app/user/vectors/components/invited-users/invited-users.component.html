@@ -1,5 +1,5 @@
 Collaborators cannot currently be uninvited.
-<mat-list>
+<mat-list dense>
   <ng-container *ngFor="let userPub of layersCerts$ | async">
     <mat-list-item>@{{ userPub | alias | async }}</mat-list-item>
   </ng-container>

@@ -10,7 +10,7 @@
       [matTooltip]="(r | alias | async) + ' ' + r"
       >@{{ r | alias | async }}</a
     >
-    <button mat-icon-button (click)="accept(r)">
+    <button mat-mini-fab color="primary" (click)="accept(r)">
       <mat-icon>check</mat-icon>
     </button>
     <button mat-icon-button (click)="reject(r)">
