@@ -102,13 +102,13 @@ export class VectorCardComponent implements OnInit {
       .afterClosed()
       .pipe(filter((r) => r))
       .subscribe((result) => {
-        this.vectorService.vectors.unset(this.vector);
+        this.vectorService.vectors.unset(this.vectorChain.gun as any);
       });
   }
 
   cancelEdit() {
     this.editing = false;
-    this.titleCtl.patchValue(this.vector.title);
+    this.titleCtl.patchValue(this.vector);
   }
 
   confirmEdit() {

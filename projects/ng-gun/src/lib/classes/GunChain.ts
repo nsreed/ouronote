@@ -358,7 +358,7 @@ export class GunChain<
     return this.from(
       this.gun.set(
         data,
-        null,
+        undefined,
         certificate
           ? {
               opt: {
