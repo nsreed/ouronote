@@ -28,6 +28,7 @@ export interface LogMessage {
   args: any[];
 }
 
+// @dynamic
 @Injectable({
   providedIn: 'root',
 })
