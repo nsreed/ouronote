@@ -90,9 +90,13 @@ import * as paper from 'paper';
 import { EventEmitter } from '@angular/core';
 
 const IGNORED_PROPS = ['selected', 'fullySelected', 'selection'];
-const prototypeProperties = {} as any;
 const prototypeOwnProperties = {} as any;
 
+/**
+ * Gets a list of settable properties from a given prototype
+ * @param proto the prototype from which the list of settable properties will be derived
+ * @returns a list of settable properties belonging to the prototype
+ */
 function getOwnSettable(proto: any) {
   if (!(proto.constructor.name in prototypeOwnProperties)) {
     const likelyProperties = Object.getOwnPropertyDescriptors(proto);
@@ -112,24 +116,11 @@ function getOwnSettable(proto: any) {
   return prototypeOwnProperties[proto.constructor.name];
 }
 
-function getProtoSettable(prototype: any) {
-  if (!(prototype.constructor.name in prototypeProperties)) {
-    // console.log('prototype', prototype);
-
-    let proto = prototype;
-    let properties: any[] = [];
-    while (proto) {
-      const props = getOwnSettable(proto);
-      properties = [...properties, ...props];
-      proto = Object.getPrototypeOf(proto);
-    }
-    prototypeProperties[prototype.constructor.name] = properties.sort();
-  }
-  return prototypeProperties[prototype.constructor.name];
-}
-
+/**
+ * Creates new property setters for a prototype which emit new values on the prototype's changes$ emitter.
+ * @param prototype the prototype to inject change emission into
+ */
 function interceptAll(prototype: any) {
-  // console.log('intercepting', prototype.constructor.name);
   addChangeEmitter(prototype);
   getOwnSettable(prototype).forEach((prop: any[]) => {
     const original = prop[0];
@@ -147,6 +138,10 @@ function interceptAll(prototype: any) {
   });
 }
 
+/**
+ * Adds a change emitter, .changes$, to the given prototype
+ * @param prototype The prototype to add .changes$ to
+ */
 function addChangeEmitter(prototype: any) {
   if (!Object.getOwnPropertyDescriptor(prototype, 'changes$')) {
     Object.defineProperty(prototype, 'changes$', {
@@ -161,6 +156,9 @@ function addChangeEmitter(prototype: any) {
   }
 }
 
+/**
+ * A list of paper.js classes to add changes$ emitters to
+ */
 const toIntercept = [
   paper.Item,
   paper.Path,
@@ -177,4 +175,5 @@ const toIntercept = [
   paper.Size,
 ].map((con) => con.prototype);
 
+// Add change emitters
 toIntercept.forEach((proto) => interceptAll(proto));
