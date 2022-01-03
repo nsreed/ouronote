@@ -70,11 +70,7 @@ import 'gun';
 import 'gun/nts';
 import 'gun/sea';
 
-// if (RADISK_ENABLE) {
-// import 'gun/lib/radix';
-// import 'gun/lib/radisk';
 import 'gun/lib/store';
-// }
 
 import 'gun/lib/rindexed';
 import 'gun/lib/load';
@@ -84,15 +80,10 @@ import 'gun/lib/time';
 import 'gun/lib/not';
 import 'gun/lib/unset';
 
-// if (WEBRTC_ENABLE) {
-// import 'gun/lib/webrtc';
-// }
-
 /* PAPER.JS OVERRIDES
  * Injects rxjs-style property change observables into paper.js
  */
 // TODO move paper.js overrides to a better place
-// FIXME this approach is breaking --prod builds
 // These are here to make sure they're done before the app loads
 
 import * as paper from 'paper';
@@ -178,7 +169,7 @@ const toIntercept = [
   paper.Shape.Circle,
   paper.Shape.Ellipse,
   paper.Shape.Rectangle,
-  paper.Style,
+  // paper.Style, // TODO: in case we need `change$` event emitter for Style, this has to be fixed in the --prod build
   paper.Group,
   paper.Gradient,
   paper.Color,
@@ -187,13 +178,3 @@ const toIntercept = [
 ].map((con) => con.prototype);
 
 toIntercept.forEach((proto) => interceptAll(proto));
-
-function addGunProperty(prototype: any) {
-  // console.log('addGunProperty', prototype.constructor.name);
-  const allSettable = getProtoSettable(prototype);
-  allSettable.forEach((settable: any[]) => {
-    // console.log(settable[1]);
-  });
-}
-
-toIntercept.forEach(addGunProperty);
