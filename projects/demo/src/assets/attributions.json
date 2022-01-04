@@ -9,7 +9,7 @@
         "license": "CC BY 3.0",
         "licenseURL": "https://creativecommons.org/licenses/by/3.0/",
         "adapted": true,
-        "file": "/assets/thenounproject/noun-lasso-1471841.svg",
+        "url": "https://thenounproject.com/icon/lasso-1471841/",
         "attribution": "Lasso by Éléonore Sabaté from NounProject.com",
         "modifications": "removed embedded signature line, zoomed in, increased stroke width"
       }
@@ -25,7 +25,7 @@
         "license": "Apache License, Version 2.0.",
         "licenseURL": "http://www.apache.org/licenses/LICENSE-2.0",
         "adapted": false,
-        "file": "/assets/web-fonts/",
+        "url": "https://fonts.google.com/specimen/Roboto",
         "attribution": "Roboto (font) by Christian Robertson from fonts.google.com",
         "modifications": "We are hosting them locally instead of pulling from the google API"
       }
