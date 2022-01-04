@@ -58,6 +58,11 @@ export class PaperPair {
     return this.childCache[key] === undefined;
   }
 
+  /**
+   * Gets a child of this paper object with the provided key
+   * @param jsonOrKey The key of the child to find
+   * @returns The child with the matching key
+   */
   getChild(jsonOrKey: any) {
     // TODO undo + cache invalidation is the hardest problem
     if (!this.childCache[jsonOrKey]) {

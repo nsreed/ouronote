@@ -184,6 +184,7 @@ export class ItemPair extends PaperPair {
     this.graphValue$.subscribe((json) => this.onGraph(json));
     this.graphRemove$.subscribe((json) => {
       if (this.item.isInserted()) {
+        this.logger.log('item removed.');
         this.item.remove();
       }
     });
@@ -330,8 +331,9 @@ export class ItemPair extends PaperPair {
       if (child && !json) {
         // child was removed - this is handled by the child
         this.logger.verbose(`child ${key} was removed.`);
+        // child.remove();
         // this.childSouls.delete(key);
-        delete this.childCache[key]; // TODO verify this works with erase
+        // delete this.childCache[key];
       } else if (json && !child) {
         // child was added
         this.logger.verbose(`child ${key} was added.`);
