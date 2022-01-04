@@ -14,5 +14,21 @@
         "modifications": "removed embedded signature line, zoomed in, increased stroke width"
       }
     ]
+  },
+  {
+    "name": "Google Fonts",
+    "url": "https://fonts.google.com/",
+    "licenseURL": "",
+    "meta": "Google Fonts is a library of 1,358 free licensed font families and APIs for convenient use via CSS and Android.",
+    "resources": [
+      {
+        "license": "Apache License, Version 2.0.",
+        "licenseURL": "http://www.apache.org/licenses/LICENSE-2.0",
+        "adapted": false,
+        "file": "/assets/web-fonts/",
+        "attribution": "Roboto (font) by Christian Robertson from fonts.google.com",
+        "modifications": "We are hosting them locally instead of pulling from the google API"
+      }
+    ]
   }
 ]
