@@ -91,7 +91,7 @@
               ],
               "optimization": true,
               "outputHashing": "all",
-              "sourceMap": false,
+              "sourceMap": true,
               "namedChunks": true,
               "extractLicenses": true,
               "vendorChunk": false,
