@@ -100,6 +100,7 @@ export class ItemPair extends PaperPair {
       this.isImportingJSON ? this.afterImportJSON$.pipe(mapTo(item)) : of(item)
     )
   );
+
   afterAddChild$ = after$(this.item, 'addChild').pipe(
     map(returned),
     filter((item) => {
@@ -189,9 +190,6 @@ export class ItemPair extends PaperPair {
     this.onLocalChildren();
     this.childrenBuffer$.subscribe((data) => this.onGraphChildren(data));
 
-    // fromEvent(this.item, 'strokeColorChange').subscribe((change) => {
-    //   console.log('%s got native change', this.item.toString(), change);
-    // });
     (this.item as any).changes$
       .pipe(
         tap(() => {
@@ -241,6 +239,11 @@ export class ItemPair extends PaperPair {
     });
   }
 
+  /**
+   * Processes a child of this item. Creates a Pair object for the child if it doesn't have one.
+   * @param localChild the child which should be processed
+   * @returns void
+   */
   onLocalChild(localChild: paper.Item) {
     if (!localChild) {
       this.logger.warn('null child');
@@ -250,25 +253,22 @@ export class ItemPair extends PaperPair {
       this.logger.warn('tried to pair an ignored child!');
       return;
     }
+
     const childObj = localChild as any;
     if (!childObj.pair) {
-      let cg;
+      let childNode;
       if (!childObj.data.soul) {
         // This is a new child, not yet inserted in the graph
         const soul = getUUID(this.chain).replace(/~.*/, '');
-        cg = this.children.get(soul);
+        childNode = this.children.get(soul);
         childObj.data.soul = soul;
-        // cg = this.children.set(this.getShallow(childObj));
-        // cg.once().subscribe((v) => {
-        //   this.logger.log('exported child', v);
-        //   const soul = Gun.node.soul(v as any);
-        //   childObj.data.soul = soul;
-        // });
       } else {
-        cg = this.children.get(childObj.data.soul);
+        // This is a cached child
+        childNode = this.children.get(childObj.data.soul);
       }
+      // Create a new ItemPair for the child
       const childPair = new ItemPair(
-        cg,
+        childNode,
         localChild,
         this.project,
         this.scope,
@@ -276,9 +276,8 @@ export class ItemPair extends PaperPair {
       );
       childObj.pair = childPair;
     } else {
-      // What to do when the added child already has an associated pair
-      const chP = childObj.pair as ItemPair;
-      chP.chain.put(chP.getShallow());
+      this.logger.log('locally added child has an associated pair.');
+      childObj.pair.doSave();
     }
   }
 
@@ -305,17 +304,23 @@ export class ItemPair extends PaperPair {
     }
   }
 
+  /**
+   * Processes changes to children from the gun graph
+   * @param data the list of children to process
+   * @returns void
+   */
   onGraphChildren(data: any[]) {
     if (data.length === 0) {
       return;
     }
-    // this.logger.log(
-    //   'onGraphChildren',
-    //   data
-    //     .map((v) => v[0] as Partial<paper.Item>)
-    //     .filter((i) => i !== null)
-    //     .map((i) => `${i.className} ${Gun.node.soul(i as any)}`)
-    // );
+    this.logger.verbose(
+      'onGraphChildren',
+      data
+        .map((v) => v[0] as Partial<paper.Item>)
+        .filter((i) => i !== null)
+        .map((i) => `${i.className} ${Gun.node.soul(i as any)}`)
+    );
+
     const toInsert = [] as paper.Item[];
     data.forEach((childVK) => {
       const json = childVK[0];
@@ -326,6 +331,7 @@ export class ItemPair extends PaperPair {
         // child was removed - this is handled by the child
         this.logger.verbose(`child ${key} was removed.`);
         // this.childSouls.delete(key);
+        delete this.childCache[key]; // TODO verify this works with erase
       } else if (json && !child) {
         // child was added
         this.logger.verbose(`child ${key} was added.`);
@@ -345,7 +351,8 @@ export class ItemPair extends PaperPair {
               json,
             }
           );
-          this.item.addChild(child);
+          // this.item.addChild(child); // FIXME is this breaking undo erase???
+          toInsert.push(child); // TODO did this fix undo erase???
         }
       }
     });
