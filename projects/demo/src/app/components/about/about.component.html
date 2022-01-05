@@ -43,7 +43,7 @@
     <blockquote>{{ source.meta }}</blockquote>
     <div>
       <ng-container *ngFor="let resource of source.resources">
-        <a href="{{ resource.file }}" target="_blank">{{
+        <a href="{{ resource.url }}" target="_blank">{{
           resource.attribution
         }}</a>
         &mdash;
