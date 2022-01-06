@@ -60,7 +60,9 @@ import { WelcomeComponent } from './welcome/welcome.component';
 const RADISK_LOCAL = localStorage.getItem('RADISK_ENABLE');
 const RADISK_ENABLE = RADISK_LOCAL === null ? true : !!JSON.parse(RADISK_LOCAL);
 const WEBRTC_LOCAL = localStorage.getItem('WEBRTC_ENABLE');
-const WEBRTC_ENABLE = WEBRTC_LOCAL === null ? true : !!JSON.parse(WEBRTC_LOCAL);
+// Default to false for now
+const WEBRTC_ENABLE =
+  WEBRTC_LOCAL === null ? false : !!JSON.parse(WEBRTC_LOCAL);
 
 @NgModule({
   declarations: [
