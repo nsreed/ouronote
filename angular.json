@@ -28,16 +28,6 @@
             "tsConfig": "projects/ng-gun/tsconfig.spec.json",
             "karmaConfig": "projects/ng-gun/karma.conf.js"
           }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "projects/ng-gun/tsconfig.lib.json",
-              "projects/ng-gun/tsconfig.spec.json"
-            ],
-            "exclude": ["**/node_modules/**"]
-          }
         }
       }
     },
@@ -147,17 +137,6 @@
             "scripts": []
           }
         },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "projects/demo/tsconfig.app.json",
-              "projects/demo/tsconfig.spec.json",
-              "projects/demo/e2e/tsconfig.json"
-            ],
-            "exclude": ["**/node_modules/**"]
-          }
-        },
         "e2e": {
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
@@ -197,16 +176,6 @@
             "tsConfig": "projects/ng-gun-forms/tsconfig.spec.json",
             "karmaConfig": "projects/ng-gun-forms/karma.conf.js"
           }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "projects/ng-gun-forms/tsconfig.lib.json",
-              "projects/ng-gun-forms/tsconfig.spec.json"
-            ],
-            "exclude": ["**/node_modules/**"]
-          }
         }
       }
     },
@@ -234,16 +203,6 @@
             "main": "projects/log/src/test.ts",
             "tsConfig": "projects/log/tsconfig.spec.json",
             "karmaConfig": "projects/log/karma.conf.js"
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "projects/log/tsconfig.lib.json",
-              "projects/log/tsconfig.spec.json"
-            ],
-            "exclude": ["**/node_modules/**"]
           }
         }
       }
