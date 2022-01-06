@@ -250,7 +250,7 @@ export function deGunifyProject(node: GunChain, project: paper.Project) {
         console.log(stringed);
         // project.clear();
         // project.importJSON(stringed);
-      } catch (e) {
+      } catch (e: any) {
         console.warn(e.message);
       }
     });

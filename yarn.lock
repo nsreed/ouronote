@@ -121,12 +121,12 @@
     ora "5.4.1"
     rxjs "6.6.7"
 
-"@angular-material-components/color-picker@^5.0.1":
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/@angular-material-components/color-picker/-/color-picker-5.0.2.tgz#44fbbb87d2ee666217db855742e55e4bdc475b14"
-  integrity sha512-JT7KUwWHgRKJLbD4zgCV3v4/HkUOFly+QtxCtkcfdG0FDD8dhY3F+W2FTH/VXPVTU5NUNhyfCMTVaGV3iByyXA==
+"@angular-material-components/color-picker@^7.0.1":
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/@angular-material-components/color-picker/-/color-picker-7.0.1.tgz#f69d0e3601c975a26ece9781655277c67979bbdc"
+  integrity sha512-BgJmZqdzk+FFcHlpwRnti38reXYF52aq9cFoB3fKqs1nS45N8Hz1zM1ycQy3rBSjObogtdBSC8T7kFF1cqpzRg==
   dependencies:
-    tslib "^2.0.0"
+    tslib "^2.3.0"
 
 "@angular/animations@~13.1.1":
   version "13.1.1"
@@ -135,12 +135,12 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/cdk@^12.2.13":
-  version "12.2.13"
-  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-12.2.13.tgz#1fdbe814adfd6b4ff906c6d9c4c6df07b83f09d8"
-  integrity sha512-zSKRhECyFqhingIeyRInIyTvYErt4gWo+x5DQr0b7YLUbU8DZSwWnG4w76Ke2s4U8T7ry1jpJBHoX/e8YBpGMg==
+"@angular/cdk@^13.1.1":
+  version "13.1.1"
+  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-13.1.1.tgz#bfc1050df357a26bda03410d821ae05826dcf88e"
+  integrity sha512-66PyWg+zKdxTe3b1pc1RduT8hsMs/hJ0aD0JX0pSEWVq7O0OJWJ5f0z+Mk03T9tAERA3NK1GifcKEDq5k7R2Zw==
   dependencies:
-    tslib "^2.2.0"
+    tslib "^2.3.0"
   optionalDependencies:
     parse5 "^5.0.0"
 
@@ -231,12 +231,12 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/material@^12.2.13":
-  version "12.2.13"
-  resolved "https://registry.yarnpkg.com/@angular/material/-/material-12.2.13.tgz#7f92f95002a2abaa8bb115ca8f0809bdc3f7d3fc"
-  integrity sha512-6g2GyN4qp2D+DqY2AwrQuPB3cd9gybvQVXvNRbTPXEulHr+LgGei00ySdFHFp6RvdGSMZ4i3LM1Fq3VkFxhCfQ==
+"@angular/material@^13.1.1":
+  version "13.1.1"
+  resolved "https://registry.yarnpkg.com/@angular/material/-/material-13.1.1.tgz#4d2d5a1ea6527b282beb26de6491eb3a221fab2a"
+  integrity sha512-kKWZBhnzuBYAVO1nrkqEaVTCJ2onEWs+tzAJDIlmbo9USiQyVCnFXx+rs86m4kRUxeAAZ9mcW5BGJr6oy5ClCA==
   dependencies:
-    tslib "^2.2.0"
+    tslib "^2.3.0"
 
 "@angular/platform-browser-dynamic@~13.1.1":
   version "13.1.1"
