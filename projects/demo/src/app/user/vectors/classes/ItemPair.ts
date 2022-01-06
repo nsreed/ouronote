@@ -234,6 +234,9 @@ export class ItemPair extends PaperPair {
       });
   }
 
+  /**
+   * Processes all children of this item. See: onLocalChild()
+   */
   onLocalChildren() {
     this.item.children?.forEach((item) => {
       this.onLocalChild(item);
@@ -282,6 +285,11 @@ export class ItemPair extends PaperPair {
     }
   }
 
+  /**
+   * Applies incoming changes from GUN to this item
+   * @param json The GUN value for this item
+   * @returns void
+   */
   onGraph(json: any) {
     this.graphValue = json;
     if (this.editing) {
@@ -367,6 +375,9 @@ export class ItemPair extends PaperPair {
     }
   }
 
+  /**
+   * Handles this item's .remove()
+   */
   onLocalRemove() {
     if (this.item.data.ignore) {
       return;

@@ -54,10 +54,6 @@ export class PaperPair {
     });
   }
 
-  hasChild(key: string) {
-    return this.childCache[key] === undefined;
-  }
-
   /**
    * Gets a child of this paper object with the provided key
    * @param jsonOrKey The key of the child to find
@@ -74,6 +70,11 @@ export class PaperPair {
     return this.childCache[jsonOrKey];
   }
 
+  /**
+   * Prepares GUN data for paper import
+   * @param json The object to sanitize
+   * @param key The GUN 'key' for this item
+   */
   scrubJSON(json: any, key: string) {
     const scrubbed = { ...json } as any;
     delete scrubbed._;
@@ -143,7 +144,13 @@ export class PaperPair {
     return child;
   }
 
+  /**
+   * Requests this object be persisted to GUN
+   * @param properties An array of property names to save
+   * @returns void
+   */
   save(properties?: string[]) {
+    this.logger.verbose('save()');
     if (this.ctx?.data?.ignore) {
       this.logger.warn('tried saving ignored item');
       return;
@@ -164,6 +171,10 @@ export class PaperPair {
     this.save$.emit();
   }
 
+  /**
+   * Persists this item's JSON to GUN
+   * @param json the object value to save
+   */
   protected doSave(json: any) {
     // ...
   }
