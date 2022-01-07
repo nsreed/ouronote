@@ -74,7 +74,8 @@
   },
   "nodemonConfig": {
     "ignore": [
-      "radata/*"
+      "radata/*",
+      ".angular/*"
     ]
   },
   "engines": {
