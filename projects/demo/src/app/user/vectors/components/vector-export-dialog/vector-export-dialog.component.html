@@ -1,9 +1,13 @@
+<div mat-dialog-title>Download Image</div>
 <mat-dialog-content>
   <p>Preview</p>
-  <app-vector-preview [vector]="vector"></app-vector-preview>
+  <app-vector-preview #Preview="appVectorPreview" [vector]="vector"></app-vector-preview>
 </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-raised-button color="primary" (click)="download()">
-    Download
+    Download JSON
+  </button>
+  <button mat-raised-button (click)="downloadImage()">
+    Download PNG
   </button>
 </mat-dialog-actions>

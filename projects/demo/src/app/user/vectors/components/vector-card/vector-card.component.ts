@@ -93,6 +93,8 @@ export class VectorCardComponent implements OnInit {
       data: {
         vector: this.vector,
       },
+      width: '80%',
+      height: '80%',
     });
   }
 

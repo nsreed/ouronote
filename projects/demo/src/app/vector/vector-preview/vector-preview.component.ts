@@ -13,6 +13,7 @@ import { PaperDirective } from 'projects/demo/src/app/vector/paper.directive';
   selector: 'app-vector-preview',
   templateUrl: './vector-preview.component.html',
   styleUrls: ['./vector-preview.component.scss'],
+  exportAs: 'appVectorPreview',
 })
 export class VectorPreviewComponent implements OnInit, AfterViewInit {
   private _vector!: any;
@@ -29,6 +30,11 @@ export class VectorPreviewComponent implements OnInit, AfterViewInit {
   public get project(): paper.Project {
     return this.paperDirective.project;
   }
+
+  public get canvas() {
+    return this.paperDirective.canvas;
+  }
+
   constructor() {}
 
   ngOnInit(): void {}

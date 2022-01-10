@@ -27,6 +27,11 @@ export class PaperDirective implements OnInit {
     private snackBar: MatSnackBar,
     private logger: LogService
   ) {}
+
+  get canvas(): HTMLCanvasElement {
+    return this.el.nativeElement;
+  }
+
   @Output()
   appPaperChange = new EventEmitter();
 
@@ -186,7 +191,7 @@ export class PaperDirective implements OnInit {
       this.project.view.element.parentElement?.scrollWidth ||
       this.project.view.element.scrollWidth;
 
-    this.project.view.viewSize.width += 0.0001;
+    this.project.view.viewSize.width -= this.project.view.viewSize.width;
     this.project.view.viewSize.width = tempWidth;
 
     // if (this.project.view.element.parentElement !== null) {
@@ -197,7 +202,7 @@ export class PaperDirective implements OnInit {
     tempHeight =
       this.project.view.element.parentElement?.scrollHeight ||
       this.project.view.element.scrollHeight;
-    this.project.view.viewSize.height += 0.0001;
+    this.project.view.viewSize.height -= this.project.view.viewSize.height;
     this.project.view.viewSize.height = tempHeight;
   }
 

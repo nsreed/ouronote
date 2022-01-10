@@ -1,3 +1,18 @@
-app-vector-preview {
+:host {
+  display: flex;
+  flex-direction: column;
   height: 100%;
+  mat-dialog-content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    app-vector-preview {
+      flex: 1 1 0%;
+      width: 100%;
+      outline: 1px solid black;
+    }
+    & > * {
+      margin: 1px 0;
+    }
+  }
 }

@@ -45,6 +45,7 @@ import { timeout } from 'rxjs/operators';
 import { SettingsDialogComponent } from '../components/settings-dialog/settings-dialog.component';
 import { MatTooltip } from '@angular/material/tooltip';
 import { timer } from 'rxjs';
+import { ElementRef } from '@angular/core';
 
 const VECTOR_PAPER_JSON_KEY = 'graph';
 
@@ -96,7 +97,8 @@ export class EditVectorComponent
     private logger: LogService,
     public userService: UserService,
     private cb: ClipboardService,
-    private snackbar: MatSnackBar
+    private snackbar: MatSnackBar,
+    private el: ElementRef
   ) {
     super(vectorService, route, ngGun, userService);
     this.logger = logger.supplemental('edit-vector');
@@ -265,6 +267,20 @@ export class EditVectorComponent
     const title = await this.vectorNode.get('title').once().toPromise();
     const updated = new Date(this.vectorNode.updateTime).toISOString();
     saveAs(jsonBlob, `${username}${title}-${updated}.json`);
+  }
+
+  async downloadImage() {
+    const canvas = this.paperDirective.canvas;
+    const data = canvas.toDataURL();
+    const tmpLink = document.createElement('a');
+    const username = this.userService.user.alias + '-' || '';
+    const title = await this.vectorNode.get('title').once().toPromise();
+    const updated = new Date(this.vectorNode.updateTime).toISOString();
+    tmpLink.download = `${username}${title}-${updated}.png`;
+    tmpLink.href = data;
+    this.el.nativeElement.appendChild(tmpLink);
+    tmpLink.click();
+    this.el.nativeElement.removeChild(tmpLink);
   }
 
   importPaper() {
