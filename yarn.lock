@@ -4270,9 +4270,9 @@ flush-write-stream@^1.0.0:
     readable-stream "^2.3.6"
 
 follow-redirects@^1.0.0:
-  version "1.14.0"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.0.tgz#f5d260f95c5f8c105894491feee5dc8993b402fe"
-  integrity sha512-0vRwd7RKQBTt+mgu87mtYeofLFZpTas2S9zY+jIeuLJMNvudIgF52nr19q40HOwH5RrhWIPuj9puybzSJiRrVg==
+  version "1.14.7"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.7.tgz#2004c02eb9436eee9a21446a6477debf17e81685"
+  integrity sha512-+hbxoLbFMbRKDwohX8GkTataGqO6Jb7jGwpAlwgy2bIz25XtRm7KEzJM76R1WiNT5SwZkX4Y75SwBolkpmE7iQ==
 
 for-in@^1.0.2:
   version "1.0.2"
@@ -4546,10 +4546,10 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.6.tgz#ff040b2b0853b23c3d31027523706f1885d76bee"
   integrity sha512-nTnJ528pbqxYanhpDYsi4Rd8MAeaBA67+RZ10CM1m3bTAVFEDcd5AuA4a6W5YkGZ1iNXHzZz8T6TBKLeBuNriQ==
 
-gun@^0.2020.1235:
+"gun@https://github.com/amark/gun.git":
   version "0.2020.1235"
-  resolved "https://registry.yarnpkg.com/gun/-/gun-0.2020.1235.tgz#5b6cdfb383b8e7d5e430f12af8cc59621d0b6191"
-  integrity sha512-aba6s0X/MCCOByt0T3VrMzMMUEblfN2aLV2bAmIQWjkB7SKnm07zAZWigljwI69Rb5sOw7C1G116UyvCM2p9kA==
+  uid "852b77f49a10d3105400e7057908eeca30c4b679"
+  resolved "https://github.com/amark/gun.git#852b77f49a10d3105400e7057908eeca30c4b679"
   dependencies:
     ws "^7.2.1"
   optionalDependencies:
