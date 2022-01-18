@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "loiane.angular-extension-pack",
+    "ms-azuretools.vscode-docker",
+    "p1c2u.docker-compose",
+    "pmneo.tsimporter",
+    "mike-co.import-sorter",
+    "formulahendry.auto-rename-tag",
+    "aaron-bond.better-comments"
+  ]
+}
