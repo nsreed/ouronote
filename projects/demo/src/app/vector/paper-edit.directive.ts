@@ -10,6 +10,7 @@ import {
 } from '../user/vectors/tools/select';
 import { ShapeTool } from '../user/vectors/tools/shape';
 import { PaperDirective } from './paper.directive';
+import { EyedropperTool } from '../user/vectors/tools/eyedropper';
 
 @Directive({
   selector: '[appPaperEdit]',
@@ -18,7 +19,7 @@ import { PaperDirective } from './paper.directive';
 export class PaperEditDirective extends PaperDirective {
   tool$ = propertyChange$(this.scope, 'tool').pipe(shareReplay(1));
   public areaSelect = new RectangleSelectTool(this.scope as any);
-  public lassoSelect = new LassoSelectTool(this.scope as any); // FIXME fix lasso select
+  public lassoSelect = new LassoSelectTool(this.scope as any);
   public pen = new PenTool(this.scope as any);
   public eraser = new EraserTool(this.scope as any);
   public shape = new ShapeTool(this.scope as any);
