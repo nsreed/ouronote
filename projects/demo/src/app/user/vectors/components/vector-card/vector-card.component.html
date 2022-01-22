@@ -1,37 +1,17 @@
 <mat-card *ngIf="vector; else NoVector">
   <mat-card-title>
     <ng-container *ngIf="!editing; else Editing">
-      <a
-        id="Title"
-        fxFlex="1 1 auto"
-        [routerLink]="['/user/vectors', vector | soul, 'edit']"
-        [matTooltip]="vector.title"
-        >{{ vector.title }}</a
-      >
-      <button
-        mat-icon-button
-        (click)="editing = true"
-        [disabled]="!(canEditTitle$ | async)"
-      >
+      <a id="Title" fxFlex="1 1 auto" [routerLink]="['/user/vectors', vector | soul, 'edit']"
+        [matTooltip]="vector.title">{{ vector.title }}</a>
+      <button mat-icon-button (click)="editing = true" [disabled]="!(canEditTitle$ | async)">
         <mat-icon>edit</mat-icon>
-      </button></ng-container
-    >
+      </button>
+    </ng-container>
     <ng-template #Editing>
       <!-- using (keydown) because it can capture focus-changing key events (such as escape)-->
-      <input
-        #TitleInput
-        [formControl]="titleCtl"
-        fxFlex="1 1 auto"
-        class="mat-card-title"
-        id="TitleInput"
-        (keydown)="onTitleKey($event)"
-        autocomplete="off"
-      />
-      <button
-        mat-icon-button
-        [disabled]="!titleCtl.valid"
-        (click)="confirmEdit()"
-      >
+      <input #TitleInput [formControl]="titleCtl" fxFlex="1 1 auto" class="mat-card-title" id="TitleInput"
+        (keydown)="onTitleKey($event)" autocomplete="off" />
+      <button mat-icon-button [disabled]="!titleCtl.valid" (click)="confirmEdit()">
         <mat-icon>check</mat-icon>
       </button>
       <button mat-icon-button (click)="cancelEdit()">
@@ -39,32 +19,23 @@
       </button>
     </ng-template>
   </mat-card-title>
-  <mat-card-subtitle
-    >@{{
-      vector.owner ? (vector | owner | async) : "(looking up owner)"
+  <mat-card-subtitle>@{{
+    vector.owner ? (vector | owner | async) : "(looking up owner)"
     }}
-    &mdash; {{ vector | updated | date }}</mat-card-subtitle
-  >
+    &mdash; {{ vector | updated | date }}</mat-card-subtitle>
   <mat-card-actions>
-    <button
-      mat-raised-button
-      [routerLink]="['/user/vectors', vector | soul, 'edit']"
-    >
+    <button mat-raised-button [routerLink]="['/user/vectors', vector | soul, 'edit']">
       open
     </button>
     <button mat-icon-button (click)="remove()">
       <mat-icon>delete</mat-icon>
     </button>
-    <button
-      *ngIf="false"
-      mat-icon-button
-      [routerLink]="['/user/vectors', vector | soul, 'permissions']"
-    >
+    <button *ngIf="false" mat-icon-button [routerLink]="['/user/vectors', vector | soul, 'permissions']">
       <mat-icon>settings</mat-icon>
     </button>
-    <button mat-icon-button (click)="download()">
+    <!-- <button mat-icon-button (click)="download()">
       <mat-icon>file_download</mat-icon>
-    </button>
+    </button> -->
   </mat-card-actions>
 </mat-card>
 <ng-template #NoVector>
