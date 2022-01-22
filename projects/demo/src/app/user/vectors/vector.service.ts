@@ -140,11 +140,7 @@ export class VectorService {
     const vectorPair: any = await this.sea.pair().toPromise();
     const vector = await this.initializeCertificates(value, vectorPair);
 
-    const vectorAuthRoot = new NgGunService(
-      this.gunOpts,
-      this.ngZone,
-      this.router
-    );
+    const vectorAuthRoot = new NgGunService(this.gunOpts, this.ngZone);
 
     const otp = new EventEmitter();
     vectorAuthRoot.gun.user().auth(

@@ -142,11 +142,7 @@ export class CreateCertificateComponent implements OnInit {
           pairRestore$
             .pipe(delay(1000))
             .subscribe((a: any) => sessionStorage.setItem('pair', a));
-          const detachedGun = new NgGunService(
-            this.gunOpts,
-            this.ngZone,
-            this.router
-          );
+          const detachedGun = new NgGunService(this.gunOpts, this.ngZone);
           (detachedGun.gun.user() as any).auth(recordPair, async () => {
             const v = detachedGun.gun.user();
             const certs = v.get('certs');

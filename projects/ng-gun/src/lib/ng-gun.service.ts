@@ -1,14 +1,11 @@
 import { Inject, Injectable, NgZone } from '@angular/core';
-
 import * as Gun from 'gun';
-import { IGunChainReference } from 'gun/types/chain';
+import { SEA } from 'gun';
 import { IGunConstructorOptions } from 'gun/types/options';
+import { map } from 'rxjs/operators';
 import { GunChain } from './classes/GunChain';
 import { GunPeers } from './GunPeers';
-import { SEA } from 'gun';
-import { ReplaySubject, Subject } from 'rxjs';
-import { shareReplay, take, map } from 'rxjs/operators';
-import { Router } from '@angular/router';
+
 export const GunOptions = 'gun-options';
 @Injectable()
 export class NgGunService<
@@ -24,23 +21,13 @@ export class NgGunService<
   constructor(
     @Inject(GunOptions)
     public readonly gunOptions: IGunConstructorOptions,
-    ngZone: NgZone,
-    public router: Router
+    ngZone: NgZone
   ) {
     super(
       ngZone,
       new Gun(JSON.parse(JSON.stringify(gunOptions))) as any,
       null as any
     );
-    this.auth().auth$.subscribe((ack: any) => {
-      const redirect = sessionStorage.getItem('redirect');
-      if (redirect) {
-        this.logger.log('redirecting to %s', redirect);
-        sessionStorage.removeItem('redirect');
-        // router.navigateByUrl(redirect);
-        window.location.href = redirect;
-      }
-    });
   }
 
   findAlias(alias: string) {
@@ -75,11 +62,7 @@ export class NgGunService<
       .once()
       .toPromise();
     const ownerPair: any = await SEA.decrypt(owner, this.auth().is);
-    const detached = new NgGunService(
-      this.gunOptions,
-      this.ngZone,
-      this.router
-    );
+    const detached = new NgGunService(this.gunOptions, this.ngZone);
     const a = await new Promise((res, rej) => {
       (detached.gun.user() as any).auth(ownerPair, (ack: any) => {
         res(ack.sea);

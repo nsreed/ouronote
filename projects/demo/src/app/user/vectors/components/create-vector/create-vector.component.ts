@@ -86,11 +86,7 @@ export class CreateVectorComponent implements OnInit {
       });
 
       // Create a detached gun instance for the vector itself
-      const detachedGun = new NgGunService(
-        this.gunOpts,
-        this.ngZone,
-        this.router
-      );
+      const detachedGun = new NgGunService(this.gunOpts, this.ngZone);
 
       // login as that vector
       const u = detachedGun.gun.user() as any;

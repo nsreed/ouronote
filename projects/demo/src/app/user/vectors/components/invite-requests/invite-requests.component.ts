@@ -106,11 +106,7 @@ export class InviteRequestsComponent implements OnInit {
                   .subscribe((a: any) => sessionStorage.setItem('pair', a));
 
                 this.logger.log('created certificate %o', certs);
-                const detachedGun = new NgGunService(
-                  this.gunOpts,
-                  this.ngZone,
-                  this.router
-                );
+                const detachedGun = new NgGunService(this.gunOpts, this.ngZone);
                 // this.chainDirective.chain?.get('certs').put(certs as never);
                 (detachedGun.gun.user() as any).auth(pair, () => {
                   this.logger.log('secondary auth succeeded');

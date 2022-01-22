@@ -73,6 +73,16 @@ export class AppComponent {
         //   JSON.stringify(lastActivated.snapshot, ['children', 'data'])
         // );
       });
+
+    this.ngGun.auth().auth$.subscribe((ack: any) => {
+      const redirect = sessionStorage.getItem('redirect');
+      if (redirect) {
+        this.logger.log('redirecting to %s', redirect);
+        sessionStorage.removeItem('redirect');
+        // router.navigateByUrl(redirect);
+        window.location.href = redirect;
+      }
+    });
   }
 
   logout() {
