@@ -55,6 +55,14 @@ export class ProjectPair extends PaperPair {
     // project.layers
   }
 
+  destroy() {
+    super.destroy();
+    this.chain.gun.off();
+    this.project.layers.forEach((l: any) => {
+      l.pair?.destroy();
+    });
+  }
+
   getChild(jsonOrKey: any): any {
     const child = this.project.layers.find((l) => l.data.soul === jsonOrKey);
     return child;

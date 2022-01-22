@@ -3,6 +3,7 @@ import {
   AfterViewInit,
   Component,
   NgZone,
+  OnDestroy,
   OnInit,
   ViewChild,
 } from '@angular/core';
@@ -55,7 +56,7 @@ const VECTOR_PAPER_JSON_KEY = 'graph';
 })
 export class EditVectorComponent
   extends RouteVectorDirective
-  implements OnInit, AfterViewInit
+  implements OnInit, AfterViewInit, OnDestroy
 {
   @ViewChild('paper')
   private paperDirective!: PaperEditDirective;
@@ -102,6 +103,9 @@ export class EditVectorComponent
   ) {
     super(vectorService, route, ngGun, userService);
     this.logger = logger.supplemental('edit-vector');
+  }
+  ngOnDestroy(): void {
+    this.projectPair.destroy();
   }
 
   ngAfterViewInit(): void {

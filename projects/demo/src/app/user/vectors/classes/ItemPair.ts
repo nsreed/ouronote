@@ -134,6 +134,13 @@ export class ItemPair extends PaperPair {
     this.setup();
   }
 
+  destroy() {
+    super.destroy();
+    this.item.children?.forEach((c: any) => {
+      c.pair?.destroy();
+    });
+  }
+
   /**
    * Returns a deep copy of the item for persistence to gun
    * @param item the item to get a deep object representation from

@@ -4,6 +4,7 @@ import {
   OnInit,
   AfterViewInit,
   ViewChild,
+  OnDestroy,
 } from '@angular/core';
 import { ProjectPair } from '../../user/vectors/classes/ProjectPair';
 import { LogService } from 'projects/log/src/public-api';
@@ -15,7 +16,9 @@ import { PaperDirective } from 'projects/demo/src/app/vector/paper.directive';
   styleUrls: ['./vector-preview.component.scss'],
   exportAs: 'appVectorPreview',
 })
-export class VectorPreviewComponent implements OnInit, AfterViewInit {
+export class VectorPreviewComponent
+  implements OnInit, AfterViewInit, OnDestroy
+{
   private _vector!: any;
   @ViewChild(PaperDirective)
   private paperDirective!: PaperDirective;
@@ -48,5 +51,9 @@ export class VectorPreviewComponent implements OnInit, AfterViewInit {
       this.paperDirective.scope,
       new LogService()
     );
+  }
+
+  ngOnDestroy(): void {
+    this.projectPair.destroy();
   }
 }
