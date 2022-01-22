@@ -5,6 +5,16 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "chrome",
+      "request": "launch",
+      "name": "ouronote - chrome",
+      "url": "http://localhost:4200",
+      "webRoot": "${workspaceFolder}",
+      "linux": {
+        "runtimeExecutable": "/snap/bin/chromium"
+      }
+    },
+    {
       "name": "Attach to Chrome",
       "port": 9222,
       "request": "attach",
@@ -21,16 +31,6 @@
       "name": "Launch Firefox against localhost",
       "url": "http://localhost:4200",
       "webRoot": "${workspaceFolder}"
-    },
-    {
-      "type": "chrome",
-      "request": "launch",
-      "name": "Launch Chrome against localhost",
-      "url": "http://localhost:4200",
-      "webRoot": "${workspaceFolder}",
-      "linux": {
-        "runtimeExecutable": "/snap/bin/chromium"
-      }
     }
   ]
 }
