@@ -1,7 +1,13 @@
 <h1>ouronote</h1>
 <form [formGroup]="form">
   <mat-form-field>
-    <input matInput formControlName="alias" placeholder="username" />
+    <input
+      id="alias"
+      name="alias"
+      matInput
+      formControlName="alias"
+      placeholder="username"
+    />
     <mat-label>username</mat-label>
     <span matPrefix>@</span>
     <!-- <mat-hint>{{
