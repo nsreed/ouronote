@@ -2,11 +2,9 @@
 <div matDialogContent>
   <div fxLayout="column">
     <h2>Description</h2>
-    <textarea
-      matInput
+    <textarea matInput
       placeholder="Please provide a description of the problem and what you were doing/what you expected when you encountered it."
-      [formControl]="descriptionCtl"
-    ></textarea>
+      [formControl]="descriptionCtl"></textarea>
     <h2>Options</h2>
     <form [formGroup]="includeForm">
       <h3>Choose what information to include in the report:</h3>
@@ -16,9 +14,7 @@
       <mat-checkbox formControlName="peers">Peer Information</mat-checkbox>
       A list of peers that the application was connected to at the time of the
       bug report.
-      <mat-checkbox formControlName="gunOpts"
-        >Database Configuration</mat-checkbox
-      >
+      <mat-checkbox formControlName="gunOpts">Database Configuration</mat-checkbox>
       Contains information about the relay peers that the database is configured
       to connect to, as well as system configuration options relating to storage
       and communication.
@@ -40,10 +36,6 @@
   <button mat-icon-button (click)="download()" matTooltip="Download .json">
     <mat-icon>file_download</mat-icon>
   </button>
-  <a
-    mat-button
-    target="_blank"
-    href="https://www.github.com/nsreed/ouronote/issues"
-    >Create a github issue</a
-  >
+  <a mat-button target="_blank" rel="noopener" href="https://www.github.com/nsreed/ouronote/issues">Create a github
+    issue</a>
 </div>
