@@ -59,20 +59,20 @@ export class AppComponent {
     this.user = this.ngGun.auth();
     window.document.title = OURONOTE_DEFAULT_TITLE; // `ouronote version ${VERSION.version}`;
 
-    let lastActivated: ChildActivationEnd;
-    router.events
-      .pipe(filter((e) => e instanceof ChildActivationEnd))
-      .subscribe((e) => (lastActivated = e as any));
-    router.events
-      .pipe(filter((e) => e instanceof NavigationEnd))
-      .subscribe((e) => {
-        // console.log('last activated at navigation end', lastActivated);
-        // this.logger.log(
-        //   'last activated',
-        //   // tslint:disable-next-line: only-arrow-functions
-        //   JSON.stringify(lastActivated.snapshot, ['children', 'data'])
-        // );
-      });
+    // let lastActivated: ChildActivationEnd;
+    // router.events
+    //   .pipe(filter((e) => e instanceof ChildActivationEnd))
+    //   .subscribe((e) => (lastActivated = e as any));
+    // router.events
+    //   .pipe(filter((e) => e instanceof NavigationEnd))
+    //   .subscribe((e) => {
+    //     // console.log('last activated at navigation end', lastActivated);
+    //     // this.logger.log(
+    //     //   'last activated',
+    //     //   // tslint:disable-next-line: only-arrow-functions
+    //     //   JSON.stringify(lastActivated.snapshot, ['children', 'data'])
+    //     // );
+    //   });
 
     this.ngGun.auth().auth$.subscribe((ack: any) => {
       const redirect = sessionStorage.getItem('redirect');
