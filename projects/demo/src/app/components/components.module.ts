@@ -24,6 +24,8 @@ import { GunPeersComponent } from './gun-peers/gun-peers.component';
 import { LicenseFormComponent } from './license-form/license-form.component';
 import { LicenseSelectorComponent } from './license-selector/license-selector.component';
 import { SystemSettingsComponent } from './system-settings/system-settings.component';
+import { LicenseComponent } from './license/license.component';
+import { LicenseDialogComponent } from './license-dialog/license-dialog.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +36,8 @@ import { SystemSettingsComponent } from './system-settings/system-settings.compo
     SystemSettingsComponent,
     LicenseFormComponent,
     LicenseSelectorComponent,
+    LicenseComponent,
+    LicenseDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -63,6 +67,7 @@ import { SystemSettingsComponent } from './system-settings/system-settings.compo
     SystemSettingsComponent,
     LicenseFormComponent,
     LicenseSelectorComponent,
+    LicenseComponent,
   ],
 })
 export class ComponentsModule {}

@@ -42,11 +42,12 @@ import {
   MatSnackBarRef,
   TextOnlySnackBar,
 } from '@angular/material/snack-bar';
-import { timeout } from 'rxjs/operators';
+import { timeout, mergeAll, mapTo } from 'rxjs/operators';
 import { SettingsDialogComponent } from '../components/settings-dialog/settings-dialog.component';
 import { MatTooltip } from '@angular/material/tooltip';
-import { timer } from 'rxjs';
+import { timer, from } from 'rxjs';
 import { ElementRef } from '@angular/core';
+import { LicenseDialogComponent } from '../../../components/license-dialog/license-dialog.component';
 
 const VECTOR_PAPER_JSON_KEY = 'graph';
 
@@ -255,6 +256,23 @@ export class EditVectorComponent
 
   onPaste(e: any) {
     console.log(e);
+  }
+
+  onCopyrightClick() {
+    const licenseNode = this.vectorNode.get('license');
+
+    from([
+      this.vectorNode.get('license').open().pipe(take(1)),
+      this.vectorNode.get('license').not().pipe(mapTo(undefined)),
+    ])
+      .pipe(mergeAll(), take(1))
+      .subscribe((l) => {
+        this.dialog.open(LicenseDialogComponent, {
+          data: {
+            license: l,
+          },
+        });
+      });
   }
 
   addLayer() {

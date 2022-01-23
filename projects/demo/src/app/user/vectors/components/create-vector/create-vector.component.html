@@ -10,9 +10,7 @@
     <app-license-selector [control]="form.controls.license" [customControl]="form.controls.customLicense">
     </app-license-selector>
   </span>
-  <!-- <pre> {{vectorPub$ | async}}: {{recordValue | json}}  </pre> -->
 </form>
 <div fxFlexAlign="center end" mat-dialog-actions [formGroup]="form">
-  <!-- <mat-checkbox formControlName="confirm">Confirm</mat-checkbox> -->
-  <button mat-button color="primary" [disabled]="!form.valid" (click)="create()">Create</button>
+  <button mat-raised-button color="primary" [disabled]="!form.valid" (click)="create()">Create</button>
 </div>

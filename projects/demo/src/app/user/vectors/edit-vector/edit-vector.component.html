@@ -91,6 +91,11 @@
           </button>
         </ng-template>
       </ng-container>
+
+      <button mat-icon-button (click)="onCopyrightClick()">
+        <mat-icon>copyright</mat-icon>
+      </button>
+
       <button mat-icon-button [mat-menu-trigger-for]="ShareMenu">
         <mat-icon>share</mat-icon>
       </button>
@@ -102,6 +107,7 @@
           Copy Edit Link
         </button>
       </mat-menu>
+
       <button mat-icon-button (click)="onPeopleClick()" *ngIf="isOwner$ | async" #EditRequestsTooltip="matTooltip"
         [matTooltip]="
           (requestCount$ | async)
@@ -110,6 +116,7 @@
         ">
         <mat-icon [matBadge]="(requestCount$ | async) || null" matBadgeColor="warn">people</mat-icon>
       </button>
+
       <a mat-icon-button [matMenuTriggerFor]="menuMore" color="primary">
         <mat-icon>more_horiz</mat-icon>
       </a>
@@ -129,6 +136,7 @@
         </button>
       </mat-menu>
     </mat-toolbar>
+
     <div id="WorkspaceContainer">
       <canvas id="Workspace" appPaperEdit #paper="appPaperEdit"></canvas>
     </div>
