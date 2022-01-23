@@ -260,10 +260,9 @@ export class EditVectorComponent
 
   onCopyrightClick() {
     const licenseNode = this.vectorNode.get('license');
-
     from([
-      this.vectorNode.get('license').open().pipe(take(1)),
-      this.vectorNode.get('license').not().pipe(mapTo(undefined)),
+      licenseNode.open().pipe(take(1)),
+      licenseNode.not().pipe(mapTo(undefined)),
     ])
       .pipe(mergeAll(), take(1))
       .subscribe((l) => {

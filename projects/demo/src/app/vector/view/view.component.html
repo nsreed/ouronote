@@ -5,6 +5,9 @@
       @{{ owner.key | alias | async }}
     </ng-container>
   </span>
+  <button mat-icon-button (click)="onCopyrightClick()">
+    <mat-icon>copyright</mat-icon>
+  </button>
   <a
     *ngIf="!editClicked"
     fxFlex="0 0 auto"

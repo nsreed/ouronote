@@ -6,7 +6,7 @@ import {
   AfterViewInit,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable, timer } from 'rxjs';
+import { from, Observable, timer } from 'rxjs';
 import {
   pluck,
   map,
@@ -14,11 +14,16 @@ import {
   switchMap,
   mapTo,
   delay,
+  mergeAll,
+  take,
+  takeUntil,
+  takeWhile,
 } from 'rxjs/operators';
 import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
 import { VectorGraph } from '../../user/VectorGraph';
 import { MatDialog } from '@angular/material/dialog';
 import { AboutComponent } from '../../components/about/about.component';
+import { LicenseDialogComponent } from '../../components/license-dialog/license-dialog.component';
 
 @Component({
   templateUrl: './view.component.html',
@@ -41,7 +46,10 @@ export class ViewComponent implements OnInit, AfterViewInit {
     shareReplay(1)
   );
 
-  is$ = timer(0, 1000).pipe(map(() => (this.ngGun.gun.user() as any).is));
+  is$ = timer(0, 1000).pipe(
+    map(() => (this.ngGun.gun.user() as any).is),
+    takeWhile(() => this.editLink !== null && this.editLink !== undefined)
+  );
 
   editClicked = false;
 
@@ -57,6 +65,24 @@ export class ViewComponent implements OnInit, AfterViewInit {
   ) {
     route.data.pipe(pluck('vector')).subscribe((v) => {
       this.vectorPub = v._['#'];
+    });
+  }
+
+  onCopyrightClick() {
+    this.vectorNode$.subscribe((vectorNode) => {
+      const licenseNode = vectorNode.get('license');
+      from([
+        licenseNode.open().pipe(take(1)),
+        licenseNode.not().pipe(mapTo(undefined)),
+      ])
+        .pipe(mergeAll(), take(1))
+        .subscribe((l) => {
+          this.dialog.open(LicenseDialogComponent, {
+            data: {
+              license: l,
+            },
+          });
+        });
     });
   }
 
