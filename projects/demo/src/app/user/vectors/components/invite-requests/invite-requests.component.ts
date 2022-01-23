@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmComponent } from '../../../../components/confirm/confirm.component';
+import { IGunCryptoKeyPair } from 'gun/types/types';
 
 @Component({
   selector: 'app-invite-requests',
@@ -68,60 +69,46 @@ export class InviteRequestsComponent implements OnInit {
   }
 
   async accept(pubKey: any) {
-    // TODO pop up confirmation dialog with user's public key
-    // console.log(pubKey);
-    this.ngGun.findUserAlias(pubKey).subscribe((alias) => {
-      this.dialog
-        .open(ConfirmComponent, {
-          data: {
-            title: 'Confirm Invite',
-            prompt: `Are you sure you want to permanently invite @${alias}?`,
-          },
-        })
-        .afterClosed()
-        .subscribe((result) => {
-          if (result) {
-            this.logger.log('accepting invite request for %s', pubKey);
-            this.chainDirective.chain
-              ?.get('owner')
-              .get(this.userService.user.is.pub)
-              .once()
-              .subscribe(async (ownerPair: any) => {
-                const pair = await SEA.decrypt(
-                  ownerPair,
-                  this.userService.user.is
-                );
-                // this.logger.log('got owner pair %o', pair);
-                const certs = await this.vectorService.certify(
-                  { pub: pubKey.replace('~', '') },
-                  ['layers'],
-                  pair
-                );
+    const alias = await this.ngGun.findUserAlias(pubKey).toPromise();
 
-                // FIXME this is bad, you should report this behavior to Mark
-                const authPair = sessionStorage.getItem('pair');
-                const pairRestore$ = new Subject();
-                pairRestore$
-                  .pipe(delay(1000))
-                  .subscribe((a: any) => sessionStorage.setItem('pair', a));
+    const answer = await this.dialog
+      .open(ConfirmComponent, {
+        data: {
+          title: 'Confirm Invite',
+          prompt: `Are you sure you want to permanently invite @${alias}?`,
+        },
+      })
+      .afterClosed()
+      .toPromise();
+    if (!answer) {
+      return;
+    }
+    const ownerPair = await this.chainDirective.chain
+      ?.get('owner')
+      .get(this.userService.user.is.pub)
+      .once()
+      .toPromise();
+    this.logger.log('accepting invite request for %s', pubKey);
+    const pair = (await SEA.decrypt(
+      ownerPair,
+      this.userService.user.is
+    )) as IGunCryptoKeyPair;
+    const certs = await this.vectorService.certify(
+      { pub: pubKey.replace('~', '') },
+      ['layers'],
+      pair
+    );
 
-                this.logger.log('created certificate %o', certs);
-                const detachedGun = new NgGunService(this.gunOpts, this.ngZone);
-                // this.chainDirective.chain?.get('certs').put(certs as never);
-                (detachedGun.gun.user() as any).auth(pair, () => {
-                  this.logger.log('secondary auth succeeded');
-                  const v = detachedGun.user().get('certs');
-                  v.put(certs as never);
-                  this.chainDirective.chain
-                    ?.get('inviteRequests')
-                    .get(pubKey)
-                    .put(null as never);
-                  pairRestore$.next(authPair);
-                });
-              });
-          }
-        });
-    });
+    this.logger.log('created certificate %o', certs);
+    const detachedGun = await this.ngGun.detached(pair);
+    detachedGun
+      .auth()
+      .get('certs')
+      .put(certs as never);
+    this.chainDirective.chain
+      ?.get('inviteRequests')
+      .get(pubKey)
+      .put(null as never);
     return;
   }
 
