@@ -9,6 +9,7 @@ import { LogService } from '../../../../../log/src/lib/log.service';
 import { FileUploaderComponent } from '../../files/file-uploader/file-uploader.component';
 import { VectorExportDialogComponent } from './components/vector-export-dialog/vector-export-dialog.component';
 import { OURONOTE_DEFAULT_TITLE } from '../../constants';
+import { Router } from '@angular/router';
 
 export function buildVectorLogger(parent: LogService) {
   return parent.supplemental('name');
@@ -41,18 +42,23 @@ export class VectorsComponent implements OnInit {
   );
   constructor(
     private vectorService: VectorService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private logger: LogService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     document.title = OURONOTE_DEFAULT_TITLE;
   }
 
-  create() {
-    this.dialog.open(CreateVectorComponent, { width: '90%', height: '90%' });
-    // this.vectorService.vectors.set({
-    //   title: 'new vector',
-    // } as never);
+  async create() {
+    const vector = await this.dialog
+      .open(CreateVectorComponent, { width: '90%', height: '90%' })
+      .afterClosed()
+      .toPromise();
+
+    this.logger.log('Created vector %s', vector);
+    this.router.navigate(['/user/vectors', `~${vector}`, 'edit']);
   }
 
   importVector() {

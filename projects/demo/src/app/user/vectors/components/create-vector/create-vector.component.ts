@@ -15,7 +15,7 @@ import {
   switchMap,
   delay,
 } from 'rxjs/operators';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 
@@ -51,7 +51,7 @@ export class CreateVectorComponent implements OnInit {
     @Inject(GunOptions)
     private gunOpts: any,
     private ngZone: NgZone,
-    private dialog: MatDialog,
+    private dialog: MatDialogRef<any, any>,
     private router: Router
   ) {}
 
@@ -80,7 +80,7 @@ export class CreateVectorComponent implements OnInit {
       const detachedGun = await this.ngGun.detached(vectorPair);
       detachedGun.auth().put(vector);
       this.vectorService.vectors.set(detachedGun.auth().gun as any);
-      this.dialog.closeAll();
+      this.dialog.close(detachedGun.auth().is.pub);
     });
   }
 }
