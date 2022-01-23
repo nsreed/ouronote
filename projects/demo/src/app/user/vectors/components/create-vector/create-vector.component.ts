@@ -76,30 +76,11 @@ export class CreateVectorComponent implements OnInit {
         return;
       }
 
-      // FIXME this is bad, you should report this behavior to Mark
-      const authPair = sessionStorage.getItem('pair');
-      const pairRestore$ = new Subject();
-      pairRestore$.pipe(delay(1000)).subscribe((a: any) => {
-        sessionStorage.setItem('pair', a);
-
-        this.router.navigateByUrl(`/user/vectors/~${vectorPair.pub}/edit`);
-      });
-
       // Create a detached gun instance for the vector itself
-      const detachedGun = new NgGunService(this.gunOpts, this.ngZone);
-
-      // login as that vector
-      const u = detachedGun.gun.user() as any;
-
-      u.auth(vectorPair, async () => {
-        const v = detachedGun.gun.user();
-        // save the vector's data
-        v.put(vector);
-        // add the vector itself to the user's list of saved vectors
-        this.vectorService.vectors.set(v as never);
-        this.dialog.closeAll();
-        pairRestore$.next(authPair);
-      });
+      const detachedGun = await this.ngGun.detached(vectorPair);
+      detachedGun.auth().put(vector);
+      this.vectorService.vectors.set(detachedGun.auth().gun as any);
+      this.dialog.closeAll();
     });
   }
 }
