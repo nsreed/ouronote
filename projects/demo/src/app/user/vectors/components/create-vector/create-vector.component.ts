@@ -18,6 +18,9 @@ import {
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
+import { LICENSES } from '../../../../LICENSES';
+import { map } from 'rxjs/operators';
+import { UserService } from '../../../user.service';
 
 @Component({
   selector: 'app-create-vector',
@@ -28,20 +31,32 @@ export class CreateVectorComponent implements OnInit {
   certificate?: string;
   recordValue?: any;
   form = this.fb.group({
-    detached: false,
-    addToFavorites: false,
-    public: false,
     title: ['untitled', Validators.required],
-    confirm: true,
+    license: null,
+    customLicense: this.fb.group({
+      name: null,
+      text: `Copyright © ${new Date().getFullYear()} ${
+        this.userService.user.alias
+      } ALL RIGHTS RESERVED`,
+    }),
   });
 
   vectorPair$ = this.sea.pair().pipe(shareReplay(1));
   vectorPub$ = this.vectorPair$.pipe(pluck('pub'));
-  // recordValue$ = this.form.valueChanges.pipe(
-  //   switchMap(formValue => this.vectorPair$.pipe(
 
-  //   ))
-  // )
+  license$ = this.form.controls.license.valueChanges.pipe(
+    map((l) =>
+      typeof l === 'object' && l.text
+        ? {
+            ...l,
+            text: l.text
+              .replace('{{ licensor }}', this.userService.user.alias)
+              .replace('{{ year }}', new Date().getFullYear()),
+          }
+        : l
+    ),
+    shareReplay(1)
+  );
 
   constructor(
     private fb: FormBuilder,
@@ -52,7 +67,8 @@ export class CreateVectorComponent implements OnInit {
     private gunOpts: any,
     private ngZone: NgZone,
     private dialog: MatDialogRef<any, any>,
-    private router: Router
+    private router: Router,
+    private userService: UserService
   ) {}
 
   ngOnInit(): void {}
@@ -62,8 +78,13 @@ export class CreateVectorComponent implements OnInit {
       return;
     }
     const formValue = this.form.value;
+    const license =
+      formValue.license === 'custom'
+        ? formValue.customLicense
+        : formValue.license;
     const vg = {
       title: formValue.title,
+      license,
     };
     this.vectorPair$.subscribe(async (vectorPair: any) => {
       const vector = await this.vectorService.initializeCertificates(
@@ -71,10 +92,6 @@ export class CreateVectorComponent implements OnInit {
         vectorPair
       );
       this.recordValue = vector;
-
-      if (!formValue.confirm) {
-        return;
-      }
 
       // Create a detached gun instance for the vector itself
       const detachedGun = await this.ngGun.detached(vectorPair);

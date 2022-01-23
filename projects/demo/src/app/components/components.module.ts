@@ -13,6 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgGunModule } from '../../../../ng-gun/src/lib/ng-gun.module';
@@ -20,6 +21,8 @@ import { AboutComponent } from './about/about.component';
 import { AliasAutocompleteComponent } from './alias-autocomplete/alias-autocomplete.component';
 import { BugReportComponent } from './bug-report/bug-report.component';
 import { GunPeersComponent } from './gun-peers/gun-peers.component';
+import { LicenseFormComponent } from './license-form/license-form.component';
+import { LicenseSelectorComponent } from './license-selector/license-selector.component';
 import { SystemSettingsComponent } from './system-settings/system-settings.component';
 
 @NgModule({
@@ -29,6 +32,8 @@ import { SystemSettingsComponent } from './system-settings/system-settings.compo
     AliasAutocompleteComponent,
     AboutComponent,
     SystemSettingsComponent,
+    LicenseFormComponent,
+    LicenseSelectorComponent,
   ],
   imports: [
     CommonModule,
@@ -45,6 +50,7 @@ import { SystemSettingsComponent } from './system-settings/system-settings.compo
     MatListModule,
     MatListModule,
     MatRadioModule,
+    MatSelectModule,
     MatStepperModule,
     MatTooltipModule,
     NgGunModule,
@@ -55,6 +61,8 @@ import { SystemSettingsComponent } from './system-settings/system-settings.compo
     GunPeersComponent,
     AliasAutocompleteComponent,
     SystemSettingsComponent,
+    LicenseFormComponent,
+    LicenseSelectorComponent,
   ],
 })
 export class ComponentsModule {}

@@ -7,10 +7,8 @@
     <input matInput formControlName="title">
   </mat-form-field>
   <span fxLayout="column">
-    <!-- <mat-checkbox formControlName="detached" matTooltip="Creates document in a new public key">Detached?</mat-checkbox>
-    <mat-checkbox formControlName="addToFavorites">Add to Favorites</mat-checkbox>
-
-    <mat-checkbox formControlName="public" matTooltip="Allows public editing">Public?</mat-checkbox> -->
+    <app-license-selector [control]="form.controls.license" [customControl]="form.controls.customLicense">
+    </app-license-selector>
   </span>
   <!-- <pre> {{vectorPub$ | async}}: {{recordValue | json}}  </pre> -->
 </form>

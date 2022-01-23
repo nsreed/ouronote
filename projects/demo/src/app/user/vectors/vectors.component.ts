@@ -57,6 +57,10 @@ export class VectorsComponent implements OnInit {
       .afterClosed()
       .toPromise();
 
+    if (!vector) {
+      this.logger.log('No vector was created');
+      return;
+    }
     this.logger.log('Created vector %s', vector);
     this.router.navigate(['/user/vectors', `~${vector}`, 'edit']);
   }

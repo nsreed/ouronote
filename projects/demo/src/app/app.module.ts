@@ -56,6 +56,7 @@ import { GunRadImporterService } from './services/gun-rad-importer.service';
 import { GunWebrtcImporterService } from './services/gun-webrtc-importer.service';
 import { SessionInfoComponent } from './session-info/session-info.component';
 import { WelcomeComponent } from './welcome/welcome.component';
+import { MatSelectModule } from '@angular/material/select';
 
 const RADISK_LOCAL = localStorage.getItem('RADISK_ENABLE');
 const RADISK_ENABLE = RADISK_LOCAL === null ? true : !!JSON.parse(RADISK_LOCAL);
@@ -102,6 +103,7 @@ const WEBRTC_ENABLE =
     MatMenuModule,
     MatNativeDateModule,
     MatRadioModule,
+    MatSelectModule,
     MatSidenavModule,
     MatSliderModule,
     MatSlideToggleModule,

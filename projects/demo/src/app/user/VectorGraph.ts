@@ -1,6 +1,7 @@
 import { LayerGraph } from './LayerGraph';
 import { ICertChain } from '../../../../ng-gun/src/lib/interfaces/IAuthGraph';
 import { User } from './model';
+import { License } from '../License';
 
 export interface VectorGraph extends ICertChain {
   title: string;
@@ -11,5 +12,6 @@ export interface VectorGraph extends ICertChain {
   palette?: string[];
   backgroundColor?: string;
   inviteRequests?: User[];
+  license?: License;
   [key: string]: any;
 }
