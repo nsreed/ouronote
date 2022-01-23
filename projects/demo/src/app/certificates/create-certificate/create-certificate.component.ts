@@ -8,6 +8,7 @@ import { ChainDirective } from '../../../../../ng-gun/src/lib/chain.directive';
 import { from, Subject } from 'rxjs';
 import { SEA } from 'gun';
 import { Router } from '@angular/router';
+import { IGunCryptoKeyPair } from 'gun/types/types';
 
 @Component({
   selector: 'app-create-certificate',
@@ -135,34 +136,20 @@ export class CreateCertificateComponent implements OnInit {
             isProtected,
             opts
           )
-        ).subscribe((certStores: any) => {
-          // FIXME this is bad, you should report this behavior to Mark
-          const authPair = sessionStorage.getItem('pair');
-          const pairRestore$ = new Subject();
-          pairRestore$
-            .pipe(delay(1000))
-            .subscribe((a: any) => sessionStorage.setItem('pair', a));
-          const detachedGun = new NgGunService(this.gunOpts, this.ngZone);
-          (detachedGun.gun.user() as any).auth(recordPair, async () => {
-            const v = detachedGun.gun.user();
-            const certs = v.get('certs');
-            certStores.forEach((store: any) => {
-              console.log('create store', store);
-              Object.keys(store).forEach((k) => {
-                const certPath = certs.get(k);
-                const certNew = store[k];
-                Object.keys(certNew).forEach((pub) => {
-                  console.log('insert cert at', k, pub, certNew[pub]);
-                  certPath.get(pub).put(certNew[pub] as never);
-                });
-                // console.log('create store key', k);
-                // certs.get(k).put(store[k] as never);
+        ).subscribe(async (certStores: any) => {
+          const v = (
+            await this.ngGun.detached(recordPair as IGunCryptoKeyPair)
+          ).auth();
+
+          const certs = v.get('certs');
+          certStores.forEach((store: any) => {
+            Object.keys(store).forEach((k) => {
+              const certPath = certs.get(k);
+              const certNew = store[k];
+              Object.keys(certNew).forEach((pub) => {
+                certPath.get(pub).put(certNew[pub] as never);
               });
-              // certs.put(store as never);
             });
-            // v.put(vector);
-            // this.vectorService.vectors.set(v as never);
-            pairRestore$.next(authPair);
           });
         });
       });
