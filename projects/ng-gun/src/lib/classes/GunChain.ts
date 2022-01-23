@@ -46,6 +46,7 @@ import { SEA } from 'gun';
 import { LogService } from '../../../../log/src/lib/log.service';
 import { pluck } from 'rxjs/operators';
 import { timer } from 'rxjs';
+import { IGunCryptoKeyPair } from 'gun/types/types';
 
 export const GUN_NODE = Symbol('GUN_NODE');
 
@@ -532,13 +533,13 @@ export class GunChain<
     ).pipe(take(1));
   }
 
-  auth() {
+  auth(recall = true) {
     if (!this._auth) {
       this._auth = new GunAuthChain<DataType, ReferenceKey>(
         this.ngZone,
         //// no fix for this... gun.user.is is static! can't have multiple logins on a single gun instance
         // TODO allow option to create a new gun instance for this auth call
-        this.gun.user().recall({ sessionStorage: true }) as any,
+        this.gun.user().recall({ sessionStorage: recall }) as any,
         this as any,
         this as any
       );
@@ -599,18 +600,18 @@ export class GunAuthChain<
     }
   }
   get is() {
-    return this._is;
+    return this._is || (this.gun.user() as any).is;
   }
   alias!: string;
   auth$ = this.root.onEvent('auth').pipe(
     tap((ack) => {
       this.logger.log(
-        'authentication event. put present? %s; null or undefined? %s',
+        'authentication event. put present? %s; is gun node? %s',
         ack.put ? 'yes' : 'no',
-        ack.put === null || ack.put === undefined ? 'yes' : 'no'
+        ack.$ ? 'yes' : 'no'
       );
       if (!ack.err) {
-        this.is = ack.put;
+        this.is = ack.put || ack.root?.user?.is;
       } else {
         this.logger.warn('authentication error: ', ack.put);
       }
@@ -632,7 +633,7 @@ export class GunAuthChain<
     this.is = (gun as any).is;
   }
 
-  login(alias: string, pass: string) {
+  login(alias: string | IGunCryptoKeyPair, pass?: string) {
     const auth$ = this.root.onEvent('auth').pipe(
       filter((ack) => !ack.err),
       filter((ack) => {
@@ -644,11 +645,16 @@ export class GunAuthChain<
     const login$ = fromEventPattern(
       (handler) => {
         const signal = { stopped: false };
-        this.gun.auth(alias, pass, (ack: any) => {
+        const handleAck = (ack: any) => {
           this.ngZone.run(() => {
             handler(ack);
           });
-        });
+        };
+        if (pass) {
+          this.gun.auth(alias as any, pass as any, handleAck);
+        } else {
+          this.gun.auth(alias as any, handleAck as any);
+        }
         return signal;
       },
       (handler, signal) => {
@@ -658,7 +664,12 @@ export class GunAuthChain<
       mergeMap((ack: any) => (ack.wait ? throwError(new Error(ack)) : of(ack))),
       retryWhen((errors) => errors.pipe(delay(1000), take(10)))
     );
-    const loginOrAuth$ = from([auth$, login$]).pipe(mergeAll(), take(1));
+    const loginOrAuth$ = from([auth$, login$]).pipe(
+      mergeAll(),
+      take(1),
+      shareReplay(1)
+    );
+    loginOrAuth$.subscribe();
     return loginOrAuth$;
   }
 
