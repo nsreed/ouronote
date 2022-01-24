@@ -18,11 +18,12 @@ export class MoveTool extends VectorTool {
       selected: true,
       match: (item: paper.Item) => item.className !== 'Layer',
     });
-    const selectedGroup = new paper.Group(selectedItems);
-    selectedGroup.translate(e.delta);
-    // selectedItems.forEach((item) => {
-    //   item.translate(e.delta as any);
-    // });
+    // TODO figure out how to ungroup items. Using this approach they stay grouped forever.
+    // const selectedGroup = new paper.Group(selectedItems);
+    // selectedGroup.translate(e.delta);
+    selectedItems.forEach((item) => {
+      item.translate(e.delta as any);
+    });
   });
 
   upSub = this.up.subscribe((e) => {
