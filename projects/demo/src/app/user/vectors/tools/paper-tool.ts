@@ -80,7 +80,7 @@ export class VectorTool extends Tool {
   keydown = fromEvent<paper.KeyEvent>(this, 'keydown');
   keyup = fromEvent<paper.KeyEvent>(this, 'keyup');
 
-  click = this.up.pipe(filter((e) => e.delta.length === 0));
+  click = fromEvent<paper.ToolEvent>(this, 'mouseclick');
 
   // FIXME class names get mangled by production build, stop being lazy
   name = Object.getPrototypeOf(this).constructor.name.replace(/tool/gi, '');
