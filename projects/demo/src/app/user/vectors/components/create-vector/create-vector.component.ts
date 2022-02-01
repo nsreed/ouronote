@@ -21,6 +21,7 @@ import { Subject } from 'rxjs';
 import { LICENSES } from '../../../../LICENSES';
 import { map } from 'rxjs/operators';
 import { UserService } from '../../../user.service';
+import { NameRandomizerService } from '../../../../services/name-randomizer.service';
 
 @Component({
   selector: 'app-create-vector',
@@ -31,7 +32,7 @@ export class CreateVectorComponent implements OnInit {
   certificate?: string;
   recordValue?: any;
   form = this.fb.group({
-    title: ['untitled', Validators.required],
+    title: [this.nameRandomizer.getRandomName(), Validators.required],
     license: null,
     customLicense: this.fb.group({
       name: null,
@@ -68,7 +69,8 @@ export class CreateVectorComponent implements OnInit {
     private ngZone: NgZone,
     private dialog: MatDialogRef<any, any>,
     private router: Router,
-    private userService: UserService
+    private userService: UserService,
+    private nameRandomizer: NameRandomizerService
   ) {}
 
   ngOnInit(): void {}
