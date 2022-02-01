@@ -76,8 +76,10 @@ import 'gun/lib/unset';
 
 import * as paper from 'paper';
 import { EventEmitter } from '@angular/core';
+import { after$ } from './app/functions/aspect-rx';
 
-const IGNORED_PROPS = ['selected', 'fullySelected', 'selection'];
+const IGNORED_PROPS: string[] = ['fullySelected', 'selected', 'selection'];
+const BUBBLE_PROPS: string[] = ['fullySelected', 'selected', 'selection'];
 const prototypeOwnProperties = {} as any;
 
 /**
@@ -105,28 +107,6 @@ function getOwnSettable(proto: any) {
 }
 
 /**
- * Creates new property setters for a prototype which emit new values on the prototype's changes$ emitter.
- * @param prototype the prototype to inject change emission into
- */
-function interceptAll(prototype: any) {
-  addChangeEmitter(prototype);
-  getOwnSettable(prototype).forEach((prop: any[]) => {
-    const original = prop[0];
-    const name = prop[1];
-    // console.log('%s.%s', prototype.constructor.name, name);
-    Object.defineProperty(prototype, name, {
-      get: original.get,
-      set(...args) {
-        // if (this[name] !== args[0]) {
-        original.set.call(this, ...args);
-        this.changes$.emit([name, ...args]);
-        // }
-      },
-    });
-  });
-}
-
-/**
  * Adds a change emitter, .changes$, to the given prototype
  * @param prototype The prototype to add .changes$ to
  */
@@ -142,6 +122,39 @@ function addChangeEmitter(prototype: any) {
       enumerable: false,
     });
   }
+}
+
+/**
+ * Creates new property setters for a prototype which emit new values on the prototype's changes$ emitter.
+ * @param prototype the prototype to inject change emission into
+ */
+function addChangeListeners(
+  prototype: any,
+  properties = getOwnSettable(prototype)
+) {
+  console.log('monkeypatching prototype', prototype);
+  addChangeEmitter(prototype);
+  properties.forEach((prop: any[]) => {
+    const property = prop[0];
+    const propertyName = prop[1];
+    console.log('%s.%s', prototype.constructor.name, propertyName);
+    Object.defineProperty(prototype, propertyName, {
+      get: property.get,
+      set(...args) {
+        // console.log('set %s to', propertyName, ...args);
+        property.set.call(this, ...args);
+        this.changes$.emit([propertyName, ...args]);
+        if (BUBBLE_PROPS.includes(propertyName)) {
+          console.log('bubbling %s', propertyName);
+          const e = {} as paper.Event;
+          const i = {} as paper.Item;
+          if (this.emit) {
+            this.emit(`${propertyName}Change`, {});
+          }
+        }
+      },
+    });
+  });
 }
 
 /**
@@ -161,7 +174,44 @@ const toIntercept = [
   paper.Color,
   paper.View,
   paper.Size,
+  paper.Project,
 ].map((con) => con.prototype);
 
 // Add change emitters
-toIntercept.forEach((proto) => interceptAll(proto));
+toIntercept.forEach((proto) => addChangeListeners(proto));
+
+const afterProto =
+  (proto: any) => (name: string) => (cb: (...args: any[]) => any) => {
+    const o = proto[name];
+    if (typeof o === 'function') {
+      console.log('after proto', proto.constructor.name, name);
+      proto[name] = function (...args: any[]) {
+        const r = o.call(this, ...args);
+        cb(r);
+        return r;
+      };
+    }
+  };
+
+// Patch Project
+const original = paper.Project.prototype.deselectAll;
+
+paper.Project.prototype.deselectAll = function () {
+  original.call(this);
+};
+
+const oActivate = paper.Project.prototype.activate;
+paper.Project.prototype.activate = function () {
+  oActivate.call(this);
+  (this as any).changes$.emit(['active', true]);
+};
+
+const oDeselectAll = paper.Project.prototype.deselectAll;
+paper.Project.prototype.deselectAll = function () {
+  oDeselectAll.call(this);
+  (this as any).changes$.emit(['selectedItems', this.selectedItems]);
+};
+
+const p = afterProto(paper.Project.prototype)('deselectAll')(() =>
+  (this as any)?.changes$?.emit(['selectedItems', (this as any).selectedItems])
+);
