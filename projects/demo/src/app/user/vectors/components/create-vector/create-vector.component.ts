@@ -63,9 +63,7 @@ export class CreateVectorComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.nameRandomizer
-      .getRandomName()
-      .then((v) => this.form.controls.title.setValue(v));
+    this.randomizeName();
   }
 
   async create() {
@@ -94,5 +92,11 @@ export class CreateVectorComponent implements OnInit {
       this.vectorService.vectors.set(detachedGun.auth().gun as any);
       this.dialog.close(detachedGun.auth().is.pub);
     });
+  }
+
+  randomizeName() {
+    this.nameRandomizer
+      .getRandomName()
+      .then((v) => this.form.controls.title.setValue(v));
   }
 }

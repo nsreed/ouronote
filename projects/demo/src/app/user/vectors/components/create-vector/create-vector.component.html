@@ -6,6 +6,9 @@
     <mat-label>Title</mat-label>
     <input matInput formControlName="title">
   </mat-form-field>
+  <button mat-icon-button (click)="randomizeName()">
+    <i class="fas fa-dice"></i>
+  </button>
   <span fxLayout="column">
     <app-license-selector [control]="form.controls.license" [customControl]="form.controls.customLicense">
     </app-license-selector>
