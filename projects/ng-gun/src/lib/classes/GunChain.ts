@@ -288,7 +288,7 @@ export class GunChain<
   }
   public set certificates(value: ICertStore) {
     if (value !== this._certificates) {
-      this.logger.log('loaded certificate store', value);
+      this.logger.verbose('loaded certificate store', value);
       this._certificates = value;
       this.certificates$.next(value);
     }
