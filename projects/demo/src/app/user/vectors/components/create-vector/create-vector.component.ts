@@ -1,27 +1,16 @@
+import { Component, Inject, NgZone, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { Component, Inject, OnInit, NgZone } from '@angular/core';
+import { MatDialogRef } from '@angular/material/dialog';
+import { Router } from '@angular/router';
+import { map, pluck, shareReplay } from 'rxjs/operators';
 import {
-  NgGunService,
   GunOptions,
+  NgGunService,
 } from '../../../../../../../ng-gun/src/lib/ng-gun.service';
 import { NgSeaService } from '../../../../../../../ng-gun/src/lib/ng-sea.service';
-import { SEA } from 'gun';
-import { VectorService } from '../../vector.service';
-import { VectorGraph } from '../../../VectorGraph';
-import {
-  pluck,
-  shareReplay,
-  switchMapTo,
-  switchMap,
-  delay,
-} from 'rxjs/operators';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
-import { LICENSES } from '../../../../LICENSES';
-import { map } from 'rxjs/operators';
-import { UserService } from '../../../user.service';
 import { NameRandomizerService } from '../../../../services/name-randomizer.service';
+import { UserService } from '../../../user.service';
+import { VectorService } from '../../vector.service';
 
 @Component({
   selector: 'app-create-vector',
@@ -32,7 +21,7 @@ export class CreateVectorComponent implements OnInit {
   certificate?: string;
   recordValue?: any;
   form = this.fb.group({
-    title: [this.nameRandomizer.getRandomName(), Validators.required],
+    title: [null, Validators.required],
     license: null,
     customLicense: this.fb.group({
       name: null,
@@ -73,7 +62,11 @@ export class CreateVectorComponent implements OnInit {
     private nameRandomizer: NameRandomizerService
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.nameRandomizer
+      .getRandomName()
+      .then((v) => this.form.controls.title.setValue(v));
+  }
 
   async create() {
     if (!this.form.valid) {
