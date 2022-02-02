@@ -50,10 +50,10 @@ export class ColorFormComponent implements OnInit {
   public set color(value: paper.Color) {
     if (value !== this._color) {
       this._color = value;
-      (value as any).changes$?.subscribe((che: any) => {
-        // console.log('has changes', che);
-        this.updateFromColor();
-      });
+      // (value as any).changes$?.subscribe((che: any) => {
+      //   // console.log('has changes', che);
+      //   this.updateFromColor();
+      // });
       this.updateFromColor();
     }
   }
@@ -78,6 +78,7 @@ export class ColorFormComponent implements OnInit {
   }
 
   updateFromColor() {
+    this.colorCtr.patchValue(this.color ? this.color.toCSS(true) : null);
     if (!this.color) {
       return;
     }
