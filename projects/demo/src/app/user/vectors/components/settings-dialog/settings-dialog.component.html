@@ -1,6 +1,6 @@
 <h1 mat-dialog-title>
   Vector Settings
-  <button mat-raised-button color="primary" (click)="dialogRef.close()">
+  <button mat-raised-button color="primary" (click)="onDoneClick()">
     Done
   </button>
 </h1>
@@ -12,14 +12,13 @@
     </mat-tab>
     <mat-tab>
       <ng-template mat-tab-label>
-        <span
-          class="tab-label"
-          [matBadge]="(requestCount$ | async) || null"
-          matBadgeColor="warn"
-          >Requests</span
-        >
+        <span class="tab-label" [matBadge]="(requestCount$ | async) || null" matBadgeColor="warn">Requests</span>
       </ng-template>
       <app-invite-requests></app-invite-requests>
+    </mat-tab>
+    <mat-tab label="License">
+      <app-license-selector [control]="form.controls.license" [customControl]="form.controls.customLicense">
+      </app-license-selector>
     </mat-tab>
   </mat-tab-group>
 </mat-dialog-content>
