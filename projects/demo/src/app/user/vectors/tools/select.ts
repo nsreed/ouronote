@@ -152,7 +152,7 @@ export class LassoSelectTool extends SelectTool {
         item.selected = true;
       });
 
-      if (this.project.selectedItems.length >= 0) {
+      if (this.project.selectedItems.length > 0) {
         console.log('have selected', this.project.selectedItems.length);
         this.scope.tools.find((t: any) => t.name === 'move')?.activate();
       }
