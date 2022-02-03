@@ -98,7 +98,8 @@ export class LassoSelectTool extends SelectTool {
     // TODO hitTest appears to be able to honor fill, but requires a point, not an item
     if (this.path) {
       const intersected = this.scope.project.getItems({
-        overlapping: this.path?.bounds,
+        // !overlapping doesn't work for Shape.Rectangle, might want to use view bounds?
+        // overlapping: this.path?.bounds,
         match: (item: paper.Item) => {
           if (item === this.path || item.className === 'Layer') {
             return false;
@@ -108,7 +109,6 @@ export class LassoSelectTool extends SelectTool {
           if (item.className === 'Path') {
             const iPath = item as paper.Path;
             const segmentPoints = iPath.segments.map((s) => s.point);
-            // TODO add mode for matching ALL points, instead of any
             if (!this.greedySelect) {
               hasMatch = true;
               segmentPoints.forEach((p) => {
@@ -122,6 +122,26 @@ export class LassoSelectTool extends SelectTool {
                   hasMatch = true;
                 }
               });
+            }
+          } else if (item instanceof paper.Shape) {
+            const corners = [
+              item.bounds.bottomLeft,
+              item.bounds.bottomRight,
+              item.bounds.topRight,
+              item.bounds.topLeft,
+            ];
+
+            // TODO: Greedy select on shape edges
+            // const x = new paper.Path(corners);
+            // x.closePath();
+            // x.strokeWidth = 3;
+            // x.strokeColor = new paper.Color('green');
+            // x.removeOnDown();
+
+            if (this.greedySelect) {
+              return corners.find((p) => this.path.contains(p)) !== undefined;
+            } else {
+              return corners.find((p) => !this.path.contains(p)) === undefined;
             }
           }
 
