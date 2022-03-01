@@ -58,7 +58,7 @@ openssl req -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out ouronote-dev.cr
 docker-compose up -d
 ```
 
-Navigate to https://localhost:4430 or http://localhost:8080
+Navigate to <https://localhost:4430> or <http://localhost:8080>
 
 ### Development
 
