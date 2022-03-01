@@ -24,5 +24,5 @@ export class PaperEditDirective extends PaperDirective {
   public eraser = new EraserTool(this.scope as any);
   public shape = new ShapeTool(this.scope as any);
   public move = new MoveTool(this.scope as any);
-  // public eyedropper = new EyedropperTool(this.scope as any);
+  public eyedropper = new EyedropperTool(this.scope as any);
 }
