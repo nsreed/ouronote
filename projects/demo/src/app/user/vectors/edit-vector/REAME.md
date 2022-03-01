@@ -143,7 +143,7 @@ As opposed to `project.importJSON(data)`, an `item`'s `importJSON(data)` will im
 
 Need caching of bound nodes
 
-## Indexing Beaks **EVERYTHING**
+## Indexing Breaks **EVERYTHING**
 
 _... and the dangers of trying to store arrays in graphs_
 
@@ -211,3 +211,15 @@ Bob moves d behind b
 
 Alice [a, c, e]
 Bob [d, b, c]
+
+## Forms: Multi-Item Property vs. Single-Item Property
+
+> Do the items all have this property defined?
+
+For a given property, e.g., stroke width, maybe not all items in the selection have that property. **Filter them out.**
+
+> If the items have different values, how are they displayed? How are they written?
+
+If the values are the same, show the value. If they're different, show a special state.
+
+Changing the value should write the value to each of the items.

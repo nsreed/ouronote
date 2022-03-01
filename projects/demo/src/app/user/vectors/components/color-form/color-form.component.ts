@@ -1,9 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
+import { ObjectPropertyDirective } from '../../../../directives/object-property.directive';
 import * as paper from 'paper';
-import { filter } from 'rxjs/operators';
-
-const RE_HEX = /^\#.*/;
 
 @Component({
   selector: 'app-color-form',
@@ -42,6 +40,9 @@ export class ColorFormComponent implements OnInit {
     alpha: this.defaultMinMax,
   };
 
+  @Input()
+  public paperStyle?: paper.Style;
+
   private _color!: paper.Color;
   public get color(): paper.Color {
     return this._color;
@@ -58,7 +59,7 @@ export class ColorFormComponent implements OnInit {
     }
   }
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, public prop: ObjectPropertyDirective) {}
 
   ngOnInit(): void {
     // TODO re-enable for rgb/cymk editor
@@ -73,7 +74,13 @@ export class ColorFormComponent implements OnInit {
     // }
 
     this.colorCtr.valueChanges.subscribe((v) => {
-      this.color.set([v.r / 255, v.g / 255, v.b / 255, v.a]);
+      // FIXME this is broken for fillColor (the color passed in was null)
+      // this.color?.set([v.r / 255, v.g / 255, v.b / 255, v.a]);
+      if (!this.prop.value) {
+        this.prop.value = new paper.Color(v.r / 255, v.g / 255, v.b / 255, v.a);
+      } else {
+        this.prop.value.set([v.r / 255, v.g / 255, v.b / 255, v.a]);
+      }
     });
   }
 

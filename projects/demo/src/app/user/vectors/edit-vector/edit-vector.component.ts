@@ -49,8 +49,6 @@ import { timer, from } from 'rxjs';
 import { ElementRef } from '@angular/core';
 import { LicenseDialogComponent } from '../../../components/license-dialog/license-dialog.component';
 
-const VECTOR_PAPER_JSON_KEY = 'graph';
-
 @Component({
   templateUrl: './edit-vector.component.html',
   styleUrls: ['./edit-vector.component.scss'],
@@ -78,7 +76,6 @@ export class EditVectorComponent
   myRequest$ = this.requests$.pipe(
     map((pks) => {
       return pks.includes(this.userService.user.is.pub);
-      // return pks === this.userService.user.is.pub;
     })
   );
   requestCount$ = this.requests$.pipe(map((r) => r.length));
@@ -113,7 +110,6 @@ export class EditVectorComponent
     this.requestCount$.subscribe((count) => {
       if (count > 0 && this.editRequestsTooltip) {
         this.editRequestsTooltip.message = `There are ${count} edit requests.`;
-        // this.editRequestsTooltip.hideDelay = 1000;
         this.editRequestsTooltip.show();
         timer(5000).subscribe(() => this.editRequestsTooltip?.hide());
       }
@@ -158,7 +154,6 @@ export class EditVectorComponent
         .get('title')
         .on()
         .subscribe((title: any) => {
-          // console.log('title change', title);
           this.vectorForm.get('title')?.patchValue(title, { emitEvent: false });
         });
       this.vectorNode = node;
@@ -166,12 +161,10 @@ export class EditVectorComponent
         .get('title')
         ?.valueChanges.pipe(distinct())
         .subscribe((title) => {
-          // console.log('local title change', title);
           node.get('title').put(title);
         });
     });
     this.vector$.subscribe((vector: VectorGraph) => {
-      // console.log('vector change', vector, this.paperDirective);
       if (!this.paperDirective.project) {
         return;
       }
@@ -227,8 +220,6 @@ export class EditVectorComponent
   }
 
   onProjectReady(project: paper.Project, gun: GunChain<VectorGraph>) {
-    // console.log('setting up project graph');
-    // this.paperDirective.tool.activate();
     this.logger.log('project ready');
     this.projectPair = new ProjectPair(
       gun as any,
@@ -327,10 +318,6 @@ export class EditVectorComponent
       });
   }
 
-  logDeep() {
-    console.log(getDeep(this.paperDirective.project));
-  }
-
   requestAccess() {
     this.vectorNode
       .get('inviteRequests')
@@ -344,7 +331,6 @@ export class EditVectorComponent
   }
 
   onUndoClick() {
-    console.log(this.paperDirective.scope);
     if (this.paperDirective.scope?.actions) {
       const undoAction = this.paperDirective.scope.actions.pop();
       undoAction?.undoFn();

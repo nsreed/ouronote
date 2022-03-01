@@ -50,6 +50,7 @@ import { SettingsDialogComponent } from './components/settings-dialog/settings-d
 import { InvitedUsersComponent } from './components/invited-users/invited-users.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { DirectivesModule } from '../../directives/directives.module';
 
 @NgModule({
   declarations: [
@@ -74,6 +75,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     CertificatesModule,
     CommonModule,
     ComponentsModule,
+    DirectivesModule,
     FilesModule,
     FlexLayoutModule,
     LogModule,

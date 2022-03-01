@@ -25,15 +25,20 @@
           </ng-container>
         </div>
         <mat-divider></mat-divider>
-        <app-color-form [color]="paper.project.currentStyle.strokeColor"
-          *ngIf="paper.scope.tool?.propertyNames?.includes('style')"></app-color-form>
-        <!-- <app-color-form [color]="paper.project.currentStyle.fillColor"></app-color-form> -->
-        <ng-container *ngIf="paper.scope.tool?.propertyNames?.includes('style')">
-          <app-stroke-width-form [tool]="paper.scope.tool" [style]="paper.scope.tool.style"></app-stroke-width-form>
-          <p>Size</p>
-        </ng-container>
-        <app-selection-intersect-mode-form [tool]="paper.scope.tool"
-          *ngIf="paper.scope.tool?.propertyNames?.includes('greedySelect')"></app-selection-intersect-mode-form>
+        <div [appObject]="paper.project.currentStyle">
+          <app-color-form appObjectProperty="strokeColor" [color]="paper.project.currentStyle.strokeColor"
+            *ngIf="paper.scope.tool?.propertyNames?.includes('style')" [style]="paper.scope.tool.style">
+          </app-color-form>
+          <app-color-form appObjectProperty="fillColor" [color]="paper.project.currentStyle.fillColor"
+            [style]="paper.scope.tool.style" *ngIf="paper.scope.tool?.propertyNames?.includes('style')">
+          </app-color-form>
+          <ng-container *ngIf="paper.scope.tool?.propertyNames?.includes('style')">
+            <app-stroke-width-form [tool]="paper.scope.tool" [style]="paper.scope.tool.style"></app-stroke-width-form>
+            <p>Size</p>
+          </ng-container>
+          <app-selection-intersect-mode-form [tool]="paper.scope.tool"
+            *ngIf="paper.scope.tool?.propertyNames?.includes('greedySelect')"></app-selection-intersect-mode-form>
+        </div>
       </ng-template>
     </mat-expansion-panel>
 
@@ -48,6 +53,12 @@
         </a>
       </mat-action-row>
     </mat-expansion-panel> -->
+    <mat-expansion-panel *ngIf="project.selectedItems?.length > 0">
+      <mat-expansion-panel-header>Selection</mat-expansion-panel-header>
+      <ng-template matExpansionPanelContent>
+        <button>Use Style</button>
+      </ng-template>
+    </mat-expansion-panel>
 
     <mat-expansion-panel *ngIf="false">
       <mat-expansion-panel-header>Layers</mat-expansion-panel-header>
@@ -138,6 +149,7 @@
     </mat-toolbar>
 
     <div id="WorkspaceContainer">
+      <!-- <div class="floating">0 fps</div> -->
       <canvas id="Workspace" appPaperEdit #paper="appPaperEdit"></canvas>
     </div>
   </div>

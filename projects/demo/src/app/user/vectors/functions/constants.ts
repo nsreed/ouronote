@@ -2,6 +2,8 @@ export const EXPECT_PRIMITIVE_ARRAY = [
   'matrix',
   'size',
   'strokeColor',
+  'fillColor',
+  'shadowColor',
   'radius',
   'segments',
   'position',

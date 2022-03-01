@@ -18,6 +18,13 @@
   }
 }
 
+.floating {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
 app-invite-requests {
   max-width: 220px;
 }
