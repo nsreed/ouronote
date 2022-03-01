@@ -53,10 +53,11 @@
         </a>
       </mat-action-row>
     </mat-expansion-panel> -->
-    <mat-expansion-panel *ngIf="project.selectedItems?.length > 0">
+
+    <mat-expansion-panel *ngIf="false && project.selectedItems?.length > 0" expanded>
       <mat-expansion-panel-header>Selection</mat-expansion-panel-header>
       <ng-template matExpansionPanelContent>
-        <button>Use Style</button>
+        <app-selected-items></app-selected-items>
       </ng-template>
     </mat-expansion-panel>
 

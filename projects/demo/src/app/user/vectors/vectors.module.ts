@@ -51,6 +51,7 @@ import { InvitedUsersComponent } from './components/invited-users/invited-users.
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { DirectivesModule } from '../../directives/directives.module';
+import { SelectedItemsComponent } from './components/selected-items/selected-items.component';
 
 @NgModule({
   declarations: [
@@ -70,6 +71,7 @@ import { DirectivesModule } from '../../directives/directives.module';
     VectorsComponent,
     SettingsDialogComponent,
     InvitedUsersComponent,
+    SelectedItemsComponent,
   ],
   imports: [
     CertificatesModule,
