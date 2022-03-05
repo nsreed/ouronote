@@ -43,24 +43,12 @@ export class SelectTool extends VectorTool {
   );
 
   keyEsc = this.keyup.pipe(filter((e) => e.key === 'escape'));
-  keyDel = this.keyup.pipe(filter((e) => e.key === 'delete'));
   //#endregion
+
   //#region subscribers
   keyEscSub = this.keyEsc.subscribe((e) => {
     this.selecting = false;
     this.scope.project.deselectAll();
-  });
-  keyDelSub = this.keyDel.subscribe((e) => {
-    // console.log('keyup', e);
-    this.scope.project
-      .getItems({
-        selected: true,
-        match: (i: paper.Item) => i.className !== 'Layer',
-      })
-      .forEach((i) => {
-        // console.log('would delete', i.toString());
-        i.remove();
-      });
   });
   //#endregion
 }

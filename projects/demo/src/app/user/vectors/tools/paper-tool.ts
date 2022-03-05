@@ -113,6 +113,18 @@ export class VectorTool extends Tool {
   // FIXME class names get mangled by production build, stop being lazy
   name = Object.getPrototypeOf(this).constructor.name.replace(/tool/gi, '');
 
+  keyDel = this.keyup.pipe(filter((e) => e.key === 'delete'));
+  keyDelSub = this.keyDel.subscribe((e) => {
+    this.scope.project
+      .getItems({
+        selected: true,
+        match: (i: paper.Item) => i.className !== 'Layer',
+      })
+      .forEach((i) => {
+        i.remove();
+      });
+  });
+
   readonly logger = LogService.getLogger(`${this.name}`);
   protected setup() {
     this.pointerDown.subscribe(() => (this.isPointerDown = true));
