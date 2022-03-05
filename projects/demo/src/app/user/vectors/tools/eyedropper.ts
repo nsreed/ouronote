@@ -5,19 +5,37 @@ export class EyedropperTool extends VectorTool {
   name = 'Eyedropper';
   icon = 'eye-dropper';
   downSub = this.down.subscribe((e: paper.ToolEvent) => {
-    // console.log('click', e);
-    // const hits = this.scope.project.getItems({
-    //   match: (item: paper.Item) => {
-    //     return item.className !== 'Layer' && item.hitTest(e.point);
-    //   },
-    // });
-    // console.log('hit', hits);
-    // Find "best" item to pull styling from (this should be topmost item);
-    // Apply style to... currently active tool? Current project style? Depends on how tool property sharing turns out.
+    // this will sample a point from a raster. it fails when layers are too big. Use canvas sampling?
+    // const raster = this.project.activeLayer.rasterize({ insert: false });
+    // const color = raster.getAverageColor(e.point);
+    // this.project.currentStyle.strokeColor = color;
 
-    const raster = this.project.activeLayer.rasterize({ insert: false });
-    const color = raster.getAverageColor(e.point);
-    this.project.currentStyle.strokeColor = color;
+    this.project.currentStyle = e.item?.style;
+    const styleProps = [
+      'strokeWidth',
+      'strokeColor',
+      'strokeCap',
+      'strokeJoin',
+      'strokeScaling',
+      'dashOffset',
+      'dashArray',
+      'fillColor',
+      'fillRule',
+      'shadowColor',
+      'shadowBlur',
+      'shadowOffset',
+      'fontFamily',
+      'fontWeight',
+      'fontSize',
+      'leading',
+      'justification',
+      'miterLimit',
+    ];
+    styleProps.forEach((p) => {
+      if (!(e.item?.style as any)[p]) {
+        (this.project.currentStyle as any)[p] = null;
+      }
+    });
   });
 
   upSub = this.up.subscribe((e: paper.ToolEvent) => {
