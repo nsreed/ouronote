@@ -24,10 +24,13 @@ export class PenTool extends VectorTool {
 
   @Property({
     label: 'Strength',
+    min: -1,
+    max: 10,
+    default: 2,
   })
   smoothingStrength = 2;
 
-  propertyNames = ['style', 'simplify'];
+  propertyNames = ['style', 'simplify', 'smoothingStrength'];
 
   penDown: Observable<PenEvent | paper.ToolEvent> = CAPABILITIES.POINTER
     ? this.pointerDown
