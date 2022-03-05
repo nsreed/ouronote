@@ -18,11 +18,16 @@ export class PenTool extends VectorTool {
   } as paper.Style);
 
   @Property({
-    label: 'Smoothing',
+    label: 'Smooth',
   })
-  smoothing = false;
+  simplify = true;
 
-  propertyNames = ['style', 'smoothing'];
+  @Property({
+    label: 'Strength',
+  })
+  smoothingStrength = 2;
+
+  propertyNames = ['style', 'simplify'];
 
   penDown: Observable<PenEvent | paper.ToolEvent> = CAPABILITIES.POINTER
     ? this.pointerDown
@@ -51,6 +56,7 @@ export class PenTool extends VectorTool {
     }
     this.path.add(e.point);
   });
+
   upSub = this.up.subscribe((e) => {
     if (this.path) {
       if (this.path.length === 0) {
@@ -66,14 +72,18 @@ export class PenTool extends VectorTool {
           },
         });
       }
-      // this.path.style.strokeWidth = this.style.strokeWidth;
-      // this.path.strokeColor = this.project.currentStyle.strokeColor;
-      // this.path.fillColor = this.project.currentStyle.fillColor;
-      if (this.smoothing) {
-        this.path.smooth({
-          type: 'continuous',
-        });
+
+      if (this.simplify) {
+        // zoom err
+        // 0.5  5     out
+        // 1.0  2.5   default
+        // 2.0  1.25  in
+        const zoom = this.project.view.zoom;
+        const scalingFactor = 1 / (zoom * zoom);
+        const actualTolerance = 2.5 * scalingFactor * this.smoothingStrength;
+        this.path.simplify(actualTolerance);
       }
+
       (this.path as any).pair.doSave();
       (this.path as any).pair.editing = false;
       // TODO add this path to the undo stack
