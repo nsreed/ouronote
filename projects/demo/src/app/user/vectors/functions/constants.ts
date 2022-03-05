@@ -1,3 +1,23 @@
+export const PAPER_STYLE_PROPS = [
+  'strokeWidth',
+  'strokeColor',
+  'strokeCap',
+  'strokeJoin',
+  'strokeScaling',
+  'dashOffset',
+  'dashArray',
+  'fillColor',
+  'fillRule',
+  'shadowColor',
+  'shadowBlur',
+  'shadowOffset',
+  'fontFamily',
+  'fontWeight',
+  'fontSize',
+  'leading',
+  'justification',
+  'miterLimit',
+];
 export const EXPECT_PRIMITIVE_ARRAY = [
   'matrix',
   'size',

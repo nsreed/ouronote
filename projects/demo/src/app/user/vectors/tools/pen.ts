@@ -5,6 +5,7 @@ import { CAPABILITIES } from '../../../system.service';
 import { PenEvent } from '../classes/PenEvent';
 import { Property } from '../functions/decorators';
 import { VectorTool } from './paper-tool';
+import { copyNulls } from '../functions/paper-functions';
 export class PenTool extends VectorTool {
   path!: paper.Path;
   icon = 'marker';
@@ -15,7 +16,7 @@ export class PenTool extends VectorTool {
     strokeCap: 'round',
     strokeJoin: 'round',
     strokeWidth: 3,
-  } as paper.Style);
+  });
 
   @Property({
     label: 'Smooth',
@@ -53,6 +54,7 @@ export class PenTool extends VectorTool {
       this.path = new paper.Path(e.point) as any;
       (this.path as any).pair.editing = true;
       this.path.style = this.style;
+      this.path.style = this.project.currentStyle;
       this.path.strokeWidth = this.style.strokeWidth;
       this.path.strokeColor = this.project.currentStyle.strokeColor;
       this.path.fillColor = this.project.currentStyle.fillColor;
