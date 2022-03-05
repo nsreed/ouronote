@@ -25,6 +25,7 @@
           </ng-container>
         </div>
         <mat-divider></mat-divider>
+
         <div [appObject]="paper.project.currentStyle">
           <app-color-form appObjectProperty="strokeColor" [color]="paper.project.currentStyle.strokeColor"
             *ngIf="paper.scope.tool?.propertyNames?.includes('style')" [style]="paper.scope.tool.style">
@@ -36,9 +37,13 @@
             <app-stroke-width-form [tool]="paper.scope.tool" [style]="paper.scope.tool.style"></app-stroke-width-form>
             <p>Size</p>
           </ng-container>
+          <ng-container *ngIf="paper.scope.tool?.propertyNames?.includes('smoothing')">
+            <app-boolean-form label="Smooth" [appObject]="paper.scope.tool" appObjectProperty="smoothing"></app-boolean-form>
+          </ng-container>
           <app-selection-intersect-mode-form [tool]="paper.scope.tool"
             *ngIf="paper.scope.tool?.propertyNames?.includes('greedySelect')"></app-selection-intersect-mode-form>
         </div>
+
       </ng-template>
     </mat-expansion-panel>
 

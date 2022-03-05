@@ -52,6 +52,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { DirectivesModule } from '../../directives/directives.module';
 import { SelectedItemsComponent } from './components/selected-items/selected-items.component';
+import { BooleanFormComponent } from './components/boolean-form/boolean-form.component';
 
 @NgModule({
   declarations: [
@@ -72,6 +73,7 @@ import { SelectedItemsComponent } from './components/selected-items/selected-ite
     SettingsDialogComponent,
     InvitedUsersComponent,
     SelectedItemsComponent,
+    BooleanFormComponent,
   ],
   imports: [
     CertificatesModule,

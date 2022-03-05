@@ -67,9 +67,9 @@ export class PenTool extends VectorTool {
       // this.path.style.strokeWidth = this.style.strokeWidth;
       // this.path.strokeColor = this.project.currentStyle.strokeColor;
       // this.path.fillColor = this.project.currentStyle.fillColor;
-      // if (this.smoothing) {
-      //   this.path.smooth();
-      // }
+      if (this.smoothing) {
+        this.path.smooth();
+      }
       (this.path as any).pair.doSave();
       (this.path as any).pair.editing = false;
       // TODO add this path to the undo stack

@@ -8,13 +8,21 @@ export class ObjectPropertyDirective implements OnInit {
   @Input('appObjectProperty')
   public propertyName!: string;
 
+  @Input()
+  label?: string;
+
+  get object() {
+    return this.objectDirective.object;
+  }
+
+  get propertyDesc() {
+    return Object.getPrototypeOf(this.object).__PROPERTIES[this.propertyName];
+  }
+
   constructor(private objectDirective: ObjectDirective) {}
 
   ngOnInit(): void {
-    console.log(
-      this.objectDirective.object[this.propertyName],
-      this.propertyName
-    );
+    console.log(this.propertyDesc);
   }
 
   get value() {
