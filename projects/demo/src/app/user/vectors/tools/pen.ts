@@ -16,7 +16,7 @@ export class PenTool extends VectorTool {
     strokeCap: 'round',
     strokeJoin: 'round',
     strokeWidth: 3,
-  });
+  } as paper.Style);
 
   @Property({
     label: 'Smooth',
@@ -31,7 +31,12 @@ export class PenTool extends VectorTool {
   })
   smoothingStrength = 2;
 
-  propertyNames = ['style', 'simplify', 'smoothingStrength'];
+  @Property({
+    label: 'Scale',
+  })
+  scale = false;
+
+  propertyNames = ['style', 'simplify', 'smoothingStrength', 'scale'];
 
   penDown: Observable<PenEvent | paper.ToolEvent> = CAPABILITIES.POINTER
     ? this.pointerDown
@@ -55,7 +60,10 @@ export class PenTool extends VectorTool {
       (this.path as any).pair.editing = true;
       this.path.style = this.style;
       this.path.style = this.project.currentStyle;
-      this.path.strokeWidth = this.style.strokeWidth;
+      const width = this.scale
+        ? (1 / this.project.view.zoom) * this.style.strokeWidth
+        : this.style.strokeWidth;
+      this.path.strokeWidth = width;
       this.path.strokeColor = this.project.currentStyle.strokeColor;
       this.path.fillColor = this.project.currentStyle.fillColor;
     }

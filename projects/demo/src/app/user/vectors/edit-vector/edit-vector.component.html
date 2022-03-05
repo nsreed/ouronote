@@ -43,6 +43,9 @@
           <ng-container *ngIf="paper.scope.tool?.propertyNames?.includes('smoothingStrength') && paper.scope.tool?.simplify">
             <app-slider-form [appObject]="paper.scope.tool" appObjectProperty="smoothingStrength"></app-slider-form>
           </ng-container>
+          <ng-container *ngIf="paper.scope.tool?.propertyNames?.includes('scale')">
+            <app-boolean-form [appObject]="paper.scope.tool" appObjectProperty="scale"></app-boolean-form>
+          </ng-container>
           <app-selection-intersect-mode-form [tool]="paper.scope.tool"
             *ngIf="paper.scope.tool?.propertyNames?.includes('greedySelect')"></app-selection-intersect-mode-form>
         </div>

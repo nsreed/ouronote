@@ -14,7 +14,12 @@ export class ShapeTool extends VectorTool {
     strokeWidth: 3,
   } as paper.Style);
 
-  propertyNames: string[] = ['style'];
+  @Property({
+    label: 'Scale',
+  })
+  scale = false;
+
+  propertyNames: string[] = ['style', 'scale'];
 
   downSub = this.down.subscribe(() => this.activateDrawLayer());
 
@@ -25,6 +30,11 @@ export class ShapeTool extends VectorTool {
     this.shape = new paper.Shape.Rectangle(e.downPoint, e.point);
     this.shape.data.ignore = true;
     this.shape.style = this.style;
+    this.shape.style = this.project.currentStyle;
+    const width = this.scale
+      ? (1 / this.project.view.zoom) * this.style.strokeWidth
+      : this.style.strokeWidth;
+    this.shape.strokeWidth = width;
     (this.scope.settings as any).insertItems = prev;
     this.project.activeLayer.insertChild(0, this.shape);
   });
