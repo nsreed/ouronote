@@ -70,7 +70,9 @@ export class PenTool extends VectorTool {
       // this.path.strokeColor = this.project.currentStyle.strokeColor;
       // this.path.fillColor = this.project.currentStyle.fillColor;
       if (this.smoothing) {
-        this.path.smooth();
+        this.path.smooth({
+          type: 'continuous',
+        });
       }
       (this.path as any).pair.doSave();
       (this.path as any).pair.editing = false;
