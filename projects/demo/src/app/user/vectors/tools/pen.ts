@@ -18,7 +18,7 @@ export class PenTool extends VectorTool {
   } as paper.Style);
 
   @Property()
-  smoothing = true;
+  smoothing = false;
 
   propertyNames = ['style', 'smoothing'];
 

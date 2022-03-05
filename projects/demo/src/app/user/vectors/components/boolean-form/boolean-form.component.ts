@@ -14,5 +14,7 @@ export class BooleanFormComponent implements OnInit {
     this.boolCtl.valueChanges.subscribe((v) => (prop.value = v));
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.boolCtl.patchValue(this.prop.value);
+  }
 }
