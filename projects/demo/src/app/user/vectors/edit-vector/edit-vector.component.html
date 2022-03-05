@@ -38,7 +38,7 @@
             <p>Size</p>
           </ng-container>
           <ng-container *ngIf="paper.scope.tool?.propertyNames?.includes('smoothing')">
-            <app-boolean-form label="Smooth" [appObject]="paper.scope.tool" appObjectProperty="smoothing"></app-boolean-form>
+            <app-boolean-form [appObject]="paper.scope.tool" appObjectProperty="smoothing"></app-boolean-form>
           </ng-container>
           <app-selection-intersect-mode-form [tool]="paper.scope.tool"
             *ngIf="paper.scope.tool?.propertyNames?.includes('greedySelect')"></app-selection-intersect-mode-form>
