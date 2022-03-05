@@ -74,26 +74,33 @@ export class PenTool extends VectorTool {
       }
 
       if (this.simplify) {
+        const segmentCount = this.path.segments.length;
         /* the more zoomed in we are, the smaller a tolerance ("error") we should be using when smoothing
           inversely, as we zoom out, we can tolerate a lot more smoothing.
           this is because simplificaiton is calculated by distance in paper.js units,
           but the input point density is relative to the zoom level.
-          
-                       zoom  scaling 
-          zoomed out+  0.25  16      
-          zoomed out   0.5   4       
-          normal       1.0   1       
-          zoomed in    2.0   0.25    
-          zoomed in+   4.0   0.0625  
+
+                       zoom  scaling
+          zoomed out+  0.25  16
+          zoomed out   0.5   4
+          normal       1.0   1
+          zoomed in    2.0   0.25
+          zoomed in+   4.0   0.0625
         */
-        const defaultSmoothingTolerance = 2.5;    // this is what paper.js uses by default
-        const zoom = this.project.view.zoom;      // this is how many pixels on screen represent a paper.js unit
-        const scalingFactor = 1 / (zoom * zoom);  // this is used to scale the tolerance with respect to pixel density
-        const actualTolerance =                   // calculate the actual applied tolerance
-          defaultSmoothingTolerance
-          * scalingFactor
-          * this.smoothingStrength;               // This value can be modified by the user to impact the smoothing strength
+        const defaultSmoothingTolerance = 2.5; // this is what paper.js uses by default
+        const zoom = this.project.view.zoom; // this is how many pixels on screen represent a paper.js unit
+        const scalingFactor = 1 / (zoom * zoom); // this is used to scale the tolerance with respect to pixel density
+        const actualTolerance = // calculate the actual applied tolerance
+          defaultSmoothingTolerance * scalingFactor * this.smoothingStrength; // This value can be modified by the user to impact the smoothing strength
         this.path.simplify(actualTolerance);
+
+        // Gloating
+        const difference = segmentCount - this.path.segments.length;
+        const percentage =
+          100 - Math.round((this.path.segments.length / segmentCount) * 100);
+        console.log(
+          `Smoothing: ${difference} of the ${segmentCount} segments were removed, saving ${percentage}%`
+        );
       }
 
       (this.path as any).pair.doSave();
