@@ -272,13 +272,15 @@ export class EditVectorComponent
   }
 
   async download() {
-    const jsonBlob = new Blob([this.project.exportJSON()], {
-      type: 'text/plain;charset=utf-8',
-    });
-    const username = this.userService.user.alias + '-' || '';
-    const title = await this.vectorNode.get('title').once().toPromise();
-    const updated = new Date(this.vectorNode.updateTime).toISOString();
-    saveAs(jsonBlob, `${username}${title}-${updated}.json`);
+    console.log(this.project.exportJSON({ asString: false }));
+
+    // const jsonBlob = new Blob([this.project.exportJSON()], {
+    //   type: 'text/plain;charset=utf-8',
+    // });
+    // const username = this.userService.user.alias + '-' || '';
+    // const title = await this.vectorNode.get('title').once().toPromise();
+    // const updated = new Date(this.vectorNode.updateTime).toISOString();
+    // saveAs(jsonBlob, `${username}${title}-${updated}.json`);
   }
 
   async downloadImage() {

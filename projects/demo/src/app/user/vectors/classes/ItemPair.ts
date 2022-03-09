@@ -17,7 +17,7 @@ import {
 } from '../../../../../../ng-gun/src/lib/classes/GunChain';
 import { after$, before$, returned } from '../../../functions/aspect-rx';
 import { ItemGraph } from '../../ItemGraph';
-import { getUUID } from '../edit-vector/converter-functions';
+import { getUUID as getSetKey } from '../edit-vector/converter-functions';
 import {
   EXPECT_PRIMITIVE_ARRAY,
   hasRequired,
@@ -131,6 +131,7 @@ export class ItemPair extends PaperPair {
     logger: LogService
   ) {
     super(item, project, scope, logger);
+    item.data.path = chain.pathFromRecord.join('/');
     this.setup();
   }
 
@@ -270,13 +271,14 @@ export class ItemPair extends PaperPair {
       let childNode;
       if (!childObj.data.soul) {
         // This is a new child, not yet inserted in the graph
-        const soul = getUUID(this.chain).replace(/~.*/, '');
-        childNode = this.children.get(soul);
-        childObj.data.soul = soul;
+        const childKey = getSetKey(this.chain).replace(/~.*/, '');
+        childNode = this.children.get(childKey);
+        childObj.data.soul = childKey;
       } else {
         // This is a cached child
         childNode = this.children.get(childObj.data.soul);
       }
+      childObj.data.path = childNode.pathFromRecord.join('/');
       // Create a new ItemPair for the child
       const childPair = new ItemPair(
         childNode,

@@ -2,8 +2,14 @@ import { EventEmitter } from '@angular/core';
 import * as paper from 'paper';
 import { buffer, bufferTime, filter, map } from 'rxjs/operators';
 import { LogService } from '../../../../../../log/src/lib/log.service';
-import { EXPECT_PRIMITIVE_ARRAY, hasRequired } from '../functions/constants';
+import {
+  EXPECT_PRIMITIVE_ARRAY,
+  hasRequired,
+  PAPER_STYLE_EMPTY,
+} from '../functions/constants';
 import { serializeValue } from '../functions/packaging';
+import { copyNulls } from '../functions/paper-functions';
+import { IItemData } from './IItemData';
 
 export class PaperPair {
   childCache = {} as any;
@@ -83,6 +89,7 @@ export class PaperPair {
     delete scrubbed.className;
     scrubbed.data = {
       soul: key,
+      path: json._['#'],
     };
     Object.keys(scrubbed).forEach((k) => {
       if (EXPECT_PRIMITIVE_ARRAY.includes(k)) {
@@ -123,7 +130,8 @@ export class PaperPair {
     delete scrubbed.className;
     scrubbed.data = {
       soul: key,
-    };
+      path: childJSON._['#'],
+    } as IItemData;
     Object.keys(scrubbed).forEach((k) => {
       if (EXPECT_PRIMITIVE_ARRAY.includes(k)) {
         scrubbed[k] = JSON.parse(scrubbed[k]);

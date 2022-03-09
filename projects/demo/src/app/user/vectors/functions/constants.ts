@@ -1,3 +1,4 @@
+import * as paper from 'paper';
 export const PAPER_STYLE_PROPS = [
   'strokeWidth',
   'strokeColor',
@@ -18,6 +19,26 @@ export const PAPER_STYLE_PROPS = [
   'justification',
   'miterLimit',
 ];
+export const PAPER_STYLE_EMPTY = {
+  strokeWidth: null,
+  strokeColor: null,
+  strokeCap: null,
+  strokeJoin: null,
+  strokeScaling: true,
+  dashOffset: null,
+  dashArray: null,
+  fillColor: null,
+  // fillRule: null,
+  shadowColor: null,
+  shadowBlur: null,
+  shadowOffset: null,
+  fontFamily: null,
+  fontWeight: null,
+  fontSize: null,
+  leading: null,
+  justification: null,
+  miterLimit: null,
+};
 export const EXPECT_PRIMITIVE_ARRAY = [
   'matrix',
   'size',

@@ -37,15 +37,15 @@
             <app-stroke-width-form [tool]="paper.scope.tool" [style]="paper.scope.tool.style"></app-stroke-width-form>
             <p>Size</p>
           </ng-container>
-          <ng-container *ngIf="paper.scope.tool?.propertyNames?.includes('simplify')">
+          <div *ngIf="paper.scope.tool?.propertyNames?.includes('simplify')">
             <app-boolean-form [appObject]="paper.scope.tool" appObjectProperty="simplify"></app-boolean-form>
-          </ng-container>
-          <ng-container *ngIf="paper.scope.tool?.propertyNames?.includes('smoothingStrength') && paper.scope.tool?.simplify">
+          </div>
+          <div *ngIf="paper.scope.tool?.propertyNames?.includes('smoothingStrength') && paper.scope.tool?.simplify">
             <app-slider-form [appObject]="paper.scope.tool" appObjectProperty="smoothingStrength"></app-slider-form>
-          </ng-container>
-          <ng-container *ngIf="paper.scope.tool?.propertyNames?.includes('scale')">
+          </div>
+          <div *ngIf="paper.scope.tool?.propertyNames?.includes('scale')">
             <app-boolean-form [appObject]="paper.scope.tool" appObjectProperty="scale"></app-boolean-form>
-          </ng-container>
+          </div>
           <app-selection-intersect-mode-form [tool]="paper.scope.tool"
             *ngIf="paper.scope.tool?.propertyNames?.includes('greedySelect')"></app-selection-intersect-mode-form>
         </div>
