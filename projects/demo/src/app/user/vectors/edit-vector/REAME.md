@@ -34,29 +34,58 @@ this.gun$.pipe().subscribe((gun) => {});
 
 ## Graph Structure
 
-Flat
+### Flat
 
 ```typescript
 {
   Layer: {
     'kjiwfxx0291485': {...}
+  },
+  Path: {
+    'kjiwfxx02noQ35': {
+      parent: {
+        '#': '~project-pub/repo/Layer/kjiwfxx0291485'
+      }
+    }
   }
 }
+
+const repo = project.get('repo');
+const classes = repo.map();
+const instance = classes.map();
+instance.map().on().subscribe((v, k) => {
+  // can derive class from node's path
+  // filter items that are null or have null parents
+
+});
 
 ```
 
 Pros:
 
 - Easier to import/export?
+- Reduces incoming sync code to project.items.map().map().on()
 
 Cons:
 
 - Orphan detection
+- Have to map _every_ object when using `.parent`
 
 > When an item is removed in paper, it can be by way of
 > `remove()` (allows us to intercept it directly) or
 > `parent.removeChild()` - the question is, does a `removeChild(...)` call `remove()` or something
 > like it on the child
+
+### Reactive
+
+ui -> item.clone() -> capture changes -> gun
+gun -> item
+
+This needs some sort of encapsulation around cloning the item.
+
+item.in.move([10, 10]);
+
+move() clones the object, calls move() on that object, captures the changes, and writes the changes to gun.
 
 ## Pair Bonding
 
@@ -211,6 +240,25 @@ Bob moves d behind b
 
 Alice [a, c, e]
 Bob [d, b, c]
+
+_probably too error prone, next_
+
+### Z-Indexing
+
+give a `z` property to item graph
+
+sort by z, then by z's property update time
+
+default to 0, using className property update time (does this make sense? doesn't really work when moving to a
+z-index that already has occupants, no way to sort occupants relative to one another?)
+
+sorting is easiest when handling new children
+
+get the existing child with the highest Z less than new child, insertBelow() that child
+
+How to handle z-index changes by UI?
+
+Hook after insertAbove/insertBelow?
 
 ## Forms: Multi-Item Property vs. Single-Item Property
 
