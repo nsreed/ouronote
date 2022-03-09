@@ -122,6 +122,7 @@ export class PaperPair {
     const prevInsertItemsValue = (this.scope.settings as any).insertItems;
     (this.scope.settings as any).insertItems = false;
     const scrubbed = {
+      ...PAPER_STYLE_EMPTY,
       ...childJSON,
     };
     delete scrubbed._;
