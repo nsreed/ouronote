@@ -42,9 +42,5 @@ try {
   console.log("will default to HTTP");
 }
 
-// app.listen = function(){
-
-// }
-
 const server = app.listen(PORT);
 const gun = Gun({ web: httpsServer || server });
