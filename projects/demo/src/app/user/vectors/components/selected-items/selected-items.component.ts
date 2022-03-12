@@ -56,7 +56,35 @@ export class SelectedItemsComponent implements OnInit {
       let prevGun: any = null;
       if (item.nextSibling) {
         console.log(`replacing nextSibling's 'above'`);
-        // Set nextSibling's 'above' to previousSibling
+        // FIXME moving multiple items is broken
+        // a, b, s1, s2, c
+        // move s1 to back
+        // s2 gets prev set to b...
+        // ...
+        // basically, the selected items should end up in a contiguous group at beginning or end
+        // but since we're doing this reactively, and using the document state to make these changes,
+        // things might end up stale
+        // s1, a, b, s2, c
+        // but the document is still a, b, s1, s2, c
+        // so when s2 moves, c gets prev set to s1, effectively moving it to the top with s1
+        // so what do we do???
+
+        /* Idea 1
+          group selectedItems by parent
+          for each group:
+          set each item's previousSibling to its previous selected item (maintains relative order)
+          set first selected item's previousSibling to null...
+          repair adjacent non-selected items
+          like, getClosestUnselectedPrev(selectedItem) & getClosestUnselectedNext(selectedItem)
+          ^ could get expensive if we're moving large selections
+        */
+
+        /* Idea 2
+          just have the parent rewrite the child order?
+        */
+
+        // FIXME drawing after reordering multiple items causes glitchiness
+
         prevGun = (item.previousSibling as any)?.pair?.chain.gun;
         if (item.previousSibling) {
           item.nextSibling.data.previousSibling = {
