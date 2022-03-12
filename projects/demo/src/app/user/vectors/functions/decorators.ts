@@ -14,13 +14,13 @@ export const makeConstructor =
   };
 
 export const PropertiedObject = () => (target: any) => {
-  console.log('PROPERTIED OBJECT', target);
+  // console.log('PROPERTIED OBJECT', target);
   if (!target.___DECORATORS) {
     target.___DECORATORS = {};
   }
   const cn = target.constructor.name;
   if (!target.___DECORATORS[target.constructor.name]) {
-    console.log('PROPCONST', target.constructor.name);
+    // console.log('PROPCONST', target.constructor.name);
     target.constructor = makeConstructor(target.constructor);
     target.___DECORATORS[cn] = true;
   }
@@ -31,7 +31,7 @@ export const Property: any =
   (config?: any) =>
   (target: any, name: string, ...args: any[]) => {
     PropertiedObject()(target);
-    console.log('PROPERTY', target, name, config, args);
+    // console.log('PROPERTY', target, name, config, args);
     const p = {
       target,
       name,

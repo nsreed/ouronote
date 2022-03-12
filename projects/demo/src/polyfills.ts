@@ -132,12 +132,12 @@ function addChangeListeners(
   prototype: any,
   properties = getOwnSettable(prototype)
 ) {
-  console.log('monkeypatching prototype', prototype);
+  // console.log('monkeypatching prototype', prototype);
   addChangeEmitter(prototype);
   properties.forEach((prop: any[]) => {
     const property = prop[0];
     const propertyName = prop[1];
-    console.log('%s.%s', prototype.constructor.name, propertyName);
+    // console.log('%s.%s', prototype.constructor.name, propertyName);
     Object.defineProperty(prototype, propertyName, {
       get: property.get,
       set(...args) {
