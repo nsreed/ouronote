@@ -32,42 +32,40 @@ _note: `npm` should also work for the following commands_
 yarn install
 ```
 
-### Running with Docker
-
-**Build Projects**
-
-```
-yarn build
-```
+### Run Ouronote
 
 **docker-compose**
 
-docker-compose.yml will use the project directory as a volume. This means you must have the project built before hosting.
+This is useful for testing on local network devices, such as tablets.
 
-```
-yarn build demo
-```
-
-Generate self-signed certs (not required for localhost)
+1. Generate self-signed certs (required for access outside localhost)
 
 ```
 openssl req -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out ouronote-dev.crt -keyout ouronote-dev.key
 ```
 
+2. Build the project
+
+```
+yarn build:all
+```
+
+3. Run the docker container
+
 ```
 docker-compose up -d
 ```
 
-Navigate to <https://localhost:4430> or <http://localhost:8080>
+Navigate to <https://[YOUR IP]:4430> or <http://localhost:8080>
 
 ### Development
 
-#### Without live reloading (recommended)
+#### Using Docker
 
 1. Run the above steps for docker-compose.
 2. Run `yarn build:watch`
 
-#### Angular CLI
+#### Using Angular CLI
 
 For the time being, a GUN relay peer is required on `localhost:8765`.
 
