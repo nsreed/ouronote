@@ -19,7 +19,6 @@ import { after$, before$, returned } from '../../../functions/aspect-rx';
 import { ItemGraph } from '../../ItemGraph';
 import { getUUID as getSetKey } from '../edit-vector/converter-functions';
 import {
-  EXPECT_PRIMITIVE_ARRAY,
   hasRequired,
   MUTATIONS,
   MUTATION_PROPERTIES,
@@ -28,14 +27,17 @@ import {
 import { getDeep, getShallow, serializeValue } from '../functions/packaging';
 import { PaperPair } from './PaperPair';
 import { SaveStrategy } from './SaveStrategy';
-import { isIgnored } from '../functions/paper-functions';
-import { EXPECT_KEYED_ARRAY } from '../functions/constants';
 
 export class ItemPair extends PaperPair {
   graphValue: any;
   graph$ = this.chain
     .on({ changes: true, bypassZone: true } as GunChainCallbackOptions)
     .pipe(shareReplay(1));
+
+  readonly z = this.chain.get('z');
+  z$ = this.z.on();
+
+  previousSibling = this.chain.get('previousSibling');
 
   graphValue$ = this.graph$.pipe(
     filter((json) => hasRequired(json)),
@@ -171,7 +173,10 @@ export class ItemPair extends PaperPair {
     }
     if (!json) {
       // We are performing a "dumb" save
+      this.logger.log('full save');
       this.chain.put(this.getShallow());
+      const prevGun = (this.item.previousSibling as any)?.pair?.chain.gun;
+      this.chain.get('previousSibling').put(prevGun as never);
     } else {
       // We were provided the JSON to update
       this.chain.put({
@@ -240,6 +245,29 @@ export class ItemPair extends PaperPair {
           this.logger.warn('onLocalChange$ was not an array, not saving!!!');
         }
       });
+
+    this.previousSibling.on().subscribe((previousSibling) => {
+      this.logger.verbose('got previousSibling', previousSibling);
+      if (!previousSibling) {
+        this.item.sendToBack();
+        return;
+      }
+      const prevSibSoul = previousSibling._['#'];
+      this.item.data.previousSibling = previousSibling;
+      const prevItem = this.project.getItem({
+        match: (i: any) => {
+          return i.data.path === prevSibSoul;
+        },
+      });
+
+      if (prevItem) {
+        this.logger.verbose('found previousSibling', prevItem);
+        this.item.insertAbove(prevItem);
+      } else {
+        // This might not be a problem, just logging
+        this.logger.log('could not find previous sibling', prevSibSoul);
+      }
+    });
   }
 
   /**
@@ -380,6 +408,39 @@ export class ItemPair extends PaperPair {
       this.logger.log('inserting %d paper items', toInsert.length);
       this.isInsertingFromGraph = true;
       this.item.insertChildren(this.item.children.length, toInsert as any);
+      toInsert.forEach((child) => {
+        // Look for the item that should be above this one
+        if (!child.data.previousSibling) {
+          this.logger.verbose('found bottom child', child);
+          child.sendToBack();
+          return;
+        }
+        const below = this.item.getItem({
+          match: (item: any) =>
+            item.data.previousSibling &&
+            item.data.previousSibling._['#'] === child.data.path,
+        });
+        if (below) {
+          this.logger.verbose('should insert below', below);
+          child.insertBelow(below);
+        } else {
+          // Look for the item that should be below this one
+          const above = this.item.getItem({
+            match: (item: any) =>
+              child.data.previousSibling &&
+              item.data.path === child.data.previousSibling._['#'],
+          });
+          if (above) {
+            this.logger.verbose('should insert above', above.data.path);
+            child.insertAbove(above);
+          } else {
+            this.logger.error(
+              'could not find insert location for',
+              child.data.path
+            );
+          }
+        }
+      });
       this.isInsertingFromGraph = false;
     }
   }

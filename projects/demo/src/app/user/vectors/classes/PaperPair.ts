@@ -87,6 +87,7 @@ export class PaperPair {
     delete scrubbed.children;
     delete scrubbed.data;
     delete scrubbed.className;
+    delete scrubbed.previousSibling;
     scrubbed.data = {
       soul: key,
       path: json._['#'],
@@ -129,6 +130,7 @@ export class PaperPair {
     delete scrubbed.children;
     delete scrubbed.data;
     delete scrubbed.className;
+    delete scrubbed.previousSibling;
     scrubbed.data = {
       soul: key,
       path: childJSON._['#'],
