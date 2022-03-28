@@ -152,6 +152,7 @@ export class VectorTool extends Tool {
         drawLayer.activate();
       } else {
         const newDrawLayer = new paper.Layer();
+        newDrawLayer.activate();
       }
     }
   }

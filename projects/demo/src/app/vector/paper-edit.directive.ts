@@ -11,6 +11,7 @@ import {
 import { ShapeTool } from '../user/vectors/tools/shape';
 import { PaperDirective } from './paper.directive';
 import { EyedropperTool } from '../user/vectors/tools/eyedropper';
+import { LineTool } from '../user/vectors/tools/line';
 
 @Directive({
   selector: '[appPaperEdit]',
@@ -25,4 +26,5 @@ export class PaperEditDirective extends PaperDirective {
   public shape = new ShapeTool(this.scope as any);
   public move = new MoveTool(this.scope as any);
   public eyedropper = new EyedropperTool(this.scope as any);
+  public line = new LineTool(this.scope as any);
 }
