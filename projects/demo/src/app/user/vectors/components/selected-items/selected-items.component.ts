@@ -21,6 +21,23 @@ export class SelectedItemsComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  onCloneClick() {
+    const items = [...this.selectedItems];
+    this.editVectorComponent.project.deselectAll();
+    const clones = items.map((item) =>
+      item.clone({
+        insert: true,
+      })
+    );
+    clones.forEach((clone) => {
+      console.log(clone);
+      clone.data = {};
+      clone.selected = true;
+      (clone.parent as any).pair?.onLocalChild(clone);
+      (clone as any).pair?.doSave();
+    });
+  }
+
   onBringToFrontClick() {
     // Group items by parent
     const parents = this.selectedItems?.reduce(

@@ -131,6 +131,7 @@ export class PaperPair {
     delete scrubbed.data;
     delete scrubbed.className;
     delete scrubbed.previousSibling;
+    delete scrubbed.selected;
     scrubbed.data = {
       soul: key,
       path: childJSON._['#'],

@@ -341,6 +341,7 @@ export class ItemPair extends PaperPair {
     }
     const scrubbed = this.scrubJSON(json, this.item.data.soul);
     delete scrubbed.className;
+    delete scrubbed.selected;
     const imported = this.item.importJSON([
       this.item.className,
       scrubbed,
