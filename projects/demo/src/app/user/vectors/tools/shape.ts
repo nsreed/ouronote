@@ -36,7 +36,10 @@ export class ShapeTool extends VectorTool {
       : this.style.strokeWidth;
     this.shape.strokeWidth = width;
     (this.scope.settings as any).insertItems = prev;
-    this.project.activeLayer.insertChild(0, this.shape);
+    this.project.activeLayer.insertChild(
+      this.project.activeLayer.children.length,
+      this.shape
+    );
   });
 
   upSub = this.up.subscribe((e) => {
