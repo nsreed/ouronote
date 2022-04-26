@@ -223,6 +223,7 @@ export class ItemPair extends PaperPair {
         this.saveProperty$.emit([change[0], serializeValue(value)]);
         this.save();
       });
+
     this.localChange$
       .pipe(
         filter(
@@ -265,7 +266,7 @@ export class ItemPair extends PaperPair {
         this.item.insertAbove(prevItem);
       } else {
         // This might not be a problem, just logging
-        this.logger.log('could not find previous sibling', prevSibSoul);
+        this.logger.verbose('could not find previous sibling', prevSibSoul);
       }
     });
   }
@@ -442,7 +443,30 @@ export class ItemPair extends PaperPair {
           }
         }
       });
+      this.arrangeLocalChildren();
       this.isInsertingFromGraph = false;
+    }
+  }
+
+  arrangeLocalChildren() {
+    // Find the bottom child (should have no data.previousSibling)
+    // Send it to back
+    // find next child with current set as previousSibling, iteratively
+
+    let c =
+      this.item.getItem({
+        match: (i: paper.Item) => !i.data.previousSibling,
+      }) || this.item.firstChild;
+
+    while (c) {
+      const next = this.item.getItem({
+        match: (i: paper.Item) =>
+          i.data.previousSibling?._['#'] === c.data.path,
+      });
+      if (next) {
+        next.insertAbove(c);
+      }
+      c = next;
     }
   }
 

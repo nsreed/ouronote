@@ -1,3 +1,7 @@
-<button mat-flat-button (click)="onBringToFrontClick()">Bring to Front</button>
-<button mat-flat-button (click)="onSendToBackClick()">Send to Back</button>
-<button mat-flat-button (click)="onCloneClick()">Clone</button>
+<mat-list>
+  <div mat-subheader>{{ selectedItems?.length || 0 }} item{{ selectedItems?.length === 1 ? '' : 's' }}</div>
+  <button mat-flat-button (click)="onBringToFrontClick()">Bring to Front</button>
+  <button mat-flat-button (click)="onSendToBackClick()">Send to Back</button>
+  <button mat-flat-button (click)="onCloneClick()">Clone</button>
+</mat-list>
+<app-style-form></app-style-form>

@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { EditVectorComponent } from '../../edit-vector/edit-vector.component';
 import { FormBuilder } from '@angular/forms';
 import { ItemPair } from '../../classes/ItemPair';
+import * as paper from 'paper';
 
 @Component({
   selector: 'app-selected-items',
@@ -29,10 +30,18 @@ export class SelectedItemsComponent implements OnInit {
         insert: true,
       })
     );
+
+    const randomDistance =
+      10 + 500 * this.editVectorComponent.project.view.zoom * Math.random();
+
+    const randomDirection = new paper.Point(randomDistance, 0);
+    randomDirection.angle = Math.random() * 360;
+
     clones.forEach((clone) => {
       console.log(clone);
       clone.data = {};
       clone.selected = true;
+      clone.translate(randomDirection);
       (clone.parent as any).pair?.onLocalChild(clone);
       (clone as any).pair?.doSave();
     });
@@ -61,7 +70,7 @@ export class SelectedItemsComponent implements OnInit {
     for (const parentID in parents) {
       const items = parents[parentID];
       // Move selected items to front
-      items.reverse().forEach((item) => item.bringToFront());
+      items.forEach((item) => item.bringToFront());
       // Find differences
       const parent = this.editVectorComponent.project.getItem({
         id: parseInt(parentID, 10),
@@ -137,7 +146,7 @@ export class SelectedItemsComponent implements OnInit {
     for (const parentID in parents) {
       const items = parents[parentID];
       // Move selected items to front
-      items.forEach((item) => item.sendToBack());
+      items.reverse().forEach((item) => item.sendToBack());
       // Find differences
       const parent = this.editVectorComponent.project.getItem({
         id: parseInt(parentID, 10),
