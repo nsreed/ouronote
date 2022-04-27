@@ -30,6 +30,7 @@ import { SaveStrategy } from './SaveStrategy';
 
 export class ItemPair extends PaperPair {
   graphValue: any;
+  savedValue: any = {};
   graph$ = this.chain
     .on({ changes: true, bypassZone: true } as GunChainCallbackOptions)
     .pipe(shareReplay(1));
@@ -40,9 +41,9 @@ export class ItemPair extends PaperPair {
   previousSibling = this.chain.get('previousSibling');
 
   graphValue$ = this.graph$.pipe(
-    filter((json) => hasRequired(json)),
+    filter((json) => hasRequired(json))
     // distinct((v) => JSON.stringify(v)),
-    tap((value) => (this.graphValue = value))
+    // tap((value) => (this.graphValue = value))
   );
   graphRemove$ = this.graph$.pipe(filter((json) => json === null));
 
@@ -178,6 +179,10 @@ export class ItemPair extends PaperPair {
       const prevGun = (this.item.previousSibling as any)?.pair?.chain.gun;
       this.chain.get('previousSibling').put(prevGun as never);
     } else {
+      this.savedValue = {
+        ...this.savedValue,
+        ...json,
+      };
       // We were provided the JSON to update
       this.chain.put({
         ...json,
@@ -329,7 +334,6 @@ export class ItemPair extends PaperPair {
    * @returns void
    */
   onGraph(json: any) {
-    this.graphValue = json;
     if (this.editing) {
       this.logger.log('ignored incoming graph update because editing');
       return;
@@ -341,15 +345,53 @@ export class ItemPair extends PaperPair {
       this.logger.warn('  NO JSON! SHOULD REMOVE???');
     }
     const scrubbed = this.scrubJSON(json, this.item.data.soul);
-    delete scrubbed.className;
-    delete scrubbed.selected;
-    const imported = this.item.importJSON([
-      this.item.className,
-      scrubbed,
-    ] as any) as any;
-    if (imported !== this.item) {
-      this.logger.error('unexpected new item!!!');
+
+    if (Object.keys(this.savedValue).length > 0) {
+      console.log('ignoring update, waiting for:', this.savedValue);
+      Object.keys(json)
+        .filter((k) => Object.keys(this.savedValue).includes(k))
+        .forEach((k) => {
+          const saved = this.savedValue[k];
+          const graph = json[k];
+          if (graph === saved) {
+            console.log('got expected value');
+            delete this.savedValue[k];
+            // delete scrubbed[k];
+          } else {
+            console.log('got different value');
+            delete scrubbed[k];
+          }
+        });
+    } else {
+      if (this.graphValue) {
+        Object.keys(json).forEach((k) => {
+          const oldVal = this.graphValue[k];
+          const newVal = json[k];
+          if (oldVal === newVal) {
+            // console.log('no diff for ', k, oldVal, newVal);
+            delete scrubbed[k];
+          } else {
+            // console.log('diff for ', k);
+          }
+        });
+      }
+      delete scrubbed.className;
+      delete scrubbed.selected;
+
+      if (Object.keys(scrubbed).length === 1) {
+        console.log('no keys to import');
+        // return;
+      } else {
+        const imported = this.item.importJSON([
+          this.item.className,
+          scrubbed,
+        ] as any) as any;
+        if (imported !== this.item) {
+          this.logger.error('unexpected new item!!!');
+        }
+      }
     }
+    this.graphValue = { ...json };
   }
 
   /**
