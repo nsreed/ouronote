@@ -9,6 +9,7 @@
       placeholder="username"
     />
     <mat-label>username</mat-label>
+    <mat-error *ngIf="form.controls.alias.errors?.aliasTaken">Username has been taken</mat-error>
     <span matPrefix>@</span>
     <!-- <mat-hint>{{
       mode !== "create"
@@ -23,7 +24,9 @@
   <mat-form-field *ngIf="mode === 'create'">
     <input type="password" matInput formControlName="password2" />
     <mat-label>confirm password</mat-label>
+    <mat-error *ngIf="form.controls.password2.errors?.passwordMatch">Passwords do not match</mat-error>
   </mat-form-field>
+
   <div
     fxLayout="row"
     fxLayoutAlign="center center"
@@ -38,9 +41,10 @@
     </div>
     <!-- <pre>{{ unsupportedBrowser | json }}</pre> -->
   </div>
+
   <ng-container *ngIf="mode === 'login'; else Create">
     <div fxLayout="row" fxLayoutAlign="center baseline" fxLayoutGap="1em">
-      <button mat-raised-button color="primary" (click)="login()">
+      <button mat-raised-button color="primary" (click)="onLoginClick()">
         Log In
       </button>
       or
@@ -60,16 +64,15 @@
       </p></mat-error
     >
   </ng-container>
+
   <ng-template #Create>
-    <mat-error *ngIf="passwordMatch"> Passwords do not match. </mat-error>
+    <mat-error *ngIf="form.errors"> Passwords do not match. </mat-error>
     <div fxLayout="row" fxLayoutAlign="center baseline" fxLayoutGap="1em">
       <button
         mat-raised-button
         color="primary"
-        (click)="create()"
-        [disabled]="
-          passwordMatch && form.value.alias !== '' && form.value.password !== ''
-        "
+        (click)="onCreateClick()"
+        [disabled]="form.invalid"
       >
         Create & Sign In
       </button>

@@ -1,10 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormControl,
+  Validators,
+} from '@angular/forms';
 import { NgGunService } from '../../../../ng-gun/src/lib/ng-gun.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { AboutComponent } from '../components/about/about.component';
 import host from '@jsdevtools/host-environment';
+import { UserService } from '../user/user.service';
 
 @Component({
   templateUrl: './login.component.html',
@@ -15,7 +21,21 @@ export class LoginComponent implements OnInit {
 
   unsupportedBrowser = !(host.browser as any).chrome;
 
-  mode: 'create' | 'login' = 'login';
+  private _mode: 'create' | 'login' = 'login';
+  public get mode(): 'create' | 'login' {
+    return this._mode;
+  }
+  public set mode(value: 'create' | 'login') {
+    this._mode = value;
+    this.form.controls.alias.updateValueAndValidity({
+      onlySelf: false,
+      emitEvent: true,
+    });
+    this.form.controls.password2.updateValueAndValidity();
+    console.log(this.form.controls.password2.errors);
+  }
+
+  submitted = false;
 
   // FIXME editing password 1 doesn't re-trigger validation
   // FIXME creating account with existing alias should fail validation
@@ -46,13 +66,28 @@ export class LoginComponent implements OnInit {
       // console.log('auth data', data);
       router.navigateByUrl('/user/vectors');
     });
+    this.form.controls.alias.addAsyncValidators(
+      async (ctl: AbstractControl) => {
+        if (this.mode === 'create') {
+          console.log('validating unique username');
+          const match = await this.ngGun.findAlias(ctl.value).toPromise();
+          console.log(match);
+          return match
+            ? {
+                aliasTaken: true,
+              }
+            : null;
+        }
+        return null;
+      }
+    );
   }
 
   ngOnInit(): void {
     this.form.updateValueAndValidity();
   }
 
-  create() {
+  onCreateClick() {
     if (this.form.invalid) {
       return;
     }
@@ -65,12 +100,12 @@ export class LoginComponent implements OnInit {
         this.error = data.err;
         // console.log('create result', data)
         if (!this.error) {
-          this.login();
+          this.onLoginClick();
         }
       });
   }
 
-  login() {
+  onLoginClick() {
     if (!this.form.valid) {
       return;
     }
