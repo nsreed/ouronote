@@ -270,6 +270,49 @@ export class EditVectorComponent
     (pt as any).pair.save(['content']);
   }
 
+  activateDrawLayer() {
+    if (this.project.activeLayer.data.ignore) {
+      const drawLayer = this.project.getItem({
+        className: 'Layer',
+        data: {
+          ignore: undefined,
+        },
+      }) as paper.Layer;
+      if (drawLayer) {
+        drawLayer.activate();
+      } else {
+        const newDrawLayer = new paper.Layer();
+        newDrawLayer.activate();
+      }
+    }
+  }
+
+  onInsertImageClick() {
+    this.dialog
+      .open(FileUploaderComponent, {
+        data: {
+          extensions: ['png', 'jpg', 'jpeg'],
+        },
+      })
+      .afterClosed()
+      .subscribe((files) => {
+        if (files.length > 0) {
+          this.project.deselectAll();
+        }
+        this.activateDrawLayer();
+        files.forEach((file: File) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const b64 = reader.result;
+            const raster = new paper.Raster(b64 as string);
+            raster.selected = true;
+            (this.project.activeLayer as any).pair.onLocalChild(raster);
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+  }
+
   addLayer() {
     this.logger.log('adding layer');
     const layer = new paper.Layer();

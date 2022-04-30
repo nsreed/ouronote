@@ -1,5 +1,15 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import {
+  Component,
+  ElementRef,
+  Inject,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-file-uploader',
@@ -7,7 +17,17 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
   styleUrls: ['./file-uploader.component.scss'],
 })
 export class FileUploaderComponent implements OnInit {
-  constructor(private dialog: MatDialogRef<FileUploaderComponent, any>) {}
+  constructor(
+    private dialog: MatDialogRef<FileUploaderComponent, any>,
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {
+    console.log(this.data);
+  }
+
+  get extensions(): string[] {
+    return this.data.extensions || ['json'];
+  }
+
   @ViewChild('fileDropRef', { static: false }) fileDropEl!: ElementRef;
   files: any[] = [];
 
@@ -43,9 +63,12 @@ export class FileUploaderComponent implements OnInit {
    * Convert Files list to normal array list
    * @param files (Files List)
    */
-  prepareFilesList(files: Array<any>) {
+  prepareFilesList(files: any) {
     for (const item of files) {
-      if (item.name.endsWith('.json')) {
+      const matched = this.extensions.find((x) =>
+        item.name.toLowerCase().endsWith(x)
+      );
+      if (matched) {
         item.progress = 0;
         this.files.push(item);
       }
