@@ -29,6 +29,7 @@ export class FileUploaderComponent implements OnInit {
   }
 
   @ViewChild('fileDropRef', { static: false }) fileDropEl!: ElementRef;
+
   files: any[] = [];
 
   ngOnInit(): void {}
@@ -63,8 +64,10 @@ export class FileUploaderComponent implements OnInit {
    * Convert Files list to normal array list
    * @param files (Files List)
    */
-  prepareFilesList(files: any) {
-    for (const item of files) {
+  prepareFilesList(files: FileList) {
+    for (let i = 0; i < files.length; i++) {
+      console.log('processing %f of %f', i + 1, files.length);
+      const item = files[i] as any;
       const matched = this.extensions.find((x) =>
         item.name.toLowerCase().endsWith(x)
       );
@@ -72,8 +75,9 @@ export class FileUploaderComponent implements OnInit {
         item.progress = 0;
         this.files.push(item);
       }
-      this.fileDropEl.nativeElement.value = '';
     }
+
+    this.fileDropEl.nativeElement.value = '';
   }
 
   finish() {

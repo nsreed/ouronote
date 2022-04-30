@@ -45,10 +45,12 @@ import {
 import { timeout, mergeAll, mapTo } from 'rxjs/operators';
 import { SettingsDialogComponent } from '../components/settings-dialog/settings-dialog.component';
 import { MatTooltip } from '@angular/material/tooltip';
-import { timer, from } from 'rxjs';
+import { timer, from, fromEvent } from 'rxjs';
 import { ElementRef } from '@angular/core';
 import { LicenseDialogComponent } from '../../../components/license-dialog/license-dialog.component';
 import { VectorTool } from '../tools/paper-tool';
+import { tool } from 'paper/dist/paper-core';
+import { layoutVertical } from '../functions/paper-functions';
 
 @Component({
   templateUrl: './edit-vector.component.html',
@@ -300,21 +302,73 @@ export class EditVectorComponent
         },
       })
       .afterClosed()
-      .subscribe((files) => {
-        if (files.length > 0) {
-          this.project.deselectAll();
+      .subscribe(async (files) => {
+        if (files.length === 0) {
+          return;
         }
+        this.project.deselectAll();
+        this.logger.log('processing files');
         this.activateDrawLayer();
-        files.forEach((file: File) => {
+
+        const readers = files.map((file: File) => {
           const reader = new FileReader();
-          reader.onloadend = () => {
-            const b64 = reader.result;
-            const raster = new paper.Raster(b64 as string);
-            raster.selected = true;
-            (this.project.activeLayer as any).pair.onLocalChild(raster);
-          };
-          reader.readAsDataURL(file);
+          return new Promise((res, rej) => {
+            reader.onloadend = () => {
+              res(reader.result);
+            };
+            reader.onerror = (ev: ProgressEvent<FileReader>) => {
+              this.logger.error(
+                'Error: %s event reading file "%s": %s',
+                ev.target?.error?.name,
+                file.name,
+                ev.target?.error?.message,
+                ev.target?.error?.stack
+              );
+            };
+            reader.readAsDataURL(file);
+          });
         });
+
+        const results = await Promise.all(readers);
+        const rasters = results.map((result) => {
+          const b64 = result;
+          const raster = new paper.Raster(b64 as string);
+          raster.selected = true;
+
+          return raster;
+        });
+
+        const loads = rasters
+          .filter((r) => !r.loaded)
+          .map(
+            (raster) =>
+              new Promise((res, rej) => {
+                raster.onLoad = res;
+                raster.onError = rej;
+              })
+          );
+        console.log('loads', loads);
+        await Promise.all(loads);
+        console.log('all loaded');
+
+        // rasters.forEach((raster) => {
+        //   console.log('inserting', raster);
+        //   (this.project.activeLayer as any).insertChild(
+        //     this.project.activeLayer.children.length,
+        //     raster
+        //   );
+        // });
+        // console.log('all inserted');
+
+        layoutVertical(rasters, this.project.view.center);
+
+        console.log('layout complete');
+        rasters.forEach((raster: any) => {
+          // raster.parent.pair.onLocalChild(raster);
+          raster.pair.doSave();
+        });
+
+        this.tools.find((t: any) => t.name === 'move')?.activate();
       });
   }
 

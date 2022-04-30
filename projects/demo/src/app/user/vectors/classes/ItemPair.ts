@@ -176,10 +176,10 @@ export class ItemPair extends PaperPair {
       // We are performing a "dumb" save
       this.logger.log('full save');
       const shallow = this.getShallow();
-      console.log(shallow);
+      // console.log(JSON.stringify(shallow));
       this.chain.put(shallow);
       const prevGun = (this.item.previousSibling as any)?.pair?.chain.gun;
-      this.chain.get('previousSibling').put(prevGun as never);
+      this.chain.get('previousSibling').put(prevGun as never); // FIXME this breaks for rasters
     } else {
       this.savedValue = {
         ...this.savedValue,

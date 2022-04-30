@@ -3,7 +3,10 @@ import { EditVectorComponent } from '../../edit-vector/edit-vector.component';
 import { FormBuilder } from '@angular/forms';
 import { ItemPair } from '../../classes/ItemPair';
 import * as paper from 'paper';
-import { copyStyleToItem } from '../../functions/paper-functions';
+import {
+  copyStyleToItem,
+  layoutVertical,
+} from '../../functions/paper-functions';
 
 function copyMatchingKeys(o1: any, o2: any) {
   const o = {} as any;
@@ -287,5 +290,10 @@ export class SelectedItemsComponent implements OnInit {
     //   item.pair?.previousSibling.put(null as never);
     //   (item.nextSibling as any)?.pair?.previousSibling.put(prevGun || null);
     // });
+  }
+
+  onLayoutVerticalClick() {
+    layoutVertical(this.selectedItems as any);
+    this.selectedItems.forEach((i) => i.pair?.save(['position']));
   }
 }
