@@ -27,10 +27,10 @@ export class PaperEditDirective extends PaperDirective {
   public pen = new PenTool(this.scope as any);
   public eraser = new EraserTool(this.scope as any);
   public shape = new ShapeTool(this.scope as any);
-  public move = new MoveTool(this.scope as any);
   public eyedropper = new EyedropperTool(this.scope as any);
   public line = new LineTool(this.scope as any);
   public text = new TextTool(this.scope as any);
+  public move = new MoveTool(this.scope as any);
   public rotate = new RotateTool(this.scope as any);
   public resize = new ResizeTool(this.scope as any);
 }
