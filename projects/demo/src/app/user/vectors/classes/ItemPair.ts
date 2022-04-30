@@ -347,18 +347,18 @@ export class ItemPair extends PaperPair {
     const scrubbed = this.scrubJSON(json, this.item.data.soul);
 
     if (Object.keys(this.savedValue).length > 0) {
-      console.log('ignoring update, waiting for:', this.savedValue);
+      // console.log('ignoring update, waiting for:', this.savedValue);
       Object.keys(json)
         .filter((k) => Object.keys(this.savedValue).includes(k))
         .forEach((k) => {
           const saved = this.savedValue[k];
           const graph = json[k];
           if (graph === saved) {
-            console.log('got expected value');
+            // console.log('got expected value');
             delete this.savedValue[k];
             // delete scrubbed[k];
           } else {
-            console.log('got different value');
+            // console.log('got different value');
             delete scrubbed[k];
           }
         });
@@ -379,7 +379,7 @@ export class ItemPair extends PaperPair {
       delete scrubbed.selected;
 
       if (Object.keys(scrubbed).length === 1) {
-        console.log('no keys to import');
+        // console.log('no keys to import');
         // return;
       } else {
         const imported = this.item.importJSON([
