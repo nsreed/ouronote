@@ -74,31 +74,39 @@ export class SelectedItemsComponent implements OnInit {
   }
 
   onStyleChange(style: paper.Style | any) {
-    const simple = style.toJSON();
+    // const simple = style.toJSON();
+    // this.selectedItems.forEach((s: any) => {
+    //   Object.keys(simple._values).forEach((p) => {
+    //     const old = s[p];
+    //     const nv = simple._values[p];
+    //     if (old === undefined) {
+    //       // console.log(`old ${p} is undefined`);
+    //       return;
+    //     }
+    //     if (old === nv) {
+    //       // console.log(`old ${p} is equal to new value`, nv);
+    //       return;
+    //     }
+    //     // TODO handle text-only stuff better
+    //     if (p === 'leading') {
+    //       return;
+    //     }
+    //     if (old === JSON.stringify(nv)) {
+    //       console.log(p, 'skipping because JSON equiv');
+    //       return;
+    //     }
+    //     console.log(p, 'old', old, 'new', nv);
+    //     s[p] = nv;
+    //     s.pair.save([p]);
+    //   });
+    // });
+  }
+
+  onStylePropChange(change: [string, any]) {
+    const [prop, val] = change;
     this.selectedItems.forEach((s: any) => {
-      Object.keys(simple._values).forEach((p) => {
-        const old = s[p];
-        const nv = simple._values[p];
-        if (old === undefined) {
-          // console.log(`old ${p} is undefined`);
-          return;
-        }
-        if (old === nv) {
-          // console.log(`old ${p} is equal to new value`, nv);
-          return;
-        }
-        // TODO handle text-only stuff better
-        if (p === 'leading') {
-          return;
-        }
-        if (old === JSON.stringify(nv)) {
-          console.log(p, 'skipping because JSON equiv');
-          return;
-        }
-        console.log(p, 'old', old, 'new', nv);
-        s[p] = nv;
-        s.pair.save([p]);
-      });
+      s[prop] = val;
+      s.pair.save([prop]);
     });
   }
 

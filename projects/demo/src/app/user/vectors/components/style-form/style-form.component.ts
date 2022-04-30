@@ -4,6 +4,14 @@ import { FormBuilder } from '@angular/forms';
 import { serializeValue } from '../../functions/packaging';
 import { Style } from 'paper';
 
+function getColorValue(value: any) {
+  return value === null
+    ? value
+    : typeof value === 'string'
+    ? value
+    : value.toCSS(true);
+}
+
 @Component({
   selector: 'app-style-form',
   templateUrl: './style-form.component.html',
@@ -19,9 +27,28 @@ export class StyleFormComponent implements OnInit {
     if (JSON.stringify(this._style) !== JSON.stringify(value)) {
       this._style = value;
       console.log('set style', value);
-      this.form.controls.strokeWidth.setValue(value.strokeWidth);
-      this.form.controls.strokeColor.setValue(
-        (value.strokeColor as any).toCSS(true)
+      this.form.controls.strokeWidth.patchValue(value.strokeWidth, {
+        onlySelf: true,
+        emitEvent: false,
+      });
+      // this.form.controls.strokeColor.patchValue(
+      //   value.strokeColor
+      //     ? typeof value.strokeColor === 'string'
+      //       ? value.strokeColor
+      //       : (value.strokeColor as any).toCSS(true)
+      //     : null,
+      //   { onlySelf: true, emitEvent: false }
+      // );
+      this.form.controls.fillColor.patchValue(getColorValue(value.fillColor), {
+        onlySelf: true,
+        emitEvent: false,
+      });
+      this.form.controls.strokeColor.patchValue(
+        getColorValue(value.strokeColor),
+        {
+          onlySelf: true,
+          emitEvent: false,
+        }
       );
     }
     // const json = serializeValue(value);
@@ -34,6 +61,9 @@ export class StyleFormComponent implements OnInit {
 
   @Output()
   styleChange = new EventEmitter<paper.Style>();
+
+  @Output()
+  stylePropChange = new EventEmitter<[string, any]>();
 
   categories = {
     stroke: [
@@ -52,24 +82,24 @@ export class StyleFormComponent implements OnInit {
   };
 
   form = this.fb.group({
-    strokeWidth: null,
-    strokeColor: null,
-    strokeCap: 'round',
-    strokeJoin: 'round',
-    strokeScaling: true,
-    dashOffset: null,
     dashArray: null,
+    dashOffset: null,
     fillColor: null,
     fillRule: 'nonzero',
-    shadowColor: null,
-    shadowBlur: null,
-    shadowOffset: null,
     fontFamily: null,
-    fontWeight: null,
     fontSize: null,
-    leading: null,
+    fontWeight: null,
     justification: null,
+    leading: null,
     miterLimit: null,
+    shadowBlur: null,
+    shadowColor: null,
+    shadowOffset: null,
+    strokeCap: 'round',
+    strokeColor: null,
+    strokeJoin: 'round',
+    strokeScaling: true,
+    strokeWidth: null,
   });
 
   constructor(private fb: FormBuilder) {
@@ -77,6 +107,14 @@ export class StyleFormComponent implements OnInit {
       const ns = new paper.Style(v);
       this.styleChange.emit(ns);
     });
+    for (const k in this.form.controls) {
+      if (Object.prototype.hasOwnProperty.call(this.form.controls, k)) {
+        const control = this.form.controls[k];
+        control.valueChanges.subscribe((vc) =>
+          this.stylePropChange.emit([k, vc])
+        );
+      }
+    }
   }
 
   ngOnInit(): void {}

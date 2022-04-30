@@ -4,4 +4,4 @@
   <button mat-flat-button (click)="onSendToBackClick()">Send to Back</button>
   <button mat-flat-button (click)="onCloneClick()">Clone</button>
 </mat-list>
-<app-style-form [style]="selectedStyle" (styleChange)="onStyleChange($event)"></app-style-form>
+<app-style-form [style]="selectedStyle" (styleChange)="onStyleChange($event)" (stylePropChange)="onStylePropChange($event)"></app-style-form>
