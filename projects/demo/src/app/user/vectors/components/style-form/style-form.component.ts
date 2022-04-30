@@ -1,7 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, EventEmitter, Output } from '@angular/core';
 import * as paper from 'paper';
 import { FormBuilder } from '@angular/forms';
 import { serializeValue } from '../../functions/packaging';
+import { Style } from 'paper';
 
 @Component({
   selector: 'app-style-form',
@@ -15,12 +16,14 @@ export class StyleFormComponent implements OnInit {
   }
   @Input()
   public set style(value: paper.Style) {
-    this._style = value;
-    console.log('set style', value);
-    this.form.controls.strokeWidth.setValue(value.strokeWidth);
-    this.form.controls.strokeColor.setValue(
-      (value.strokeColor as any).toCSS(true)
-    );
+    if (JSON.stringify(this._style) !== JSON.stringify(value)) {
+      this._style = value;
+      console.log('set style', value);
+      this.form.controls.strokeWidth.setValue(value.strokeWidth);
+      this.form.controls.strokeColor.setValue(
+        (value.strokeColor as any).toCSS(true)
+      );
+    }
     // const json = serializeValue(value);
     // console.log(json);
     // this.form.patchValue((value as any).exportJSON({ asString: false })[1], {
@@ -28,6 +31,9 @@ export class StyleFormComponent implements OnInit {
     //   emitEvent: false,
     // });
   }
+
+  @Output()
+  styleChange = new EventEmitter<paper.Style>();
 
   categories = {
     stroke: [
@@ -48,13 +54,13 @@ export class StyleFormComponent implements OnInit {
   form = this.fb.group({
     strokeWidth: null,
     strokeColor: null,
-    strokeCap: null,
-    strokeJoin: null,
-    strokeScaling: null,
+    strokeCap: 'round',
+    strokeJoin: 'round',
+    strokeScaling: true,
     dashOffset: null,
     dashArray: null,
     fillColor: null,
-    fillRule: null,
+    fillRule: 'nonzero',
     shadowColor: null,
     shadowBlur: null,
     shadowOffset: null,
@@ -66,7 +72,12 @@ export class StyleFormComponent implements OnInit {
     miterLimit: null,
   });
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder) {
+    this.form.valueChanges.subscribe((v) => {
+      const ns = new paper.Style(v);
+      this.styleChange.emit(ns);
+    });
+  }
 
   ngOnInit(): void {}
 

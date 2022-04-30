@@ -52,6 +52,9 @@ function unpackArray(value: any) {
 
 /** Serializes a paper gun formatted JSON to ...something else. */
 export function serializeValue(value: any): any {
+  if (value === null) {
+    return null;
+  }
   if (Array.isArray(value)) {
     return value.map((e) => serializeValue(e));
   }
