@@ -32,7 +32,6 @@ export class LoginComponent implements OnInit {
       emitEvent: true,
     });
     this.form.controls.password2.updateValueAndValidity();
-    console.log(this.form.controls.password2.errors);
   }
 
   submitted = false;
@@ -69,9 +68,9 @@ export class LoginComponent implements OnInit {
     this.form.controls.alias.addAsyncValidators(
       async (ctl: AbstractControl) => {
         if (this.mode === 'create') {
-          console.log('validating unique username');
+          // console.log('validating unique username');
           const match = await this.ngGun.findAlias(ctl.value).toPromise();
-          console.log(match);
+          // console.log(match);
           return match
             ? {
                 aliasTaken: true,
@@ -91,6 +90,7 @@ export class LoginComponent implements OnInit {
     if (this.form.invalid) {
       return;
     }
+    this.submitted = true;
     this.error = null;
     // console.log('create', this.form.value);
     this.ngGun
@@ -109,6 +109,7 @@ export class LoginComponent implements OnInit {
     if (!this.form.valid) {
       return;
     }
+    this.submitted = true;
     this.error = null;
     // console.log('login', this.form.value);
     this.ngGun
@@ -118,6 +119,7 @@ export class LoginComponent implements OnInit {
         // console.log('login result', data);
         if (data.err) {
           this.error = true;
+          this.submitted = false;
         } else {
           this.error = undefined;
         }

@@ -1,3 +1,4 @@
+<mat-progress-bar mode="indeterminate" *ngIf="submitted"></mat-progress-bar>
 <h1>ouronote</h1>
 <form [formGroup]="form">
   <mat-form-field>
@@ -44,11 +45,11 @@
 
   <ng-container *ngIf="mode === 'login'; else Create">
     <div fxLayout="row" fxLayoutAlign="center baseline" fxLayoutGap="1em">
-      <button mat-raised-button color="primary" (click)="onLoginClick()">
+      <button mat-raised-button color="primary" [disabled]="form.invalid || submitted" (click)="onLoginClick()">
         Log In
       </button>
       or
-      <button mat-button color="primary" (click)="mode = 'create'">
+      <button mat-button color="primary" [disabled]="submitted" (click)="mode = 'create'">
         Create Account
       </button>
     </div>
@@ -72,11 +73,11 @@
         mat-raised-button
         color="primary"
         (click)="onCreateClick()"
-        [disabled]="form.invalid"
+        [disabled]="form.invalid || submitted"
       >
         Create & Sign In
       </button>
-      <button mat-button (click)="mode = 'login'">Cancel</button>
+      <button mat-button (click)="mode = 'login'" [disabled]="submitted">Cancel</button>
     </div>
   </ng-template>
   <p></p>

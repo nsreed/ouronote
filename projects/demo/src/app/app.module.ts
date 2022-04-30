@@ -58,6 +58,7 @@ import { SessionInfoComponent } from './session-info/session-info.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { MatSelectModule } from '@angular/material/select';
 import { DirectivesModule } from './directives/directives.module';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 const RADISK_LOCAL = localStorage.getItem('RADISK_ENABLE');
 const RADISK_ENABLE = RADISK_LOCAL === null ? true : !!JSON.parse(RADISK_LOCAL);
@@ -104,6 +105,7 @@ const WEBRTC_ENABLE =
     MatListModule,
     MatMenuModule,
     MatNativeDateModule,
+    MatProgressBarModule,
     MatRadioModule,
     MatSelectModule,
     MatSidenavModule,
