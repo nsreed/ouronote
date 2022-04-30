@@ -1,4 +1,4 @@
-import { Directive, Input, OnInit } from '@angular/core';
+import { Directive, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { ObjectDirective } from './object.directive';
 
 @Directive({
@@ -16,6 +16,9 @@ export class ObjectPropertyDirective implements OnInit {
   public set label(value: string | undefined) {
     this._label = value;
   }
+
+  @Output()
+  propertyValueChange = new EventEmitter();
 
   get object() {
     return this.objectDirective.object;
@@ -39,5 +42,6 @@ export class ObjectPropertyDirective implements OnInit {
 
   set value(value: any) {
     this.objectDirective.object[this.propertyName] = value;
+    this.propertyValueChange.emit(value);
   }
 }

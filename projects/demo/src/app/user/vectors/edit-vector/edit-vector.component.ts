@@ -265,6 +265,11 @@ export class EditVectorComponent
       });
   }
 
+  onContentValueChange(pt: paper.PointText, value: string) {
+    pt.content = value;
+    (pt as any).pair.save(['content']);
+  }
+
   addLayer() {
     this.logger.log('adding layer');
     const layer = new paper.Layer();

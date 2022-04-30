@@ -75,6 +75,9 @@
     <mat-expansion-panel *ngIf="project.selectedItems?.length > 0" expanded>
       <mat-expansion-panel-header>Selection</mat-expansion-panel-header>
       <ng-template matExpansionPanelContent>
+        <ng-container *ngIf="project.selectedItems?.length === 1 && project.selectedItems[0].className === 'PointText'">
+          <app-text-form [appObject]="project.selectedItems[0]" appObjectProperty="content" (propertyValueChange)="onContentValueChange(project.selectedItems[0], $event)"></app-text-form>
+        </ng-container>
         <app-selected-items [selectedItems]="project.selectedItems"></app-selected-items>
       </ng-template>
     </mat-expansion-panel>
