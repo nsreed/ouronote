@@ -54,6 +54,7 @@ import { DirectivesModule } from '../../directives/directives.module';
 import { SelectedItemsComponent } from './components/selected-items/selected-items.component';
 import { BooleanFormComponent } from './components/boolean-form/boolean-form.component';
 import { SliderFormComponent } from './components/slider-form/slider-form.component';
+import { TextFormComponent } from './components/text-form/text-form.component';
 
 @NgModule({
   declarations: [
@@ -76,6 +77,7 @@ import { SliderFormComponent } from './components/slider-form/slider-form.compon
     SelectedItemsComponent,
     BooleanFormComponent,
     SliderFormComponent,
+    TextFormComponent,
   ],
   imports: [
     CertificatesModule,

@@ -29,6 +29,10 @@
         </div>
         <mat-divider></mat-divider>
 
+        <ng-container *ngIf="paper.scope.tool?.propertyNames?.includes('content')">
+          <app-text-form [appObject]="paper.scope.tool" appObjectProperty="content"></app-text-form>
+        </ng-container>
+
         <div [appObject]="paper.project.currentStyle">
           <app-color-form appObjectProperty="strokeColor" [color]="paper.project.currentStyle.strokeColor"
             *ngIf="paper.scope.tool?.propertyNames?.includes('style')" [style]="paper.scope.tool.style">
