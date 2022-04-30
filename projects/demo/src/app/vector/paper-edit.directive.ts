@@ -14,6 +14,7 @@ import { EyedropperTool } from '../user/vectors/tools/eyedropper';
 import { LineTool } from '../user/vectors/tools/line';
 import { RotateTool } from '../user/vectors/tools/rotate';
 import { ResizeTool } from '../user/vectors/tools/resize';
+import { TextTool } from '../user/vectors/tools/text';
 
 @Directive({
   selector: '[appPaperEdit]',
@@ -29,6 +30,7 @@ export class PaperEditDirective extends PaperDirective {
   public move = new MoveTool(this.scope as any);
   public eyedropper = new EyedropperTool(this.scope as any);
   public line = new LineTool(this.scope as any);
+  public text = new TextTool(this.scope as any);
   public rotate = new RotateTool(this.scope as any);
   public resize = new ResizeTool(this.scope as any);
 }
