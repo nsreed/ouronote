@@ -175,7 +175,9 @@ export class ItemPair extends PaperPair {
     if (!json) {
       // We are performing a "dumb" save
       this.logger.log('full save');
-      this.chain.put(this.getShallow());
+      const shallow = this.getShallow();
+      console.log(shallow);
+      this.chain.put(shallow);
       const prevGun = (this.item.previousSibling as any)?.pair?.chain.gun;
       this.chain.get('previousSibling').put(prevGun as never);
     } else {

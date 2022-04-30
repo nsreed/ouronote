@@ -48,6 +48,7 @@ import { MatTooltip } from '@angular/material/tooltip';
 import { timer, from } from 'rxjs';
 import { ElementRef } from '@angular/core';
 import { LicenseDialogComponent } from '../../../components/license-dialog/license-dialog.component';
+import { VectorTool } from '../tools/paper-tool';
 
 @Component({
   templateUrl: './edit-vector.component.html',
@@ -84,6 +85,10 @@ export class EditVectorComponent
   editRequestsTooltip?: MatTooltip;
 
   editToast?: MatSnackBarRef<TextOnlySnackBar>;
+
+  get tools(): VectorTool[] {
+    return this.paperDirective.scope.tools as any;
+  }
 
   constructor(
     private dialog: MatDialog,

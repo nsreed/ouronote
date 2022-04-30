@@ -3,6 +3,7 @@ import { EditVectorComponent } from '../../edit-vector/edit-vector.component';
 import { FormBuilder } from '@angular/forms';
 import { ItemPair } from '../../classes/ItemPair';
 import * as paper from 'paper';
+import { copyStyleToItem } from '../../functions/paper-functions';
 
 function copyMatchingKeys(o1: any, o2: any) {
   const o = {} as any;
@@ -113,11 +114,6 @@ export class SelectedItemsComponent implements OnInit {
   onCloneClick() {
     const items = [...this.selectedItems];
     this.editVectorComponent.project.deselectAll();
-    const clones = items.map((item) =>
-      item.clone({
-        insert: true,
-      })
-    );
 
     const randomDistance =
       10 + 500 * this.editVectorComponent.project.view.zoom * Math.random();
@@ -125,14 +121,21 @@ export class SelectedItemsComponent implements OnInit {
     const randomDirection = new paper.Point(randomDistance, 0);
     randomDirection.angle = Math.random() * 360;
 
-    clones.forEach((clone) => {
-      console.log(clone);
+    const clones = items.map((item) => {
+      const clone = item.clone({
+        insert: true,
+      });
+      clone.copyAttributes(item, false);
+      // copyStyleToItem(item.style, clone);
+      // copyStyleToItem(item, clone);
       clone.data = {};
       clone.selected = true;
       clone.translate(randomDirection);
       (clone.parent as any).pair?.onLocalChild(clone);
       (clone as any).pair?.doSave();
+      return clone;
     });
+    this.editVectorComponent.tools.find((t) => t.name === 'move')?.activate();
   }
 
   onBringToFrontClick() {

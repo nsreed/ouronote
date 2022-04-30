@@ -12,3 +12,9 @@ export const copyNulls = (source: any, dest: any) => {
     }
   });
 };
+export const copyStyleToItem = (
+  style: paper.Style | any,
+  item: paper.Item | any
+) => {
+  PAPER_STYLE_PROPS.forEach((p) => (item[p] = style[p]));
+};
