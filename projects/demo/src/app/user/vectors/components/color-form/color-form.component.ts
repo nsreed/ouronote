@@ -2,6 +2,16 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ObjectPropertyDirective } from '../../../../directives/object-property.directive';
 import * as paper from 'paper';
+import { Color } from '@angular-material-components/color-picker';
+
+function paperColorToPicker(color: paper.Color) {
+  return new Color(
+    color?.red || 0,
+    color?.green || 0,
+    color?.blue || 0,
+    color?.alpha || 1
+  );
+}
 
 @Component({
   selector: 'app-color-form',
@@ -59,6 +69,15 @@ export class ColorFormComponent implements OnInit {
     }
   }
 
+  public get pickerColor() {
+    return new Color(
+      this.color?.red || 0,
+      this.color?.green || 0,
+      this.color?.blue || 0,
+      this.color?.alpha || 1
+    );
+  }
+
   constructor(private fb: FormBuilder, public prop: ObjectPropertyDirective) {}
 
   ngOnInit(): void {
@@ -85,7 +104,9 @@ export class ColorFormComponent implements OnInit {
   }
 
   updateFromColor() {
-    this.colorCtr.patchValue(this.color ? this.color.toCSS(true) : null);
+    this.colorCtr.patchValue(
+      this.color ? paperColorToPicker(this.color) : null
+    );
     if (!this.color) {
       return;
     }
