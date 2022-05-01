@@ -340,8 +340,6 @@ export class ItemPair extends PaperPair {
       this.logger.log('ignored incoming graph update because editing');
       return;
     }
-    // FIXME path segments getting overwritten by previous saves
-    // FIXME occasionally only the first debounce of a path will be saved
     // console.log('%s onGraph', this.item.toString());
     if (!json) {
       this.logger.warn('  NO JSON! SHOULD REMOVE???');

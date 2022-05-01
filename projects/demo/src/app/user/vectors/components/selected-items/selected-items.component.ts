@@ -191,30 +191,6 @@ export class SelectedItemsComponent implements OnInit {
         );
       });
     }
-
-    // this.selectedItems?.forEach((item) => {
-    //   const top = item.parent?.lastChild;
-    //   if (top === item) {
-    //     return;
-    //   }
-
-    //   let prevGun: any = null;
-    //   if (item.nextSibling) {
-    //     console.log(`replacing nextSibling's 'above'`);
-    //     // Set nextSibling's 'above' to previousSibling
-    //     prevGun = (item.previousSibling as any)?.pair?.chain.gun;
-    //     if (item.previousSibling) {
-    //       item.nextSibling.data.previousSibling = {
-    //         '#': item.previousSibling?.data.path,
-    //       };
-    //     } else {
-    //       delete item.nextSibling.data.previousSibling;
-    //     }
-    //   }
-
-    //   item.pair?.previousSibling.put((top as any).pair?.chain.gun as never);
-    //   (item.nextSibling as any)?.pair?.previousSibling.put(prevGun || null);
-    // });
   }
 
   onSendToBackClick() {
@@ -267,29 +243,6 @@ export class SelectedItemsComponent implements OnInit {
         );
       });
     }
-    // this.selectedItems?.forEach((item) => {
-    //   if (item.parent?.firstChild === item) {
-    //     return;
-    //   }
-
-    //   let prevGun: any = null;
-    //   if (item.nextSibling) {
-    //     prevGun = (item.previousSibling as any)?.pair?.chain.gun;
-    //     if (item.previousSibling) {
-    //       item.nextSibling.data.previousSibling = {
-    //         '#': item.previousSibling?.data.path,
-    //       };
-    //     } else {
-    //       delete item.nextSibling.data.previousSibling;
-    //     }
-    //   }
-
-    //   (item.parent?.firstChild as any).pair?.previousSibling.put(
-    //     (item.pair as any)?.chain.gun as never
-    //   );
-    //   item.pair?.previousSibling.put(null as never);
-    //   (item.nextSibling as any)?.pair?.previousSibling.put(prevGun || null);
-    // });
   }
 
   onLayoutVerticalClick() {

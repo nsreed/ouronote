@@ -1,7 +1,6 @@
+import { of } from 'rxjs';
 import { VectorTool } from './paper-tool';
 import * as paper from 'paper';
-import { of } from 'rxjs';
-import { Action } from './undo-stack';
 export class MoveTool extends VectorTool {
   name = 'move';
   icon = 'arrows-alt';
