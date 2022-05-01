@@ -55,6 +55,7 @@ import { SelectedItemsComponent } from './components/selected-items/selected-ite
 import { BooleanFormComponent } from './components/boolean-form/boolean-form.component';
 import { SliderFormComponent } from './components/slider-form/slider-form.component';
 import { TextFormComponent } from './components/text-form/text-form.component';
+import { FavoriteColorsComponent } from './components/favorite-colors/favorite-colors.component';
 
 @NgModule({
   declarations: [
@@ -78,6 +79,7 @@ import { TextFormComponent } from './components/text-form/text-form.component';
     BooleanFormComponent,
     SliderFormComponent,
     TextFormComponent,
+    FavoriteColorsComponent,
   ],
   imports: [
     CertificatesModule,

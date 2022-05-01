@@ -6,9 +6,9 @@ import { Color } from '@angular-material-components/color-picker';
 
 function paperColorToPicker(color: paper.Color) {
   return new Color(
-    color?.red || 0,
-    color?.green || 0,
-    color?.blue || 0,
+    (color?.red || 0) * 255,
+    (color?.green || 0) * 255,
+    (color?.blue || 0) * 255,
     color?.alpha || 1
   );
 }
@@ -55,7 +55,7 @@ export class ColorFormComponent implements OnInit {
 
   private _color!: paper.Color;
   public get color(): paper.Color {
-    return this._color;
+    return this._color || this.prop.value;
   }
   @Input()
   public set color(value: paper.Color) {
@@ -95,10 +95,10 @@ export class ColorFormComponent implements OnInit {
     this.colorCtr.valueChanges.subscribe((v) => {
       // FIXME this is broken for fillColor (the color passed in was null)
       // this.color?.set([v.r / 255, v.g / 255, v.b / 255, v.a]);
-      if (!this.prop.value) {
-        this.prop.value = new paper.Color(v.r / 255, v.g / 255, v.b / 255, v.a);
-      } else {
+      if (this.prop.value) {
         this.prop.value.set([v.r / 255, v.g / 255, v.b / 255, v.a]);
+      } else {
+        this.prop.value = new paper.Color(v.r / 255, v.g / 255, v.b / 255, v.a);
       }
     });
   }
@@ -123,5 +123,19 @@ export class ColorFormComponent implements OnInit {
   onSubmit(evt: Event) {
     evt.stopPropagation();
     evt.preventDefault();
+  }
+
+  onFavoriteColorClick(color: string) {
+    const v = new paper.Color(color);
+
+    // this.color.set([v.red, v.green, v.blue, v.alpha]);
+    // this.prop.value = v;
+    if (!(this.prop.value instanceof paper.Color)) {
+      this.prop.value = v;
+    } else {
+      this.prop.value.set([v.red, v.green, v.blue, v.alpha]);
+    }
+
+    this.colorCtr.patchValue(paperColorToPicker(v));
   }
 }

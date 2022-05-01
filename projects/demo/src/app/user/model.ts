@@ -24,6 +24,11 @@ export interface User {
   messages: Message[];
   posts: Post[];
   vectors: VectorGraph[];
+  favorites: {
+    colors: {
+      [name: string]: string;
+    };
+  };
   vectorRefs: SetReference<VectorGraph>[];
   name: string;
   certs: {

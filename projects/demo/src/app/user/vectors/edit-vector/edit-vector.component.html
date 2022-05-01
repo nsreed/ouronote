@@ -40,6 +40,7 @@
           <app-color-form appObjectProperty="strokeColor" [color]="paper.project.currentStyle.strokeColor"
             *ngIf="paper.scope.tool?.propertyNames?.includes('style')" [style]="paper.scope.tool.style">
           </app-color-form>
+          <button mat-button (click)="FavoriteColors.add(paper.project.currentStyle.strokeColor)">favorite</button>
           <app-color-form appObjectProperty="fillColor" [color]="paper.project.currentStyle.fillColor"
             [style]="paper.scope.tool.style" *ngIf="paper.scope.tool?.propertyNames?.includes('style')">
           </app-color-form>

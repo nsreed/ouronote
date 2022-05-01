@@ -4,6 +4,9 @@
     <ngx-mat-color-toggle matSuffix [for]="picker"></ngx-mat-color-toggle>
     <ngx-mat-color-picker #picker [color]="pickerColor"></ngx-mat-color-picker>
   </mat-form-field>
+
+
+  <app-favorite-colors #FavoriteColors (color$)="onFavoriteColorClick($event)"></app-favorite-colors>
 </form>
 <!-- <form [formGroup]="form" gdColumns="1fr 1fr 1fr">
   <mat-form-field *ngFor="let cvp of controlKeys">

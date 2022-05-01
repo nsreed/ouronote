@@ -1,0 +1,14 @@
+<div gdColumns="auto auto" *ngIf="mode === 'edit'">
+  <ng-container *ngFor="let kvp of (colors$|async)|keyvalue">
+    <div>{{ kvp.value }}</div>
+    <div [style]="{backgroundColor: kvp.value}">
+      <button>S</button>
+      <button>F</button>
+    </div>
+  </ng-container>
+</div>
+<div fxLayout="row" *ngIf="mode === 'view'">
+  <ng-container *ngFor="let kvp of (colors$|async)|keyvalue">
+    <button class="color-box" [style]="{backgroundColor: kvp.value}" (click)="onColorClick(kvp.key, kvp.value)">&nbsp;</button>
+  </ng-container>
+</div>
