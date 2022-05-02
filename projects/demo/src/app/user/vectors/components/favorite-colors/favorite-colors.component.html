@@ -7,8 +7,8 @@
     </div>
   </ng-container>
 </div>
-<div fxLayout="row" *ngIf="mode === 'view'">
-  <ng-container *ngFor="let kvp of (colors$|async)|keyvalue">
-    <button class="color-box" [style]="{backgroundColor: kvp.value}" (click)="onColorClick(kvp.key, kvp.value)">&nbsp;</button>
+<div gdColumns="auto auto auto auto" *ngIf="mode === 'view'">
+  <ng-container *ngFor="let color of (colors$|async)">
+    <button class="color-box" [style]="{backgroundColor: color.value}" (click)="onColorClick(color.key, color.value)">&nbsp;</button>
   </ng-container>
 </div>

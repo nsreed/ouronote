@@ -96,3 +96,6 @@ export const MUTATION_PROPERTIES = {
 
 export const INCOMING_DEBOUNCE = 25;
 export const SAVE_DEBOUNCE = 1000;
+
+export const RE_VALID_HEX_COLOR =
+  /^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/;

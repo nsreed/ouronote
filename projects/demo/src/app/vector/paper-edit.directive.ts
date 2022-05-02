@@ -1,4 +1,4 @@
-import { Directive } from '@angular/core';
+import { Directive, OnInit } from '@angular/core';
 import { shareReplay } from 'rxjs/operators';
 import { propertyChange$ } from '../user/vectors/functions/paper-chain';
 import { EraserTool } from '../user/vectors/tools/eraser';
@@ -15,12 +15,13 @@ import { LineTool } from '../user/vectors/tools/line';
 import { RotateTool } from '../user/vectors/tools/rotate';
 import { ResizeTool } from '../user/vectors/tools/resize';
 import { TextTool } from '../user/vectors/tools/text';
+import { PanTool } from '../user/vectors/tools/pan';
 
 @Directive({
   selector: '[appPaperEdit]',
   exportAs: 'appPaperEdit',
 })
-export class PaperEditDirective extends PaperDirective {
+export class PaperEditDirective extends PaperDirective implements OnInit {
   tool$ = propertyChange$(this.scope, 'tool').pipe(shareReplay(1));
   public areaSelect = new RectangleSelectTool(this.scope as any);
   public lassoSelect = new LassoSelectTool(this.scope as any);
@@ -33,4 +34,17 @@ export class PaperEditDirective extends PaperDirective {
   public move = new MoveTool(this.scope as any);
   public rotate = new RotateTool(this.scope as any);
   public resize = new ResizeTool(this.scope as any);
+
+  public pan = new PanTool(this.scope as any);
+
+  ngOnInit(): void {
+    super.ngOnInit();
+
+    this.project.currentStyle = new this.scope.Style({}) as any;
+    this.project.currentStyle.strokeColor = new this.scope.Color(
+      0,
+      0,
+      0
+    ) as any;
+  }
 }

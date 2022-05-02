@@ -56,6 +56,7 @@ import { BooleanFormComponent } from './components/boolean-form/boolean-form.com
 import { SliderFormComponent } from './components/slider-form/slider-form.component';
 import { TextFormComponent } from './components/text-form/text-form.component';
 import { FavoriteColorsComponent } from './components/favorite-colors/favorite-colors.component';
+import { ColorGradientComponent } from './components/color-gradient/color-gradient.component';
 
 @NgModule({
   declarations: [
@@ -80,6 +81,7 @@ import { FavoriteColorsComponent } from './components/favorite-colors/favorite-c
     SliderFormComponent,
     TextFormComponent,
     FavoriteColorsComponent,
+    ColorGradientComponent,
   ],
   imports: [
     CertificatesModule,

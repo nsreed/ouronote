@@ -11,17 +11,18 @@ import * as Hammer from 'hammerjs';
 import { LogService } from 'log';
 import * as paper from 'paper';
 import { from, fromEvent, timer } from 'rxjs';
-import { map, mergeMap, switchMap } from 'rxjs/operators';
+import { map, mergeMap, switchMap, shareReplay } from 'rxjs/operators';
 import { CAPABILITIES } from '../system.service';
 import { PenEvent } from '../user/vectors/classes/PenEvent';
 import { PanTool } from '../user/vectors/tools/pan';
 import { UndoStack } from '../user/vectors/tools/undo-stack';
+import { AfterViewInit } from '@angular/core';
 
 @Directive({
   selector: '[appPaper]',
   exportAs: 'appPaper',
 })
-export class PaperDirective implements OnInit {
+export class PaperDirective implements OnInit, AfterViewInit {
   constructor(
     private el: ElementRef<HTMLCanvasElement>,
     private snackBar: MatSnackBar,
@@ -53,12 +54,13 @@ export class PaperDirective implements OnInit {
   hammer!: HammerManager;
 
   resize$ = this.projectChange.pipe(
-    switchMap((project) => fromEvent(project.view, 'resize'))
+    switchMap((project) =>
+      fromEvent(project.view, 'resize').pipe(shareReplay(1))
+    ),
+    shareReplay(1)
   );
 
   scope: paper.PaperScope & UndoStack = new paper.PaperScope() as any;
-
-  public pan = new PanTool(this.scope as any);
 
   ignore(fn: any, ...args: any[]) {
     let item: any;
@@ -109,7 +111,7 @@ export class PaperDirective implements OnInit {
 
   setupTouch() {
     if (CAPABILITIES.TOUCH) {
-      this.logger.log('setting up touch events');
+      // this.logger.log('setting up touch events');
       const events = ['move', 'down', 'up'];
       const pointerevents = events.map((n) => `touch${n}`);
       from(pointerevents)
@@ -152,20 +154,7 @@ export class PaperDirective implements OnInit {
 
     this.project.activate();
     this.scope.project = this.project as any;
-    this.project.currentStyle = new this.scope.Style({}) as any;
-    this.project.currentStyle.strokeColor = new this.scope.Color(
-      0,
-      0,
-      0
-    ) as any;
     // this.project.currentStyle.strokeWidth = 5;
-
-    // update the view size after a delay to account for UI loading time
-    timer(1000).subscribe(() => this.updateViewSize());
-
-    this.resize$.subscribe(() => {
-      console.log('PROJECT CANVAS RESIZE');
-    });
 
     // CREATE BACKGROUND LAYER
     this.scope.settings.insertItems = false;
@@ -176,11 +165,21 @@ export class PaperDirective implements OnInit {
     this.scope.settings.insertItems = true;
   }
 
+  ngAfterViewInit() {
+    // update the view size after a delay to account for UI loading time
+    timer(1000).subscribe(() => this.updateViewSize());
+
+    this.resize$.subscribe(() => {
+      console.log('PROJECT CANVAS RESIZE');
+    });
+  }
+
   updateViewSize() {
     if (!this.project) {
       console.warn('scope not set on CanvasDirective');
       return;
     }
+    this.logger.log('updateViewSize()');
     let tempWidth = 0;
     let tempHeight = 0;
 
@@ -208,6 +207,7 @@ export class PaperDirective implements OnInit {
 
   @HostListener('window:resize', ['$event'])
   onHostResize(event?: any) {
+    console.log('host resize');
     this.updateViewSize();
   }
 
@@ -230,7 +230,7 @@ export class PaperDirective implements OnInit {
   }
 
   onViewBounds() {
-    // console.log('view bounds');
+    console.log('view bounds');
   }
 
   private point(event: { offsetX: number; offsetY: number }) {
