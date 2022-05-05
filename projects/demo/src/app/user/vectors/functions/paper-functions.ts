@@ -46,3 +46,15 @@ export const layoutVertical = (
   );
   layoutVertical(items, start.add(currentHeight));
 };
+
+export const toCSSAlpha = (color?: paper.Color) => {
+  if (color instanceof paper.Color) {
+    let hex = color.toCSS(true);
+    hex +=
+      color.hasAlpha() && color.alpha < 1
+        ? Math.round(color.alpha * 255).toString(16)
+        : '';
+    return hex;
+  }
+  return null;
+};

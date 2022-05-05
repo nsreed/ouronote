@@ -2,4 +2,7 @@
   min-width: 1rem;
   line-height: 1rem;
   border: none;
+  &.selected {
+    outline: solid 3px yellow;
+  }
 }

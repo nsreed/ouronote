@@ -1,8 +1,9 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { UserService } from '../../../user.service';
 import * as paper from 'paper';
 import { map, shareReplay } from 'rxjs/operators';
 import { RE_VALID_HEX_COLOR } from '../../functions/constants';
+import { toCSSAlpha } from '../../functions/paper-functions';
 
 @Component({
   selector: 'app-favorite-colors',
@@ -11,6 +12,22 @@ import { RE_VALID_HEX_COLOR } from '../../functions/constants';
 })
 export class FavoriteColorsComponent implements OnInit {
   readonly colors = this.userService.user.get('favorites').get('colors');
+
+  private _candidate?: paper.Color | undefined;
+  public get candidate(): paper.Color | undefined {
+    return this._candidate;
+  }
+  @Input()
+  public set candidate(value: paper.Color | undefined) {
+    this._candidate = value;
+    this.updateSelected();
+  }
+
+  get candidateHex() {
+    return toCSSAlpha(this.candidate);
+  }
+
+  selected: any;
 
   mode = 'view';
   colors$ = this.colors.open().pipe(
@@ -59,20 +76,39 @@ export class FavoriteColorsComponent implements OnInit {
     shareReplay(1)
   );
 
+  private _favoriteColors: any = [];
+  public get favoriteColors(): any {
+    return this._favoriteColors;
+  }
+  public set favoriteColors(value: any) {
+    this._favoriteColors = value;
+    this.updateSelected();
+  }
+
   @Output()
   public color$ = new EventEmitter<string>();
 
   constructor(public readonly userService: UserService) {
-    this.colors$.subscribe((cs) => console.log('colors', cs));
+    this.colors$.subscribe((cs) => (this.favoriteColors = cs));
+    this.color$.subscribe((c) => (this.selected = c));
   }
 
   ngOnInit(): void {}
 
+  updateSelected() {
+    console.log('updateSelected()');
+    const matched = this.favoriteColors.find(
+      (fc: any) => fc.value === this.candidateHex
+    );
+    this.selected = matched?.value;
+  }
+
   add(color: any) {
     if (color instanceof paper.Color) {
-      let hex = color.toCSS(true);
-      hex += color.hasAlpha() ? Math.round(color.alpha * 255).toString(16) : '';
-      this.colors.get(hex).put(hex);
+      const hex = toCSSAlpha(color);
+      if (typeof hex === 'string') {
+        this.colors.get(hex).put(hex);
+      }
     }
   }
 
@@ -82,5 +118,6 @@ export class FavoriteColorsComponent implements OnInit {
     } else {
       this.color$.emit(value);
     }
+    this.updateSelected();
   }
 }

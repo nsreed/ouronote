@@ -5,13 +5,17 @@
       <input matInput [ngxMatColorPicker]="picker" [formControl]="colorCtr" type="hidden"/>
     <ngx-mat-color-toggle matSuffix [for]="picker"></ngx-mat-color-toggle>
     <ngx-mat-color-picker #picker [color]="pickerColor"></ngx-mat-color-picker>
+    <button mat-icon-button matSuffix (click)="showFavorites = !showFavorites">
+      <mat-icon >arrow_drop_down</mat-icon>
+    </button>
+
   </mat-form-field>
-  <app-favorite-colors #FavoriteColors (color$)="onFavoriteColorClick($event)"></app-favorite-colors>
-  <button mat-button (click)="FavoriteColors.add(this.color)">favorite</button>
-</form>
-<div fxLayout="row">
-  <app-color-gradient></app-color-gradient>
-</div>
+  <ng-container *ngIf="showFavorites">
+    <app-favorite-colors [candidate]="color" #FavoriteColors (color$)="onFavoriteColorClick($event)"></app-favorite-colors>
+    <!-- <button mat-button (click)="FavoriteColors.add(this.color)">favorite</button> -->
+  </ng-container>
+  </form>
+  <!-- <app-color-gradient></app-color-gradient> -->
 </div>
 <!-- <form [formGroup]="form" gdColumns="1fr 1fr 1fr">
   <mat-form-field *ngFor="let cvp of controlKeys">
