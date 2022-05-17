@@ -40,7 +40,21 @@ export class LoginComponent implements OnInit {
   // FIXME creating account with existing alias should fail validation
   form = this.fb.group({
     alias: [null, Validators.required],
-    password: [null, Validators.required],
+    password: [
+      null,
+      [
+        Validators.required,
+        (ctl: FormControl) => {
+          if (this.mode === 'login') {
+            return null;
+          }
+          if (ctl.value !== this.form.get('password2')?.value) {
+            return { passwordMatch: 'passwords do not match' };
+          }
+          return null;
+        },
+      ],
+    ],
     password2: [
       null,
       (ctl: FormControl) => {
