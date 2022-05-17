@@ -107,13 +107,14 @@ export class StyleFormComponent implements OnInit {
       const ns = new paper.Style(v);
       this.styleChange.emit(ns);
     });
+    // tslint:disable-next-line: forin
     for (const k in this.form.controls) {
-      if (Object.prototype.hasOwnProperty.call(this.form.controls, k)) {
-        const control = this.form.controls[k];
-        control.valueChanges.subscribe((vc) =>
-          this.stylePropChange.emit([k, vc])
-        );
-      }
+      // if (Object.prototype.hasOwnProperty.call(this.form.controls, k)) {
+      const control = this.form.controls[k];
+      control.valueChanges.subscribe((vc) =>
+        this.stylePropChange.emit([k, vc])
+      );
+      // }
     }
   }
 
@@ -123,5 +124,9 @@ export class StyleFormComponent implements OnInit {
     const group = this.fb.group({
       mode: null,
     });
+  }
+
+  onChange(name: string, value: any) {
+    this.form.get(name)?.setValue(value);
   }
 }

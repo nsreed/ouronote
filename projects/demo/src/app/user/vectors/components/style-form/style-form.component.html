@@ -3,14 +3,16 @@
     <mat-label>Stroke Width</mat-label>
     <input matInput formControlName="strokeWidth">
   </mat-form-field>
-  <mat-form-field>
+  <!-- <mat-form-field>
     <mat-label>Stroke Color</mat-label>
     <input matInput formControlName="strokeColor">
     <mat-icon matSuffix>color_lens</mat-icon>
-  </mat-form-field>
-  <mat-form-field>
+  </mat-form-field> -->
+  <app-color-form [appObject]="form.controls.strokeColor" appObjectProperty="value" (propertyValueChange)="onChange('strokeColor', $event)" [color]="form.controls.strokeColor?.value"></app-color-form>
+  <app-color-form [appObject]="form.controls.fillColor" appObjectProperty="value" (propertyValueChange)="onChange('fillColor', $event)" [color]="form.controls.fillColor?.value"></app-color-form>
+  <!-- <mat-form-field>
     <mat-label>Fill Color</mat-label>
     <input matInput formControlName="fillColor">
     <mat-icon matSuffix>color_lens</mat-icon>
-  </mat-form-field>
+  </mat-form-field> -->
 </form>

@@ -32,7 +32,7 @@ export class SelectedItemsComponent implements OnInit {
   public get selectedItems(): (paper.Item & {
     pair?: ItemPair;
   })[] {
-    return this._selectedItems;
+    return this._selectedItems || [];
   }
   @Input()
   public set selectedItems(
@@ -40,7 +40,13 @@ export class SelectedItemsComponent implements OnInit {
       pair?: ItemPair;
     })[]
   ) {
-    if (JSON.stringify(value) !== JSON.stringify(this._selectedItems)) {
+    let newSelections = [];
+    let deSelections = [];
+    if (value) {
+      newSelections = value.filter((s) => !this.selectedItems.includes(s));
+      deSelections = this.selectedItems.filter((s) => !value.includes(s));
+    }
+    if (newSelections.length > 0 || deSelections.length > 0) {
       this._selectedItems = value;
       this.updateStyleFromSelected();
     }
@@ -111,6 +117,7 @@ export class SelectedItemsComponent implements OnInit {
   }
 
   onStylePropChange(change: [string, any]) {
+    this.logger.log('style prop change', change[0], change[1]);
     const [prop, val] = change;
     this.selectedItems.forEach((s: any) => {
       s[prop] = val;

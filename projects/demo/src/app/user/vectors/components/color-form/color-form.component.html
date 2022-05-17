@@ -2,10 +2,10 @@
 
   <form [formGroup]="colorForm" (submit)="onSubmit($event)">
     <mat-form-field>
-      <input matInput [ngxMatColorPicker]="picker" [formControl]="colorCtr" type="hidden"/>
-    <ngx-mat-color-toggle matSuffix [for]="picker"></ngx-mat-color-toggle>
-    <ngx-mat-color-picker #picker [color]="pickerColor"></ngx-mat-color-picker>
-    <button mat-icon-button matSuffix (click)="showFavorites = !showFavorites">
+      <input matInput [ngxMatColorPicker]="picker" [formControl]="colorCtr"/>
+      <ngx-mat-color-toggle matSuffix [for]="picker"></ngx-mat-color-toggle>
+      <ngx-mat-color-picker #picker [color]="pickerColor"></ngx-mat-color-picker>
+      <button mat-icon-button matSuffix (click)="showFavorites = !showFavorites">
       <mat-icon >arrow_drop_down</mat-icon>
     </button>
 
