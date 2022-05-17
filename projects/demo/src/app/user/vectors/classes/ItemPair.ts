@@ -175,10 +175,19 @@ export class ItemPair extends PaperPair {
     if (!json) {
       // We are performing a "dumb" save
       this.logger.log('full save');
-      const shallow = this.getShallow();
-      // console.log(JSON.stringify(shallow));
+      let shallow = this.getShallow();
+      if (this.item.className === 'PointText') {
+        shallow = {
+          ...shallow,
+          justification: (this.item as paper.PointText).justification,
+          fontFamily: (this.item as paper.PointText).fontFamily,
+          fontWeight: (this.item as paper.PointText).fontWeight,
+        };
+      }
+      // console.log('saving', shallow);
       this.chain.put(shallow);
-      const prevGun = (this.item.previousSibling as any)?.pair?.chain.gun;
+      const prevGun =
+        (this.item.previousSibling as any)?.pair?.chain.gun || null;
       this.chain.get('previousSibling').put(prevGun as never); // FIXME this breaks for rasters
     } else {
       this.savedValue = {
