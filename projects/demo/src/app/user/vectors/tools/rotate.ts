@@ -14,17 +14,7 @@ export class RotateTool extends VectorTool {
 
   downSub = this.down.subscribe((e) => {
     this.dragged = false;
-    this.selectedItems = this.scope.project.getItems({
-      selected: true,
-      match: (item: paper.Item) => item.className !== 'Layer',
-    });
-
-    if (this.selectedItems.length > 0) {
-      this.selectedBounds = this.selectedItems.reduce((p, s) => {
-        return p.unite(s.bounds);
-      }, this.selectedItems[0].bounds);
-      this.selectedCenter = this.selectedBounds.center;
-    }
+    this.updateSelected();
   });
 
   dragSub = this.drag.subscribe((e) => {
@@ -75,4 +65,29 @@ export class RotateTool extends VectorTool {
       (item as any).pair.save(saveFields);
     });
   });
+
+  updateSelected() {
+    const selection = this.scope.project.getItems({
+      selected: true,
+      match: (item: paper.Item) => item.className !== 'Layer',
+    });
+
+    const newSelections = selection.filter(
+      (s) => !this.selectedItems.includes(s)
+    );
+    const deSelections = this.selectedItems.filter(
+      (s) => !selection.includes(s)
+    );
+    if (newSelections.length > 0 || deSelections.length > 0) {
+      console.log('updated selection');
+      this.selectedItems = selection;
+
+      if (this.selectedItems.length > 0) {
+        this.selectedBounds = this.selectedItems.reduce((p, s) => {
+          return p.unite(s.bounds);
+        }, this.selectedItems[0].bounds);
+        this.selectedCenter = this.selectedBounds.center;
+      }
+    }
+  }
 }
