@@ -3,6 +3,7 @@ import { EditVectorComponent } from '../../edit-vector/edit-vector.component';
 import { FormBuilder } from '@angular/forms';
 import { ItemPair } from '../../classes/ItemPair';
 import * as paper from 'paper';
+import { LogService } from '../../../../../../../log/src/lib/log.service';
 import {
   copyStyleToItem,
   layoutVertical,
@@ -53,8 +54,11 @@ export class SelectedItemsComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    public editVectorComponent: EditVectorComponent
-  ) {}
+    public editVectorComponent: EditVectorComponent,
+    private logger: LogService
+  ) {
+    logger.name = 'selected-items';
+  }
 
   ngOnInit(): void {}
 
@@ -248,5 +252,9 @@ export class SelectedItemsComponent implements OnInit {
   onLayoutVerticalClick() {
     layoutVertical(this.selectedItems as any);
     this.selectedItems.forEach((i) => i.pair?.save(['position']));
+  }
+
+  onDebugSelectedClick() {
+    this.logger.log('selected', this.selectedItems);
   }
 }
