@@ -78,6 +78,9 @@ export class GunChain<
   IsTop extends 'pre_root' | 'root' | false = false
 > {
   logger = LogService.getLogger('gun-chain');
+  settings = {
+    retryPut: false,
+  };
 
   protected get userPair() {
     return (this.gun.user() as any).is;
@@ -334,8 +337,27 @@ export class GunChain<
     (this.gun.put as any)(
       data,
       (...putAck: any[]) => {
-        if (putAck[0].err) {
-          this.logger.error('putAck', putAck);
+        const err = putAck[0].err;
+        if (err) {
+          switch (err) {
+            case 'Unverified data.':
+              this.logger.verbose(`Message: ${JSON.stringify(err)}`);
+              break;
+            case 'Error: No ACK yet.':
+              this.logger.log('No ACK yet.');
+              timer(500)
+                .pipe(
+                  take(1),
+                  filter(() => this.settings.retryPut)
+                )
+                .subscribe(() => {
+                  this.logger.log('Retrying');
+                  this.put(data, certificate);
+                });
+              break;
+            default:
+              this.logger.error(`Message: ${JSON.stringify(err)}`);
+          }
         }
       },
       certificate ? { opt: { cert: certificate } } : undefined
