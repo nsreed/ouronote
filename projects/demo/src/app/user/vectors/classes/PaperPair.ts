@@ -8,7 +8,6 @@ import {
   PAPER_STYLE_EMPTY,
 } from '../functions/constants';
 import { serializeValue } from '../functions/packaging';
-import { copyNulls } from '../functions/paper-functions';
 import { IItemData } from './IItemData';
 
 export class PaperPair {
@@ -90,9 +89,22 @@ export class PaperPair {
     delete scrubbed.selected;
     Object.keys(scrubbed).forEach((k) => {
       if (EXPECT_PRIMITIVE_ARRAY.includes(k)) {
-        const parsed = JSON.parse(scrubbed[k]);
-        // this.logger.log('  deserializing %s', k, scrubbed[k], parsed);
-        scrubbed[k] = parsed;
+        const val = scrubbed[k];
+        if (val === null || typeof val === 'string') {
+          // this.logger.log('  deserializing %s', k, scrubbed[k], parsed);
+          const parsed = JSON.parse(scrubbed[k]);
+          scrubbed[k] = parsed;
+        } else {
+          delete scrubbed[k];
+          this.logger.warn(
+            val && typeof val === 'object' && val['#']
+              ? '  expected primitive array was GUN reference'
+              : '  cannot deserialize %s %s, %s',
+            typeof val,
+            k,
+            JSON.stringify(val)
+          );
+        }
       }
     });
     return scrubbed;
@@ -135,7 +147,17 @@ export class PaperPair {
     } as IItemData;
     Object.keys(scrubbed).forEach((k) => {
       if (EXPECT_PRIMITIVE_ARRAY.includes(k)) {
-        scrubbed[k] = JSON.parse(scrubbed[k]);
+        const val = scrubbed[k];
+        try {
+          if (typeof val === 'string') {
+            scrubbed[k] = JSON.parse(val);
+          }
+        } catch (err: any) {
+          this.logger.error(
+            `parsing ${k} failed, value: ${JSON.stringify(val)}`
+          );
+          throw err;
+        }
       }
     });
     const stringed = JSON.stringify([childJSON.className, scrubbed]);

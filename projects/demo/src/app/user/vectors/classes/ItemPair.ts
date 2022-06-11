@@ -403,41 +403,43 @@ export class ItemPair extends PaperPair {
             delete scrubbed[k];
           }
         });
+    }
+
+    if (!this.graphValue) {
+      this.graphValue = {};
+    }
+
+    delete scrubbed.className;
+    delete scrubbed.data;
+    if (this.settings.forceImport) {
+      // console.log(scrubbed);
+      const imported = this.item.importJSON([
+        this.item.className,
+        scrubbed,
+      ] as any) as any;
     } else {
-      if (!this.graphValue) {
-        this.graphValue = {};
-      }
-      delete scrubbed.className;
-      delete scrubbed.data;
-      if (this.settings.forceImport) {
+      Object.keys(json).forEach((k) => {
+        const oldVal = this.graphValue[k];
+        const newVal = json[k];
+        if (oldVal === newVal) {
+          // console.log('no diff for ', k, oldVal, newVal);
+          delete scrubbed[k];
+        } else {
+          // console.log('diff for ', k, oldVal, newVal);
+        }
+      });
+
+      if (Object.keys(scrubbed).length === 0) {
+        // console.log('no keys to import');
+        // return;
+      } else {
+        console.log(`diffs for ${Object.keys(scrubbed).join(',')}`);
         const imported = this.item.importJSON([
           this.item.className,
           scrubbed,
         ] as any) as any;
-      } else {
-        Object.keys(json).forEach((k) => {
-          const oldVal = this.graphValue[k];
-          const newVal = json[k];
-          if (oldVal === newVal) {
-            // console.log('no diff for ', k, oldVal, newVal);
-            delete scrubbed[k];
-          } else {
-            // console.log('diff for ', k, oldVal, newVal);
-          }
-        });
-
-        if (Object.keys(scrubbed).length === 0) {
-          // console.log('no keys to import');
-          // return;
-        } else {
-          console.log(`diffs for ${Object.keys(scrubbed).join(',')}`);
-          const imported = this.item.importJSON([
-            this.item.className,
-            scrubbed,
-          ] as any) as any;
-          if (imported !== this.item) {
-            this.logger.error('unexpected new item!!!');
-          }
+        if (imported !== this.item) {
+          this.logger.error('unexpected new item!!!');
         }
       }
     }
