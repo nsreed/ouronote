@@ -1,4 +1,8 @@
-import { PAPER_STYLE_PROPS } from './constants';
+import {
+  PAPER_STYLE_PROPS,
+  PAPER_STYLE_DEFAULTS,
+  EXPECT_PRIMITIVE_ARRAY,
+} from './constants';
 import stringify from 'safe-stable-stringify';
 import * as paper from 'paper';
 export const isIgnored = (item: paper.Item) => !item.data?.ignore;
@@ -16,9 +20,32 @@ export const copyNulls = (source: any, dest: any) => {
 };
 export const copyStyleToItem = (
   style: paper.Style | any,
-  item: paper.Item | any
+  item: paper.Item | any,
+  overwrite = false
 ) => {
-  PAPER_STYLE_PROPS.forEach((p) => (item[p] = style[p]));
+  PAPER_STYLE_PROPS.forEach((p) => {
+    if (overwrite) {
+      item[p] = style[p];
+    } else {
+      item[p] = item[p] || style[p];
+    }
+  });
+};
+
+export const defaultsFor = (item: paper.Item, json: any) => {
+  const n = { ...json };
+  const defaults = PAPER_STYLE_DEFAULTS[item.className] || {};
+  PAPER_STYLE_PROPS.forEach((k) => {
+    n[k] = n[k] || (item as any)[k] || defaults[k];
+    if (n[k] === undefined) {
+      delete n[k];
+    } else if (EXPECT_PRIMITIVE_ARRAY.includes(k)) {
+      if (typeof n[k] !== 'string') {
+        n[k] = JSON.stringify(n[k]);
+      }
+    }
+  });
+  return n;
 };
 
 export const layoutVertical = (

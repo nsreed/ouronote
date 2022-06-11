@@ -55,7 +55,7 @@ export class PaperPair {
         this.logger.warn('cannot save');
         return;
       }
-      // TODO find a way to ignore the next incoming change for these keys
+      this.logger.verbose('saving from buffer: ', Object.keys(buf).join(','));
       this.doSave(buf);
     });
   }
@@ -79,23 +79,20 @@ export class PaperPair {
   /**
    * Prepares GUN data for paper import
    * @param json The object to sanitize
-   * @param key The GUN 'key' for this item
    */
-  scrubJSON(json: any, key: string) {
+  scrubJSON(json: any) {
     const scrubbed = { ...json } as any;
     delete scrubbed._;
     delete scrubbed.children;
     delete scrubbed.data;
     delete scrubbed.className;
     delete scrubbed.previousSibling;
-    scrubbed.data = {
-      soul: key,
-      path: json._['#'],
-    };
+    delete scrubbed.selected;
     Object.keys(scrubbed).forEach((k) => {
       if (EXPECT_PRIMITIVE_ARRAY.includes(k)) {
-        // this.logger.log('  deserializing %s', k, scrubbed[k]);
-        scrubbed[k] = JSON.parse(scrubbed[k]);
+        const parsed = JSON.parse(scrubbed[k]);
+        // this.logger.log('  deserializing %s', k, scrubbed[k], parsed);
+        scrubbed[k] = parsed;
       }
     });
     return scrubbed;
@@ -110,14 +107,14 @@ export class PaperPair {
   constructChild(childJSON: any, key: string) {
     // this.logger.log('constructing child: %o', childJSON);
     if (!childJSON.className) {
-      this.logger.error('child has no class name', childJSON);
+      this.logger.verbose('child has no class name', childJSON);
       if (this.ctx instanceof paper.Project) {
         childJSON.className = 'Layer';
       }
       return;
     }
     if (!hasRequired(childJSON)) {
-      this.logger.error('child does not have required fields', childJSON);
+      this.logger.verbose('child does not have required fields', childJSON);
       return;
     }
     const prevInsertItemsValue = (this.scope.settings as any).insertItems;
@@ -161,7 +158,7 @@ export class PaperPair {
    * @param properties An array of property names to save
    * @returns void
    */
-  save(properties?: string[]) {
+  save(properties?: string | string[]) {
     this.logger.verbose('save()');
     if (this.ctx?.data?.ignore) {
       this.logger.warn('tried saving ignored item');
@@ -178,6 +175,7 @@ export class PaperPair {
         }
       }
       properties.forEach((name) => this.saveProperty$.emit([name]));
+      // this.saveProperty$.emit(properties as any);
     }
 
     this.save$.emit();
@@ -191,7 +189,7 @@ export class PaperPair {
    * Persists this item's JSON to GUN
    * @param json the object value to save
    */
-  protected doSave(json: any) {
+  protected doSave(json?: any) {
     // ...
   }
 }

@@ -2,11 +2,12 @@ import { VectorTool } from './paper-tool';
 import * as paper from 'paper';
 import { Style } from 'paper';
 import { Property } from '../functions/decorators';
+import { PairedItem } from '../classes/paper-pair';
 export class TextTool extends VectorTool {
   name = 'text';
   matIconName = 'text_fields';
   shape?: paper.Shape;
-  text?: paper.PointText;
+  text?: PairedItem<paper.PointText>;
 
   @Property()
   style = new Style({
@@ -31,15 +32,16 @@ export class TextTool extends VectorTool {
     this.activateDrawLayer();
     this.text = new paper.PointText(e.point);
     this.text.content = this.content;
-    this.text.style = this.style;
     this.text.style = this.project.currentStyle;
+    this.text.style = this.style;
     this.text.fontFamily = 'sans-serif';
     this.text.fontWeight = 'normal';
     this.text.fontSize = 20;
     this.text.justification = 'left';
     this.text.strokeWidth = this.style.strokeWidth;
     this.text.strokeColor = this.style.strokeColor;
-    (this.text as any).pair.save([
+
+    this.text.pair?.save([
       'content',
       'strokeWidth',
       'fillColor',
@@ -48,6 +50,7 @@ export class TextTool extends VectorTool {
       'fontWeight',
       'fontSize',
       'justification',
+      'position',
     ]);
     this.project.activeLayer.insertChild(
       this.project.activeLayer.children.length,

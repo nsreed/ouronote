@@ -1,23 +1,24 @@
+import { getMatFormFieldMissingControlError } from '@angular/material/form-field';
 import * as paper from 'paper';
 export const PAPER_STYLE_PROPS = [
-  'strokeWidth',
-  'strokeColor',
-  'strokeCap',
-  'strokeJoin',
-  'strokeScaling',
-  'dashOffset',
   'dashArray',
+  'dashOffset',
   'fillColor',
   'fillRule',
-  'shadowColor',
-  'shadowBlur',
-  'shadowOffset',
   'fontFamily',
-  'fontWeight',
   'fontSize',
-  'leading',
+  'fontWeight',
   'justification',
+  'leading',
   'miterLimit',
+  'shadowBlur',
+  'shadowColor',
+  'shadowOffset',
+  'strokeCap',
+  'strokeColor',
+  'strokeJoin',
+  'strokeScaling',
+  'strokeWidth',
 ];
 export const PAPER_STYLE_EMPTY = {
   strokeWidth: null,
@@ -39,6 +40,16 @@ export const PAPER_STYLE_EMPTY = {
   justification: null,
   miterLimit: null,
 };
+export const PAPER_STYLE_DEFAULTS: {
+  [key: string]: any;
+} = {
+  PointText: {
+    fontSize: 12,
+    fontFamily: 'sans-serif',
+    content: '',
+    justification: 'left',
+  },
+};
 export const EXPECT_PRIMITIVE_ARRAY = [
   'matrix',
   'size',
@@ -56,6 +67,7 @@ export const REQUIRED_BY = {
 
 export const REQUIRES = {
   Shape: ['size'],
+  PointText: ['content', 'fontFamily', 'fontSize'],
 } as any;
 
 export function hasRequired(json: any) {
@@ -69,10 +81,19 @@ export function hasRequired(json: any) {
   const required = (REQUIRES[json.className] as string[]) || [];
   const missing = required.filter((r) => !Object.keys(json).includes(r));
   if (missing.length > 0) {
-    console.warn('item lacks required fields', missing);
+    // console.warn('item lacks required fields', missing);
     return false;
   }
   return true;
+}
+
+export function getMissing(json: any) {
+  if (!json) {
+    return [];
+  }
+  const required = (REQUIRES[json.className] as string[]) || [];
+  const missing = required.filter((r) => !Object.keys(json).includes(r));
+  return missing;
 }
 
 export const MUTATION_METHODS = [

@@ -130,26 +130,39 @@ export class SelectedItemsComponent implements OnInit {
     this.editVectorComponent.project.deselectAll();
 
     const randomDistance =
-      10 + 500 * this.editVectorComponent.project.view.zoom * Math.random();
+      10 +
+      500 * (1 / this.editVectorComponent.project.view.zoom) * Math.random();
 
     const randomDirection = new paper.Point(randomDistance, 0);
     randomDirection.angle = Math.random() * 360;
 
+    const parents = items.reduce((acc, item) => {
+      acc.set(item, item.parent as any);
+      return acc;
+    }, new Map<any, paper.Item & { pair: ItemPair }>());
+
     const clones = items.map((item) => {
       const clone = item.clone({
-        insert: true,
+        insert: false,
       });
-      clone.copyAttributes(item, false);
-      // copyStyleToItem(item.style, clone);
-      // copyStyleToItem(item, clone);
+      // clone.fillColor = item.fillColor || item.style.fillColor;
+      // clone.strokeColor = item.strokeColor || item.style.strokeColor;
+      // clone.strokeWidth = item.strokeWidth || item.style.strokeWidth;
       clone.data = {};
       clone.selected = true;
       clone.translate(randomDirection);
-      (clone.parent as any).pair?.onLocalChild(clone);
-      (clone as any).pair?.doSave();
+      // copyStyleToItem(item.style, clone);
+      // copyStyleToItem(item, clone);
+      item.parent.addChild(clone);
+      clone.pair?.doSave();
+
       return clone;
     });
     this.editVectorComponent.tools.find((t) => t.name === 'move')?.activate();
+  }
+
+  onForceSaveClick() {
+    this.selectedItems?.forEach((s) => s.pair?.doSave());
   }
 
   onBringToFrontClick() {
