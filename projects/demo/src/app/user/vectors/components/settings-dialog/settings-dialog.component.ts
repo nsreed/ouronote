@@ -3,7 +3,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { VectorGraph } from '../../../VectorGraph';
 import { VectorService } from '../../vector.service';
 import { UserService } from '../../../user.service';
-import { shareReplay, map, switchMap } from 'rxjs/operators';
+import { shareReplay, map, switchMap, filter } from 'rxjs/operators';
 import { GunChain } from '../../../../../../../ng-gun/src/lib/classes/GunChain';
 import { Validators, FormBuilder } from '@angular/forms';
 import { LICENSES } from '../../../../LICENSES';
@@ -55,6 +55,7 @@ export class SettingsDialogComponent implements OnInit {
     this.vector
       .get('license')
       .open()
+      .pipe(filter((l) => l !== null))
       .subscribe((l: any) => {
         const license = Object.values(LICENSES).find(
           (ll: any) => ll.type === l.type
