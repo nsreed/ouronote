@@ -56,6 +56,7 @@ export const EXPECT_PRIMITIVE_ARRAY = [
   'strokeColor',
   'fillColor',
   'shadowColor',
+  'shadowOffset',
   'radius',
   'segments',
   'position',
