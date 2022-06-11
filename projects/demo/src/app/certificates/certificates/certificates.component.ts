@@ -96,14 +96,16 @@ export class CertificatesComponent implements OnInit {
 
   async blacklist() {
     const pub = this.chainDirective.chain?.recordPub.replace('~', '');
-    const authed = await this.ngGun.asOwner(this.chainDirective.chain as any);
-    this.selectedCerts.forEach(async (c) => {
-      this.logger.log('blacklisting cert %o', c);
-      const v: any = await SEA.verify(c.cert, pub);
-      const blPath = v.wb || 'blacklist';
-      const userPub = v.c;
-      const bl = authed.get(blPath).get(userPub);
-      bl.put(true as never);
-    });
+    if (pub) {
+      const authed = await this.ngGun.asOwner(this.chainDirective.chain as any);
+      this.selectedCerts.forEach(async (c) => {
+        this.logger.log('blacklisting cert %o', c);
+        const v: any = await SEA.verify(c.cert, pub);
+        const blPath = v.wb || 'blacklist';
+        const userPub = v.c;
+        const bl = authed.get(blPath).get(userPub);
+        bl.put(true as never);
+      });
+    }
   }
 }

@@ -91,28 +91,37 @@ export class GunChain<
   protected get myKey() {
     return (this.gun as any)._.get;
   }
+
+  private _path!: string[];
   get path() {
-    return gunPath(this.gun as any);
+    this._path = this._path || gunPath(this.gun as any);
+    return this._path;
   }
   protected get pubs() {
     return this.path.filter((key) => key.startsWith('~'));
   }
-  get recordPub() {
+  get recordPub(): string {
     return this.pubs[0];
   }
+  private _chainArray!: any[];
   get chainArray() {
-    return gunChainArray(this.gun as any);
+    this._chainArray = this._chainArray || gunChainArray(this.gun as any);
+    return this._chainArray;
   }
   get record() {
     const firstPub = this.path.findIndex((k) => k.startsWith('~'));
     return this.chainArray[firstPub];
   }
+
+  private _pathFromRecord!: any[];
   get pathFromRecord() {
-    const p = [...this.path];
-    p.reverse();
-    const recordIndex = p.findIndex((v) => v === this.recordPub);
-    const fromRecord = p.slice(recordIndex);
-    return fromRecord;
+    if (!this._pathFromRecord) {
+      const p = [...this.path];
+      p.reverse();
+      const recordIndex = p.findIndex((v) => v === this.recordPub);
+      this._pathFromRecord = p.slice(recordIndex);
+    }
+    return this._pathFromRecord;
   }
   get keyInRecord() {
     return this.pathFromRecord[1];
@@ -143,7 +152,6 @@ export class GunChain<
   }
 
   get pathCertificates$(): Observable<any> {
-    const key = this.keyInRecord;
     return this.allCertificates$.pipe(pluck(this.keyInRecord));
   }
 

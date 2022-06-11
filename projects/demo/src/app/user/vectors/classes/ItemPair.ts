@@ -9,6 +9,7 @@ import {
   mergeMap,
   scan,
   shareReplay,
+  skip,
   switchMap,
   tap,
 } from 'rxjs/operators';
@@ -41,49 +42,56 @@ import { around } from 'aspect-ts';
 import { take, distinct } from 'rxjs/operators';
 
 export class ItemPair extends PaperPair {
+  private ipTimer = this.logger.time('ItemPair');
   settings = {
     forceImport: false,
   };
   graphValue: any;
   savedValue: any = {};
-  graph$ = this.chain
-    .on({ changes: true, bypassZone: true } as GunChainCallbackOptions)
-    .pipe(shareReplay(1));
+  readonly graph$ = this.chain.on().pipe(shareReplay(1));
+  readonly graphValue$ = this.graph$.pipe(filter((json) => hasRequired(json)));
+  readonly graphRemove$ = this.graph$.pipe(filter((json) => json === null));
 
-  previousSibling = this.chain.get('previousSibling');
-
-  graphValue$ = this.graph$.pipe(
-    filter((json) => hasRequired(json))
-    // distinct((v) => JSON.stringify(v))
-    // tap((value) => (this.graphValue = value))
-  );
-  graphRemove$ = this.graph$.pipe(filter((json) => json === null));
+  readonly previousSibling = this.chain.get('previousSibling');
 
   // Graph Methods
-  childSouls = new Set<string>();
-  children = this.chain.get('children');
+  readonly childSouls = new Set<string>();
+  readonly children = this.chain.get('children');
 
-  childMap = this.children.map();
-  children$ = this.childMap
+  readonly childMap = this.children.map();
+  readonly children$ = this.childMap
     .on({
       includeKeys: true,
-      changes: true,
       bypassZone: true,
     })
     .pipe(shareReplay(1));
 
-  childrenReady$ = this.children$.pipe(filter((c) => hasRequired(c[0])));
-  childrenRemoved$ = this.children$.pipe(
+  readonly childrenReady$ = this.children$.pipe(
+    filter((c) => hasRequired(c[0]))
+  );
+  readonly childrenBuffer$ = this.childrenReady$.pipe(
+    filter((childVK) => {
+      const newChild = !this.childSouls.has(childVK[1]);
+      if (newChild) {
+        this.childSouls.add(childVK[1]);
+      }
+      return newChild;
+    }),
+    bufferTime(1000),
+    filter((children) => children.length > 0),
+    shareReplay(1)
+  );
+  readonly childrenRemoved$ = this.children$.pipe(
     filter((c) => c[0] === null || c[0] === undefined)
   );
 
-  afterRemove$ = after$(this.item, 'remove');
+  readonly afterRemove$ = after$(this.item, 'remove');
 
   // Local Methods
   isInsertingFromGraph = false;
-  beforeImportJSON$ = before$(this.item, 'importJSON');
-  afterImportJSON$ = after$(this.item, 'importJSON');
-  afterInsertChild$ = after$(this.item, 'insertChild').pipe(
+  readonly beforeImportJSON$ = before$(this.item, 'importJSON');
+  readonly afterImportJSON$ = after$(this.item, 'importJSON');
+  readonly afterInsertChild$ = after$(this.item, 'insertChild').pipe(
     map(returned),
     tap((item) =>
       this.isInsertingFromGraph
@@ -102,19 +110,21 @@ export class ItemPair extends PaperPair {
     )
   );
 
-  afterAddChild$ = after$(this.item, 'addChild').pipe(
-    map(returned),
-    filter((item) => {
-      return !this.isInsertingFromGraph && item !== null && item !== undefined;
-    }),
-    switchMap((item) => {
-      return this.isImportingJSON
-        ? this.afterImportJSON$.pipe(mapTo(item))
-        : of(item);
-    })
-  );
+  // afterAddChild$ = after$(this.item, 'addChild').pipe(
+  //   map(returned),
+  //   filter((item) => {
+  //     return !this.isInsertingFromGraph && item !== null && item !== undefined;
+  //   }),
+  //   switchMap((item) => {
+  //     return this.isImportingJSON
+  //       ? this.afterImportJSON$.pipe(mapTo(item))
+  //       : of(item);
+  //   })
+  // );
 
-  localChange$ = from((MUTATIONS[this.item.className] || []) as string[]).pipe(
+  readonly localChange$ = from(
+    (MUTATIONS[this.item.className] || []) as string[]
+  ).pipe(
     mergeMap((method: string) =>
       after$(this.item, method).pipe(
         map((v: any) => MUTATION_PROPERTIES[method])
@@ -133,12 +143,14 @@ export class ItemPair extends PaperPair {
   ) {
     super(item, project, scope, logger);
     item.data.path = chain.pathFromRecord.join('/');
+    // this.logger.monitor(this, 'setup', 20);
     // this.logger.monitor(this, 'onGraphChildren', 20);
-    this.logger.monitor(this, 'onGraphChild', 20);
-    this.logger.monitor(this, 'onGraph', 20);
+    // this.logger.monitor(this, 'onGraphChild', 20);
     // this.logger.monitor(this, 'onLocalChildren', 20);
-    this.logger.monitor(this, 'onLocalChild', 20);
+    // this.logger.monitor(this, 'onLocalChild', 20);
     // this.logger.monitor(this, 'arrangeLocalChildren', 20);
+    // this.logger.monitor(this, 'constructChild', 20);
+    this.logger.timeEnd('ItemPair');
     this.setup();
   }
 
@@ -217,52 +229,78 @@ export class ItemPair extends PaperPair {
   }
 
   setup() {
+    // this.logger.time('setup methods');
     this.afterRemove$.subscribe(() => this.onLocalRemove());
     this.beforeImportJSON$.subscribe(() => (this.isImportingJSON = true));
     this.afterImportJSON$.subscribe(() => (this.isImportingJSON = false));
     // TODO? ignoreInsert causing multiple local child adds to be ignored???
     this.afterImportJSON$.subscribe(() => this.save());
     this.afterInsertChild$.subscribe((child) => this.onLocalChild(child));
+    // this.logger.timeEnd('setup methods');
 
+    // this.logger.time('setup graph'); // TODO ~5ms here
     this.graphValue$.subscribe((json) => this.onGraph(json));
-    this.graphRemove$.subscribe((json) => {
+    this.graphRemove$.subscribe(() => {
       if (this.item.isInserted()) {
         this.logger.verbose('item removed.');
         this.item.remove();
       }
     });
-    this.onLocalChildren();
-    // this.childrenBuffer$.subscribe((data) => this.onGraphChildren(data));
-    this.childrenReady$
-      .pipe(
-        filter((childVK) => !this.childSouls.has(childVK[1])),
-        tap((childVK) => this.childSouls.add(childVK[1])),
-        bufferTime(3000),
-        filter((children) => children.length > 0)
-      )
-      .subscribe((children) => {
+    this.previousSibling
+      .on()
+      .pipe(skip(1))
+      .subscribe((previousSibling) => {
+        // previousSibling = previousSibling[0];
+        this.logger.verbose('got previousSibling', previousSibling);
+        if (!previousSibling) {
+          this.item.sendToBack();
+          return;
+        }
+        const prevSibSoul = previousSibling._['#'];
+        this.item.data.previousSibling = previousSibling;
+        const prevItem = this.project.getItem({
+          data: {
+            path: prevSibSoul,
+          },
+        });
+
+        if (prevItem) {
+          this.logger.verbose('found previousSibling', prevItem);
+          this.item.insertAbove(prevItem);
+        } else {
+          // This might not be a problem, just logging
+          this.logger.verbose('could not find previous sibling', prevSibSoul);
+        }
+      });
+    // this.logger.timeEnd('setup graph');
+
+    // Skip setting up children listeners if we can't have children
+    // Note: you'll have to expand this for compound paths, most likely
+    if (this.item.className === 'Layer') {
+      // this.logger.time('setup children'); // TODO ~5ms here
+      this.onLocalChildren();
+
+      this.childrenBuffer$.subscribe((children) => {
         this.onGraphChildren(children);
       });
 
-    this.childrenRemoved$.subscribe((childVK) => {
-      this.childSouls.delete(childVK[1]);
-    });
+      this.childrenRemoved$.subscribe((childVK) => {
+        this.childSouls.delete(childVK[1]);
+      });
+      // this.logger.timeEnd('setup children');
+    }
 
+    // this.logger.time('setup changes');
     (this.item as any).changes$
       .pipe(
-        tap(() => {
-          if (this.isImportingJSON) {
-            this.logger.verbose('ignoring local change because importing JSON');
-          }
-        }),
         filter(
           (v) =>
-            (this.project as any).pair.saveStrategy === SaveStrategy.AUTOMATIC
-        ),
-        filter((v) => !this.isImportingJSON)
+            (this.project as any).pair.saveStrategy ===
+              SaveStrategy.AUTOMATIC && !this.isImportingJSON
+        )
       )
       .subscribe((change: [string, any]) => {
-        this.logger.verbose('%s %s change', this.item.toString(), change[0]);
+        this.logger.log('%s %s change', this.item.toString(), change[0]);
         const value = change[1];
         this.saveProperty$.emit([change[0], serializeValue(value)]);
         this.save();
@@ -290,30 +328,7 @@ export class ItemPair extends PaperPair {
           this.logger.warn('onLocalChange$ was not an array, not saving!!!');
         }
       });
-
-    this.previousSibling.on().subscribe((previousSibling) => {
-      // previousSibling = previousSibling[0];
-      this.logger.verbose('got previousSibling', previousSibling);
-      if (!previousSibling) {
-        this.item.sendToBack();
-        return;
-      }
-      const prevSibSoul = previousSibling._['#'];
-      this.item.data.previousSibling = previousSibling;
-      const prevItem = this.project.getItem({
-        data: {
-          path: prevSibSoul,
-        },
-      });
-
-      if (prevItem) {
-        this.logger.verbose('found previousSibling', prevItem);
-        this.item.insertAbove(prevItem);
-      } else {
-        // This might not be a problem, just logging
-        this.logger.verbose('could not find previous sibling', prevSibSoul);
-      }
-    });
+    // this.logger.timeEnd('setup changes');
   }
 
   /**
@@ -363,6 +378,7 @@ export class ItemPair extends PaperPair {
       // This is a cached child
       childNode = this.children.get(childObj.data.soul);
     }
+
     childObj.data.path = childNode.pathFromRecord.join('/');
 
     // Create a new ItemPair for the child
@@ -374,7 +390,7 @@ export class ItemPair extends PaperPair {
       this.scope,
       this.logger
     );
-    // this.logger.timeEnd('new ItemPair()', 1000 / 30);
+    // this.logger.timeEnd('new ItemPair()', 1000 / 60);
     childObj.pair = childPair;
   }
 
@@ -490,9 +506,11 @@ export class ItemPair extends PaperPair {
         // TODO childGun.get(...all required fields).once() & re-call this method
         const missing = getMissing(json);
         this.logger.log('missing values:', missing.join(', '));
+
         missing.forEach((mk) => {
           childJSON[mk] = PAPER_STYLE_DEFAULTS[childJSON.className][mk];
         });
+
         from(
           missing.map(
             (k) =>
@@ -573,39 +591,42 @@ export class ItemPair extends PaperPair {
       if (toInsert.length > 0) {
         this.logger.log('inserting %d paper items', toInsert.length);
         this.item.insertChildren(this.item.children.length, toInsert as any);
-        toInsert.forEach((child) => {
-          // Look for the item that should be above this one
-          if (!child.data.previousSibling) {
-            this.logger.verbose('found bottom child', child);
-            child.sendToBack();
-            return;
-          }
-          const below = this.item.getItem({
-            match: (item: any) =>
-              item.data.previousSibling &&
-              item.data.previousSibling._['#'] === child.data.path,
-          });
-          if (below) {
-            this.logger.verbose('should insert below', below);
-            child.insertBelow(below);
-          } else {
-            // Look for the item that should be below this one
-            const above = this.item.getItem({
-              match: (item: any) =>
-                child.data.previousSibling &&
-                item.data.path === child.data.previousSibling._['#'],
-            });
-            if (above) {
-              this.logger.verbose('should insert above', above.data.path);
-              child.insertAbove(above);
-            } else {
-              this.logger.error(
-                'could not find insert location for',
-                child.data.path
-              );
-            }
-          }
-        });
+        // toInsert.forEach((child) => {
+        //   // Look for the item that should be above this one
+        //   if (!child.data.previousSibling) {
+        //     this.logger.verbose('found bottom child', child);
+        //     child.sendToBack();
+        //     return;
+        //   }
+
+        //   const below = this.item.getItem({
+        //     match: (item: any) =>
+        //       item.data.previousSibling &&
+        //       item.data.previousSibling._['#'] === child.data.path,
+        //   });
+
+        //   if (below) {
+        //     this.logger.verbose('should insert below', below);
+        //     child.insertBelow(below);
+        //   } else {
+        //     // Look for the item that should be below this one
+        //     const above = this.item.getItem({
+        //       match: (item: any) =>
+        //         child.data.previousSibling &&
+        //         item.data.path === child.data.previousSibling._['#'],
+        //     });
+
+        //     if (above) {
+        //       this.logger.verbose('should insert above', above.data.path);
+        //       child.insertAbove(above);
+        //     } else {
+        //       this.logger.error(
+        //         'could not find insert location for',
+        //         child.data.path
+        //       );
+        //     }
+        //   }
+        // });
         this.arrangeLocalChildren();
       }
     } catch (err: any) {

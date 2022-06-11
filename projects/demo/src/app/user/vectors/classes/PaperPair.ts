@@ -45,6 +45,8 @@ export class PaperPair {
     this.logger = logger.supplemental(
       Object.getPrototypeOf(this).constructor.name + ' ' + this.ctx.toString()
     );
+    // this.logger.name =
+    //   Object.getPrototypeOf(this).constructor.name + ' ' + this.ctx.toString();
     if (ctx.pair) {
       this.logger.error('CREATING A DUPLICATE PAIR FOR SCOPE', ctx);
     }

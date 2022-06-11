@@ -17,7 +17,7 @@ import { getDeep } from '../functions/packaging';
 export class ProjectPair extends PaperPair {
   /* STATE */
   isImportingJSON = false;
-  saveStrategy: SaveStrategy = SaveStrategy.MANUAL;
+  saveStrategy: SaveStrategy = SaveStrategy.AUTOMATIC;
 
   /* GRAPH EVENTS */
   layers = this.chain.get('layers');

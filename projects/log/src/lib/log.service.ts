@@ -38,15 +38,15 @@ class Stopwatch {
   }
 
   start() {
-    this.startTime = Date.now();
+    this.startTime = window.performance.now();
   }
 
   get elapsed() {
-    return Date.now() - this.startTime;
+    return window.performance.now() - this.startTime;
   }
 
   end() {
-    this.endTime = Date.now();
+    this.endTime = window.performance.now();
   }
 }
 
