@@ -1,4 +1,4 @@
-import { Component, Optional } from '@angular/core';
+import { Component, Optional, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
   ActivatedRoute,
@@ -20,13 +20,14 @@ import { GunWebrtcImporterService } from './services/gun-webrtc-importer.service
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { OURONOTE_DEFAULT_TITLE } from './constants';
+import { NgGunSessionService } from '../../../ng-gun/src/lib/ng-gun-session.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   user: any;
   messages: LogMessage[] = [];
   constructor(
@@ -42,7 +43,8 @@ export class AppComponent {
     @Optional()
     private webRtcImporter: GunWebrtcImporterService,
     private matIconRegistry: MatIconRegistry,
-    private domSanitizer: DomSanitizer
+    private domSanitizer: DomSanitizer,
+    private session: NgGunSessionService
   ) {
     this.matIconRegistry.addSvgIcon(
       'lasso',
@@ -56,6 +58,7 @@ export class AppComponent {
       radImporter,
       webRtcImporter,
     });
+
     this.user = this.ngGun.auth();
     window.document.title = OURONOTE_DEFAULT_TITLE; // `ouronote version ${VERSION.version}`;
 
@@ -83,6 +86,20 @@ export class AppComponent {
         window.location.href = redirect;
       }
     });
+  }
+
+  ngOnInit() {
+    // if (typeof Worker !== 'undefined') {
+    //   const worker = new Worker(
+    //     new URL('./gun-worker.worker', import.meta.url)
+    //   );
+    //   worker.onmessage = (msg: any) => {
+    //     console.log('message', msg);
+    //   };
+    //   worker.postMessage({
+    //     call: 'getSession',
+    //   });
+    // }
   }
 
   logout() {

@@ -230,6 +230,13 @@ export class ItemPair extends PaperPair {
 
   setup() {
     // this.logger.time('setup methods');
+    around(this, 'onGraphChildren', (...args: any[]) => {
+      const notify = args.pop();
+      this.project.view.autoUpdate = false;
+      const ret = notify(...args);
+      this.project.view.autoUpdate = true;
+      return ret;
+    });
     this.afterRemove$.subscribe(() => this.onLocalRemove());
     this.beforeImportJSON$.subscribe(() => (this.isImportingJSON = true));
     this.afterImportJSON$.subscribe(() => (this.isImportingJSON = false));
@@ -631,6 +638,7 @@ export class ItemPair extends PaperPair {
       }
     } catch (err: any) {
       this.logger.error('Error encountered in onGraphChildren: ', err);
+      this.isInsertingFromGraph = false;
     } finally {
       this.isInsertingFromGraph = false;
       // this.logger.timeEnd('onGraphChildren()');

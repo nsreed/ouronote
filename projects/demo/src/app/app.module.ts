@@ -67,6 +67,18 @@ const WEBRTC_LOCAL = localStorage.getItem('WEBRTC_ENABLE');
 const WEBRTC_ENABLE =
   WEBRTC_LOCAL === null ? false : !!JSON.parse(WEBRTC_LOCAL);
 
+// if (typeof SharedWorker !== 'undefined') {
+//   const sharedWorker = new SharedWorker('/assets/gun-shared.worker.js');
+//   sharedWorker.port.start();
+//   sharedWorker.port.onmessage = ({ data }) => {
+//     console.log('shared message');
+//     console.log(data);
+//   };
+//   sharedWorker.port.postMessage({
+//     cmd: 'getSession',
+//   });
+// }
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -122,6 +134,10 @@ const WEBRTC_ENABLE =
     FilesModule,
   ],
   providers: [
+    {
+      provide: SharedWorker,
+      useValue: new SharedWorker('/assets/gun-shared.worker.js'),
+    },
     { provide: MAT_COLOR_FORMATS, useValue: NGX_MAT_COLOR_FORMATS },
     {
       provide: 'gun-options',

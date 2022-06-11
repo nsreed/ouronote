@@ -47,6 +47,7 @@ import { LogService } from '../../../../log/src/lib/log.service';
 import { pluck } from 'rxjs/operators';
 import { timer } from 'rxjs';
 import { IGunCryptoKeyPair } from 'gun/types/types';
+import { NgGunSessionService } from '../ng-gun-session.service';
 
 export const GUN_NODE = Symbol('GUN_NODE');
 
@@ -270,7 +271,10 @@ export class GunChain<
       GunChainMeta,
     @Optional()
     @SkipSelf()
-    protected back: GunChain<any>
+    protected back: GunChain<any>,
+    @Optional()
+    @SkipSelf()
+    protected session?: NgGunSessionService
   ) {
     if (!gun) {
       this.logger.warn('Constructing gun with no options');
@@ -309,7 +313,7 @@ export class GunChain<
   protected _auth: GunAuthChain<DataType, ReferenceKey> | null = null;
 
   from<T>(gun: IGunChainReference<T>): GunChain<T> {
-    return new GunChain<T>(this.ngZone, gun as any, this);
+    return new GunChain<T>(this.ngZone, gun as any, this, this.session);
   }
 
   public get updateTime(): number {
@@ -571,7 +575,8 @@ export class GunChain<
         // TODO allow option to create a new gun instance for this auth call
         this.gun.user().recall({ sessionStorage: recall }) as any,
         this as any,
-        this as any
+        this as any,
+        this.session
       );
       // this._auth.logout$.subscribe(()=>this._auth = null);
     }
@@ -615,6 +620,7 @@ export class GunAuthChain<
   IsTop = false
 > extends GunChain<DataType, ReferenceKey, false> {
   logger = LogService.getLogger('gun-auth-chain');
+
   private _is: any;
   set is(value: any) {
     this._is = value;
@@ -627,6 +633,8 @@ export class GunAuthChain<
         .subscribe((alias: any) => {
           this.alias = this.gun._.root.user?._?.put?.alias;
         });
+      let pair = this.gun._.root?.user?.is;
+      pair = 'object' === typeof pair?.alias ? pair?.alias : pair;
     }
   }
   get is() {
@@ -642,6 +650,7 @@ export class GunAuthChain<
       );
       if (!ack.err) {
         this.is = ack.put || ack.root?.user?.is;
+        this.session?.setSession(this.is);
       } else {
         this.logger.warn('authentication error: ', ack.put);
       }
@@ -657,10 +666,22 @@ export class GunAuthChain<
       Partial<GunChainFunctions> &
       Partial<GunChainMeta>,
     @Optional() @SkipSelf() public root: GunChain,
-    @Optional() @SkipSelf() back: GunChain
+    @Optional() @SkipSelf() back: GunChain,
+    @Optional() @SkipSelf() protected session?: NgGunSessionService
   ) {
-    super(ngZone, gun as any, back);
+    super(ngZone, gun as any, back, session);
+
     this.is = (gun as any).is;
+    session?.session$.subscribe((p) => {
+      this.logger.log('got pair ', p?.pub);
+      if (p?.pub && p?.priv) {
+        if (this.is) {
+          this.logger.log('this.is', this.is);
+        } else {
+          this.login(p).subscribe();
+        }
+      }
+    });
   }
 
   login(alias: string | IGunCryptoKeyPair, pass?: string) {
@@ -729,7 +750,13 @@ export class GunAuthChain<
   }
 
   from<T>(gun: IGunChainReference<T>) {
-    return new GunAuthChain<T>(this.ngZone, gun, this.root, this as any);
+    return new GunAuthChain<T>(
+      this.ngZone,
+      gun,
+      this.root,
+      this as any,
+      this.session
+    );
   }
 
   recall() {

@@ -56,6 +56,7 @@
     "@types/hammerjs": "^2.0.39",
     "@types/jasmine": "~3.6.0",
     "@types/node": "^15.0.2",
+    "@types/sharedworker": "^0.0.76",
     "codelyzer": "^6.0.0",
     "jasmine-core": "~3.6.0",
     "jasmine-spec-reporter": "~5.0.0",
