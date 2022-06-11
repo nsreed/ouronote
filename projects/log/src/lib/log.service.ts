@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 import { Subject } from 'rxjs';
 import { scan, shareReplay, take, filter } from 'rxjs/operators';
+import { around } from 'aspect-ts';
 export enum LogLevel {
   VERBOSE,
   INFO,
@@ -26,6 +27,27 @@ export interface LogMessage {
   level: LogLevel;
   message: string;
   args: any[];
+}
+
+class Stopwatch {
+  startTime!: number;
+  endTime!: number;
+
+  constructor(public readonly label = 'timer') {
+    this.start();
+  }
+
+  start() {
+    this.startTime = Date.now();
+  }
+
+  get elapsed() {
+    return Date.now() - this.startTime;
+  }
+
+  end() {
+    this.endTime = Date.now();
+  }
 }
 
 // @dynamic
@@ -59,6 +81,8 @@ export class LogService {
     }
   }
   private static longestName = 14;
+  private static timers = new Map<string, Stopwatch>();
+  private static elapsed = new Map<string, number>();
 
   public static readonly root = new LogService('root');
 
@@ -92,8 +116,10 @@ export class LogService {
       }
     });
 
+  /** level to be recorded */
   level: LogLevel = LogLevel.INFO;
 
+  /** level to be echoed */
   outLevel = LogLevel.INFO;
 
   private supplementals = new Map<string, LogService>();
@@ -103,21 +129,64 @@ export class LogService {
   }
 
   verbose(message: string, ...args: any[]) {
+    if (this.level > LogLevel.VERBOSE) {
+      return;
+    }
     const packed = this.buildMessage(LogLevel.VERBOSE, message, args);
     this._out$.emit(packed);
   }
 
   log(message: string, ...args: any[]) {
+    if (this.level > LogLevel.INFO) {
+      return;
+    }
     const packed = this.buildMessage(LogLevel.INFO, message, args);
     this._out$.emit(packed);
   }
 
   warn(message: string, ...args: any[]) {
+    if (this.level > LogLevel.WARN) {
+      return;
+    }
     const packed = this.buildMessage(LogLevel.WARN, message, args);
     this._out$.emit(packed);
   }
 
+  timeEnd(label: string, threshold = 1) {
+    const t = LogService.timers.get(label) as Stopwatch;
+    t.end();
+    const prev: number = LogService.elapsed.get(label) || 0;
+    LogService.elapsed.set(label, prev + t.elapsed);
+    if (t.elapsed > threshold) {
+      console.log('%s %f (%f total)', label, t.elapsed, prev + t.elapsed);
+    }
+    return t.elapsed;
+  }
+
+  time(label: string) {
+    if (!LogService.timers.has(label)) {
+      LogService.timers.set(label, new Stopwatch(label));
+    }
+    LogService.timers.get(label)?.start();
+    return LogService.timers.get(label) as Stopwatch;
+  }
+
+  monitor(ctx: any, name: string, threshold = 1) {
+    around(ctx, name, (...args: any[]) => {
+      const notify = args.pop();
+      const t = this.time(name);
+      const ret = notify(...args);
+      const dur = this.timeEnd(name, threshold);
+      const prev: number = LogService.elapsed.get(name) || 0;
+
+      return ret;
+    });
+  }
+
   error(message: string, ...args: any[]) {
+    if (this.level > LogLevel.ERROR) {
+      return;
+    }
     const packed = this.buildMessage(LogLevel.ERROR, message, args);
     this._out$.emit(packed);
   }

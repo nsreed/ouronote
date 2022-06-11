@@ -37,10 +37,12 @@ import {
 import { IterableDiffers } from '@angular/core';
 import { defaultsFor } from '../functions/paper-functions';
 import { PairedItem } from './paper-pair';
+import { around } from 'aspect-ts';
+import { take, distinct } from 'rxjs/operators';
 
 export class ItemPair extends PaperPair {
   settings = {
-    forceImport: true,
+    forceImport: false,
   };
   graphValue: any;
   savedValue: any = {};
@@ -48,14 +50,11 @@ export class ItemPair extends PaperPair {
     .on({ changes: true, bypassZone: true } as GunChainCallbackOptions)
     .pipe(shareReplay(1));
 
-  readonly z = this.chain.get('z');
-  z$ = this.z.on();
-
   previousSibling = this.chain.get('previousSibling');
 
   graphValue$ = this.graph$.pipe(
     filter((json) => hasRequired(json))
-    // distinct((v) => JSON.stringify(v)),
+    // distinct((v) => JSON.stringify(v))
     // tap((value) => (this.graphValue = value))
   );
   graphRemove$ = this.graph$.pipe(filter((json) => json === null));
@@ -97,7 +96,9 @@ export class ItemPair extends PaperPair {
         !this.isInsertingFromGraph && item !== null && item !== undefined
     ),
     switchMap((item) =>
-      this.isImportingJSON ? this.afterImportJSON$.pipe(mapTo(item)) : of(item)
+      this.isImportingJSON
+        ? this.afterImportJSON$.pipe(mapTo(item), take(1))
+        : of(item)
     )
   );
 
@@ -132,6 +133,12 @@ export class ItemPair extends PaperPair {
   ) {
     super(item, project, scope, logger);
     item.data.path = chain.pathFromRecord.join('/');
+    // this.logger.monitor(this, 'onGraphChildren', 20);
+    this.logger.monitor(this, 'onGraphChild', 20);
+    this.logger.monitor(this, 'onGraph', 20);
+    // this.logger.monitor(this, 'onLocalChildren', 20);
+    this.logger.monitor(this, 'onLocalChild', 20);
+    // this.logger.monitor(this, 'arrangeLocalChildren', 20);
     this.setup();
   }
 
@@ -220,7 +227,7 @@ export class ItemPair extends PaperPair {
     this.graphValue$.subscribe((json) => this.onGraph(json));
     this.graphRemove$.subscribe((json) => {
       if (this.item.isInserted()) {
-        this.logger.log('item removed.');
+        this.logger.verbose('item removed.');
         this.item.remove();
       }
     });
@@ -230,7 +237,7 @@ export class ItemPair extends PaperPair {
       .pipe(
         filter((childVK) => !this.childSouls.has(childVK[1])),
         tap((childVK) => this.childSouls.add(childVK[1])),
-        bufferTime(SAVE_DEBOUNCE),
+        bufferTime(3000),
         filter((children) => children.length > 0)
       )
       .subscribe((children) => {
@@ -285,6 +292,7 @@ export class ItemPair extends PaperPair {
       });
 
     this.previousSibling.on().subscribe((previousSibling) => {
+      // previousSibling = previousSibling[0];
       this.logger.verbose('got previousSibling', previousSibling);
       if (!previousSibling) {
         this.item.sendToBack();
@@ -293,8 +301,8 @@ export class ItemPair extends PaperPair {
       const prevSibSoul = previousSibling._['#'];
       this.item.data.previousSibling = previousSibling;
       const prevItem = this.project.getItem({
-        match: (i: any) => {
-          return i.data.path === prevSibSoul;
+        data: {
+          path: prevSibSoul,
         },
       });
 
@@ -347,7 +355,7 @@ export class ItemPair extends PaperPair {
     let childNode;
     if (!childObj.data.soul) {
       // This is a new child, not yet inserted in the graph
-      this.logger.verbose('child not present in graph');
+      this.logger.log('child not present in graph');
       const childKey = getSetKey(this.chain).replace(/~.*/, '');
       childNode = this.children.get(childKey);
       childObj.data.soul = childKey;
@@ -358,6 +366,7 @@ export class ItemPair extends PaperPair {
     childObj.data.path = childNode.pathFromRecord.join('/');
 
     // Create a new ItemPair for the child
+    // const t = this.logger.time('new ItemPair()');
     const childPair = new ItemPair(
       childNode,
       localChild,
@@ -365,6 +374,7 @@ export class ItemPair extends PaperPair {
       this.scope,
       this.logger
     );
+    // this.logger.timeEnd('new ItemPair()', 1000 / 30);
     childObj.pair = childPair;
   }
 
@@ -433,7 +443,7 @@ export class ItemPair extends PaperPair {
         // console.log('no keys to import');
         // return;
       } else {
-        console.log(`diffs for ${Object.keys(scrubbed).join(',')}`);
+        // console.log(`diffs for ${Object.keys(scrubbed).join(',')}`);
         const imported = this.item.importJSON([
           this.item.className,
           scrubbed,
@@ -459,7 +469,7 @@ export class ItemPair extends PaperPair {
       this.logger.verbose(`child ${key} was added.`);
 
       const childGun = this.children.get(key);
-      const childJSON = { ...json };
+      const childJSON = { ...json }; // TODO this is slow???
 
       // FIXME If a new child is missing required fields, the child will never be processed
       if (!json.className) {
@@ -538,16 +548,17 @@ export class ItemPair extends PaperPair {
    * @returns void
    */
   onGraphChildren(data: any[]) {
+    // this.logger.time('onGraphChildren()');
     if (data.length === 0) {
       return;
     }
-    this.logger.verbose(
-      'onGraphChildren',
-      data
-        .map((v) => v[0] as Partial<paper.Item>)
-        .filter((i) => i !== null)
-        .map((i) => `${i.className} ${Gun.node.soul(i as any)}`)
-    );
+    // this.logger.verbose(
+    //   'onGraphChildren',
+    //   data
+    //     .map((v) => v[0] as Partial<paper.Item>)
+    //     .filter((i) => i !== null)
+    //     .map((i) => `${i.className} ${Gun.node.soul(i as any)}`)
+    // );
 
     try {
       this.isInsertingFromGraph = true;
@@ -601,6 +612,7 @@ export class ItemPair extends PaperPair {
       this.logger.error('Error encountered in onGraphChildren: ', err);
     } finally {
       this.isInsertingFromGraph = false;
+      // this.logger.timeEnd('onGraphChildren()');
     }
   }
 
@@ -609,6 +621,9 @@ export class ItemPair extends PaperPair {
     // Send it to back
     // find next child with current set as previousSibling, iteratively
 
+    // tslint:disable-next-line: no-console
+    // console.count('arrangeLocalChildren()');
+    // this.logger.time('arrangeLocalChildren()');
     let c =
       this.item.getItem({
         match: (i: paper.Item) => !i.data.previousSibling,
@@ -624,6 +639,8 @@ export class ItemPair extends PaperPair {
       }
       c = next;
     }
+    // tslint:disable-next-line: no-console
+    // this.logger.timeEnd('arrangeLocalChildren()');
   }
 
   /**

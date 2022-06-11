@@ -9,6 +9,7 @@ import {
 } from '../functions/constants';
 import { serializeValue } from '../functions/packaging';
 import { IItemData } from './IItemData';
+import { PairedItem } from './paper-pair';
 
 export class PaperPair {
   childCache = {} as any;
@@ -67,9 +68,21 @@ export class PaperPair {
   getChild(jsonOrKey: any) {
     // TODO undo + cache invalidation is the hardest problem
     if (!this.childCache[jsonOrKey]) {
-      const child = this.ctx.children?.find(
-        (i: paper.Item) => i.data.soul === jsonOrKey
-      );
+      const child =
+        this.ctx.getItem({
+          data: {
+            soul: jsonOrKey,
+          },
+        }) ||
+        this.ctx.getItem({
+          data: {
+            path: jsonOrKey,
+          },
+        }) ||
+        this.ctx.children?.find(
+          (i: paper.Item) =>
+            i.data.soul === jsonOrKey || i.data.path === jsonOrKey
+        );
       this.childCache[jsonOrKey] = child;
     }
     return this.childCache[jsonOrKey];
