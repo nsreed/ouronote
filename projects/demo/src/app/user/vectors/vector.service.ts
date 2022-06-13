@@ -10,7 +10,6 @@ import { UserService } from '../user.service';
 import { VectorGraph } from '../VectorGraph';
 import { ProjectPair } from './classes/ProjectPair';
 import { getDeep } from './functions/packaging';
-import { NgGunSessionService } from '../../../../../ng-gun/src/lib/ng-gun-session.service';
 
 @Injectable({
   providedIn: 'root',
@@ -26,8 +25,7 @@ export class VectorService {
     private ngZone: NgZone,
     private sea: NgSeaService,
     private logger: LogService,
-    private router: Router,
-    private session: NgGunSessionService
+    private router: Router
   ) {}
 
   async certify(
@@ -142,11 +140,7 @@ export class VectorService {
     const vectorPair: any = await this.sea.pair().toPromise();
     const vector = await this.initializeCertificates(value, vectorPair);
 
-    const vectorAuthRoot = new NgGunService(
-      this.gunOpts,
-      this.ngZone,
-      this.session
-    );
+    const vectorAuthRoot = new NgGunService(this.gunOpts, this.ngZone);
 
     const otp = new EventEmitter();
     vectorAuthRoot.gun.user().auth(

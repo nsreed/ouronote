@@ -1,6 +1,7 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { fromEvent, Observable } from 'rxjs';
 import { LogService } from '../../../log/src/lib/log.service';
+import { NgGunService } from './ng-gun.service';
 import {
   filter,
   take,
@@ -15,17 +16,6 @@ import {
 })
 export class NgGunSessionService {
   private _seq = 0;
-
-  session$ = new EventEmitter();
-
-  private _session: any;
-  public get session(): any {
-    return this._session;
-  }
-  private set session(value: any) {
-    this._session = value;
-    this.session$.emit(value);
-  }
 
   message$ = fromEvent(this.worker.port, 'message').pipe(
     shareReplay(1)
@@ -48,6 +38,10 @@ export class NgGunSessionService {
     filter(({ data }) => data.change),
     pluck('data')
   );
+  event$ = this.announce$.pipe(
+    filter(({ data }) => data.type === 'event'),
+    pluck('data')
+  );
   log$ = this.announce$.pipe(
     filter(({ data }) => data.msg),
     pluck('data')
@@ -57,13 +51,30 @@ export class NgGunSessionService {
     shareReplay(1)
   ) as Observable<any>;
 
-  constructor(private worker: SharedWorker, private logger: LogService) {
+  constructor(
+    private worker: SharedWorker,
+    private logger: LogService,
+    private gunService: NgGunService
+  ) {
+    worker.port.start();
     this.log$.subscribe((data) => {
       this.logger.log('WORKER: %s %o', data.msg, data.data);
     });
     this.command$.subscribe((command: any) => this.onCommand(command));
-    worker.port.start();
-    this.loadSession();
+    this.event$.subscribe((e: any) => {
+      this.logger.log('got event', e);
+    });
+    this.gunService.auth(true).auth$.subscribe((a) => {
+      this.logger.log('got auth event', a);
+    });
+    this.init();
+  }
+
+  async init() {
+    const is = this.gunService.auth().is;
+    const pair = is?.priv ? is : is?.alias;
+    const response = await this.setSession(pair);
+    this.logger.log('session response', response);
   }
 
   async onCommand(command: any) {
@@ -72,7 +83,7 @@ export class NgGunSessionService {
         this.result(command, true);
         break;
       case 'getSession':
-        this.result(command, false);
+        this.result(command, this.gunService.auth().is);
         break;
     }
   }
@@ -83,17 +94,8 @@ export class NgGunSessionService {
       rseq: command.seq,
       result,
     };
-    this.logger.log('sending result', res);
+    // this.logger.log('sending result', res);
     this.worker.port.postMessage(res);
-  }
-
-  async loadSession() {
-    this.logger.log('loading session...');
-    const pair = await this.getSession();
-    this.session = pair;
-    this.change$.subscribe((data: any) => {
-      this[data.change as keyof NgGunSessionService] = data.value;
-    });
   }
 
   async getSession() {

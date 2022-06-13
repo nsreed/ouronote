@@ -1,10 +1,10 @@
 import {
+  EventEmitter,
   Inject,
   Injectable,
   NgZone,
   Optional,
   SkipSelf,
-  EventEmitter,
 } from '@angular/core';
 import * as Gun from 'gun';
 import { IGunChainReference } from 'gun/types/chain';
@@ -14,6 +14,7 @@ import {
   ArrayOf,
   DisallowArray,
   DisallowPrimitives,
+  IGunCryptoKeyPair,
 } from 'gun/types/types';
 import {
   from,
@@ -21,8 +22,8 @@ import {
   Observable,
   of,
   ReplaySubject,
-  Subject,
   throwError,
+  timer,
 } from 'rxjs';
 import {
   debounceTime,
@@ -31,6 +32,7 @@ import {
   map,
   mergeAll,
   mergeMap,
+  pluck,
   retryWhen,
   scan,
   shareReplay,
@@ -38,16 +40,12 @@ import {
   tap,
   timeout,
 } from 'rxjs/operators';
+import { LogService } from '../../../../log/src/lib/log.service';
 import { gunChainArray, gunPath } from '../functions/gun-utils';
 import { GunRuntimeOpts } from '../GunRuntimeOpts';
+import { NgGunSessionService } from '../ng-gun-session.service';
 import { ICertStore } from './ICertStore';
 import { LexicalQuery } from './LexicalQuery';
-import { SEA } from 'gun';
-import { LogService } from '../../../../log/src/lib/log.service';
-import { pluck } from 'rxjs/operators';
-import { timer } from 'rxjs';
-import { IGunCryptoKeyPair } from 'gun/types/types';
-import { NgGunSessionService } from '../ng-gun-session.service';
 
 export const GUN_NODE = Symbol('GUN_NODE');
 
@@ -271,10 +269,7 @@ export class GunChain<
       GunChainMeta,
     @Optional()
     @SkipSelf()
-    protected back: GunChain<any>,
-    @Optional()
-    @SkipSelf()
-    protected session?: NgGunSessionService
+    protected back: GunChain<any>
   ) {
     if (!gun) {
       this.logger.warn('Constructing gun with no options');
@@ -313,7 +308,7 @@ export class GunChain<
   protected _auth: GunAuthChain<DataType, ReferenceKey> | null = null;
 
   from<T>(gun: IGunChainReference<T>): GunChain<T> {
-    return new GunChain<T>(this.ngZone, gun as any, this, this.session);
+    return new GunChain<T>(this.ngZone, gun as any, this);
   }
 
   public get updateTime(): number {
@@ -575,8 +570,7 @@ export class GunChain<
         // TODO allow option to create a new gun instance for this auth call
         this.gun.user().recall({ sessionStorage: recall }) as any,
         this as any,
-        this as any,
-        this.session
+        this as any
       );
       // this._auth.logout$.subscribe(()=>this._auth = null);
     }
@@ -669,19 +663,19 @@ export class GunAuthChain<
     @Optional() @SkipSelf() back: GunChain,
     @Optional() @SkipSelf() protected session?: NgGunSessionService
   ) {
-    super(ngZone, gun as any, back, session);
+    super(ngZone, gun as any, back);
 
     this.is = (gun as any).is;
-    session?.session$.subscribe((p) => {
-      this.logger.log('got pair ', p?.pub);
-      if (p?.pub && p?.priv) {
-        if (this.is) {
-          this.logger.log('this.is', this.is);
-        } else {
-          this.login(p).subscribe();
-        }
-      }
-    });
+    // session?.session$.subscribe((p) => {
+    //   this.logger.log('got pair ', p?.pub);
+    //   if (p?.pub && p?.priv) {
+    //     if (this.is) {
+    //       this.logger.log('this.is', this.is);
+    //     } else {
+    //       this.login(p).subscribe();
+    //     }
+    //   }
+    // });
   }
 
   login(alias: string | IGunCryptoKeyPair, pass?: string) {

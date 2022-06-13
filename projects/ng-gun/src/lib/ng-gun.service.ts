@@ -3,11 +3,9 @@ import * as Gun from 'gun';
 import { SEA } from 'gun';
 import { IGunConstructorOptions } from 'gun/types/options';
 import { IGunCryptoKeyPair } from 'gun/types/types';
-import { map, take, mapTo } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import { GunChain } from './classes/GunChain';
 import { GunPeers } from './GunPeers';
-import { NgGunSessionService } from './ng-gun-session.service';
-import { from, of } from 'rxjs';
 
 export const GunOptions = 'gun-options';
 @Injectable()
@@ -24,14 +22,12 @@ export class NgGunService<
   constructor(
     @Inject(GunOptions)
     public readonly gunOptions: IGunConstructorOptions,
-    ngZone: NgZone,
-    session?: NgGunSessionService
+    ngZone: NgZone
   ) {
     super(
       ngZone,
       new Gun(JSON.parse(JSON.stringify(gunOptions))) as any,
-      null as any,
-      session
+      null as any
     );
   }
 
@@ -60,11 +56,7 @@ export class NgGunService<
   }
 
   async detached(pair: IGunCryptoKeyPair) {
-    const detachedService = new NgGunService(
-      this.gunOptions,
-      this.ngZone,
-      this.session
-    );
+    const detachedService = new NgGunService(this.gunOptions, this.ngZone);
     // problem: detachedService.auth() automatically recalls the session, so subsequent logins override the session itself
     const detachedUser = detachedService.auth(false); // forces auth() to instantiate user, and not recall (or hopefully store) session
     detachedUser.login(pair);

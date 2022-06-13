@@ -3,29 +3,45 @@ const KEEPALIVE_INTERVAL = 5 * 1000;
 const CLIENT_TIMEOUT = 10 * 1000;
 const CLIENT_DEAD = 20 * 1000;
 
-connections = new Set();
 pid = getPID();
+connections = new Set();
 
 function getPID() {
   return (Math.random() * 99999999).toFixed(0);
 }
 
-class SharedState {
-  _session = null;
+class ConnectionManager {
+  connections = new Set();
 
-  set session(value) {
-    this._session = value;
-  }
-  get session() {
-    return this._session;
+  constructor(workerGlobal = self) {
+    workerGlobal.onconnect = (e) => this.onConnect(e);
   }
 
-  constructor() {
-    this.init();
+  getSessionPairs() {
+    const pairs = [...this.connections.values()]
+      .filter((c) => c.sessionPair)
+      .map((c) => c.sessionPair)
+      .reduce((acc, p) => {
+        if (!acc.find(a => a.priv === p.priv)) {
+          acc.push(p);
+        }
+        return acc;
+      }, []);
+    return [...new Set(pairs).values()];
   }
 
-  async init() {
+  onConnect(connectEvent) {
+    const port = connectEvent.ports[0];
+    const connection = new Connection(port, this);
+    this.addConnection(connection);
+  }
 
+  addConnection(connection) {
+    this.connections.add(connection);
+  }
+
+  onSession(pair) {
+    dispatch("sessions", this.getSessionPairs());
   }
 }
 
@@ -35,6 +51,8 @@ class Connection {
   lastSeen = Date.now();
   keepaliveInterval;
   seq = 0;
+  sessionPair = null;
+  manager;
 
   calls = new Map();
 
@@ -42,21 +60,27 @@ class Connection {
     return Date.now() - this.lastSeen;
   }
 
-  constructor(port) {
+  constructor(port, manager) {
     this.port = port;
+    this.manager = manager;
     port.start();
-    connections.add(this);
 
     port.onmessage = (message) => this.onMessage(message);
     port.onmessageerror = (err) => this.onMessageError(err);
 
-    this.keepaliveInterval = setInterval(() => this.checkAlive(), KEEPALIVE_INTERVAL);
-    this.keepalive();
+    this.keepaliveInterval = setInterval(
+      () => this.checkAlive(),
+      KEEPALIVE_INTERVAL
+    );
+
+    this.log("welcome");
   }
 
   async checkAlive() {
     if (this.sinceLastSeen > CLIENT_DEAD) {
-      log(`client [${this.pid}] quiet for ${this.sinceLastSeen}ms, disconnecting`);
+      log(
+        `client [${this.pid}] quiet for ${this.sinceLastSeen}ms, disconnecting`
+      );
       this.destroy();
       return;
     }
@@ -66,7 +90,7 @@ class Connection {
   }
 
   async keepalive() {
-    const r = await this.command('keepalive');
+    const r = await this.command("keepalive");
     this.lastSeen = Date.now();
   }
 
@@ -75,12 +99,12 @@ class Connection {
       const c = {
         seq: this.seq++,
         cmd: name,
-        args
+        args,
       };
       this.port.postMessage(c);
 
       this.calls.set(c.seq, (result) => {
-        if (result.err) {
+        if (result.error) {
           reject(result);
         } else {
           resolve(result.result);
@@ -98,36 +122,59 @@ class Connection {
 
   onMessage({ data }) {
     this.lastSeen = Date.now();
-    const { cmd, args, seq, rseq } = data;
-    if (!cmd || (!seq && !rseq)) {
-      this.log('not a command', data);
+    if (data.cmd) {
+      this.onCommand(data);
+    }
+  }
+
+  onCommand({ cmd, args, seq, rseq }) {
+    if (seq === undefined && rseq === undefined) {
+      this.log("not a command", data);
       return;
     }
     // This is a response
     if (rseq !== undefined && rseq !== null) {
       // TODO clean up unused calls
       const p = this.calls.get(rseq);
-      if ('function' === typeof p) {
-        p(data);
+      if ("function" === typeof p) {
+        p(...(args || []));
       }
       return;
     }
 
+    const fn = this[cmd];
+
     // This is a command
-    if ('function' !== typeof this[cmd]) {
+    if ("function" !== typeof fn) {
       this.log(`cannot execute ${cmd}`);
       this.port.postMessage({
         ...data,
         rseq: seq,
-        err: 'no such command'
+        error: "no such command",
       });
       return;
     }
+
+    try {
+      const ret = this[cmd](...(args || []));
+      this.port.postMessage({
+        cmd,
+        args,
+        seq,
+        rseq: seq,
+        result: ret,
+      });
+    } catch (err) {
+      this.log("error processing command", err);
+    }
   }
 
-  onMessageError(err) {
-
+  setSession(pair) {
+    this.sessionPair = pair;
+    this.manager.onSession(pair);
   }
+
+  onMessageError(err) { }
 
   destroy() {
     clearInterval(this.keepaliveInterval);
@@ -135,64 +182,70 @@ class Connection {
   }
 }
 
-shared = new SharedState();
+const manager = new ConnectionManager(self);
+// self.onconnect = connectEvent => {
+//   const port = connectEvent.ports[0];
+//   const state = shared;
+//   const connection = new Connection(port, shared);
+
+//   const commands = {
+//     getSession: () => state.session,
+//     setSession: (pair) => {
+//       if (JSON.stringify(pair) === JSON.stringify(state.session)) {
+//         log('same session');
+//         return state.session;
+//       }
+//       state.session = pair;
+//       change('session', state.session);
+//       return state.session;
+//     }
+//   };
+//   // port.onmessage = ({ data }) => {
+//   //   cmd = data.cmd;
+//   //   args = data.args || [];
+//   //   if (Object.keys(commands).includes(cmd)) {
+//   //     const result = commands[cmd](...args); // TODO handle errors
+//   //     port.postMessage({ ...data, result, rseq: data.seq });
+//   //   } else {
+//   //     port.postMessage({ ...data, error: 'unrecognized command' });
+//   //   }
+//   // }
+//   // port.onmessageerror = (err) => {
+//   //   log('message error', JSON.stringify(err));
+//   // }
+//   // port.addEventListener('close', () => {
+//   //   log('close event');
+//   // })
+
+//   log('new connection', connections.size());
+// };
 
 function announce(msg) {
-  connections.forEach(c => c.port.postMessage(msg));
+  manager.connections.forEach((c) => c.port.postMessage(msg));
+}
+
+function dispatch(name, ...args) {
+  announce({
+    type: "event",
+    name,
+    args,
+  });
 }
 
 function change(name, value) {
   announce({
     change: name,
-    value
-  })
+    value,
+  });
 }
 
 function log(msg, ...data) {
-  msg = pid + ': ' + msg;
+  msg = pid + ": " + msg;
   announce({
     msg,
-    data: data || []
-  })
+    data: data || [],
+  });
 }
-
-self.onconnect = connectEvent => {
-  const port = connectEvent.ports[0];
-  const state = shared;
-  const connection = new Connection(port);
-
-  const commands = {
-    getSession: () => state.session,
-    setSession: (pair) => {
-      if (JSON.stringify(pair) === JSON.stringify(state.session)) {
-        log('same session');
-        return state.session;
-      }
-      state.session = pair;
-      change('session', state.session);
-      return state.session;
-    }
-  };
-  // port.onmessage = ({ data }) => {
-  //   cmd = data.cmd;
-  //   args = data.args || [];
-  //   if (Object.keys(commands).includes(cmd)) {
-  //     const result = commands[cmd](...args); // TODO handle errors
-  //     port.postMessage({ ...data, result, rseq: data.seq });
-  //   } else {
-  //     port.postMessage({ ...data, error: 'unrecognized command' });
-  //   }
-  // }
-  // port.onmessageerror = (err) => {
-  //   log('message error', JSON.stringify(err));
-  // }
-  // port.addEventListener('close', () => {
-  //   log('close event');
-  // })
-
-  log('new connection', connections.size());
-};
-
 
 // function loadGun() {
 //   if ('function' === typeof self.importScripts) {

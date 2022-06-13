@@ -67,6 +67,7 @@ const WEBRTC_LOCAL = localStorage.getItem('WEBRTC_ENABLE');
 const WEBRTC_ENABLE =
   WEBRTC_LOCAL === null ? false : !!JSON.parse(WEBRTC_LOCAL);
 
+const worker = new SharedWorker('/assets/gun-shared.worker.js');
 // if (typeof SharedWorker !== 'undefined') {
 //   const sharedWorker = new SharedWorker('/assets/gun-shared.worker.js');
 //   sharedWorker.port.start();
@@ -136,7 +137,7 @@ const WEBRTC_ENABLE =
   providers: [
     {
       provide: SharedWorker,
-      useValue: new SharedWorker('/assets/gun-shared.worker.js'),
+      useValue: worker,
     },
     { provide: MAT_COLOR_FORMATS, useValue: NGX_MAT_COLOR_FORMATS },
     {
