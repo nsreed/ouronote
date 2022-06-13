@@ -65,11 +65,14 @@ export class NgGunSessionService {
     @Optional()
     private worker: SharedWorker
   ) {
+    if (worker instanceof NoopSharedWorker) {
+      this.logger.warn('using noop service worker');
+    }
+    this.logger.name = `session ${this.pid}`;
     worker.port.start();
     sessionStorage.setItem('pid', this.pid);
-    this.logger.name = `session ${this.pid}`;
     this.log$.subscribe((data) => {
-      this.logger.log('WORKER: %s %o', data.msg, data.data);
+      this.logger.log('WORKER: %s %o', data.msg, data.data || '');
     });
     this.command$.subscribe((command: any) => this.onCommand(command));
     this.event$.subscribe((e: any) => {
