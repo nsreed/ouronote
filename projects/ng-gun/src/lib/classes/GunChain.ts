@@ -83,7 +83,7 @@ export class GunChain<
 
   public get userPair() {
     const pair = (this.gun.user() as any).is;
-    if ('object' === typeof pair.alias) {
+    if ('object' === typeof pair?.alias) {
       return pair.alias;
     }
     return pair;
@@ -184,8 +184,8 @@ export class GunChain<
       GunChainMeta
   ) {
     this._gun = value;
-    const userPair = (this.gun.user() as any).is;
-    if (!userPair) {
+
+    if (!this.userPair) {
       // TODO figure out how to handle this case
       this.logger.warn(
         'User is not logged in, certificates for %s will not be loaded.',
@@ -215,7 +215,7 @@ export class GunChain<
         );
         pathCerts$
           .pipe(
-            pluck(userPair.pub),
+            pluck(this.userPub),
             filter((c) => c !== null && c !== undefined),
             take(1)
           )

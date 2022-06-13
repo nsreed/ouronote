@@ -1,16 +1,13 @@
 /// <reference lib="webworker" />
-name = 'ouronote shared worker';
 const KEEPALIVE_INTERVAL = 5 * 1000;
 const CLIENT_TIMEOUT = 10 * 1000;
 const CLIENT_DEAD = 20 * 1000;
 
-pid = getPID();
-
 function getPID() {
   return (Math.random() * 99999999).toFixed(0);
 }
-
 class ConnectionManager {
+  pid = getPID();
   connections = new Set();
 
   constructor(workerGlobal = self) {
@@ -38,6 +35,11 @@ class ConnectionManager {
 
   addConnection(connection) {
     this.connections.add(connection);
+  }
+
+  removeConnection(connection) {
+    this.connections.delete(connection);
+    this.onSession();
   }
 
   onSession(pair) {
@@ -199,51 +201,13 @@ class Connection {
 
   destroy() {
     clearInterval(this.keepaliveInterval);
-    connections.delete(this);
+    this.manager.removeConnection(this);
   }
 }
 
 function isPair(pair) {
   return ['priv', 'pub'].every(k => Object.keys(pair).includes(k) && pair[k] !== null)
 }
-
-const manager = new ConnectionManager(self);
-// self.onconnect = connectEvent => {
-//   const port = connectEvent.ports[0];
-//   const state = shared;
-//   const connection = new Connection(port, shared);
-
-//   const commands = {
-//     getSession: () => state.session,
-//     setSession: (pair) => {
-//       if (JSON.stringify(pair) === JSON.stringify(state.session)) {
-//         log('same session');
-//         return state.session;
-//       }
-//       state.session = pair;
-//       change('session', state.session);
-//       return state.session;
-//     }
-//   };
-//   // port.onmessage = ({ data }) => {
-//   //   cmd = data.cmd;
-//   //   args = data.args || [];
-//   //   if (Object.keys(commands).includes(cmd)) {
-//   //     const result = commands[cmd](...args); // TODO handle errors
-//   //     port.postMessage({ ...data, result, rseq: data.seq });
-//   //   } else {
-//   //     port.postMessage({ ...data, error: 'unrecognized command' });
-//   //   }
-//   // }
-//   // port.onmessageerror = (err) => {
-//   //   log('message error', JSON.stringify(err));
-//   // }
-//   // port.addEventListener('close', () => {
-//   //   log('close event');
-//   // })
-
-//   log('new connection', connections.size());
-// };
 
 function announce(msg) {
   manager.connections.forEach((c) => c.port.postMessage(msg));
@@ -270,12 +234,17 @@ function change(name, value) {
 }
 
 function log(msg, ...data) {
-  msg = pid + ": " + msg;
-  announce({
+  const m = {
     msg,
-    data: data || [],
-  });
+    data
+  };
+  if (data.length === 0) {
+    delete m['data'];
+  }
+  announce(m);
 }
+
+const manager = new ConnectionManager(self);
 
 // function loadGun() {
 //   if ('function' === typeof self.importScripts) {

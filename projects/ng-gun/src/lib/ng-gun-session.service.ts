@@ -1,10 +1,11 @@
-import { Injectable, EventEmitter } from '@angular/core';
+import { Injectable, EventEmitter, Optional } from '@angular/core';
 import { fromEvent, Observable } from 'rxjs';
 import { LogService } from '../../../log/src/lib/log.service';
 import { NgGunService } from './ng-gun.service';
 import { IGunCryptoKeyPair } from 'gun/types/types';
 import { getUUID } from '../../../demo/src/app/user/vectors/edit-vector/converter-functions';
 import { ISharedWorkerState } from './types/shared-worker';
+import { NoopSharedWorker } from './classes/NoopSharedWorker';
 import {
   filter,
   take,
@@ -59,9 +60,10 @@ export class NgGunSessionService {
   ) as Observable<any>;
 
   constructor(
-    private worker: SharedWorker,
     private logger: LogService,
-    private gunService: NgGunService
+    private gunService: NgGunService,
+    @Optional()
+    private worker: SharedWorker
   ) {
     worker.port.start();
     sessionStorage.setItem('pid', this.pid);
@@ -118,7 +120,7 @@ export class NgGunSessionService {
 
   async getSessions() {
     this.logger.log('getting sessions');
-    return await this.command('getSessions');
+    return (await this.command('getSessions')) || [];
   }
 
   async setSession(pair: any) {
@@ -136,7 +138,7 @@ export class NgGunSessionService {
     });
     return await this.response$
       .pipe(
-        filter(({ data }) => data.seq === seq),
+        filter(({ data }) => data.rseq === seq),
         take(1),
         pluck('data'),
         map((v) => {

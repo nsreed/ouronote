@@ -34,7 +34,7 @@ export class GunAuthGuard implements CanActivateChild {
 
     const recalled$ = this.ngGun.auth().auth$.pipe(
       tap((ack) => console.log('auth$', ack)),
-      timeout(5000),
+      timeout(500),
       catchError((err, caught) => {
         this.router.navigateByUrl('/login');
         return of({
@@ -50,15 +50,19 @@ export class GunAuthGuard implements CanActivateChild {
 
     if (!recall || !pair) {
       this.logger.log('no session for this tab');
-      const sessions = await this.sessionService.getSessions();
+      try {
+        const sessions = await this.sessionService.getSessions();
 
-      if (sessions.length === 1) {
-        this.ngGun
-          .auth()
-          .login(sessions[0])
-          .subscribe((res) => {
-            // this.logger.log('got login response', res);
-          });
+        if (sessions.length === 1) {
+          this.ngGun
+            .auth()
+            .login(sessions[0])
+            .subscribe((res) => {
+              // this.logger.log('got login response', res);
+            });
+        }
+      } catch (err: any) {
+        this.logger.error('error retrieving sessions:', err);
       }
     }
 

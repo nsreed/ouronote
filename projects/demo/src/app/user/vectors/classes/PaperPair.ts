@@ -218,9 +218,7 @@ export class PaperPair {
     this.save$.emit();
   }
 
-  destroy() {
-    this.logger.log('destroying');
-  }
+  destroy() {}
 
   /**
    * Persists this item's JSON to GUN

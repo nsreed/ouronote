@@ -59,6 +59,7 @@ import { WelcomeComponent } from './welcome/welcome.component';
 import { MatSelectModule } from '@angular/material/select';
 import { DirectivesModule } from './directives/directives.module';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { NoopSharedWorker } from 'projects/ng-gun/src/lib/classes/NoopSharedWorker';
 
 const RADISK_LOCAL = localStorage.getItem('RADISK_ENABLE');
 const RADISK_ENABLE = RADISK_LOCAL === null ? true : !!JSON.parse(RADISK_LOCAL);
@@ -67,18 +68,12 @@ const WEBRTC_LOCAL = localStorage.getItem('WEBRTC_ENABLE');
 const WEBRTC_ENABLE =
   WEBRTC_LOCAL === null ? false : !!JSON.parse(WEBRTC_LOCAL);
 
-const worker = new SharedWorker('/assets/gun-shared.worker.js');
-// if (typeof SharedWorker !== 'undefined') {
-//   const sharedWorker = new SharedWorker('/assets/gun-shared.worker.js');
-//   sharedWorker.port.start();
-//   sharedWorker.port.onmessage = ({ data }) => {
-//     console.log('shared message');
-//     console.log(data);
-//   };
-//   sharedWorker.port.postMessage({
-//     cmd: 'getSession',
-//   });
-// }
+let worker;
+if (typeof SharedWorker !== 'undefined') {
+  worker = new SharedWorker('/assets/gun-shared.worker.js');
+} else {
+  worker = new NoopSharedWorker();
+}
 
 @NgModule({
   declarations: [
