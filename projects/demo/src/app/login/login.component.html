@@ -1,6 +1,14 @@
 <mat-progress-bar mode="indeterminate" *ngIf="submitted"></mat-progress-bar>
 <h1>ouronote</h1>
+
+
 <form [formGroup]="form">
+  <div *ngIf="sessionService.workerState.sessions.length > 0" id="Sessions">
+    Select an existing session:
+    <app-session-selector [sessions]="sessionService.workerState.sessions" (sessionSelect)="onSessionSelect($event)"></app-session-selector>
+    <p>...or log in below</p>
+    <mat-divider></mat-divider>
+  </div>
   <mat-form-field>
     <input
       id="alias"

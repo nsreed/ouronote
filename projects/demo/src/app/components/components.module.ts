@@ -26,6 +26,7 @@ import { LicenseSelectorComponent } from './license-selector/license-selector.co
 import { SystemSettingsComponent } from './system-settings/system-settings.component';
 import { LicenseComponent } from './license/license.component';
 import { LicenseDialogComponent } from './license-dialog/license-dialog.component';
+import { SessionSelectorComponent } from './session-selector/session-selector.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { LicenseDialogComponent } from './license-dialog/license-dialog.componen
     LicenseSelectorComponent,
     LicenseComponent,
     LicenseDialogComponent,
+    SessionSelectorComponent,
   ],
   imports: [
     CommonModule,
@@ -68,6 +70,7 @@ import { LicenseDialogComponent } from './license-dialog/license-dialog.componen
     LicenseFormComponent,
     LicenseSelectorComponent,
     LicenseComponent,
+    SessionSelectorComponent,
   ],
 })
 export class ComponentsModule {}

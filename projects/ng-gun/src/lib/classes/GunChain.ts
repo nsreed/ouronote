@@ -81,10 +81,14 @@ export class GunChain<
     retryPut: false,
   };
 
-  protected get userPair() {
-    return (this.gun.user() as any).is;
+  public get userPair() {
+    const pair = (this.gun.user() as any).is;
+    if ('object' === typeof pair.alias) {
+      return pair.alias;
+    }
+    return pair;
   }
-  protected get userPub() {
+  public get userPub() {
     return this.userPair.pub;
   }
   protected get myKey() {

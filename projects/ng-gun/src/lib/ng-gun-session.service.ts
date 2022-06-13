@@ -19,7 +19,9 @@ import {
 })
 export class NgGunSessionService {
   private _seq = 0;
-  workerState = {} as ISharedWorkerState;
+  workerState = {
+    sessions: [],
+  } as ISharedWorkerState;
   pid = sessionStorage.getItem('pid') ?? getUUID(this.gunService);
 
   message$ = fromEvent(this.worker.port, 'message').pipe(

@@ -12,6 +12,7 @@ import { AboutComponent } from '../components/about/about.component';
 import host from '@jsdevtools/host-environment';
 import { UserService } from '../user/user.service';
 import { NgGunSessionService } from '../../../../ng-gun/src/lib/ng-gun-session.service';
+import { LogService } from '../../../../log/src/lib/log.service';
 
 @Component({
   templateUrl: './login.component.html',
@@ -75,8 +76,10 @@ export class LoginComponent implements OnInit {
     private ngGun: NgGunService,
     router: Router,
     private dialog: MatDialog,
-    public sessionService: NgGunSessionService
+    public sessionService: NgGunSessionService,
+    private logger: LogService
   ) {
+    logger.name = 'login';
     ngGun.auth().auth$.subscribe((data) => {
       // console.log('auth data', data);
       router.navigateByUrl('/user/vectors');
@@ -133,6 +136,23 @@ export class LoginComponent implements OnInit {
       .login(this.form.value.alias, this.form.value.password)
       .subscribe((data) => {
         // console.log('login result', data);
+        if (data.err) {
+          this.error = true;
+          this.submitted = false;
+        } else {
+          this.error = undefined;
+        }
+      });
+  }
+
+  onSessionSelect(sessionPair: any) {
+    this.logger.log('selected session', sessionPair.pub);
+    this.submitted = true;
+    this.error = null;
+    this.ngGun
+      .auth()
+      .login(sessionPair)
+      .subscribe((data) => {
         if (data.err) {
           this.error = true;
           this.submitted = false;

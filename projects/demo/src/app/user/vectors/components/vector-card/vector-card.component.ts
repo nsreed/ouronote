@@ -34,13 +34,13 @@ export class VectorCardComponent implements OnInit {
   private vectorChain!: GunChain;
   vectorNode$ = new ReplaySubject<GunChain>(1);
   canEditTitle$ = this.vector$.pipe(
-    switchMap((v) =>
-      v
+    switchMap((v) => {
+      return v
         .get('certs' as never)
         .get('title')
-        .get(this.userService.user.is.pub.replace('~', ''))
-        .on()
-    ),
+        .get(this.ngGun.userPub.replace('~', ''))
+        .on();
+    }),
     map((lc) => {
       return lc !== null && lc !== undefined;
     })

@@ -1,0 +1,5 @@
+<mat-action-list>
+  <mat-list-item *ngFor="let i of sessionService.workerState.sessions" (click)="sessionSelect.emit(i)">
+    @{{i.pub|alias|async}}
+  </mat-list-item>
+</mat-action-list>
