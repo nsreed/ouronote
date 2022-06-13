@@ -124,8 +124,12 @@ class Connection {
   }
 
   log(msg, ...data) {
-    msg = `[${pid}] ${msg}`;
-    this.port.postMessage({ msg, data });
+    msg = `${msg}`;
+    const message = { msg, data };
+    if (!data || data.length === 0) {
+      delete message['data'];
+    }
+    this.port.postMessage(message);
   }
 
   onMessage({ data }) {
