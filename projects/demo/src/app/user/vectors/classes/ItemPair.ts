@@ -241,7 +241,7 @@ export class ItemPair extends PaperPair {
     this.beforeImportJSON$.subscribe(() => (this.isImportingJSON = true));
     this.afterImportJSON$.subscribe(() => (this.isImportingJSON = false));
     // TODO? ignoreInsert causing multiple local child adds to be ignored???
-    this.afterImportJSON$.subscribe(() => this.save());
+    // this.afterImportJSON$.subscribe(() => this.save()); // TODO WTF??? Was that needed?
     this.afterInsertChild$.subscribe((child) => this.onLocalChild(child));
     // this.logger.timeEnd('setup methods');
 

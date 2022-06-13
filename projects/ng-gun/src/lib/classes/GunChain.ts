@@ -162,7 +162,7 @@ export class GunChain<
   get userCertificate$(): Observable<any> {
     if (!this._userCertificate$) {
       this._userCertificate$ = this.pathCertificates$.pipe(
-        tap((certs) => console.log('looking for user in ', certs)),
+        // tap((certs) => console.log('looking for user in ', certs)),
         pluck(this.userPub),
         shareReplay(1)
       );
@@ -195,7 +195,7 @@ export class GunChain<
     }
 
     if (this.isNested) {
-      this.logger.verbose('foreign key', this.path.join(' > '));
+      // this.logger.verbose('foreign key', this.path.join(' > '));
 
       if (this.isSubRoot) {
         this.record?.get('certs').open((certs: any) => {
@@ -203,13 +203,14 @@ export class GunChain<
         });
       } else {
         const pathCerts$ = this.closestRoot.certificates$.pipe(
-          tap((store) =>
-            this.logger.verbose(
-              'closestRoot cert store looking for',
-              this.keyInRecord,
-              store
-            )
-          ),
+          // tap((store) =>
+          //   this.logger.verbose(
+          //     'closestRoot cert store looking for',
+          //     this.keyInRecord,
+          //     'in: ',
+          //     Object.keys(store).join(', ')
+          //   )
+          // ),
           pluck(this.keyInRecord),
           filter((pathStore) => pathStore !== null && pathStore !== undefined)
         );
@@ -220,7 +221,7 @@ export class GunChain<
             take(1)
           )
           .subscribe((store: any) => {
-            this.logger.verbose('user certificate', store);
+            // this.logger.verbose('user certificate', store);
             this.certificate = store;
           });
         pathCerts$
