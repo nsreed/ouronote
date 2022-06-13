@@ -79,6 +79,7 @@ export class LogService {
     if (this.name !== 'root' && !parent) {
       this.parent = LogService.root;
     }
+    this.updatePiping();
   }
   private static longestName = 14;
   private static timers = new Map<string, Stopwatch>();
@@ -120,15 +121,54 @@ export class LogService {
   level: LogLevel = LogLevel.INFO;
 
   /** level to be echoed */
-  outLevel = LogLevel.INFO;
+  private _outLevel = JSON.parse(localStorage.getItem('log.outLevel') || '1');
+  public get outLevel() {
+    return this._outLevel;
+  }
+  public set outLevel(value) {
+    this._outLevel = value;
+    localStorage.setItem('log.outLevel', JSON.stringify(value));
+    this.updatePiping();
+  }
+
+  private _consoleOnly =
+    JSON.parse(localStorage.getItem('log.consoleOnly') || 'false') || false;
+  public get consoleOnly() {
+    return this._consoleOnly;
+  }
+  public set consoleOnly(value) {
+    this._consoleOnly = value;
+    localStorage.setItem('log.consoleOnly', JSON.stringify(value));
+    this.updatePiping();
+  }
 
   private supplementals = new Map<string, LogService>();
+
+  verbose = this.outVerbose;
+  log = this.outLog;
+  warn = this.outWarn;
+  error = this.outError;
 
   static getLogger(name: string) {
     return new LogService(name, LogService.root);
   }
 
-  verbose(message: string, ...args: any[]) {
+  updatePiping() {
+    const noop = () => {};
+    ['verbose', 'log', 'warn', 'error'].forEach((l: string, i) => {
+      const name = !this.consoleOnly
+        ? `out${l.slice(0, 1).toUpperCase()}${l.slice(1)}`
+        : l;
+
+      const consoleFn = (console as any)[l === 'verbose' ? 'info' : l];
+      const outFn = (...args: any[]) => (this as any)[name](...args);
+
+      (this as any)[l] =
+        this.outLevel <= i ? (!this.consoleOnly ? outFn : consoleFn) : noop;
+    });
+  }
+
+  private outVerbose(message: string, ...args: any[]) {
     if (this.level > LogLevel.VERBOSE) {
       return;
     }
@@ -136,7 +176,7 @@ export class LogService {
     this._out$.emit(packed);
   }
 
-  log(message: string, ...args: any[]) {
+  private outLog(message: string, ...args: any[]) {
     if (this.level > LogLevel.INFO) {
       return;
     }
@@ -144,7 +184,7 @@ export class LogService {
     this._out$.emit(packed);
   }
 
-  warn(message: string, ...args: any[]) {
+  private outWarn(message: string, ...args: any[]) {
     if (this.level > LogLevel.WARN) {
       return;
     }
@@ -152,23 +192,12 @@ export class LogService {
     this._out$.emit(packed);
   }
 
-  timeEnd(label: string, threshold = 1) {
-    const t = LogService.timers.get(label) as Stopwatch;
-    t.end();
-    const prev: number = LogService.elapsed.get(label) || 0;
-    LogService.elapsed.set(label, prev + t.elapsed);
-    if (t.elapsed > threshold) {
-      console.log('%s %f (%f total)', label, t.elapsed, prev + t.elapsed);
+  private outError(message: string, ...args: any[]) {
+    if (this.level > LogLevel.ERROR) {
+      return;
     }
-    return t.elapsed;
-  }
-
-  time(label: string) {
-    if (!LogService.timers.has(label)) {
-      LogService.timers.set(label, new Stopwatch(label));
-    }
-    LogService.timers.get(label)?.start();
-    return LogService.timers.get(label) as Stopwatch;
+    const packed = this.buildMessage(LogLevel.ERROR, message, args);
+    this._out$.emit(packed);
   }
 
   monitor(ctx: any, name: string, threshold = 1) {
@@ -183,12 +212,23 @@ export class LogService {
     });
   }
 
-  error(message: string, ...args: any[]) {
-    if (this.level > LogLevel.ERROR) {
-      return;
+  time(label: string) {
+    if (!LogService.timers.has(label)) {
+      LogService.timers.set(label, new Stopwatch(label));
     }
-    const packed = this.buildMessage(LogLevel.ERROR, message, args);
-    this._out$.emit(packed);
+    LogService.timers.get(label)?.start();
+    return LogService.timers.get(label) as Stopwatch;
+  }
+
+  timeEnd(label: string, threshold = 1) {
+    const t = LogService.timers.get(label) as Stopwatch;
+    t.end();
+    const prev: number = LogService.elapsed.get(label) || 0;
+    LogService.elapsed.set(label, prev + t.elapsed);
+    if (t.elapsed > threshold) {
+      console.log('%s %f (%f total)', label, t.elapsed, prev + t.elapsed);
+    }
+    return t.elapsed;
   }
 
   supplemental(name: string): LogService {
