@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { AboutComponent } from '../components/about/about.component';
 import host from '@jsdevtools/host-environment';
 import { UserService } from '../user/user.service';
+import { NgGunSessionService } from '../../../../ng-gun/src/lib/ng-gun-session.service';
 
 @Component({
   templateUrl: './login.component.html',
@@ -73,7 +74,8 @@ export class LoginComponent implements OnInit {
     private fb: FormBuilder,
     private ngGun: NgGunService,
     router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    public sessionService: NgGunSessionService
   ) {
     ngGun.auth().auth$.subscribe((data) => {
       // console.log('auth data', data);

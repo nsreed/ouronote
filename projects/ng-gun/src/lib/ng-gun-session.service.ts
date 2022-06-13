@@ -2,6 +2,9 @@ import { Injectable, EventEmitter } from '@angular/core';
 import { fromEvent, Observable } from 'rxjs';
 import { LogService } from '../../../log/src/lib/log.service';
 import { NgGunService } from './ng-gun.service';
+import { IGunCryptoKeyPair } from 'gun/types/types';
+import { getUUID } from '../../../demo/src/app/user/vectors/edit-vector/converter-functions';
+import { ISharedWorkerState } from './types/shared-worker';
 import {
   filter,
   take,
@@ -16,6 +19,8 @@ import {
 })
 export class NgGunSessionService {
   private _seq = 0;
+  workerState = {} as ISharedWorkerState;
+  pid = sessionStorage.getItem('pid') ?? getUUID(this.gunService);
 
   message$ = fromEvent(this.worker.port, 'message').pipe(
     shareReplay(1)
@@ -57,15 +62,22 @@ export class NgGunSessionService {
     private gunService: NgGunService
   ) {
     worker.port.start();
+    sessionStorage.setItem('pid', this.pid);
+    this.logger.name = `session ${this.pid}`;
     this.log$.subscribe((data) => {
       this.logger.log('WORKER: %s %o', data.msg, data.data);
     });
     this.command$.subscribe((command: any) => this.onCommand(command));
     this.event$.subscribe((e: any) => {
-      this.logger.log('got event', e);
+      // this.logger.log('got event', e);
+    });
+    this.change$.subscribe((change: any) => {
+      // this.logger.log('got change event', change);
+      (this.workerState as any)[change.change] = change.value;
     });
     this.gunService.auth(true).auth$.subscribe((a) => {
       this.logger.log('got auth event', a);
+      this.setSession(a.sea);
     });
     this.init();
   }
@@ -74,7 +86,6 @@ export class NgGunSessionService {
     const is = this.gunService.auth().is;
     const pair = is?.priv ? is : is?.alias;
     const response = await this.setSession(pair);
-    this.logger.log('session response', response);
   }
 
   async onCommand(command: any) {
@@ -103,6 +114,11 @@ export class NgGunSessionService {
     return await this.command('getSession');
   }
 
+  async getSessions() {
+    this.logger.log('getting sessions');
+    return await this.command('getSessions');
+  }
+
   async setSession(pair: any) {
     this.logger.log('setSession', pair);
     return await this.command('setSession', pair);
@@ -111,6 +127,7 @@ export class NgGunSessionService {
   async command(cmd: string, ...args: any[]) {
     const seq = this.getSeq();
     this.worker.port.postMessage({
+      pid: this.pid,
       cmd,
       seq,
       args,
@@ -122,7 +139,7 @@ export class NgGunSessionService {
         pluck('data'),
         map((v) => {
           if (v.error) {
-            throw new Error(v.error);
+            this.logger.error('error encounted in worker', v.error);
           } else {
             return v.result;
           }

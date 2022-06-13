@@ -1,10 +1,10 @@
 /// <reference lib="webworker" />
+name = 'ouronote shared worker';
 const KEEPALIVE_INTERVAL = 5 * 1000;
 const CLIENT_TIMEOUT = 10 * 1000;
 const CLIENT_DEAD = 20 * 1000;
 
 pid = getPID();
-connections = new Set();
 
 function getPID() {
   return (Math.random() * 99999999).toFixed(0);
@@ -17,7 +17,7 @@ class ConnectionManager {
     workerGlobal.onconnect = (e) => this.onConnect(e);
   }
 
-  getSessionPairs() {
+  getSessions() {
     const pairs = [...this.connections.values()]
       .filter((c) => c.sessionPair)
       .map((c) => c.sessionPair)
@@ -41,7 +41,9 @@ class ConnectionManager {
   }
 
   onSession(pair) {
-    dispatch("sessions", this.getSessionPairs());
+    const pairs = this.getSessions();
+    dispatch("sessions", { sessions: pairs });
+    change('sessions', pairs);
   }
 }
 
@@ -104,10 +106,14 @@ class Connection {
       this.port.postMessage(c);
 
       this.calls.set(c.seq, (result) => {
-        if (result.error) {
-          reject(result);
+        if (result) {
+          if (result.error) {
+            reject(result);
+          } else {
+            resolve(result.result);
+          }
         } else {
-          resolve(result.result);
+          resolve();
         }
         this.calls.delete(c.seq);
       });
@@ -137,6 +143,7 @@ class Connection {
       // TODO clean up unused calls
       const p = this.calls.get(rseq);
       if ("function" === typeof p) {
+        this.calls.delete(rseq);
         p(...(args || []));
       }
       return;
@@ -166,12 +173,26 @@ class Connection {
       });
     } catch (err) {
       this.log("error processing command", err);
+      this.port.postMessage({
+        cmd,
+        args,
+        seq,
+        rseq: seq,
+        error: err.message,
+      })
     }
   }
 
   setSession(pair) {
+    if (pair && !isPair(pair)) {
+      throw new Error('Invalid session pair given');
+    }
     this.sessionPair = pair;
     this.manager.onSession(pair);
+  }
+
+  getSessions() {
+    return this.manager.getSessions();
   }
 
   onMessageError(err) { }
@@ -180,6 +201,10 @@ class Connection {
     clearInterval(this.keepaliveInterval);
     connections.delete(this);
   }
+}
+
+function isPair(pair) {
+  return ['priv', 'pub'].every(k => Object.keys(pair).includes(k) && pair[k] !== null)
 }
 
 const manager = new ConnectionManager(self);
@@ -224,12 +249,17 @@ function announce(msg) {
   manager.connections.forEach((c) => c.port.postMessage(msg));
 }
 
-function dispatch(name, ...args) {
-  announce({
+function dispatch(name, data = {}, ...args) {
+  const e = {
     type: "event",
     name,
+    ...data,
     args,
-  });
+  };
+  if (args.length === 0) {
+    delete e['args'];
+  }
+  announce(e);
 }
 
 function change(name, value) {
