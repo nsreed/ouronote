@@ -30,15 +30,26 @@ export class NgGunSessionService {
   message$ = fromEvent(this.worker.port, 'message').pipe(
     shareReplay(1)
   ) as Observable<any>;
-
   response$ = this.message$.pipe(
-    filter(({ data }) => Object.keys(data).includes('seq'))
+    filter(({ data }) => Object.keys(data).includes('rseq'))
   );
   announce$ = this.message$.pipe(
-    filter(({ data }) => !Object.keys(data).includes('seq'))
+    filter(({ data }) => !Object.keys(data).includes('rseq'))
+  );
+  command$ = this.announce$.pipe(
+    filter(
+      ({ data }) =>
+        Object.keys(data).includes('cmd') &&
+        (data.seq !== undefined || data.rseq !== undefined)
+    ),
+    pluck('data')
   );
   change$ = this.announce$.pipe(
     filter(({ data }) => data.change),
+    pluck('data')
+  );
+  log$ = this.announce$.pipe(
+    filter(({ data }) => data.msg),
     pluck('data')
   );
 
@@ -47,11 +58,37 @@ export class NgGunSessionService {
   ) as Observable<any>;
 
   constructor(private worker: SharedWorker, private logger: LogService) {
+    this.log$.subscribe((data) => {
+      this.logger.log('WORKER: %s %o', data.msg, data.data);
+    });
+    this.command$.subscribe((command: any) => this.onCommand(command));
     worker.port.start();
     this.loadSession();
   }
 
+  async onCommand(command: any) {
+    switch (command.cmd) {
+      case 'keepalive':
+        this.result(command, true);
+        break;
+      case 'getSession':
+        this.result(command, false);
+        break;
+    }
+  }
+
+  async result(command: any, result: any) {
+    const res = {
+      ...command,
+      rseq: command.seq,
+      result,
+    };
+    this.logger.log('sending result', res);
+    this.worker.port.postMessage(res);
+  }
+
   async loadSession() {
+    this.logger.log('loading session...');
     const pair = await this.getSession();
     this.session = pair;
     this.change$.subscribe((data: any) => {
@@ -60,15 +97,16 @@ export class NgGunSessionService {
   }
 
   async getSession() {
-    return await this.postMessage('getSession');
+    this.logger.log('getting session');
+    return await this.command('getSession');
   }
 
   async setSession(pair: any) {
     this.logger.log('setSession', pair);
-    return await this.postMessage('setSession', pair);
+    return await this.command('setSession', pair);
   }
 
-  async postMessage(cmd: string, ...args: any[]) {
+  async command(cmd: string, ...args: any[]) {
     const seq = this.getSeq();
     this.worker.port.postMessage({
       cmd,
