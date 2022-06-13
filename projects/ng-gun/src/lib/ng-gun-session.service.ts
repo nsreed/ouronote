@@ -78,7 +78,7 @@ export class NgGunSessionService {
       (this.workerState as any)[change.change] = change.value;
     });
     this.gunService.auth(true).auth$.subscribe((a) => {
-      this.logger.log('got auth event', a);
+      // this.logger.log('got auth event', a);
       this.setSession(a.sea);
     });
     this.init();
@@ -122,7 +122,7 @@ export class NgGunSessionService {
   }
 
   async setSession(pair: any) {
-    this.logger.log('setSession', pair);
+    // this.logger.log('setSession', pair);
     return await this.command('setSession', pair);
   }
 

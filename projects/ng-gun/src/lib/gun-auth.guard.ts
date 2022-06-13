@@ -10,6 +10,7 @@ import { catchError, filter, map, take, tap, timeout } from 'rxjs/operators';
 import { NgGunService } from './ng-gun.service';
 import { Router } from '@angular/router';
 import { LogService } from '../../../log/src/lib/log.service';
+import { NgGunSessionService } from './ng-gun-session.service';
 
 @Injectable({
   providedIn: 'root',
@@ -18,25 +19,23 @@ export class GunAuthGuard implements CanActivateChild {
   constructor(
     private ngGun: NgGunService,
     private router: Router,
-    private logger: LogService
+    private logger: LogService,
+    private sessionService: NgGunSessionService
   ) {}
   sessionOrRedirect() {}
-  canActivateChild(
+  async canActivateChild(
     childRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ):
-    | Observable<boolean | UrlTree>
-    | Promise<boolean | UrlTree>
-    | boolean
-    | UrlTree {
+  ): Promise<any> {
     if (this.ngGun.auth().is) {
       return true;
     }
-    return this.ngGun.auth().auth$.pipe(
+    sessionStorage.setItem('redirect', state.url);
+
+    const recalled$ = this.ngGun.auth().auth$.pipe(
+      tap((ack) => console.log('auth$', ack)),
       timeout(5000),
       catchError((err, caught) => {
-        sessionStorage.setItem('redirect', state.url);
-
         this.router.navigateByUrl('/login');
         return of({
           err: 'Session Recall Timeout',
@@ -45,5 +44,24 @@ export class GunAuthGuard implements CanActivateChild {
       filter((ack) => !ack.err),
       take(1)
     );
+
+    const recall = sessionStorage.getItem('recall');
+    const pair = sessionStorage.getItem('pair');
+
+    if (!recall || !pair) {
+      this.logger.log('no session for this tab');
+      const sessions = await this.sessionService.getSessions();
+
+      if (sessions.length === 1) {
+        this.ngGun
+          .auth()
+          .login(sessions[0])
+          .subscribe((res) => {
+            // this.logger.log('got login response', res);
+          });
+      }
+    }
+
+    return recalled$.toPromise();
   }
 }
