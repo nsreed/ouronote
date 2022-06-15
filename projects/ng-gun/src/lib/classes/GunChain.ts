@@ -126,7 +126,7 @@ export class GunChain<
     }
     return this._pathFromRecord;
   }
-  get keyInRecord() {
+  get keyInRecord(): string {
     return this.pathFromRecord[1];
   }
   get isNested() {
@@ -212,12 +212,14 @@ export class GunChain<
           //   )
           // ),
           pluck(this.keyInRecord),
-          filter((pathStore) => pathStore !== null && pathStore !== undefined)
+          filter(
+            (pathStore: any) => pathStore !== null && pathStore !== undefined
+          )
         );
         pathCerts$
           .pipe(
             pluck(this.userPub),
-            filter((c) => c !== null && c !== undefined),
+            filter((c: any) => c !== null && c !== undefined),
             take(1)
           )
           .subscribe((store: any) => {
@@ -227,7 +229,7 @@ export class GunChain<
         pathCerts$
           .pipe(
             pluck('*'),
-            filter((c) => c !== null && c !== undefined),
+            filter((c: any) => c !== null && c !== undefined),
             take(1)
           )
           .subscribe((store: any) => {
@@ -303,7 +305,7 @@ export class GunChain<
   }
   public set certificates(value: ICertStore) {
     if (value !== this._certificates) {
-      this.logger.verbose('loaded certificate store', value);
+      // this.logger.verbose('loaded certificate store', value);
       this._certificates = value;
       this.certificates$.next(value);
     }
@@ -420,7 +422,7 @@ export class GunChain<
   load() {
     // return this.from((this.gun as any).load((d: any) => d) as any);
     return fromEventPattern(
-      (handler) => {
+      (handler: (arg0: any) => void) => {
         const signal = { stopped: false };
         (this.gun as any).load((data: any) => {
           const converted = data;
@@ -430,7 +432,7 @@ export class GunChain<
         });
         return signal;
       },
-      (handler, signal) => {
+      (handler: any, signal: { stopped: boolean }) => {
         signal.stopped = true;
       }
     ).pipe(take(1));
@@ -439,7 +441,7 @@ export class GunChain<
   open() {
     // return this.from((this.gun as any).load((d: any) => d) as any);
     return fromEventPattern(
-      (handler) => {
+      (handler: (arg0: any) => void) => {
         const signal = { stopped: false };
         (this.gun as any).open((data: any) => {
           const converted = data;
@@ -449,7 +451,7 @@ export class GunChain<
         });
         return signal;
       },
-      (handler, signal) => {
+      (handler: any, signal: { stopped: boolean }) => {
         signal.stopped = true;
       }
     ).pipe(debounceTime(25));
@@ -471,7 +473,7 @@ export class GunChain<
         }
         return acc;
       }, {} as DataType[]),
-      map((v) =>
+      map((v: any) =>
         options?.includeNulls
           ? v
           : Object.values(v).filter((ov) => ov !== undefined)
@@ -481,7 +483,7 @@ export class GunChain<
   }
 
   not() {
-    return fromEventPattern((handler) => {
+    return fromEventPattern((handler: (arg0: ReferenceKey) => void) => {
       const signal = { stopped: false };
       if (this.gun.not) {
         this.gun.not((key: ReferenceKey) => {
@@ -495,7 +497,7 @@ export class GunChain<
     options?: GunChainCallbackOptions
   ): Observable<AlwaysDisallowedType<ArrayAsRecord<DataType>>> {
     return fromEventPattern(
-      (handler) => {
+      (handler: any) => {
         const signal = { stopped: false };
         this.gun.on(
           (
@@ -528,7 +530,7 @@ export class GunChain<
         );
         return signal;
       },
-      (handler, signal) => {
+      (handler: any, signal: { stopped: boolean }) => {
         signal.stopped = true;
       }
     );
@@ -536,7 +538,7 @@ export class GunChain<
 
   once() {
     return fromEventPattern(
-      (handler) => {
+      (handler: any) => {
         const signal = { stopped: false };
         this.gun.once(
           (
@@ -561,7 +563,7 @@ export class GunChain<
         );
         return signal;
       },
-      (handler, signal) => {
+      (handler: any, signal: { stopped: boolean }) => {
         signal.stopped = true;
       }
     ).pipe(take(1));
@@ -592,9 +594,9 @@ export class GunChain<
 
   onEvent(event: string, node = this.gun): Observable<any> {
     if (!this.sources.has(event)) {
-      const source = fromEventPattern((handler) => {
+      const source = fromEventPattern((handler: (...arg0: any[]) => void) => {
         // this.logger.log('add handler');
-        (node as any).on(event, (...args: any) => {
+        (node as any).on(event, (...args: any[]) => {
           this.ngZone.run(() => {
             handler(...args);
           });
@@ -610,6 +612,18 @@ export class GunChain<
       ? (Gun.node.soul(key) as any)
       : key;
   }
+}
+
+interface AuthAck {
+  put: any;
+  $: any;
+  err: any;
+  root: {
+    user: {
+      is: any;
+    };
+  };
+  sea: any;
 }
 
 /** Represents a top-level authenticated node (user or key pair) */
@@ -641,7 +655,7 @@ export class GunAuthChain<
   }
   alias!: string;
   auth$ = this.root.onEvent('auth').pipe(
-    tap((ack) => {
+    tap((ack: AuthAck) => {
       this.logger.log(
         'authentication event. put present? %s; is gun node? %s',
         ack.put ? 'yes' : 'no',
@@ -685,15 +699,15 @@ export class GunAuthChain<
 
   login(alias: string | IGunCryptoKeyPair, pass?: string) {
     const auth$ = this.root.onEvent('auth').pipe(
-      filter((ack) => !ack.err),
-      filter((ack) => {
+      filter((ack: AuthAck) => !ack.err),
+      filter((ack: AuthAck) => {
         return ack.put.alias === alias;
       }),
       take(1)
     );
 
     const login$ = fromEventPattern(
-      (handler) => {
+      (handler: (arg0: any) => void) => {
         const signal = { stopped: false };
         const handleAck = (ack: any) => {
           this.ngZone.run(() => {
@@ -707,12 +721,12 @@ export class GunAuthChain<
         }
         return signal;
       },
-      (handler, signal) => {
+      (handler: any, signal: { stopped: boolean }) => {
         signal.stopped = true;
       }
     ).pipe(
       mergeMap((ack: any) => (ack.wait ? throwError(new Error(ack)) : of(ack))),
-      retryWhen((errors) => errors.pipe(delay(1000), take(10)))
+      retryWhen((errors: any) => errors.pipe(delay(1000), take(10)))
     );
     const loginOrAuth$ = from([auth$, login$]).pipe(
       mergeAll(),
@@ -725,7 +739,7 @@ export class GunAuthChain<
 
   create(alias: string, pass: string) {
     const auth$ = this.root.onEvent('auth').pipe(
-      filter((ack) => {
+      filter((ack: { put: { alias: string } }) => {
         return ack.put.alias === alias;
       })
     );

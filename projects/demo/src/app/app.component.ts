@@ -1,26 +1,19 @@
-import { Component, Optional, OnInit } from '@angular/core';
+import { Component, OnInit, Optional } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import {
-  ActivatedRoute,
-  ChildActivationEnd,
-  NavigationEnd,
-  Router,
-} from '@angular/router';
-import { ClipboardService } from 'ngx-clipboard';
-import { filter } from 'rxjs/operators';
-import { LogMessage, LogService } from '../../../log/src/lib/log.service';
-import { NgGunService } from '../../../ng-gun/src/lib/ng-gun.service';
-import { VERSION } from '../environments/version';
-import { GunPeersComponent } from './components/gun-peers/gun-peers.component';
-import { DiagnosticsService } from './diagnostics.service';
-import { User } from './user/model';
-import { AboutComponent } from './components/about/about.component';
-import { GunRadImporterService } from './services/gun-rad-importer.service';
-import { GunWebrtcImporterService } from './services/gun-webrtc-importer.service';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
-import { OURONOTE_DEFAULT_TITLE } from './constants';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ClipboardService } from 'ngx-clipboard';
+import { LogMessage, LogService } from '../../../log/src/lib/log.service';
 import { NgGunSessionService } from '../../../ng-gun/src/lib/ng-gun-session.service';
+import { NgGunService } from '../../../ng-gun/src/lib/ng-gun.service';
+import { AboutComponent } from './components/about/about.component';
+import { GunPeersComponent } from './components/gun-peers/gun-peers.component';
+import { OURONOTE_DEFAULT_TITLE } from './constants';
+import { DiagnosticsService } from './diagnostics.service';
+import { GunRadImporterService } from './services/gun-rad-importer.service';
+import { GunWebrtcImporterService } from './services/gun-webrtc-importer.service';
+import { User } from './user/model';
 
 @Component({
   selector: 'app-root',

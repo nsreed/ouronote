@@ -77,7 +77,7 @@ export class ItemPair extends PaperPair {
       }
       return newChild;
     }),
-    bufferTime(1000),
+    bufferTime(200),
     filter((children) => children.length > 0),
     shareReplay(1)
   );
@@ -258,7 +258,7 @@ export class ItemPair extends PaperPair {
       .pipe(skip(1))
       .subscribe((previousSibling) => {
         // previousSibling = previousSibling[0];
-        this.logger.verbose('got previousSibling', previousSibling);
+        // this.logger.verbose('got previousSibling', previousSibling);
         if (!previousSibling) {
           this.item.sendToBack();
           return;
@@ -272,7 +272,7 @@ export class ItemPair extends PaperPair {
         });
 
         if (prevItem) {
-          this.logger.verbose('found previousSibling', prevItem);
+          // this.logger.verbose('found previousSibling', prevItem);
           this.item.insertAbove(prevItem);
         } else {
           // This might not be a problem, just logging
@@ -372,7 +372,7 @@ export class ItemPair extends PaperPair {
       return;
     }
 
-    this.logger.verbose('creating new child pair');
+    // this.logger.verbose('creating new child pair');
 
     let childNode;
     if (!childObj.data.soul) {
@@ -489,7 +489,7 @@ export class ItemPair extends PaperPair {
       // delete this.childCache[key];
     } else if (json && !child) {
       // child was added
-      this.logger.verbose(`child ${key} was added.`);
+      // this.logger.verbose(`child ${key} was added.`);
 
       const childGun = this.children.get(key);
       const childJSON = { ...json }; // TODO this is slow???

@@ -36,10 +36,6 @@ export class NgSeaService {
     );
   }
 
-  certifySelf(pair: any) {
-    return from(this.SEA.certify(pair, '*', pair));
-  }
-
   pair() {
     return from(this.SEA.pair(() => {}));
   }
