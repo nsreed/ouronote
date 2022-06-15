@@ -5,14 +5,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "chrome",
+      "type": "pwa-chrome",
       "request": "launch",
       "name": "ouronote - chrome",
       "url": "http://localhost:4200",
-      "webRoot": "${workspaceFolder}",
-      "linux": {
-        "runtimeExecutable": "/snap/bin/chromium"
-      }
+      "webRoot": "${workspaceFolder}"
     },
     {
       "name": "Attach to Chrome",
