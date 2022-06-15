@@ -347,24 +347,9 @@ export class EditVectorComponent
                 raster.onError = rej;
               })
           );
-        console.log('loads', loads);
         await Promise.all(loads);
-        console.log('all loaded');
-
-        // rasters.forEach((raster) => {
-        //   console.log('inserting', raster);
-        //   (this.project.activeLayer as any).insertChild(
-        //     this.project.activeLayer.children.length,
-        //     raster
-        //   );
-        // });
-        // console.log('all inserted');
-
         layoutVertical(rasters, this.project.view.center);
-
-        console.log('layout complete');
         rasters.forEach((raster: any) => {
-          // raster.parent.pair.onLocalChild(raster);
           raster.pair.doSave();
         });
 
