@@ -60,7 +60,8 @@
               "projects/demo/src/styles.scss"
             ],
             "scripts": [
-              "projects/demo/src/assets/gun-shared.worker.js"
+              "projects/demo/src/assets/gun-shared.worker.js",
+              "projects/demo/src/assets/gun-session.worker.js"
             ],
             "allowedCommonJsDependencies": [
               "aspect-ts",
@@ -74,8 +75,7 @@
             "buildOptimizer": false,
             "sourceMap": true,
             "optimization": false,
-            "namedChunks": true,
-            "webWorkerTsConfig": "projects/demo/tsconfig.worker.json"
+            "namedChunks": true
           },
           "configurations": {
             "production": {
@@ -139,8 +139,7 @@
             "styles": [
               "projects/demo/src/styles.scss"
             ],
-            "scripts": [],
-            "webWorkerTsConfig": "projects/demo/tsconfig.worker.json"
+            "scripts": []
           }
         },
         "e2e": {
