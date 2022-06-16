@@ -71,9 +71,9 @@ export class NgGunSessionService {
     this.logger.name = `session ${this.pid}`;
     worker.port.start();
     sessionStorage.setItem('pid', this.pid);
-    this.log$.subscribe((data) => {
-      this.logger.log('WORKER: %s %o', data.msg, data.data || '');
-    });
+    // this.log$.subscribe((data) => {
+    //   this.logger.log('WORKER: %s %o', data.msg, data.data || '');
+    // });
     this.command$.subscribe((command: any) => this.onCommand(command));
     this.event$.subscribe((e: any) => {
       // this.logger.log('got event', e);

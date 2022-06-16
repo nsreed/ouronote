@@ -164,7 +164,7 @@ export class LogService {
       const outFn = (...args: any[]) => (this as any)[name](...args);
 
       (this as any)[l] =
-        this.outLevel <= i ? (!this.consoleOnly ? outFn : consoleFn) : noop;
+        this.outLevel < i ? (!this.consoleOnly ? outFn : consoleFn) : noop;
     });
   }
 

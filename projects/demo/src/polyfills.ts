@@ -68,6 +68,8 @@ import 'gun/lib/time';
 import 'gun/lib/not';
 import 'gun/lib/unset';
 
+// import 'gun/lib/webrtc';
+
 /* PAPER.JS OVERRIDES
  * Injects rxjs-style property change observables into paper.js
  */
@@ -77,7 +79,9 @@ import 'gun/lib/unset';
 import * as paper from 'paper';
 import { EventEmitter } from '@angular/core';
 import { after$ } from './app/functions/aspect-rx';
+import { GunSharedWorkerPlugin } from 'projects/ng-gun/src/lib/classes/GunSharedWorkerPlugin';
 
+GunSharedWorkerPlugin.register((window as any).Gun);
 const IGNORED_PROPS: string[] = ['fullySelected', 'selected', 'selection'];
 const BUBBLE_PROPS: string[] = ['fullySelected', 'selected', 'selection'];
 const prototypeOwnProperties = {} as any;

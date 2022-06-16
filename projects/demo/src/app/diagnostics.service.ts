@@ -1,65 +1,129 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { NgGunService } from '../../../ng-gun/src/lib/ng-gun.service';
 import { MatDialog } from '@angular/material/dialog';
 import { GunPeer } from 'projects/ng-gun/src/public-api';
-import { take, shareReplay, map, mapTo, filter } from 'rxjs/operators';
+import {
+  take,
+  shareReplay,
+  map,
+  mapTo,
+  filter,
+  delay,
+  timeout,
+} from 'rxjs/operators';
 import { BugReportComponent } from './components/bug-report/bug-report.component';
 import { LogMessage, LogService } from '../../../log/src/lib/log.service';
-import { timer } from 'rxjs';
+import { timer, Observable, of } from 'rxjs';
 import { CAPABILITIES } from './system.service';
 import { DamService } from '../../../ng-gun/src/lib/dam.service';
+import { HttpClient } from '@angular/common/http';
+import { distinct, bufferTime } from 'rxjs/operators';
+
+const TIMEOUT = 60 * 1000;
+const POLL = 10 * 1000;
+const TRYEVERY = 30 * 1000;
 
 @Injectable({
   providedIn: 'root',
 })
 export class DiagnosticsService {
   messages: LogMessage[] = [];
+  tryLater: { [key: string]: any } = {};
+
+  later$ = new EventEmitter();
+
   constructor(
     private ngGun: NgGunService,
     private dialog: MatDialog,
     private logger: LogService,
-    private dam: DamService
+    private dam: DamService,
+    private http: HttpClient
   ) {
     LogService.buffer$.subscribe((buff: LogMessage[]) => {
       // console.log('got message', buff);
       this.messages = buff;
     });
-    this.disconnectedPeers$
+    this.later$.pipe(bufferTime(1000)).subscribe((peers) => {
+      peers.forEach((peer) => {
+        if (peer.wire?.readyState) {
+          this.logger.log('RECONNECTED DIFFERENTLY?');
+          return;
+        }
+        if (peer.onOpen) {
+          return;
+        }
+        this.dam.connect(peer);
+        timer(TIMEOUT).subscribe(() => {
+          if (peer.wire?.readyState === 1) {
+            this.logger.log('RECONNECTED!!!!!!!!!!!!!!!!!!');
+            return;
+          }
+          if (!peer.wire) {
+            this.logger.log('no wire???');
+            return;
+          }
+          if (peer.wire?.readyState === 0) {
+            this.logger.log('no luck');
+            return;
+          }
+          this.later$.emit(peer);
+        });
+      });
+    });
+    this.disconnected$
       .pipe(filter((peers) => peers.length > 0))
       .subscribe((peers) => {
-        this.logger.log('attempting to reconnect peers', peers);
-        peers.forEach((peer) => this.dam.connect(peer));
-        this.ngGun.auth().get('inbox').once().subscribe();
+        peers.forEach((peer: any) => {
+          if (peer.wire?.readyState === 1) {
+            return;
+          }
+          if (!peer.met) {
+            console.log('have never met peer');
+            this.dam.connect(peer);
+            return;
+          }
+          const age = Date.now() - peer.met;
+          console.log(`met ${age}ms ago`);
+          if (age < 20 * 1000) {
+            return;
+          }
+          if (peer.onOpen) {
+            peer.onOpen();
+          }
+
+          this.logger.log(
+            'disconnecting stalled peer: %s',
+            peer.url || peer.id || peer
+          );
+          this.dam.disconnect(peer);
+          this.dam.connect(peer);
+        });
       });
     this.logger.log('capabilities', CAPABILITIES);
   }
 
   configuredPeers = Array.isArray(this.ngGun.gunOptions.peers)
-    ? ((this.ngGun.gunOptions.peers as unknown) as string[])
+    ? (this.ngGun.gunOptions.peers as unknown as string[])
     : Object.keys(this.ngGun.gunOptions.peers as any);
 
   get peers() {
     const peers = Object.keys(this.ngGun.peers).map((k) => {
       const rawPeer = this.ngGun.peers[k] as GunPeer;
-
-      const x = {
-        ...rawPeer,
-        wire:
-          rawPeer.wire === undefined
-            ? undefined
-            : {
-                readyState: rawPeer.wire.readyState,
-                protocol: rawPeer.wire.protocol,
-                extensions: rawPeer.wire.extensions,
-                bufferedAmount: rawPeer.wire.bufferedAmount,
-              },
-      };
-      return x;
+      return rawPeer;
     });
     return peers;
   }
 
-  disconnectedPeers$ = timer(1000 * 5, 1000 * 5).pipe(
+  poll$ = timer(5000, POLL);
+
+  tryLater$ = timer(TRYEVERY + POLL, TRYEVERY).pipe(map(() => this.tryLater));
+
+  disconnected$ = this.poll$.pipe(
+    map(() => this.disconnected),
+    shareReplay(1)
+  );
+
+  disconnectedPeers$ = this.poll$.pipe(
     map(() => this.disconnectedPeers),
     shareReplay(1)
   );
@@ -67,6 +131,12 @@ export class DiagnosticsService {
   get missingPeers() {
     return this.configuredPeers.filter(
       (url) => !this.peers.find((p) => p.url === url)
+    );
+  }
+
+  get disconnected() {
+    return this.peers.filter(
+      (peer) => peer.wire !== undefined && peer.wire?.readyState === 0
     );
   }
 

@@ -70,7 +70,7 @@ const WEBRTC_ENABLE =
 
 let worker;
 if (typeof SharedWorker !== 'undefined') {
-  worker = new SharedWorker('/assets/gun-shared.worker.js');
+  worker = new SharedWorker('/assets/gun-session.worker.js');
 } else {
   worker = new NoopSharedWorker();
 }
@@ -139,6 +139,10 @@ if (typeof SharedWorker !== 'undefined') {
       provide: 'gun-options',
       useValue: {
         localStorage: !RADISK_ENABLE,
+        sharedWorkerURL: '/assets/gun-shared.worker.js',
+        sharedWorker: {
+          disconnectRedundantWebRTC: true,
+        },
         peers: [
           location.origin.match(/localhost/)
             ? 'http://localhost:8765/gun'

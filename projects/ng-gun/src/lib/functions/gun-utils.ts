@@ -66,3 +66,18 @@ export function parseCertificate(cert: string) {
   const scrubbed = cert.replace(RE_SEA_CERT, '');
   return JSON.parse(scrubbed) as IGunCertificate;
 }
+export const over = (obj: any) => (fnName: string) => {
+  const orig = obj[fnName];
+  return (cb: (...args: any[]) => any) => {
+    obj[fnName] = (...args: any) => {
+      // console.log({ orig });
+      if ('function' === typeof orig) {
+        orig(...args);
+      }
+      cb(...args);
+    };
+    return () => {
+      obj[fnName] = orig;
+    };
+  };
+};
