@@ -4,6 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { GunPeers } from '../../../../../ng-gun/src/lib/GunPeers';
 import { distinct } from 'rxjs/operators';
 import { DamService } from '../../../../../ng-gun/src/lib/dam.service';
+import { DiagnosticsService } from '../../diagnostics.service';
 
 @Component({
   selector: 'app-gun-peers',
@@ -12,11 +13,13 @@ import { DamService } from '../../../../../ng-gun/src/lib/dam.service';
 })
 export class GunPeersComponent {
   peers = this.data.ngGun.peers as GunPeers;
+  missing = this.diagnostics.missing;
   constructor(
     public ngGun: NgGunService,
     public dialogRef: MatDialogRef<GunPeersComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    public damService: DamService
+    public damService: DamService,
+    public diagnostics: DiagnosticsService
   ) {}
 
   logGun() {

@@ -41,6 +41,7 @@ export class GunSharedWorkerPlugin {
       console.error('Error on SharedWorker port: ', evt);
     };
     this.worker.port.onmessage = ({ data }: any) => {
+      // console.log('heard', data);
       this.opt.mesh.hear(data, this);
     };
     root.on('bye', function (this: any, peer: { id: any }) {

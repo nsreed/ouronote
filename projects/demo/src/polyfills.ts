@@ -59,7 +59,6 @@ import 'gun/nts';
 import 'gun/sea';
 
 import 'gun/lib/store';
-
 import 'gun/lib/rindexed';
 import 'gun/lib/load';
 import 'gun/lib/open';
@@ -78,10 +77,11 @@ import 'gun/lib/unset';
 
 import * as paper from 'paper';
 import { EventEmitter } from '@angular/core';
-import { after$ } from './app/functions/aspect-rx';
-import { GunSharedWorkerPlugin } from 'projects/ng-gun/src/lib/classes/GunSharedWorkerPlugin';
 
-GunSharedWorkerPlugin.register((window as any).Gun);
+// FIXME GunSharedWorkerPlugin loses data when using one tab
+// import { GunSharedWorkerPlugin } from 'projects/ng-gun/src/lib/classes/GunSharedWorkerPlugin';
+// GunSharedWorkerPlugin.register((window as any).Gun);
+
 const IGNORED_PROPS: string[] = ['fullySelected', 'selected', 'selection'];
 const BUBBLE_PROPS: string[] = ['fullySelected', 'selected', 'selection'];
 const prototypeOwnProperties = {} as any;

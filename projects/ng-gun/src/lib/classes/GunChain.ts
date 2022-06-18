@@ -793,6 +793,9 @@ export class GunAuthChain<
     super.put(data, certificate);
     return this;
   }
+  async sign(data: string) {
+    return await Gun.SEA.sign(data, this.userPair);
+  }
 }
 
 /** Represents a node nested under a user/pair

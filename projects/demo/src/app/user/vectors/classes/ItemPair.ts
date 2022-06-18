@@ -40,6 +40,7 @@ import { defaultsFor } from '../functions/paper-functions';
 import { PairedItem } from './paper-pair';
 import { around } from 'aspect-ts';
 import { take, distinct } from 'rxjs/operators';
+import { NgSeaService } from '../../../../../../ng-gun/src/lib/ng-sea.service';
 
 export class ItemPair extends PaperPair {
   private ipTimer = this.logger.time('ItemPair');
@@ -143,6 +144,7 @@ export class ItemPair extends PaperPair {
   ) {
     super(item, project, scope, logger);
     item.data.path = chain.pathFromRecord.join('/');
+    // TODO Verify images + enable user denylist
     // this.logger.monitor(this, 'setup', 20);
     // this.logger.monitor(this, 'onGraphChildren', 20);
     // this.logger.monitor(this, 'onGraphChild', 20);
@@ -179,7 +181,7 @@ export class ItemPair extends PaperPair {
     return getShallow(item);
   }
 
-  doSave(json?: any) {
+  async doSave(json?: any) {
     if (this.isImportingJSON) {
       console.warn('tried to save while importing');
       return;
@@ -190,7 +192,7 @@ export class ItemPair extends PaperPair {
     }
     if (!json) {
       // We are performing a "dumb" save
-      this.logger.log('full save');
+      this.logger.verbose('full save');
       let shallow = this.getShallow();
       if (this.item.className === 'PointText') {
         shallow = {
@@ -209,6 +211,11 @@ export class ItemPair extends PaperPair {
             PAPER_STYLE_EMPTY.fontWeight,
           ...defaultsFor(this.item, shallow),
         };
+      }
+      if (this.item.className === 'Raster') {
+        // const signed = await this.chain.auth().sign(shallow.source);
+        // console.log('signed: ', signed);
+        // shallow.source = signed;
       }
       // console.log('saving', shallow);
       this.chain.put(shallow);
@@ -352,7 +359,7 @@ export class ItemPair extends PaperPair {
    * @param localChild the child which should be processed
    * @returns void
    */
-  onLocalChild(localChild: PairedItem) {
+  async onLocalChild(localChild: PairedItem) {
     // this.logger.log('onLocalChild()');
     if (!localChild) {
       this.logger.warn('null child');
@@ -377,7 +384,7 @@ export class ItemPair extends PaperPair {
     let childNode;
     if (!childObj.data.soul) {
       // This is a new child, not yet inserted in the graph
-      this.logger.log('child not present in graph');
+      this.logger.verbose('child not present in graph');
       const childKey = getSetKey(this.chain).replace(/~.*/, '');
       childNode = this.children.get(childKey);
       childObj.data.soul = childKey;
@@ -436,6 +443,12 @@ export class ItemPair extends PaperPair {
             delete scrubbed[k];
           }
         });
+    }
+
+    if (scrubbed.className === 'Raster') {
+      // TODO how are we supposed to figure out who wrote this data?
+      // const verified = Gun.SEA.verify(scrubbed.source, )
+      console.log('should verify raster');
     }
 
     if (!this.graphValue) {
@@ -596,7 +609,7 @@ export class ItemPair extends PaperPair {
         .filter((c) => c !== undefined && c !== null) as paper.Item[];
 
       if (toInsert.length > 0) {
-        this.logger.verbose('inserting %d paper items', toInsert.length);
+        this.logger.log('inserting %d paper items', toInsert.length);
         this.item.insertChildren(this.item.children.length, toInsert as any);
         // toInsert.forEach((child) => {
         //   // Look for the item that should be above this one

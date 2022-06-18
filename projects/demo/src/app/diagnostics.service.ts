@@ -106,6 +106,10 @@ export class DiagnosticsService {
     ? (this.ngGun.gunOptions.peers as unknown as string[])
     : Object.keys(this.ngGun.gunOptions.peers as any);
 
+  get storeStats() {
+    return this.ngGun.gun.back('opt.store.stats' as any);
+  }
+
   get peers() {
     const peers = Object.keys(this.ngGun.peers).map((k) => {
       const rawPeer = this.ngGun.peers[k] as GunPeer;
@@ -117,22 +121,6 @@ export class DiagnosticsService {
   poll$ = timer(5000, POLL);
 
   tryLater$ = timer(TRYEVERY + POLL, TRYEVERY).pipe(map(() => this.tryLater));
-
-  disconnected$ = this.poll$.pipe(
-    map(() => this.disconnected),
-    shareReplay(1)
-  );
-
-  disconnectedPeers$ = this.poll$.pipe(
-    map(() => this.disconnectedPeers),
-    shareReplay(1)
-  );
-
-  get missingPeers() {
-    return this.configuredPeers.filter(
-      (url) => !this.peers.find((p) => p.url === url)
-    );
-  }
 
   get disconnected() {
     return this.peers.filter(
@@ -146,6 +134,33 @@ export class DiagnosticsService {
       .map((p) => p.url);
     return [...errorPeers, ...this.missingPeers];
   }
+
+  disconnected$ = this.poll$.pipe(
+    map(() => this.disconnected),
+    shareReplay(1)
+  );
+
+  disconnectedPeers$ = this.poll$.pipe(
+    map(() => this.disconnectedPeers),
+    shareReplay(1)
+  );
+
+  get missing() {
+    return this.configuredPeers.filter(
+      (url) => !this.peers.find((p) => p.url === url)
+    );
+  }
+
+  get missingPeers() {
+    return this.configuredPeers.filter(
+      (url) => !this.peers.find((p) => p.url === url)
+    );
+  }
+
+  missing$ = this.poll$.pipe(
+    map(() => this.missingPeers),
+    shareReplay(1)
+  );
 
   bugReport() {
     // LogService.buffer$.pipe(take(1)).subscribe((messages) => {
