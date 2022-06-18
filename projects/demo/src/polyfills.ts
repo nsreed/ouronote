@@ -80,6 +80,8 @@ import { EventEmitter } from '@angular/core';
 
 // FIXME GunSharedWorkerPlugin loses data when using one tab
 // import { GunSharedWorkerPlugin } from 'projects/ng-gun/src/lib/classes/GunSharedWorkerPlugin';
+import { take } from 'rxjs/operators';
+import { ReplaySubject } from 'rxjs';
 // GunSharedWorkerPlugin.register((window as any).Gun);
 
 const IGNORED_PROPS: string[] = ['fullySelected', 'selected', 'selection'];
@@ -119,7 +121,7 @@ function addChangeEmitter(prototype: any) {
     Object.defineProperty(prototype, 'changes$', {
       get() {
         if (!this._changes$) {
-          this._changes$ = new EventEmitter();
+          this._changes$ = new ReplaySubject(1);
         }
         return this._changes$;
       },
@@ -138,6 +140,7 @@ function addChangeListeners(
 ) {
   // console.log('monkeypatching prototype', prototype);
   addChangeEmitter(prototype);
+  // console.log(properties.map((p: any) => p[1]).join(', '));
   properties.forEach((prop: any[]) => {
     const property = prop[0];
     const propertyName = prop[1];
@@ -146,8 +149,11 @@ function addChangeListeners(
       get: property.get,
       set(...args) {
         // console.log('set %s to', propertyName, ...args);
+        if (propertyName === 'selected') {
+          console.log('selected');
+        }
         property.set.call(this, ...args);
-        this.changes$.emit([propertyName, ...args]);
+        this.changes$.next([propertyName, ...args]);
         if (BUBBLE_PROPS.includes(propertyName)) {
           console.log('bubbling %s', propertyName);
           const e = {} as paper.Event;
@@ -203,19 +209,39 @@ const original = paper.Project.prototype.deselectAll;
 paper.Project.prototype.deselectAll = function () {
   original.call(this);
 };
+// tslint:disable: no-string-literal
+const us = (paper.Project.prototype as any)['_updateSelection'];
+(paper.Project.prototype as any)['_updateSelection'] = function (
+  this: any,
+  item: any
+) {
+  us.call(this, item);
+  this.changes$?.next(['selectedItems', this.selectedItems]);
+  this.selectedItems$?.next(this.selectedItems);
+};
+Object.defineProperty(paper.Project.prototype, 'selectedItems$', {
+  get() {
+    if (!this._selectedItems$) {
+      this._selectedItems$ = new ReplaySubject(1);
+    }
+    return this._selectedItems$;
+  },
+  enumerable: false,
+});
+// console.log(us);
 
 const oActivate = paper.Project.prototype.activate;
 paper.Project.prototype.activate = function () {
   oActivate.call(this);
-  (this as any).changes$.emit(['active', true]);
+  (this as any).changes$.next(['active', true]);
 };
 
 const oDeselectAll = paper.Project.prototype.deselectAll;
 paper.Project.prototype.deselectAll = function () {
   oDeselectAll.call(this);
-  (this as any).changes$.emit(['selectedItems', this.selectedItems]);
+  (this as any).changes$.next(['selectedItems', this.selectedItems]);
 };
 
 const p = afterProto(paper.Project.prototype)('deselectAll')(() =>
-  (this as any)?.changes$?.emit(['selectedItems', (this as any).selectedItems])
+  (this as any)?.changes$?.next(['selectedItems', (this as any).selectedItems])
 );

@@ -2,10 +2,10 @@ import { VectorTool } from './paper-tool';
 import * as paper from 'paper';
 import { of } from 'rxjs';
 import { Action } from './undo-stack';
-export class RotateTool extends VectorTool {
+import { SelectionTool } from './selection-tool';
+export class RotateTool extends SelectionTool {
   name = 'rotate';
   matIconName = 'crop_rotate';
-  enabled$ = of(true);
   dragged = false;
 
   selectedItems: paper.Item[] = [];

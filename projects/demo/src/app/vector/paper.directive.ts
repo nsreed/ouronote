@@ -10,13 +10,24 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import * as Hammer from 'hammerjs';
 import { LogService } from 'log';
 import * as paper from 'paper';
-import { from, fromEvent, timer } from 'rxjs';
-import { map, mergeMap, switchMap, shareReplay } from 'rxjs/operators';
+import { from, fromEvent, timer, ReplaySubject, Observable } from 'rxjs';
+import {
+  map,
+  mergeMap,
+  switchMap,
+  shareReplay,
+  filter,
+  tap,
+} from 'rxjs/operators';
 import { CAPABILITIES } from '../system.service';
 import { PenEvent } from '../user/vectors/classes/PenEvent';
 import { PanTool } from '../user/vectors/tools/pan';
 import { UndoStack } from '../user/vectors/tools/undo-stack';
 import { AfterViewInit } from '@angular/core';
+
+export type IEnhancedPaper = paper.Project & {
+  selectedItems$: Observable<paper.Item[]>;
+};
 
 @Directive({
   selector: '[appPaper]',
@@ -36,16 +47,26 @@ export class PaperDirective implements OnInit, AfterViewInit {
   @Output()
   appPaperChange = new EventEmitter();
 
-  projectChange = new EventEmitter<paper.Project>();
+  projectChange = new ReplaySubject<paper.Project>(1);
+  selectedItemsChange = this.projectChange.pipe(
+    tap((p: any) => console.log('project', p)),
+    switchMap((p: any) =>
+      p.changes$.pipe(
+        filter((c: any) => c[0] === 'selectedItems'),
+        map((c: [string, paper.Item[]]) => c[1])
+      )
+    ),
+    shareReplay(1)
+  );
 
-  private _project!: paper.Project;
-  public get project(): paper.Project {
+  private _project!: IEnhancedPaper;
+  public get project(): IEnhancedPaper {
     return this._project;
   }
-  public set project(value: paper.Project) {
+  public set project(value: IEnhancedPaper) {
     if (value !== this._project) {
       this._project = value;
-      this.projectChange.emit(value);
+      this.projectChange.next(value);
     }
   }
 
@@ -168,10 +189,6 @@ export class PaperDirective implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     // update the view size after a delay to account for UI loading time
     timer(1000).subscribe(() => this.updateViewSize());
-
-    this.resize$.subscribe(() => {
-      console.log('PROJECT CANVAS RESIZE');
-    });
   }
 
   updateViewSize() {

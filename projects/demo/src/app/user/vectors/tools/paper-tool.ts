@@ -1,5 +1,5 @@
 import { Tool, ToolEvent } from 'paper';
-import { fromEvent, of, ReplaySubject } from 'rxjs';
+import { fromEvent, of, ReplaySubject, Observable } from 'rxjs';
 import { after$ } from '../../../functions/aspect-rx';
 import * as paper from 'paper';
 import {
@@ -15,6 +15,8 @@ import { EventEmitter } from '@angular/core';
 import { PenEvent } from '../classes/PenEvent';
 import { propertyChange$ } from '../functions/paper-chain';
 import { UndoStack } from './undo-stack';
+import { IEnhancedPaper } from '../../../vector/paper.directive';
+import { map } from 'rxjs/operators';
 
 export class VectorTool extends Tool {
   get properties() {
@@ -42,7 +44,7 @@ export class VectorTool extends Tool {
 
     this.setup();
 
-    this.selectedItems$.subscribe((si) => console.log(si));
+    // this.selectedItems$.subscribe((si) => console.log(si));
     // this.pointerMove.subscribe((e: PenEvent) =>
     //   this.logger.log('tool pointer event', e.point)
     // );
@@ -60,9 +62,12 @@ export class VectorTool extends Tool {
   show$ = of(true);
 
   /** The scope's current project */
-  project$ = propertyChange$(this.scope, 'project').pipe(shareReplay(1));
+  project$ = propertyChange$(this.scope, 'project').pipe(
+    map((p) => p as IEnhancedPaper),
+    shareReplay(1)
+  ) as Observable<IEnhancedPaper>;
   selectedItems$ = this.project$.pipe(
-    switchMap((project) => propertyChange$(project, 'selectedItems')),
+    switchMap((project: IEnhancedPaper) => project.selectedItems$),
     shareReplay(1)
   );
 

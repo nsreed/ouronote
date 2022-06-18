@@ -2,10 +2,10 @@ import { VectorTool } from './paper-tool';
 import * as paper from 'paper';
 import { of } from 'rxjs';
 import { Action } from './undo-stack';
-export class ResizeTool extends VectorTool {
+import { SelectionTool } from './selection-tool';
+export class ResizeTool extends SelectionTool {
   name = 'resize';
   matIconName = 'aspect_ratio';
-  enabled$ = of(true);
   dragged = false;
 
   selectedItems: paper.Item[] = [];

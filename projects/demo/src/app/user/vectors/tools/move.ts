@@ -1,10 +1,10 @@
 import { of } from 'rxjs';
 import { VectorTool } from './paper-tool';
 import * as paper from 'paper';
-export class MoveTool extends VectorTool {
+import { SelectionTool } from './selection-tool';
+export class MoveTool extends SelectionTool {
   name = 'move';
   icon = 'arrows-alt';
-  enabled$ = of(true);
   dragged = false;
 
   downSub = this.down.subscribe((e) => {
