@@ -31,11 +31,10 @@ export class PaperEditDirective extends PaperDirective implements OnInit {
   public line = new LineTool(this.scope as any);
   public text = new TextTool(this.scope as any);
   public eyedropper = new EyedropperTool(this.scope as any);
+  public pan = new PanTool(this.scope as any);
   public move = new MoveTool(this.scope as any);
   public rotate = new RotateTool(this.scope as any);
   public resize = new ResizeTool(this.scope as any);
-
-  public pan = new PanTool(this.scope as any);
 
   ngOnInit(): void {
     super.ngOnInit();

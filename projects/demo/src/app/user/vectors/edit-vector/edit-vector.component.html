@@ -8,6 +8,9 @@
           <button mat-button (click)="onUndoClick()" [disabled]="paperDirective.scope?.actions?.length === 0">
             <mat-icon>undo</mat-icon>
           </button>
+          <button mat-button (click)="onInsertImageClick()" matTooltip="insert image">
+            <mat-icon>photo_library</mat-icon>
+          </button>
           <ng-container *ngFor="let tool of paper.scope.tools">
             <ng-container *ngIf="tool.enabled$ | async">
               <button mat-button [checked]="tool === paper.scope.tool" [value]="tool" [appTool]="tool"
@@ -26,9 +29,6 @@
               </button>
             </ng-container>
           </ng-container>
-          <button mat-button (click)="onInsertImageClick()" matTooltip="insert image">
-            <mat-icon>photo_library</mat-icon>
-          </button>
         </div>
         <mat-divider></mat-divider>
 
