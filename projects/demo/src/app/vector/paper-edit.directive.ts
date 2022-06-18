@@ -23,8 +23,6 @@ import { PanTool } from '../user/vectors/tools/pan';
 })
 export class PaperEditDirective extends PaperDirective implements OnInit {
   tool$ = propertyChange$(this.scope, 'tool').pipe(shareReplay(1));
-  public areaSelect = new RectangleSelectTool(this.scope as any);
-  public lassoSelect = new LassoSelectTool(this.scope as any);
   public pen = new PenTool(this.scope as any);
   public eraser = new EraserTool(this.scope as any);
   public shape = new ShapeTool(this.scope as any);
@@ -32,6 +30,8 @@ export class PaperEditDirective extends PaperDirective implements OnInit {
   public text = new TextTool(this.scope as any);
   public eyedropper = new EyedropperTool(this.scope as any);
   public pan = new PanTool(this.scope as any);
+  public areaSelect = new RectangleSelectTool(this.scope as any);
+  public lassoSelect = new LassoSelectTool(this.scope as any);
   public move = new MoveTool(this.scope as any);
   public rotate = new RotateTool(this.scope as any);
   public resize = new ResizeTool(this.scope as any);

@@ -81,6 +81,7 @@
         <ng-container *ngIf="project.selectedItems?.length === 1 && project.selectedItems[0].className === 'PointText'">
           <app-text-form [appObject]="project.selectedItems[0]" appObjectProperty="content" (propertyValueChange)="onContentValueChange(project.selectedItems[0], $event)"></app-text-form>
         </ng-container>
+        <button mat-button (click)="project.deselectAll()">Clear</button>
         <app-selected-items [selectedItems]="project.selectedItems"></app-selected-items>
       </ng-template>
     </mat-expansion-panel>

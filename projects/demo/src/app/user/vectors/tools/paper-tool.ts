@@ -18,7 +18,22 @@ import { UndoStack } from './undo-stack';
 import { IEnhancedPaper } from '../../../vector/paper.directive';
 import { map } from 'rxjs/operators';
 
+export type IEnhancedScope = paper.PaperScope &
+  UndoStack & {
+    lastActiveTool: VectorTool;
+    tool: VectorTool;
+    tools: VectorTool[];
+  };
+
 export class VectorTool extends Tool {
+  get isActive() {
+    return this.scope.tool === this;
+  }
+
+  get enabled() {
+    return true;
+  }
+
   get properties() {
     return Object.getPrototypeOf(this).___PROPERTIES || [];
   }
@@ -27,7 +42,7 @@ export class VectorTool extends Tool {
     return this.scope.project as paper.Project;
   }
 
-  constructor(public readonly scope: paper.PaperScope & UndoStack) {
+  constructor(public readonly scope: IEnhancedScope) {
     super();
 
     this.wheel.subscribe((e) => {
@@ -43,7 +58,6 @@ export class VectorTool extends Tool {
     });
 
     this.setup();
-
     // this.selectedItems$.subscribe((si) => console.log(si));
     // this.pointerMove.subscribe((e: PenEvent) =>
     //   this.logger.log('tool pointer event', e.point)
@@ -51,7 +65,6 @@ export class VectorTool extends Tool {
     // this.touch.subscribe((e) => this.logger.log('tool touch event', e.touches));
   }
   static stack: any[] = [];
-  static lastActive?: VectorTool;
   private isPointerDown = false;
   icon = 'hand-spock';
 
@@ -67,8 +80,7 @@ export class VectorTool extends Tool {
     shareReplay(1)
   ) as Observable<IEnhancedPaper>;
   selectedItems$ = this.project$.pipe(
-    switchMap((project: IEnhancedPaper) => project.selectedItems$),
-    shareReplay(1)
+    switchMap((project: IEnhancedPaper) => project.selectedItems$)
   );
 
   propertyNames: string[] = [];
@@ -138,10 +150,15 @@ export class VectorTool extends Tool {
 
   activate() {
     if (this.scope) {
+      if (!this.enabled) {
+        console.error('tried to activate a disabled tool');
+        return;
+      }
       if (this.scope.tool !== this) {
-        VectorTool.lastActive = this.scope.tool as VectorTool;
+        this.scope.lastActiveTool = this.scope.tool;
       }
     }
+
     super.activate();
   }
 

@@ -16,6 +16,6 @@ export class EyedropperTool extends VectorTool {
   });
 
   upSub = this.up.subscribe((e: paper.ToolEvent) => {
-    VectorTool.lastActive?.activate();
+    this.scope.lastActiveTool?.activate();
   });
 }
