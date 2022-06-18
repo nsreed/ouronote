@@ -1,0 +1,7 @@
+version: "3"
+services:
+  ouronote-gun:
+    image: gundb/gun
+    restart: unless-stopped
+    ports:
+      - 8765:8765
