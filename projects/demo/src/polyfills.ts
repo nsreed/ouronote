@@ -84,7 +84,12 @@ import { take } from 'rxjs/operators';
 import { ReplaySubject } from 'rxjs';
 // GunSharedWorkerPlugin.register((window as any).Gun);
 
-const IGNORED_PROPS: string[] = ['fullySelected', 'selected', 'selection'];
+const IGNORED_PROPS: string[] = [
+  'fullySelected',
+  'selected',
+  'selection',
+  'style',
+];
 const BUBBLE_PROPS: string[] = ['fullySelected', 'selected', 'selection'];
 const prototypeOwnProperties = {} as any;
 
@@ -141,27 +146,64 @@ function addChangeListeners(
   // console.log('monkeypatching prototype', prototype);
   addChangeEmitter(prototype);
   // console.log(properties.map((p: any) => p[1]).join(', '));
+
+  // prototype.bubble =
+  //   prototype.bubble ||
+  //   function (this: any, name: string, ev: any) {
+  //     this.emit(name, ev);
+  //   };
+
+  Object.defineProperty(prototype, 'bubble', {
+    get() {
+      if (!this._bubble) {
+        this._bubble = function (this: any, name: string, ev: any) {
+          this.emit(name, ev);
+        };
+      }
+      return this._bubble;
+    },
+  });
+
   properties.forEach((prop: any[]) => {
     const property = prop[0];
     const propertyName = prop[1];
     // console.log('%s.%s', prototype.constructor.name, propertyName);
     Object.defineProperty(prototype, propertyName, {
       get: property.get,
-      set(...args) {
+      set(value: any) {
         // console.log('set %s to', propertyName, ...args);
-        if (propertyName === 'selected') {
-          console.log('selected');
+        if (this[propertyName] === value) {
+          return;
         }
-        property.set.call(this, ...args);
-        this.changes$.next([propertyName, ...args]);
-        if (BUBBLE_PROPS.includes(propertyName)) {
-          console.log('bubbling %s', propertyName);
-          const e = {} as paper.Event;
-          const i = {} as paper.Item;
-          if (this.emit) {
-            this.emit(`${propertyName}Change`, {});
+        property.set.call(this, value);
+        this.changes$.next([propertyName, value]);
+        if (this.data?.path) {
+          const changeEvent = {
+            target: this,
+            // bubbles: true,
+            propertyName,
+            value,
+            path: `${this.data.path}/${propertyName}`,
+          };
+          // if (this.emit) {
+          //   this.emit(`change`, changeEvent);
+          // }
+          // if (this.parent?.bubble) {
+          //   this.parent?.bubble('change', changeEvent);
+          // }
+          if (this.parent && this.project?.bubble) {
+            console.log('bubbling', propertyName);
+            this.project?.bubble('change', changeEvent);
           }
         }
+        // if (BUBBLE_PROPS.includes(propertyName)) {
+        //   console.log('bubbling %s', propertyName);
+        //   const e = {} as paper.Event;
+        //   const i = {} as paper.Item;
+        //   if (this.emit) {
+        //     this.emit(`${propertyName}Change`, {});
+        //   }
+        // }
       },
     });
   });
@@ -225,6 +267,15 @@ Object.defineProperty(paper.Project.prototype, 'selectedItems$', {
       this._selectedItems$ = new ReplaySubject(1);
     }
     return this._selectedItems$;
+  },
+  enumerable: false,
+});
+Object.defineProperty(paper.Project.prototype, 'allChanges$', {
+  get() {
+    if (!this._allChanges$) {
+      this._allChanges$ = new EventEmitter();
+    }
+    return this._allChanges$;
   },
   enumerable: false,
 });

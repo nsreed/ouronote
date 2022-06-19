@@ -10,6 +10,7 @@ import {
 import { serializeValue } from '../functions/packaging';
 import { IItemData } from './IItemData';
 import { PairedItem } from './paper-pair';
+import { IEnhancedPaper } from '../../../vector/paper.directive';
 
 export class PaperPair {
   childCache = {} as any;
@@ -50,6 +51,10 @@ export class PaperPair {
     if (ctx.pair) {
       this.logger.error('CREATING A DUPLICATE PAIR FOR SCOPE', ctx);
     }
+    // console.log('setting up listener');
+    // (project as any).allChanges$?.subscribe((e: any) => {
+    //   console.log('project change', e);
+    // });
     ctx.pair = this;
 
     this.saveBuffer$.subscribe((buf) => {

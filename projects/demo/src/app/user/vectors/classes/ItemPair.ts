@@ -144,6 +144,9 @@ export class ItemPair extends PaperPair {
   ) {
     super(item, project, scope, logger);
     item.data.path = chain.pathFromRecord.join('/');
+    // item.on('change', (e: any) =>
+    //   this.logger.log(this.item.className + 'CHANGE CHANGE CHANGE', e)
+    // );
     // TODO Verify images + enable user denylist
     // this.logger.monitor(this, 'setup', 20);
     // this.logger.monitor(this, 'onGraphChildren', 20);

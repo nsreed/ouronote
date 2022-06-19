@@ -52,6 +52,7 @@ export class ProjectPair extends PaperPair {
     this.setupProject();
     // this.logger.log('new ProjectPair');
     (project as any).pair = this;
+    chain.openChanges();
     // project.layers
   }
 
@@ -69,6 +70,9 @@ export class ProjectPair extends PaperPair {
   }
 
   onGraphLayer(data: any) {
+    if (true) {
+      // return;
+    }
     const soul = data[1];
     const json = data[0];
     // this.logger.log('onGraphLayer %s', soul);

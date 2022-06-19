@@ -46,6 +46,7 @@ import { GunRuntimeOpts } from '../GunRuntimeOpts';
 import { NgGunSessionService } from '../ng-gun-session.service';
 import { ICertStore } from './ICertStore';
 import { LexicalQuery } from './LexicalQuery';
+import '../functions/gun-open-changes';
 
 export const GUN_NODE = Symbol('GUN_NODE');
 
@@ -443,18 +444,43 @@ export class GunChain<
     return fromEventPattern(
       (handler: (arg0: any) => void) => {
         const signal = { stopped: false };
-        (this.gun as any).open((data: any) => {
-          const converted = data;
-          this.ngZone.run(() => {
-            handler(converted);
-          });
-        });
+        (this.gun as any).open(
+          (data: any) => {
+            const converted = data;
+            this.ngZone.run(() => {
+              handler(converted);
+            });
+          },
+          {
+            meta: true,
+          }
+        );
         return signal;
       },
       (handler: any, signal: { stopped: boolean }) => {
         signal.stopped = true;
       }
     ).pipe(debounceTime(25));
+  }
+
+  openChanges() {
+    (this.gun as any).openChanges(
+      (v: any, k: any, n: any) => {
+        // console.log('open', v, k, n);
+      },
+      {
+        meta: true,
+        diff: (key: string, dk: string) => {
+          console.log('diff', key, dk);
+        },
+        create: (data: any, key: string) => {
+          console.log('create', key, data);
+        },
+        delete: (key: string) => {
+          console.log('delete', key);
+        },
+      }
+    );
   }
 
   map(options?: GunChainCallbackOptions) {

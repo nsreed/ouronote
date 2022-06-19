@@ -81,3 +81,11 @@ export const over = (obj: any) => (fnName: string) => {
     };
   };
 };
+export function isSubSoul(a: string, b: string) {
+  const sa = a.split('/');
+  const ba = b.split('/');
+  if (ba.length < sa.length) {
+    return false;
+  }
+  return !ba.find((v, i) => i < sa.length && sa[i] !== v);
+}

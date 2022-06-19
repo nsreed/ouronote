@@ -1,4 +1,5 @@
 import * as Gun from 'gun';
+import { isSubSoul } from './gun-utils';
 // tslint:disable: object-literal-shorthand
 // tslint:disable: only-arrow-functions
 // tslint:disable: no-conditional-assignment
@@ -48,6 +49,7 @@ import * as Gun from 'gun';
     // opt.updateTimes = opt.updateTimes || updateTimes;
     // subscribe to 1 deeper of data!
     clearTimeout(opt.to); // do not trigger callback if bunch of changes...
+    const WAIT = 2; // 9;
     opt.to = setTimeout(function () {
       // but schedule the callback to fire soon!
       if (!opt.any) {
@@ -59,7 +61,7 @@ import * as Gun from 'gun';
         opt.eve.off();
         opt.any = null;
       }
-    }, opt.wait || 9);
+    }, opt.wait || WAIT);
     opt.at = opt.at || ctx; // opt.at will always be the first context it finds.
     opt.key = opt.key || key;
     opt.eve.s[this._.id] = eve; // collect all the events together.
@@ -75,37 +77,59 @@ import * as Gun from 'gun';
     }
     const tmp = this; // else if a sub-object, CPU schedule loop over properties to do recursion.
     // console.log(opt.doc);
+    // if (data.className) {
+    //   console.log(ctx);
+    //   // opt.create(data, data._['#']);
+    // }
     (setTimeout as any).each(Object.keys(data), function (dk: any, val: any) {
       if ('_' === dk && !opt.meta) {
         return;
       }
       val = data[dk];
       const doc = at || opt.doc;
+      const oldVal = doc[dk];
       const id = (Gun as any).valid(val);
+
       // first pass this becomes the root of open, then at is passed below, and will be the parent for each sub-document/object.
       if (!doc) {
         return;
       } // if no "parent"
 
+      const primSoul = `${data._['#']}/${dk}`;
+      const docOrVal = doc[dk] || val;
+      if (!val && oldVal) {
+        // console.log('delete', primSoul);
+        opt.delete(primSoul);
+      }
+
       if ('string' !== typeof id) {
-        const primSoul = `${data._['#']}/${dk}`;
         // if primitive...
         // console.log('its primitive', primSoul);
-        const newUp = data._['>'][dk] || 0;
-        const oldUp = (opt.updateTimes || {})[primSoul] || newUp;
+        const newUp = data._['>'][dk];
+        const oldUp = (opt.updateTimes || {})[primSoul];
         const upDiff = newUp - oldUp;
         opt.updateTimes[primSoul] = newUp;
+        doc[dk] = val;
         if (upDiff) {
           // console.log(`${dk} diff ${upDiff}`);
-          opt.diff(key, dk, data[dk]);
+          opt.diff(data[dk], primSoul);
+        } else if (!oldVal) {
+          // opt.diff(docOrVal, primSoul);
         }
-        doc[dk] = val;
         return;
       }
+
       if (opt.ids[id]) {
         // if we've already seen this sub-object/document
         doc[dk] = opt.ids[id]; // link to itself, our already in-memory one, not a new copy.
         return;
+      }
+
+      if (oldVal === undefined && docOrVal) {
+        const iss = isSubSoul(primSoul, data[dk]['#']);
+        if (iss) {
+          // opt.create(data[dk], primSoul); // FIXME this isn't quite right
+        }
       }
 
       if (opt.depth <= depth) {
