@@ -46,9 +46,9 @@ export class PaperEditDirective extends PaperDirective implements OnInit {
       0
     ) as any;
 
-    (this.project as any).on('change', (e: any) => {
-      // TODO use this
-      // console.log(`${e.path} = ${JSON.stringify(e.value)}`);
-    });
+    // (this.project as any).on('change', (e: any) => {
+    //   // TODO use this
+    //   console.log(`${e.path} = ${JSON.stringify(e.value)}`);
+    // });
   }
 }

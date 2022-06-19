@@ -103,17 +103,17 @@ export const MUTATION_METHODS = [
   'lineBy',
   'curveTo',
   'curveBy',
-  // 'translate',
+  'translate',
 ];
 
 export const MUTATIONS = {
   Path: MUTATION_METHODS,
-  // Item: ['translate'],
+  Item: ['translate'],
 } as any;
 
 export const MUTATION_PROPERTIES = {
   add: ['segments'],
-  // translate: ['position', 'segments'], // FIXME translate gets called by paper internally, causing unnecessary saves
+  translate: ['position', 'segments'], // FIXME translate gets called by paper internally, causing unnecessary saves
 } as any;
 
 export const INCOMING_DEBOUNCE = 25;

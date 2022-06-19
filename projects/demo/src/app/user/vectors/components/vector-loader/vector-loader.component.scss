@@ -1,0 +1,107 @@
+:host {
+  // position: absolute;
+  // width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+#WorkspaceContainer {
+  overflow: auto;
+  height: 100%;
+  flex-grow: 1;
+
+  canvas#Workspace {
+    // outline: solid 10px gray;
+    touch-action: pinch-zoom;
+    position: absolute;
+    // height: 100vh;
+  }
+}
+
+.floating {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+app-invite-requests {
+  max-width: 220px;
+}
+
+mat-accordion {
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #fafafa;
+    box-shadow: inset 0 0 3px grey;
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #f1f1f1;
+    box-shadow: inset 0 0 3px slategray;
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #d1d1d1;
+  }
+
+  max-height: 100%;
+  mat-expansion-panel {
+    flex-shrink: 0;
+  }
+}
+
+form {
+  padding: 0;
+  margin: 0;
+}
+
+#ToolsContainer {
+  justify-items: center;
+}
+
+.tool {
+  width: 100%;
+  padding: 0.65em 0;
+  &.active {
+    color: blueviolet;
+    background-color: rgba(0, 0, 0, 0.07);
+  }
+}
+
+mat-list-item.active {
+  white-space: nowrap;
+  break-inside: avoid;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  outline: solid 3px #0000ff55;
+}
+
+// mat-button-toggle {
+//   border-top: solid 1px rgba(0,0,0,.12);
+// }
+
+p {
+  margin-top: -1em;
+  padding-top: 0;
+
+  margin-bottom: 0.5em;
+  padding-left: 1em;
+  padding-bottom: 0.15em;
+}
+
+mat-toolbar {
+  & > span {
+    max-width: calc(100vw - 416px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  & > button.request {
+    margin-left: 1em;
+  }
+}

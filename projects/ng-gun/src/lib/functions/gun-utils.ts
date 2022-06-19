@@ -89,3 +89,26 @@ export function isSubSoul(a: string, b: string) {
   }
   return !ba.find((v, i) => i < sa.length && sa[i] !== v);
 }
+function gunUpdates(doc: any) {
+  return doc._ && doc._['>'];
+}
+export function gunDiff(docA: any, docB: any) {
+  const aup = (docA._ && docA._['>']) || {};
+  const bup = (docB._ && docB._['>']) || {};
+  const allKeys = [...new Set(Object.keys(aup).concat(Object.keys(bup)))];
+  const out = allKeys.reduce((acc, k) => {
+    const src = aup[k] >= bup[k] ? docA : docB;
+    acc[k] = src[k] || docA[k] || docB[k];
+    if (acc[k] !== undefined) {
+      return acc;
+    }
+    if (docA[k] === undefined) {
+      acc[k] = docB[k];
+    }
+    if (docB[k] === undefined) {
+      acc[k] = docB[k];
+    }
+    return acc;
+  }, {} as any);
+  return out;
+}

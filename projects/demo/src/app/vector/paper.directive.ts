@@ -10,7 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import * as Hammer from 'hammerjs';
 import { LogService } from 'log';
 import * as paper from 'paper';
-import { from, fromEvent, timer, ReplaySubject, Observable } from 'rxjs';
+import { from, fromEvent, timer, ReplaySubject } from 'rxjs';
 import {
   map,
   mergeMap,
@@ -24,10 +24,7 @@ import { PenEvent } from '../user/vectors/classes/PenEvent';
 import { PanTool } from '../user/vectors/tools/pan';
 import { UndoStack } from '../user/vectors/tools/undo-stack';
 import { AfterViewInit } from '@angular/core';
-
-export type IEnhancedPaper = paper.Project & {
-  selectedItems$: Observable<paper.Item[]>;
-};
+import { IEnhancedPaper } from './IEnhancedPaper';
 
 @Directive({
   selector: '[appPaper]',

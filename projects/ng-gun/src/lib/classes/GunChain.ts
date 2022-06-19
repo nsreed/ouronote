@@ -464,21 +464,41 @@ export class GunChain<
   }
 
   openChanges() {
-    (this.gun as any).openChanges(
-      (v: any, k: any, n: any) => {
-        // console.log('open', v, k, n);
+    return fromEventPattern(
+      (handler: any) => {
+        const signal = { stopped: false };
+        (this.gun as any).openChanges(
+          (data: any, key: string, soul: string) => {
+            handler('bulk', { data, key, soul });
+          },
+          {
+            meta: true,
+            diff: (data: any, key: string, soul: string) => {
+              handler('diff', { data, key, soul });
+            },
+            create: (data: any, key: string, soul: string) => {
+              handler('create', { data, key, soul });
+            },
+            delete: (key: string) => {
+              handler('delete', key);
+            },
+          }
+        );
+        // (this.gun as any).open(
+        //   (data: any) => {
+        //     const converted = data;
+        //     this.ngZone.run(() => {
+        //       handler(converted);
+        //     });
+        //   },
+        //   {
+        //     meta: true,
+        //   }
+        // );
+        return signal;
       },
-      {
-        meta: true,
-        diff: (key: string, dk: string) => {
-          console.log('diff', key, dk);
-        },
-        create: (data: any, key: string) => {
-          console.log('create', key, data);
-        },
-        delete: (key: string) => {
-          console.log('delete', key);
-        },
+      (handler: any, signal: { stopped: boolean }) => {
+        signal.stopped = true;
       }
     );
   }

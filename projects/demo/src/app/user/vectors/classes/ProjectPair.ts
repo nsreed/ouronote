@@ -52,8 +52,11 @@ export class ProjectPair extends PaperPair {
     this.setupProject();
     // this.logger.log('new ProjectPair');
     (project as any).pair = this;
-    chain.openChanges();
+    // this.layers.openChanges();
     // project.layers
+    // (project as any).on('change', (e: any) => {
+    //   console.log('project change', e);
+    // });
   }
 
   destroy() {

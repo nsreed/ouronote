@@ -14,16 +14,9 @@ import { LogService } from '../../../../../../log/src/lib/log.service';
 import { EventEmitter } from '@angular/core';
 import { PenEvent } from '../classes/PenEvent';
 import { propertyChange$ } from '../functions/paper-chain';
-import { UndoStack } from './undo-stack';
-import { IEnhancedPaper } from '../../../vector/paper.directive';
+import { IEnhancedPaper } from '../../../vector/IEnhancedPaper';
 import { map } from 'rxjs/operators';
-
-export type IEnhancedScope = paper.PaperScope &
-  UndoStack & {
-    lastActiveTool: VectorTool;
-    tool: VectorTool;
-    tools: VectorTool[];
-  };
+import { IEnhancedScope } from '../../../vector/IEnhancedScope';
 
 export class VectorTool extends Tool {
   get isActive() {

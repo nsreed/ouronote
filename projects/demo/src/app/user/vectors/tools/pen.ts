@@ -6,6 +6,7 @@ import { PenEvent } from '../classes/PenEvent';
 import { Property } from '../functions/decorators';
 import { VectorTool } from './paper-tool';
 import { copyNulls } from '../functions/paper-functions';
+import { ItemPair } from '../classes/ItemPair';
 export class PenTool extends VectorTool {
   path!: paper.Path;
   icon = 'marker';
@@ -57,7 +58,10 @@ export class PenTool extends VectorTool {
   dragSub = this.drag.subscribe((e: any) => {
     if (!this.path) {
       this.path = new paper.Path(e.point) as any;
-      (this.path as any).pair.editing = true;
+      const pair = (this.path as any).pair;
+      if (pair) {
+        pair.editing = true;
+      }
       this.path.style = this.style;
       this.path.style = this.project.currentStyle;
       const width = this.scale
@@ -104,7 +108,8 @@ export class PenTool extends VectorTool {
         const zoom = this.project.view.zoom; // this is how many pixels on screen represent a paper.js unit
         const scalingFactor = 1 / (zoom * zoom); // this is used to scale the tolerance with respect to pixel density
         const actualTolerance = // calculate the actual applied tolerance
-          defaultSmoothingTolerance * scalingFactor * this.smoothingStrength; // This value can be modified by the user to impact the smoothing strength
+          defaultSmoothingTolerance * scalingFactor * this.smoothingStrength;
+        // This value can be modified by the user to impact the smoothing strength
         this.path.simplify(actualTolerance);
 
         // Gloating
@@ -116,8 +121,11 @@ export class PenTool extends VectorTool {
         );
       }
 
-      (this.path as any).pair.doSave();
-      (this.path as any).pair.editing = false;
+      const pair = (this.path as any).pair as ItemPair;
+      if (pair) {
+        pair.doSave();
+        pair.editing = false;
+      }
       // TODO add this path to the undo stack
       this.path = null as any;
     }

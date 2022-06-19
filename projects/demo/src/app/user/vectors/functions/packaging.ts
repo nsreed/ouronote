@@ -6,10 +6,17 @@ export function unpack(
 ): any {
   // console.log('unpacking value');
   // console.dir(value);
-  return value.className ? unpackObject(value) : unpackArray(value);
+  return Array.isArray(value)
+    ? unpackArray(value)
+    : 'object' === typeof value
+    ? unpackObject(value)
+    : value;
 }
 
-function unpackObject(item: any, soul: string | null = item.data?.soul) {
+function unpackObject(
+  item: any,
+  soul: string | null = item.data?.soul || (item._ && item._['#'])
+) {
   if (!item) {
     return null;
   }
@@ -23,6 +30,9 @@ function unpackObject(item: any, soul: string | null = item.data?.soul) {
     console.warn('  unpacking children (UNTESTED)');
     scrubbed.children = unpack(scrubbed.children);
   }
+  delete scrubbed.selected;
+  delete scrubbed.fullySelected;
+  delete scrubbed.previousSibling;
   Object.keys(scrubbed)
     .filter((k) => EXPECT_PRIMITIVE_ARRAY.includes(k))
     .forEach((k) => (scrubbed[k] = JSON.parse(scrubbed[k])));

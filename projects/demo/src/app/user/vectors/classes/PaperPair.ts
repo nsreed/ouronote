@@ -10,7 +10,7 @@ import {
 import { serializeValue } from '../functions/packaging';
 import { IItemData } from './IItemData';
 import { PairedItem } from './paper-pair';
-import { IEnhancedPaper } from '../../../vector/paper.directive';
+import { IEnhancedPaper } from '../../../vector/IEnhancedPaper';
 
 export class PaperPair {
   childCache = {} as any;

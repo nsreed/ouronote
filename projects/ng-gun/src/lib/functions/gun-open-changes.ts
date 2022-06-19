@@ -1,5 +1,5 @@
 import * as Gun from 'gun';
-import { isSubSoul } from './gun-utils';
+import { isSubSoul, gunDiff } from './gun-utils';
 // tslint:disable: object-literal-shorthand
 // tslint:disable: only-arrow-functions
 // tslint:disable: no-conditional-assignment
@@ -49,12 +49,13 @@ import { isSubSoul } from './gun-utils';
     // opt.updateTimes = opt.updateTimes || updateTimes;
     // subscribe to 1 deeper of data!
     clearTimeout(opt.to); // do not trigger callback if bunch of changes...
-    const WAIT = 2; // 9;
+    const WAIT = 1000 / 30; // 9;
     opt.to = setTimeout(function () {
       // but schedule the callback to fire soon!
       if (!opt.any) {
         return;
       }
+      // console.log('flushing', opt.eve);
       opt.any.call(opt.at.$, opt.doc, opt.key, opt, opt.eve); // call it.
       if (opt.off) {
         // check for unsubscribing.
@@ -65,9 +66,11 @@ import { isSubSoul } from './gun-utils';
     opt.at = opt.at || ctx; // opt.at will always be the first context it finds.
     opt.key = opt.key || key;
     opt.eve.s[this._.id] = eve; // collect all the events together.
+    opt.priorities = opt.priorities || ['className'];
 
     if (true === (Gun as any).valid(data)) {
       // if primitive value...
+      console.log('primitive top', data);
       if (!at) {
         opt.doc = data;
       } else {
@@ -75,13 +78,24 @@ import { isSubSoul } from './gun-utils';
       }
       return;
     }
+    const soul = data._['#'];
     const tmp = this; // else if a sub-object, CPU schedule loop over properties to do recursion.
     // console.log(opt.doc);
-    // if (data.className) {
-    //   console.log(ctx);
-    //   // opt.create(data, data._['#']);
-    // }
-    (setTimeout as any).each(Object.keys(data), function (dk: any, val: any) {
+    const subKeys = Object.keys(data).sort((a, b) => {
+      const ap = opt.priorities.includes(a);
+      const bp = opt.priorities.includes(b);
+      return ap && !bp ? 1 : bp && !ap ? -1 : 0;
+    });
+    if (at && data.className) {
+      // We aren't dealing with a map
+      if (data._['#'].endsWith(key)) {
+        opt.create(data, key, soul);
+      }
+      subKeys.forEach(mapKey); // FIXME sort fields by criticality
+    } else {
+      (setTimeout as any).each(Object.keys(data), mapKey);
+    }
+    function mapKey(dk: any, val: any): void {
       if ('_' === dk && !opt.meta) {
         return;
       }
@@ -95,7 +109,7 @@ import { isSubSoul } from './gun-utils';
         return;
       } // if no "parent"
 
-      const primSoul = `${data._['#']}/${dk}`;
+      const primSoul = `${soul}/${dk}`;
       const docOrVal = doc[dk] || val;
       if (!val && oldVal) {
         // console.log('delete', primSoul);
@@ -112,9 +126,11 @@ import { isSubSoul } from './gun-utils';
         doc[dk] = val;
         if (upDiff) {
           // console.log(`${dk} diff ${upDiff}`);
-          opt.diff(data[dk], primSoul);
+          if (JSON.stringify(val) !== JSON.stringify(oldVal)) {
+            opt.diff(data[dk], dk, soul);
+          }
         } else if (!oldVal) {
-          // opt.diff(docOrVal, primSoul);
+          // opt.diff(docOrVal, dk, soul);
         }
         return;
       }
@@ -137,10 +153,11 @@ import { isSubSoul } from './gun-utils';
         doc[dk] = doc[dk] || val; // show link so app can load it if need.
         return;
       } // now open up the recursion of sub-documents!
+
       // console.log(key, dk, data._['>'][dk]);
       tmp
         .get(dk)
-        .openChanges(opt.any, opt, (opt.ids[id] = doc[dk] = {}), depth + 1); // 3rd param is now where we are "at".
-    });
+        .openChanges(opt.any, opt, (opt.ids[id] = doc[dk] = {}), depth + 1);
+    }
   });
 };

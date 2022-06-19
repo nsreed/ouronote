@@ -1,6 +1,7 @@
-import { VectorTool, IEnhancedScope } from './paper-tool';
+import { VectorTool } from './paper-tool';
+import { IEnhancedScope } from '../../../vector/IEnhancedScope';
 import { map, shareReplay } from 'rxjs/operators';
-import { IEnhancedPaper } from '../../../vector/paper.directive';
+import { IEnhancedPaper } from '../../../vector/IEnhancedPaper';
 export class SelectionTool extends VectorTool {
   constructor(scope: IEnhancedScope) {
     super(scope);

@@ -79,19 +79,45 @@ import * as paper from 'paper';
 import { EventEmitter } from '@angular/core';
 
 // FIXME GunSharedWorkerPlugin loses data when using one tab
-// import { GunSharedWorkerPlugin } from 'projects/ng-gun/src/lib/classes/GunSharedWorkerPlugin';
+import { GunSharedWorkerPlugin } from 'projects/ng-gun/src/lib/classes/GunSharedWorkerPlugin';
+GunSharedWorkerPlugin.register((window as any).Gun);
+
 import { take } from 'rxjs/operators';
 import { ReplaySubject } from 'rxjs';
-// GunSharedWorkerPlugin.register((window as any).Gun);
+import { getAllSettable } from './app/user/vectors/functions/paper-chain';
+import {
+  MUTATION_METHODS,
+  MUTATION_PROPERTIES,
+} from './app/user/vectors/functions/constants';
+
+// tslint:disable: space-before-function-paren
+// tslint:disable: only-arrow-functions
 
 const IGNORED_PROPS: string[] = [
   'fullySelected',
   'selected',
   'selection',
   'style',
+  'data',
 ];
 const BUBBLE_PROPS: string[] = ['fullySelected', 'selected', 'selection'];
 const prototypeOwnProperties = {} as any;
+MUTATION_METHODS.forEach((name: string) => {
+  console.log('mutta', name);
+});
+
+const afterProto =
+  (proto: any) => (name: string) => (cb: (...args: any[]) => any) => {
+    const o = proto[name];
+    if (typeof o === 'function') {
+      // console.log('after proto', proto.constructor.name, name);
+      proto[name] = function (...args: any[]) {
+        const r = o.call(this, ...args);
+        cb.call(this, r);
+        return r;
+      };
+    }
+  };
 
 /**
  * Gets a list of settable properties from a given prototype
@@ -117,6 +143,43 @@ function getOwnSettable(proto: any) {
   return prototypeOwnProperties[proto.constructor.name];
 }
 
+function getEverySettable(proto: any) {
+  let properties: any[] = [];
+  while (proto) {
+    const likelyProperties = Object.getOwnPropertyDescriptors(proto);
+    const props = Object.keys(likelyProperties)
+      .map((k) => [likelyProperties[k], k, proto])
+      .filter((prop) => {
+        const d = prop[0] as PropertyDescriptor;
+        return (
+          d.enumerable &&
+          d.set &&
+          !(prop[1] as any).startsWith('on') &&
+          !IGNORED_PROPS.includes(prop[1] as any)
+        );
+      });
+    properties = [...properties, ...props];
+
+    // console.log('property descriptors', props);
+    // console.log('emitting all from', Object.getOwnPropertyNames(proto));
+    proto = Object.getPrototypeOf(proto);
+  }
+  return properties;
+}
+
+function findAncestorWithKey(prototype: any, key: string) {
+  while (prototype) {
+    if (Object.keys(prototype).includes(key)) {
+      return prototype;
+    }
+    if (Object.getOwnPropertyDescriptor(prototype, key)) {
+      return prototype;
+    }
+    prototype = Object.getPrototypeOf(prototype);
+  }
+  return null;
+}
+
 /**
  * Adds a change emitter, .changes$, to the given prototype
  * @param prototype The prototype to add .changes$ to
@@ -140,18 +203,31 @@ function addChangeEmitter(prototype: any) {
  * @param prototype the prototype to inject change emission into
  */
 function addChangeListeners(
-  prototype: any,
-  properties = getOwnSettable(prototype)
+  cls: any,
+  prototype = cls.prototype,
+  cnst = prototype.constructor,
+  properties = getOwnSettable(cls.prototype)
 ) {
-  // console.log('monkeypatching prototype', prototype);
-  addChangeEmitter(prototype);
-  // console.log(properties.map((p: any) => p[1]).join(', '));
+  console.log(`${cnst.name}`);
 
-  // prototype.bubble =
-  //   prototype.bubble ||
-  //   function (this: any, name: string, ev: any) {
-  //     this.emit(name, ev);
-  //   };
+  addChangeEmitter(prototype);
+
+  // CONSTRUCTOR OVERRIDES
+  if (false && prototype !== paper.Color.prototype) {
+    console.log(`overriding ${cnst.name}`);
+    const cn = prototype.constructor;
+    prototype.constructor = function (...args: any[]) {
+      console.log('constructed', cn.name);
+      const instance = new cn(...args);
+      const keys = Object.keys(instance);
+      console.log({ keys });
+      return instance;
+    };
+    const old = (paper as any)[cn.name];
+    // console.log(`${cn.name}`, old);
+    (paper as any)[cn.name] = prototype.constructor;
+    // console.log(`${Object.keys(paper).join(',')}`);
+  }
 
   Object.defineProperty(prototype, 'bubble', {
     get() {
@@ -162,88 +238,81 @@ function addChangeListeners(
       }
       return this._bubble;
     },
+    enumerable: false,
   });
 
   properties.forEach((prop: any[]) => {
     const property = prop[0];
     const propertyName = prop[1];
-    // console.log('%s.%s', prototype.constructor.name, propertyName);
+    console.log('%s.%s', prototype.constructor.name, propertyName);
+
+    const propField = `_${propertyName}`;
+    const protoWithField = findAncestorWithKey(prototype, propField);
+    if (protoWithField) {
+      console.log('creating backing property', protoWithField, propField);
+      if (protoWithField[`_${propField}`]) {
+        console.log('already created');
+      }
+      protoWithField[`_${propField}`] = protoWithField[propField];
+      Object.defineProperty(protoWithField, propField, {
+        enumerable: false,
+        get() {
+          return this[`__${propertyName}`];
+        },
+        set(value: any) {
+          if (value !== this[`__${propertyName}`]) {
+            this[`__${propertyName}`] = value;
+            onPropertyChange.call(this, propertyName, value);
+          }
+        },
+      });
+    }
+
     Object.defineProperty(prototype, propertyName, {
       get: property.get,
       set(value: any) {
-        // console.log('set %s to', propertyName, ...args);
+        // console.log('set %s to', propertyName, value);
         if (this[propertyName] === value) {
           return;
         }
-        property.set.call(this, value);
-        this.changes$.next([propertyName, value]);
-        if (this.data?.path) {
-          const changeEvent = {
-            target: this,
-            // bubbles: true,
-            propertyName,
-            value,
-            path: `${this.data.path}/${propertyName}`,
-          };
-          // if (this.emit) {
-          //   this.emit(`change`, changeEvent);
-          // }
-          // if (this.parent?.bubble) {
-          //   this.parent?.bubble('change', changeEvent);
-          // }
-          if (this.parent && this.project?.bubble) {
-            console.log('bubbling', propertyName);
-            this.project?.bubble('change', changeEvent);
-          }
-        }
-        // if (BUBBLE_PROPS.includes(propertyName)) {
-        //   console.log('bubbling %s', propertyName);
-        //   const e = {} as paper.Event;
-        //   const i = {} as paper.Item;
-        //   if (this.emit) {
-        //     this.emit(`${propertyName}Change`, {});
-        //   }
-        // }
+        property.set?.call(this, value);
+        onPropertyChange.call(this, propertyName, value);
       },
     });
-  });
-}
 
-/**
- * A list of paper.js classes to add changes$ emitters to
- */
-const toIntercept = [
-  paper.Item,
-  paper.Path,
-  paper.Layer,
-  paper.Shape,
-  paper.Shape.Circle,
-  paper.Shape.Ellipse,
-  paper.Shape.Rectangle,
-  // paper.Style, // TODO: in case we need `change$` event emitter for Style, this has to be fixed in the --prod build
-  paper.Group,
-  paper.Gradient,
-  paper.Color,
-  paper.View,
-  paper.Size,
-  paper.Project,
-].map((con) => con.prototype);
-
-// Add change emitters
-toIntercept.forEach((proto) => addChangeListeners(proto));
-
-const afterProto =
-  (proto: any) => (name: string) => (cb: (...args: any[]) => any) => {
-    const o = proto[name];
-    if (typeof o === 'function') {
-      console.log('after proto', proto.constructor.name, name);
-      proto[name] = function (...args: any[]) {
-        const r = o.call(this, ...args);
-        cb(r);
+    if (propertyName === 'position') {
+      prototype._position = null;
+      const oldTranslate = prototype.translate;
+      prototype.translate = function (this: any, ...args: any[]) {
+        const op = this.position;
+        const r = oldTranslate.call(this, ...args);
+        const np = this.position;
+        if (op === np) {
+          return;
+        }
+        onPropertyChange.call(this, 'position', this.position);
         return r;
       };
     }
-  };
+  });
+}
+
+function onPropertyChange(this: any, propertyName: string, value: any) {
+  this.changes$.next([propertyName, value]);
+  if (this.data?.soul) {
+    const changeEvent = {
+      target: this,
+      // bubbles: true,
+      propertyName,
+      value,
+      soul: `${this.data.soul}/${propertyName}`,
+    };
+    if (this.isInserted() && this.project?.bubble) {
+      // console.log('bubbling', propertyName);
+      this.project?.bubble('change', changeEvent);
+    }
+  }
+}
 
 // Patch Project
 const original = paper.Project.prototype.deselectAll;
@@ -296,3 +365,26 @@ paper.Project.prototype.deselectAll = function () {
 const p = afterProto(paper.Project.prototype)('deselectAll')(() =>
   (this as any)?.changes$?.next(['selectedItems', (this as any).selectedItems])
 );
+
+/**
+ * A list of paper.js classes to add changes$ emitters to
+ */
+const toIntercept = [
+  paper.Item,
+  paper.Path,
+  paper.Layer,
+  paper.Shape,
+  paper.Shape.Circle,
+  paper.Shape.Ellipse,
+  paper.Shape.Rectangle,
+  // paper.Style, // TODO: in case we need `change$` event emitter for Style, this has to be fixed in the --prod build
+  paper.Group,
+  paper.Gradient,
+  paper.Color,
+  paper.View,
+  paper.Size,
+  paper.Project,
+];
+
+// Add change emitters
+toIntercept.forEach((cns) => addChangeListeners(cns));
