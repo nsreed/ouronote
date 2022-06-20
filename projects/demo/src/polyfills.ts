@@ -100,6 +100,7 @@ const IGNORED_PROPS: string[] = [
   'style',
   'data',
 ];
+const NEEDS_BACKING_PROPERTY: string[] = ['position'];
 const BUBBLE_PROPS: string[] = ['fullySelected', 'selected', 'selection'];
 const prototypeOwnProperties = {} as any;
 MUTATION_METHODS.forEach((name: string) => {
@@ -246,37 +247,42 @@ function addChangeListeners(
     const propertyName = prop[1];
     console.log('%s.%s', prototype.constructor.name, propertyName);
 
-    const propField = `_${propertyName}`;
-    const protoWithField = findAncestorWithKey(prototype, propField);
-    if (protoWithField) {
-      console.log('creating backing property', protoWithField, propField);
-      if (protoWithField[`_${propField}`]) {
-        console.log('already created');
+    if (NEEDS_BACKING_PROPERTY.includes(propertyName)) {
+      const propField = `_${propertyName}`;
+      const protoWithField = findAncestorWithKey(prototype, propField);
+      if (protoWithField) {
+        console.log('creating backing property', protoWithField, propField);
+        if (protoWithField[`_${propField}`]) {
+          console.log('already created');
+        }
+        protoWithField[`_${propField}`] = protoWithField[propField];
+        Object.defineProperty(protoWithField, propField, {
+          enumerable: false,
+          get() {
+            return this[`__${propertyName}`];
+          },
+          set(value: any) {
+            if (value !== this[`__${propertyName}`]) {
+              this[`__${propertyName}`] = value;
+              onPropertyChange.call(this, propertyName, value);
+            }
+          },
+        });
       }
-      protoWithField[`_${propField}`] = protoWithField[propField];
-      Object.defineProperty(protoWithField, propField, {
-        enumerable: false,
-        get() {
-          return this[`__${propertyName}`];
-        },
-        set(value: any) {
-          if (value !== this[`__${propertyName}`]) {
-            this[`__${propertyName}`] = value;
-            onPropertyChange.call(this, propertyName, value);
-          }
-        },
-      });
     }
 
     Object.defineProperty(prototype, propertyName, {
       get: property.get,
       set(value: any) {
-        // console.log('set %s to', propertyName, value);
-        if (this[propertyName] === value) {
-          return;
+        try {
+          if (this[propertyName] === value) {
+            return;
+          }
+          property.set?.call(this, value);
+          onPropertyChange.call(this, propertyName, value);
+        } catch (e: any) {
+          console.error(`error setting property ${propertyName}`, e);
         }
-        property.set?.call(this, value);
-        onPropertyChange.call(this, propertyName, value);
       },
     });
 
