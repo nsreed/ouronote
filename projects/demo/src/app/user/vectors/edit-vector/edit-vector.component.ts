@@ -291,9 +291,9 @@ export class EditVectorComponent
   }
 
   onContentBlur(pt: paper.PointText, value: any) {
-    if (pt.content === '') {
-      pt.remove();
-    }
+    // if (pt.content === '') {
+    //   pt.remove();
+    // }
   }
 
   activateDrawLayer() {
