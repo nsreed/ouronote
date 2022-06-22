@@ -24,12 +24,13 @@ export class TextTool extends VectorTool {
   @Property({
     label: 'Content',
   })
-  content = 'text';
+  content = '';
 
   propertyNames: string[] = ['content', 'style'];
 
   downSub = this.down.subscribe((e) => {
     this.activateDrawLayer();
+    this.project.deselectAll();
     this.text = new paper.PointText(e.point);
     this.text.content = this.content;
     this.text.style = this.project.currentStyle;
@@ -56,6 +57,7 @@ export class TextTool extends VectorTool {
       this.project.activeLayer.children.length,
       this.text
     );
+    this.text.selected = true;
   });
 
   dragSub = this.drag.subscribe((e) => {

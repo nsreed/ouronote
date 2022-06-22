@@ -96,6 +96,14 @@ export class ColorFormComponent implements OnInit {
     this.colorCtr.valueChanges.subscribe((v) => {
       // FIXME this is broken for fillColor (the color passed in was null)
       // this.color?.set([v.r / 255, v.g / 255, v.b / 255, v.a]);
+      if (!v) {
+        v = {
+          r: 0,
+          g: 0,
+          b: 0,
+          a: 0,
+        };
+      }
       if (this.prop.value instanceof paper.Color) {
         this.prop.value.set([v.r / 255, v.g / 255, v.b / 255, v.a]);
       } else {
