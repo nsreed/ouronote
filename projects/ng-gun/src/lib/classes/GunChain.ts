@@ -452,7 +452,7 @@ export class GunChain<
             });
           },
           {
-            meta: true,
+            meta: false,
           }
         );
         return signal;
