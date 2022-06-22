@@ -5,6 +5,17 @@ import { serializeValue } from '../../functions/packaging';
 import { Style } from 'paper';
 
 function getColorValue(value: any) {
+  if (!value) {
+    return null;
+  }
+  if ('string' === typeof value) {
+    return value;
+  }
+  if (value instanceof paper.Color) {
+    const css = value.toCSS(true);
+    const alpha = Math.round(value.alpha * 255).toString(16);
+    return value.alpha < 1 ? css + alpha : css;
+  }
   return value === null
     ? value
     : typeof value === 'string'

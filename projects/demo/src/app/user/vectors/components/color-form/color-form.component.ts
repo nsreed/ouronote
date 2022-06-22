@@ -4,11 +4,24 @@ import { ObjectPropertyDirective } from '../../../../directives/object-property.
 import * as paper from 'paper';
 import { Color } from '@angular-material-components/color-picker';
 
+class PickerColor extends Color {
+  constructor(r: number, g: number, b: number, a?: number) {
+    super(r, g, b, a);
+    // this.hex = this.toHex8String();
+  }
+
+  toHex(allow3Char = false): string {
+    return this.a < 1
+      ? this.toHex8String().replace('#', '')
+      : super.toHex(allow3Char);
+  }
+}
+
 function paperColorToPicker(color: paper.Color) {
   if ('string' === typeof color) {
     color = new paper.Color(color);
   }
-  return new Color(
+  return new PickerColor(
     (color?.red || 0) * 255,
     (color?.green || 0) * 255,
     (color?.blue || 0) * 255,

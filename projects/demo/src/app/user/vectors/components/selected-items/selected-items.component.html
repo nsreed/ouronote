@@ -1,3 +1,5 @@
+
+<app-style-form [style]="selectedStyle" (styleChange)="onStyleChange($event)" (stylePropChange)="onStylePropChange($event)"></app-style-form>
 <mat-list>
   <div mat-subheader>{{ selectedItems?.length || 0 }} item{{ selectedItems?.length === 1 ? '' : 's' }}</div>
   <button mat-flat-button (click)="onBringToFrontClick()">Bring to Front</button>
@@ -7,4 +9,3 @@
   <button mat-flat-button (click)="onDebugSelectedClick()">Debug Items</button>
   <button mat-flat-button (click)="onForceSaveClick()">Force Save</button>
 </mat-list>
-<app-style-form [style]="selectedStyle" (styleChange)="onStyleChange($event)" (stylePropChange)="onStylePropChange($event)"></app-style-form>
