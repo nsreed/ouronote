@@ -1,5 +1,5 @@
 <div fxLayout="column">
-
+  <!-- colorCtr.value: {{colorCtr.value}} -->
   <form [formGroup]="colorForm" (submit)="onSubmit($event)">
     <mat-form-field>
       <input matInput [ngxMatColorPicker]="picker" [formControl]="colorCtr"/>

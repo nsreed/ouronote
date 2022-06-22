@@ -5,6 +5,9 @@ import * as paper from 'paper';
 import { Color } from '@angular-material-components/color-picker';
 
 function paperColorToPicker(color: paper.Color) {
+  if ('string' === typeof color) {
+    color = new paper.Color(color);
+  }
   return new Color(
     (color?.red || 0) * 255,
     (color?.green || 0) * 255,
@@ -114,9 +117,8 @@ export class ColorFormComponent implements OnInit {
   }
 
   updateFromColor() {
-    this.colorCtr.patchValue(
-      this.color ? paperColorToPicker(this.color) : null
-    );
+    const clr = this.color ? paperColorToPicker(this.color) : null;
+    this.colorCtr.patchValue(clr);
     if (!this.color) {
       return;
     }

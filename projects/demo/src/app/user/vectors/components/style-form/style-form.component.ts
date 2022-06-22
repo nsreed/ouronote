@@ -50,6 +50,13 @@ export class StyleFormComponent implements OnInit {
           emitEvent: false,
         }
       );
+      this.form.controls.strokeColor.patchValue(
+        getColorValue(value.strokeColor),
+        {
+          onlySelf: true,
+          emitEvent: false,
+        }
+      );
     }
     // const json = serializeValue(value);
     // console.log(json);
