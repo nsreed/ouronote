@@ -61,12 +61,15 @@
         Create Account
       </button>
     </div>
+
+    <mat-error *ngIf="!onLine">
+      You are currently offline. You may not be able to log into accounts that you haven't used on this computer.
+    </mat-error>
     <mat-error *ngIf="requiredFields">
       Username and password are required.
     </mat-error>
     <mat-error *ngIf="error">
       <p>Username or password not found.</p>
-
       <p>
         If you have created an account on another device, log in with that
         device first, then try again.

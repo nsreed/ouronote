@@ -13,6 +13,8 @@ import host from '@jsdevtools/host-environment';
 import { UserService } from '../user/user.service';
 import { NgGunSessionService } from '../../../../ng-gun/src/lib/ng-gun-session.service';
 import { LogService } from '../../../../log/src/lib/log.service';
+import { fromEvent } from 'rxjs';
+import { shareReplay, map, mapTo } from 'rxjs/operators';
 
 @Component({
   templateUrl: './login.component.html',
@@ -22,6 +24,15 @@ export class LoginComponent implements OnInit {
   error: any;
 
   unsupportedBrowser = !(host.browser as any).chrome;
+
+  navigator = (window as any).navigator;
+
+  onLine$ = fromEvent(this.navigator.connection, 'change').pipe(
+    map(() => this.navigator.onLine),
+    shareReplay(1)
+  );
+
+  onLine = this.navigator.onLine;
 
   private _mode: 'create' | 'login' = 'login';
   public get mode(): 'create' | 'login' {
@@ -79,6 +90,9 @@ export class LoginComponent implements OnInit {
     public sessionService: NgGunSessionService,
     private logger: LogService
   ) {
+    this.onLine$.subscribe((v) => {
+      this.onLine = v;
+    });
     logger.name = 'login';
     ngGun.auth().auth$.subscribe((data) => {
       // console.log('auth data', data);
