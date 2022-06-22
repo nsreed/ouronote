@@ -80,7 +80,7 @@ import { EventEmitter } from '@angular/core';
 
 // FIXME GunSharedWorkerPlugin loses data when using one tab
 import { GunSharedWorkerPlugin } from 'projects/ng-gun/src/lib/classes/GunSharedWorkerPlugin';
-GunSharedWorkerPlugin.register((window as any).Gun);
+// GunSharedWorkerPlugin.register((window as any).Gun);
 
 import { take } from 'rxjs/operators';
 import { ReplaySubject } from 'rxjs';
