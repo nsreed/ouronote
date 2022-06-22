@@ -169,12 +169,12 @@ export class ColorFormComponent implements OnInit {
     const v = new paper.Color(color);
 
     // this.color.set([v.red, v.green, v.blue, v.alpha]);
-    // this.prop.value = v;
-    if (!(this.prop.value instanceof paper.Color)) {
-      this.prop.value = v;
-    } else {
-      this.prop.value.set([v.red, v.green, v.blue, v.alpha]);
-    }
+    this.prop.value = v;
+    // if (!(this.prop.value instanceof paper.Color)) {
+    //   this.prop.value = v;
+    // } else {
+    //   this.prop.value.set([v.red, v.green, v.blue, v.alpha]);
+    // }
 
     this.colorCtr.patchValue(paperColorToPicker(v));
   }

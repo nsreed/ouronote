@@ -109,6 +109,8 @@ export class FavoriteColorsComponent implements OnInit {
       if (typeof hex === 'string') {
         this.colors.get(hex).put(hex);
       }
+    } else if ('string' === typeof color && RE_VALID_HEX_COLOR.test(color)) {
+      this.colors.get(color).put(color);
     }
   }
 
