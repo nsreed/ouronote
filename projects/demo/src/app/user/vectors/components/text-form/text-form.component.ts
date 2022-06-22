@@ -4,10 +4,12 @@ import {
   ViewChild,
   ElementRef,
   AfterViewInit,
+  Output,
 } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ObjectPropertyDirective } from 'projects/demo/src/app/directives/object-property.directive';
 import { ObjectDirective } from '../../../../directives/object.directive';
+import { EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-text-form',
@@ -19,6 +21,11 @@ export class TextFormComponent implements OnInit, AfterViewInit {
 
   @ViewChild('TextArea')
   textAreaRef!: ElementRef<HTMLTextAreaElement>;
+
+  @Output()
+  blur$ = new EventEmitter();
+
+  private lastObj: any = null;
 
   constructor(
     private fb: FormBuilder,
@@ -32,6 +39,7 @@ export class TextFormComponent implements OnInit, AfterViewInit {
         emitEvent: false,
       });
       this.textAreaRef?.nativeElement?.focus();
+      this.lastObj = o;
     });
   }
 
@@ -41,5 +49,9 @@ export class TextFormComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.textAreaRef.nativeElement.focus();
+  }
+
+  onBlur() {
+    this.blur$.emit();
   }
 }

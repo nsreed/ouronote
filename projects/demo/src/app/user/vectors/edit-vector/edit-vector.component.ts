@@ -51,6 +51,7 @@ import { LicenseDialogComponent } from '../../../components/license-dialog/licen
 import { VectorTool } from '../tools/paper-tool';
 import { tool } from 'paper/dist/paper-core';
 import { layoutVertical } from '../functions/paper-functions';
+import { IEnhancedPaper } from '../../../vector/IEnhancedPaper';
 
 @Component({
   templateUrl: './edit-vector.component.html',
@@ -234,6 +235,18 @@ export class EditVectorComponent
       this.paperDirective.scope as any,
       new LogService()
     );
+    let lastSelected: paper.Item[] = [];
+    (project as IEnhancedPaper).selectedItems$.subscribe((items) => {
+      lastSelected.forEach((item) => {
+        // Do sanity checks?
+        if (item instanceof paper.PointText) {
+          if (item.content === '') {
+            item.remove();
+          }
+        }
+      });
+      lastSelected = items;
+    });
   }
 
   copyViewLink() {
@@ -275,6 +288,12 @@ export class EditVectorComponent
   onContentValueChange(pt: paper.PointText, value: string) {
     pt.content = value;
     (pt as any).pair.save(['content']);
+  }
+
+  onContentBlur(pt: paper.PointText, value: any) {
+    if (pt.content === '') {
+      pt.remove();
+    }
   }
 
   activateDrawLayer() {
