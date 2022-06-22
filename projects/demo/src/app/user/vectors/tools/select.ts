@@ -94,6 +94,7 @@ export class LassoSelectTool extends SelectTool {
           }
 
           let hasMatch = false;
+
           if (item.className === 'Path') {
             const iPath = item as paper.Path;
             const segmentPoints = iPath.segments.map((s) => s.point);
@@ -111,7 +112,10 @@ export class LassoSelectTool extends SelectTool {
                 }
               });
             }
-          } else if (item instanceof paper.Shape) {
+          } else if (
+            item instanceof paper.Shape ||
+            item instanceof paper.PointText
+          ) {
             const corners = [
               item.bounds.bottomLeft,
               item.bounds.bottomRight,
