@@ -107,12 +107,27 @@ export class ColorFormComponent implements OnInit {
           a: 0,
         };
       }
+      // if (this.prop.value instanceof paper.Color) {
+      //   console.log('updating existing');
+      //   // FIXME this might not trigger saves
+      //   // this.prop.value.set([v.r / 255, v.g / 255, v.b / 255, v.a]);
+      //   // this.prop.value = new paper.Color(v.r / 255, v.g / 255, v.b / 255, v.a);
+      // } else {
+      //   console.log('setting new');
+      //   this.prop.value = new paper.Color(v.r / 255, v.g / 255, v.b / 255, v.a);
+      // }
+      const c = new paper.Color(v.r / 255, v.g / 255, v.b / 255, v.a);
       if (this.prop.value instanceof paper.Color) {
-        this.prop.value.set([v.r / 255, v.g / 255, v.b / 255, v.a]);
-      } else {
-        this.prop.value = new paper.Color(v.r / 255, v.g / 255, v.b / 255, v.a);
+        if (
+          this.prop.value.red === c.red &&
+          this.prop.value.green === c.green &&
+          this.prop.value.blue === c.blue &&
+          this.prop.value.alpha === c.alpha
+        ) {
+          return;
+        }
       }
-      // this.prop.value = new paper.Color(v.r / 255, v.g / 255, v.b / 255, v.a);
+      this.prop.value = c;
     });
   }
 
