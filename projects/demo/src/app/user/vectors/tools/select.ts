@@ -123,14 +123,14 @@ export class LassoSelectTool extends SelectTool {
               item.bounds.topLeft,
             ];
 
-            // TODO: Greedy select on shape edges
-            // const x = new paper.Path(corners);
-            // x.closePath();
-            // x.strokeWidth = 3;
-            // x.strokeColor = new paper.Color('green');
-            // x.removeOnDown();
-
             if (this.greedySelect) {
+              const x = new paper.Path(corners);
+              x.closePath();
+              if (x.intersects(this.path)) {
+                x.remove();
+                return true;
+              }
+              x.remove();
               return corners.find((p) => this.path.contains(p)) !== undefined;
             } else {
               return corners.find((p) => !this.path.contains(p)) === undefined;
