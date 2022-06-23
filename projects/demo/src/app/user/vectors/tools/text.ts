@@ -14,6 +14,7 @@ export class TextTool extends VectorTool {
     strokeCap: 'round',
     strokeJoin: 'round',
     strokeWidth: 3,
+    fontSize: 20,
   } as paper.Style);
 
   @Property({
@@ -34,13 +35,13 @@ export class TextTool extends VectorTool {
     // Look for text (to select)
     const selected = this.project.getItem({
       match: (item: paper.Item) => {
-        if(item.className === 'PointText'){
+        if (item.className === 'PointText') {
           return item.hitTest(e.point);
         }
         return false;
-      }
+      },
     });
-    if(selected){
+    if (selected) {
       selected.selected = true;
       return;
     }

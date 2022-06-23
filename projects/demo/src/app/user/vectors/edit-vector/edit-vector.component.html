@@ -48,7 +48,10 @@
           </app-color-form>
           <ng-container *ngIf="paper.scope.tool?.propertyNames?.includes('style')">
             <app-stroke-width-form [tool]="paper.scope.tool" [style]="paper.scope.tool.style"></app-stroke-width-form>
-            <p>Size</p>
+            <p>Stroke Width</p>
+          </ng-container>
+          <ng-container *ngIf="paper.scope.tool?.propertyNames?.includes('style')">
+            <app-number-form label="Font Size" [appObject]="paper.scope.tool.style" appObjectProperty="fontSize"></app-number-form>
           </ng-container>
           <div *ngIf="paper.scope.tool?.propertyNames?.includes('simplify')">
             <app-boolean-form [appObject]="paper.scope.tool" appObjectProperty="simplify"></app-boolean-form>

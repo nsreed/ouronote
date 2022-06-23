@@ -58,6 +58,7 @@ import { TextFormComponent } from './components/text-form/text-form.component';
 import { FavoriteColorsComponent } from './components/favorite-colors/favorite-colors.component';
 import { ColorGradientComponent } from './components/color-gradient/color-gradient.component';
 import { VectorLoaderComponent } from './components/vector-loader/vector-loader.component';
+import { NumberFormComponent } from './components/number-form/number-form.component';
 
 @NgModule({
   declarations: [
@@ -84,6 +85,7 @@ import { VectorLoaderComponent } from './components/vector-loader/vector-loader.
     FavoriteColorsComponent,
     ColorGradientComponent,
     VectorLoaderComponent,
+    NumberFormComponent,
   ],
   imports: [
     CertificatesModule,
