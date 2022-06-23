@@ -115,7 +115,7 @@ export class VectorService {
 
     const userCerts = await this.certify(
       userPair,
-      ['layers', 'title', 'certs'],
+      ['layers', 'title', 'certs', 'license'],
       vectorPair
     );
 
