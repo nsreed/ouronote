@@ -57,9 +57,9 @@ export class SettingsDialogComponent implements OnInit {
       .open()
       .pipe(filter((l) => l !== null))
       .subscribe((l: any) => {
-        const license = Object.values(LICENSES).find(
-          (ll: any) => ll.type === l.type
-        );
+        const license =
+          Object.values(LICENSES).find((ll: any) => ll.type === l.type) ||
+          'custom';
         this.form.controls.license.setValue(license);
       });
   }
@@ -73,6 +73,9 @@ export class SettingsDialogComponent implements OnInit {
         formValue.license === 'custom'
           ? formValue.customLicense
           : formValue.license;
+      license.url = license.url || null;
+      license.type = license.type || null;
+      license.text = license.text || null;
       this.vector.get('license').put(license);
     }
     this.dialogRef.close();
