@@ -8,11 +8,11 @@
   </ng-container>
 </div>
 <div gdColumns="auto auto auto auto" *ngIf="mode === 'view'">
-  <button title="Add" class="color-box" (click)="add(candidate)" *ngIf="candidate && !selected">+</button>
   <ng-container *ngFor="let color of (colors$|async)">
     <button [title]="color.value" [ngClass]="{
       selected: candidate && candidateHex === color.value
     }" class="color-box" [style]="{backgroundColor: color.value}" (click)="onColorClick(color.key, color.value)">&nbsp;</button>
   </ng-container>
+  <button matTooltip="Add color to favorites" class="color-box" (click)="add(candidate)" *ngIf="candidate && !selected">+</button>
 </div>
-<button mat-icon-button *ngIf="selected"><mat-icon>delete</mat-icon></button>
+<button mat-icon-button *ngIf="selected" matTooltip="Remove color from favorites"><mat-icon>delete</mat-icon></button>

@@ -38,7 +38,7 @@ export class ColorFormComponent implements OnInit {
   @Input()
   label?: string;
 
-  showFavorites = false;
+  showFavorites = true;
   form = this.fb.group({
     red: [0, [Validators.min(0), Validators.max(1)]],
     green: [0, [Validators.min(0), Validators.max(1)]],
