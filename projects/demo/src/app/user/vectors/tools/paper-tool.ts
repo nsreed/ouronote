@@ -123,7 +123,14 @@ export class VectorTool extends Tool {
   // FIXME class names get mangled by production build, stop being lazy
   name = Object.getPrototypeOf(this).constructor.name.replace(/tool/gi, '');
 
-  keyDel = this.keyup.pipe(filter((e) => e.key === 'delete'));
+  keyDel = this.keyup.pipe(
+    filter((e: any) => {
+      return (
+        !['textarea', 'input'].includes(e.event.target.localName) &&
+        e.key === 'delete'
+      );
+    })
+  );
   keyDelSub = this.keyDel.subscribe((e) => {
     this.scope.project
       .getItems({
