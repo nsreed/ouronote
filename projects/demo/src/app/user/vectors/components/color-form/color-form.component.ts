@@ -35,6 +35,9 @@ function paperColorToPicker(color: paper.Color) {
   styleUrls: ['./color-form.component.scss'],
 })
 export class ColorFormComponent implements OnInit {
+  @Input()
+  label?: string;
+
   showFavorites = false;
   form = this.fb.group({
     red: [0, [Validators.min(0), Validators.max(1)]],

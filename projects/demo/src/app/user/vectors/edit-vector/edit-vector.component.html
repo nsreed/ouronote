@@ -38,10 +38,10 @@
 
         <div [appObject]="paper.project.currentStyle">
           <app-color-form appObjectProperty="strokeColor" [color]="paper.project.currentStyle.strokeColor"
-            *ngIf="paper.scope.tool?.propertyNames?.includes('style')" [style]="paper.scope.tool.style">
+            *ngIf="paper.scope.tool?.propertyNames?.includes('style')" [style]="paper.scope.tool.style" label="Stroke Color">
           </app-color-form>
           <app-color-form appObjectProperty="fillColor" [color]="paper.project.currentStyle.fillColor"
-            [style]="paper.scope.tool.style" *ngIf="paper.scope.tool?.propertyNames?.includes('style')">
+            [style]="paper.scope.tool.style" *ngIf="paper.scope.tool?.propertyNames?.includes('style')" label="Fill Color">
           </app-color-form>
           <ng-container *ngIf="paper.scope.tool?.propertyNames?.includes('style')">
             <app-stroke-width-form [tool]="paper.scope.tool" [style]="paper.scope.tool.style"></app-stroke-width-form>
