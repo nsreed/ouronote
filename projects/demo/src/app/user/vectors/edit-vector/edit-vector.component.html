@@ -50,7 +50,7 @@
             <app-stroke-width-form [tool]="paper.scope.tool" [style]="paper.scope.tool.style"></app-stroke-width-form>
             <p>Stroke Width</p>
           </ng-container>
-          <ng-container *ngIf="paper.scope.tool?.propertyNames?.includes('style')">
+          <ng-container *ngIf="paper.scope.tool.name === 'text' && paper.scope.tool?.propertyNames?.includes('style')">
             <app-number-form label="Font Size" [appObject]="paper.scope.tool.style" appObjectProperty="fontSize"></app-number-form>
           </ng-container>
           <div *ngIf="paper.scope.tool?.propertyNames?.includes('simplify')">
