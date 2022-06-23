@@ -15,4 +15,9 @@
     <input matInput formControlName="fillColor">
     <mat-icon matSuffix>color_lens</mat-icon>
   </mat-form-field> -->
+
+  <mat-form-field>
+    <mat-label>Font Size</mat-label>
+    <input [min]="0" type="number" matInput formControlName="fontSize">
+  </mat-form-field>
 </form>

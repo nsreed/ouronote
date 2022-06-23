@@ -72,6 +72,10 @@ export class StyleFormComponent implements OnInit {
           emitEvent: false,
         }
       );
+      this.form.controls.fontSize.patchValue(value.fontSize, {
+        onlySelf: true,
+        emitEvent: false,
+      });
     }
     // const json = serializeValue(value);
     // console.log(json);
