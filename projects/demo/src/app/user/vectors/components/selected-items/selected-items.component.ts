@@ -15,6 +15,9 @@ function copyMatchingKeys(o1: any, o2: any) {
     if (JSON.stringify(o1[k]) === JSON.stringify(o2[k])) {
       // o[k] = JSON.parse(JSON.stringify(o1[k])); // Copy value
       o[k] = o1[k]; // Copy reference (maybe broken)
+    } else {
+      // console.log('non matching key', k);
+      o[k] = null;
     }
   });
   return o;
