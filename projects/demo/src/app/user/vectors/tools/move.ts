@@ -26,11 +26,11 @@ export class MoveTool extends SelectionTool {
   });
 
   upSub = this.up.subscribe((e) => {
-    if (!this.dragged) {
-      this.scope.tools.find((t: any) => t.name === 'lasso select')?.activate();
-      this.project.deselectAll();
-      return;
-    }
+    // if (!this.dragged) {
+    //   this.scope.tools.find((t: any) => t.name === 'lasso select')?.activate();
+    //   this.project.deselectAll();
+    //   return;
+    // }
 
     const selectedItems = this.scope.project.getItems({
       selected: true,
