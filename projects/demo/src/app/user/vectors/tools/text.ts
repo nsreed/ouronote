@@ -31,6 +31,21 @@ export class TextTool extends VectorTool {
   downSub = this.down.subscribe((e) => {
     this.activateDrawLayer();
     this.project.deselectAll();
+    // Look for text (to select)
+    const selected = this.project.getItem({
+      match: (item: paper.Item) => {
+        if(item.className === 'PointText'){
+          return item.hitTest(e.point);
+        }
+        return false;
+      }
+    });
+    if(selected){
+      selected.selected = true;
+      return;
+    }
+
+    // If no selectable text, create a new text
     this.text = new paper.PointText(e.point);
     this.text.content = this.content;
     this.text.style = this.project.currentStyle;
