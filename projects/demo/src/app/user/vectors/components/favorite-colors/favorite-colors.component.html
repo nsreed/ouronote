@@ -15,4 +15,4 @@
   </ng-container>
   <button matTooltip="Add color to favorites" class="color-box" (click)="add(candidate)" *ngIf="candidate && !selected">+</button>
 </div>
-<button mat-icon-button *ngIf="selected" matTooltip="Remove color from favorites"><mat-icon>delete</mat-icon></button>
+<button mat-icon-button *ngIf="selected" matTooltip="Remove color from favorites" (click)="remove(selected)"><mat-icon>delete</mat-icon></button>

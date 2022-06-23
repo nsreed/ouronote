@@ -122,4 +122,9 @@ export class FavoriteColorsComponent implements OnInit {
     }
     this.updateSelected();
   }
+
+  remove(color: any) {
+    console.log('removing', color);
+    this.colors.get(color).put(null as any);
+  }
 }
