@@ -38,6 +38,10 @@ export class StyleFormComponent implements OnInit {
     if (JSON.stringify(this._style) !== JSON.stringify(value)) {
       this._style = value;
       console.log('set style', value);
+      if ((value as any).changes$) {
+        console.log('style has changes$ emitter');
+        (value as any).changes$.subscribe((c: any) => console.log({ c }));
+      }
       this.form.controls.strokeWidth.patchValue(value.strokeWidth, {
         onlySelf: true,
         emitEvent: false,

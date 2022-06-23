@@ -247,6 +247,7 @@ export class EditVectorComponent
       });
       lastSelected = items;
     });
+    project.currentStyle.strokeWidth = 3;
   }
 
   copyViewLink() {

@@ -279,10 +279,15 @@ function addChangeListeners(
             return;
           }
         } catch (e: any) {
+          // console.error(e);
           // We can ignore this because it's only performance code to avoid redundant change events for position
         }
-        property.set?.call(this, value);
-        onPropertyChange.call(this, propertyName, value);
+        try {
+          property.set?.call(this, value);
+          onPropertyChange.call(this, propertyName, value);
+        } catch (e: any) {
+          console.error(e);
+        }
       },
     });
 

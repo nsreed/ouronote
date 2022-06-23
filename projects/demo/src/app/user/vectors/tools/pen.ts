@@ -1,5 +1,4 @@
 import * as paper from 'paper';
-import { Style } from 'paper';
 import { Observable } from 'rxjs';
 import { CAPABILITIES } from '../../../system.service';
 import { PenEvent } from '../classes/PenEvent';
@@ -13,7 +12,7 @@ export class PenTool extends VectorTool {
   name = 'pen';
 
   @Property()
-  style = new Style({
+  style = new paper.Style({
     strokeCap: 'round',
     strokeJoin: 'round',
     strokeWidth: 3,
@@ -65,8 +64,8 @@ export class PenTool extends VectorTool {
       this.path.style = this.style;
       this.path.style = this.project.currentStyle;
       const width = this.scale
-        ? (1 / this.project.view.zoom) * this.style.strokeWidth
-        : this.style.strokeWidth;
+        ? (1 / this.project.view.zoom) * this.project.currentStyle.strokeWidth
+        : this.project.currentStyle.strokeWidth;
       this.path.strokeWidth = width;
       this.path.strokeColor = this.project.currentStyle.strokeColor;
       this.path.fillColor = this.project.currentStyle.fillColor;
@@ -134,5 +133,12 @@ export class PenTool extends VectorTool {
   filterEvent(event: any) {
     // Respond to pen if pointerType is present, if it isn't assume we're mouse-only
     return true; // ['pen', undefined].includes(event.event.pointerType); // TODO re-enable me when ready to tackle digitizer support
+  }
+
+  activate(): void {
+    super.activate();
+    if (this.project) {
+      this.style.strokeWidth = this.project.currentStyle.strokeWidth;
+    }
   }
 }

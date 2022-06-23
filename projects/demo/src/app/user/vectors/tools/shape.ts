@@ -53,4 +53,11 @@ export class ShapeTool extends VectorTool {
       delete this.shape;
     }
   });
+
+  activate(): void {
+    super.activate();
+    if (this.project) {
+      this.style.strokeWidth = this.project.currentStyle.strokeWidth;
+    }
+  }
 }

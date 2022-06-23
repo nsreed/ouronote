@@ -36,7 +36,10 @@
           <app-text-form [appObject]="paper.scope.tool" appObjectProperty="content"></app-text-form>
         </ng-container> -->
 
-        <div [appObject]="paper.project.currentStyle">
+        <!-- <div [appObject]="paper.project.currentStyle">
+          <app-style-form [style]="paper.project.currentStyle"></app-style-form>
+        </div> -->
+        <div *ngIf="true" [appObject]="paper.project.currentStyle">
           <app-color-form appObjectProperty="strokeColor" [color]="paper.project.currentStyle.strokeColor"
             *ngIf="paper.scope.tool?.propertyNames?.includes('style')" [style]="paper.scope.tool.style" label="Stroke Color">
           </app-color-form>

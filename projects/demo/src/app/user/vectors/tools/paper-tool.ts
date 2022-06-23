@@ -32,7 +32,7 @@ export class VectorTool extends Tool {
   }
 
   get project() {
-    return this.scope.project as paper.Project;
+    return this.scope?.project as paper.Project;
   }
 
   constructor(public readonly scope: IEnhancedScope) {

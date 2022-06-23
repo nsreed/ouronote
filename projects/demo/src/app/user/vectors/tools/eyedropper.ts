@@ -1,6 +1,6 @@
 import { VectorTool } from './paper-tool';
 import * as paper from 'paper';
-import { copyNulls } from '../functions/paper-functions';
+import { copyNulls, copyStyleToItem } from '../functions/paper-functions';
 
 export class EyedropperTool extends VectorTool {
   name = 'Eyedropper';
@@ -12,7 +12,9 @@ export class EyedropperTool extends VectorTool {
     // this.project.currentStyle.strokeColor = color;
 
     this.project.currentStyle = e.item?.style;
-    copyNulls(e.item?.style, this.project.currentStyle);
+
+    copyStyleToItem(e.item, this.project.currentStyle);
+    copyNulls(e.item, this.project.currentStyle);
   });
 
   upSub = this.up.subscribe((e: paper.ToolEvent) => {
