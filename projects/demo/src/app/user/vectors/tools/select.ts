@@ -153,6 +153,15 @@ export class LassoSelectTool extends SelectTool {
       this.path = null as never;
     } else {
       // this.scope.project.deselectAll();
+      const selected = this.project.getItem({
+        match: (item: paper.Item) => {
+          return item.className !== 'Layer' && item.hitTest(e.point);
+        },
+      });
+      if (selected) {
+        this.project.deselectAll();
+        selected.selected = true;
+      }
     }
   });
 }
@@ -192,6 +201,15 @@ export class RectangleSelectTool extends SelectTool {
       this.rect = null as never;
     } else {
       // this.scope.project.deselectAll();
+      const selected = this.project.getItem({
+        match: (item: paper.Item) => {
+          return item.className !== 'Layer' && item.hitTest(e.point);
+        },
+      });
+      if (selected) {
+        this.project.deselectAll();
+        selected.selected = true;
+      }
     }
   });
 }
