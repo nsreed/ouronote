@@ -193,7 +193,7 @@ export class PaperDirective implements OnInit, AfterViewInit {
       console.warn('scope not set on CanvasDirective');
       return;
     }
-    this.logger.log('updateViewSize()');
+    // this.logger.log('updateViewSize()');
     let tempWidth = 0;
     let tempHeight = 0;
 
@@ -221,7 +221,7 @@ export class PaperDirective implements OnInit, AfterViewInit {
 
   @HostListener('window:resize', ['$event'])
   onHostResize(event?: any) {
-    console.log('host resize');
+    // console.log('host resize');
     this.updateViewSize();
   }
 
