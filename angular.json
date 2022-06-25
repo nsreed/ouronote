@@ -60,7 +60,6 @@
               "projects/demo/src/styles.scss"
             ],
             "scripts": [
-              "projects/demo/src/assets/gun-shared.worker.js",
               "projects/demo/src/assets/gun-session.worker.js"
             ],
             "allowedCommonJsDependencies": [

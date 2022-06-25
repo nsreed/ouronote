@@ -1,13 +1,14 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Component, Inject, OnInit } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import * as Gun from 'gun';
+import { License } from 'projects/demo/src/app/License';
+import { filter, map, shareReplay } from 'rxjs/operators';
+import { GunChain } from '../../../../../../../ng-gun/src/lib/classes/GunChain';
+import { LICENSES } from '../../../../LICENSES';
+import { UserService } from '../../../user.service';
 import { VectorGraph } from '../../../VectorGraph';
 import { VectorService } from '../../vector.service';
-import { UserService } from '../../../user.service';
-import { shareReplay, map, switchMap, filter } from 'rxjs/operators';
-import { GunChain } from '../../../../../../../ng-gun/src/lib/classes/GunChain';
-import { Validators, FormBuilder } from '@angular/forms';
-import { LICENSES } from '../../../../LICENSES';
-import { License } from 'projects/demo/src/app/License';
 
 export interface VectorSettingsData {
   mode: 'general' | 'people' | 'license';
@@ -27,6 +28,8 @@ export class SettingsDialogComponent implements OnInit {
       text: `Copyright © ${new Date().getFullYear()} ${
         this.userService.user.alias
       } ALL RIGHTS RESERVED`,
+      type: 'custom',
+      url: null,
     }),
   });
 
@@ -58,38 +61,86 @@ export class SettingsDialogComponent implements OnInit {
     // });
     this.vector
       .get('license')
-      .open()
-      .pipe(filter((l) => l !== null))
+      .once()
+      // .pipe(filter((l) => l !== null))
       .subscribe((graphLicense: any) => {
-        const license =
-          Object.values(LICENSES).find(
-            (presetLicense: any) =>
-              presetLicense.type === graphLicense.type && !graphLicense.text
-          ) || 'custom'; // FIXME this won't load custom license text into the form
-        this.form.controls.license.setValue(license);
+        // Determine signer
+        console.log('signed graph license', graphLicense);
+        if (!graphLicense) {
+          return;
+        }
+        this.vector
+          .get('owner')
+          .once()
+          .subscribe(async (owner: any) => {
+            // console.log('owner', owner);
+            const ownerPub = Object.keys(owner)[0];
+            const license = (await Gun.SEA.verify(graphLicense, {
+              pub: ownerPub,
+            } as any)) as License;
+
+            if (!license) {
+              console.warn('could not verify license');
+              return;
+            }
+            // console.log({ license });
+
+            if (license.type === 'custom') {
+              this.form.controls.license.setValue('custom');
+              this.form.controls.customLicense.setValue({
+                url: null,
+                type: 'custom',
+                ...(license as any),
+              });
+            } else {
+              const matchedLicensePreset =
+                Object.values(LICENSES).find(
+                  (presetLicense: any) => presetLicense.type === license.type
+                ) || 'custom';
+              this.form.controls.license.setValue(matchedLicensePreset);
+            }
+          });
       });
   }
 
   ngOnInit(): void {}
 
-  onDoneClick() {
+  async onDoneClick() {
     if (this.form.dirty) {
+      const licenseNode = this.vector.get('license') as GunChain<License>;
       const formValue = this.form.value;
       const license =
         formValue.license === 'custom'
-          ? formValue.customLicense
+          ? { ...formValue.customLicense, type: 'custom' }
           : formValue.license;
       license.url = license.url || null;
       license.type = license.type || null;
       license.text = license.text || null;
       license.name = license.name || null;
-      const licenseNode = this.vector.get('license') as GunChain<License>;
-      licenseNode.put(license);
 
-      licenseNode.get('url').put(license.url);
-      licenseNode.get('type').put(license.type);
-      licenseNode.get('name').put(license.name);
+      if (!this.userService.user.userPair) {
+        console.error('No user pair!');
+        return;
+      }
+
+      const signedLicense = await Gun.SEA.sign(
+        license,
+        this.userService.user.userPair
+      );
+
+      // TODO Sign license
+      console.log('putting signedLicense: ', signedLicense);
+      licenseNode.put(signedLicense as any);
+      licenseNode.on().subscribe((n: any) => {
+        if (n !== signedLicense) {
+          console.error('got different license than set', n, signedLicense);
+          return;
+        }
+        this.dialogRef.close();
+      });
+      return;
     }
+
     this.dialogRef.close();
   }
 }

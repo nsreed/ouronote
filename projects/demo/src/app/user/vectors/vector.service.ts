@@ -110,7 +110,7 @@ export class VectorService {
    * @param value the VectorGraph data to use
    * @param vectorPair the optional vector pair to use
    */
-  async initializeCertificates(value: VectorGraph, vectorPair: any) {
+  async initializeCertificates(value: any, vectorPair: any) {
     const userPair = this.ngGun.auth().is;
 
     const userCerts = await this.certify(

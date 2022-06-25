@@ -3,7 +3,7 @@ import { Directive } from '@angular/core';
 import { VectorService } from './vector.service';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { map, switchMap, tap, shareReplay } from 'rxjs/operators';
+import { map, switchMap, tap, shareReplay, filter } from 'rxjs/operators';
 import { GunChain } from '../../../../../ng-gun/src/lib/classes/GunChain';
 import { VectorGraph } from '../VectorGraph';
 import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
@@ -16,6 +16,7 @@ export class RouteVectorDirective {
   vectorNode!: GunChain<VectorGraph>;
   userPub = this.ngGun.auth().is.pub;
   vectorNode$ = this.route.data.pipe(
+    filter((data) => data.soul),
     // tap((node: any) => console.log('ROUTE SOUL', node.soul)),
     map((data) =>
       data.soul['#'].indexOf(this.userPub) < 0

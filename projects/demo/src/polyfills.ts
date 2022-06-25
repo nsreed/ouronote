@@ -79,7 +79,7 @@ import * as paper from 'paper';
 import { EventEmitter } from '@angular/core';
 
 // FIXME GunSharedWorkerPlugin loses data when using one tab
-import { GunSharedWorkerPlugin } from 'projects/ng-gun/src/lib/classes/GunSharedWorkerPlugin';
+// import { GunSharedWorkerPlugin } from 'projects/ng-gun/src/lib/classes/GunSharedWorkerPlugin';
 // GunSharedWorkerPlugin.register((window as any).Gun);
 
 import { take } from 'rxjs/operators';
@@ -103,9 +103,9 @@ const IGNORED_PROPS: string[] = [
 const NEEDS_BACKING_PROPERTY: string[] = ['position'];
 const BUBBLE_PROPS: string[] = ['fullySelected', 'selected', 'selection'];
 const prototypeOwnProperties = {} as any;
-MUTATION_METHODS.forEach((name: string) => {
-  console.log('mutta', name);
-});
+// MUTATION_METHODS.forEach((name: string) => {
+//   console.log('mutta', name);
+// });
 
 const afterProto =
   (proto: any) => (name: string) => (cb: (...args: any[]) => any) => {
@@ -209,7 +209,7 @@ function addChangeListeners(
   cnst = prototype.constructor,
   properties = getOwnSettable(cls.prototype)
 ) {
-  console.log(`${cnst.name}`);
+  // console.log(`${cnst.name}`);
 
   addChangeEmitter(prototype);
 
@@ -245,7 +245,7 @@ function addChangeListeners(
   properties.forEach((prop: any[]) => {
     const property = prop[0];
     const propertyName = prop[1];
-    console.log('%s.%s', prototype.constructor.name, propertyName);
+    // console.log('%s.%s', prototype.constructor.name, propertyName);
 
     if (NEEDS_BACKING_PROPERTY.includes(propertyName)) {
       const propField = `_${propertyName}`;

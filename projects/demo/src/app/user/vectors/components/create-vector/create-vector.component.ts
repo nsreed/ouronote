@@ -2,7 +2,8 @@ import { Component, Inject, NgZone, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { map, pluck, shareReplay } from 'rxjs/operators';
+import Gun from 'gun';
+import { map, pluck, shareReplay, take, filter } from 'rxjs/operators';
 import {
   GunOptions,
   NgGunService,
@@ -73,11 +74,11 @@ export class CreateVectorComponent implements OnInit {
     const formValue = this.form.value;
     const license =
       formValue.license === 'custom'
-        ? formValue.customLicense
+        ? { ...formValue.customLicense, type: 'custom' }
         : formValue.license;
     const vg = {
       title: formValue.title,
-      license,
+      // license,
     };
     this.vectorPair$.subscribe(async (vectorPair: any) => {
       const vector = await this.vectorService.initializeCertificates(
@@ -90,7 +91,44 @@ export class CreateVectorComponent implements OnInit {
       const detachedGun = await this.ngGun.detached(vectorPair);
       detachedGun.auth().put(vector);
       this.vectorService.vectors.set(detachedGun.auth().gun as any);
-      this.dialog.close(detachedGun.auth().is.pub);
+
+      const vectorInUser = this.vectorService.vectors.get(
+        ('~' + vectorPair.pub) as any
+      );
+      const userPair = this.userService.user.userPair;
+      // const titleInUser = vectorInUser.get('title' as never);
+      // titleInUser.put(
+      //   formValue.title as never,
+      //   vector.certs.title[userPair.pub]
+      // );
+      // // TODO sign & save license
+
+      if (license) {
+        // console.log({ license });
+        const signedLicense = await Gun.SEA.sign(license, userPair);
+        const licenseInUser = vectorInUser.get('license' as never);
+        licenseInUser.put(
+          signedLicense as never,
+          vector.certs.license[userPair.pub]
+        );
+      }
+      const vectorCerts = vectorInUser.get('certs' as never);
+      vectorCerts
+        .open()
+        .pipe(
+          filter(
+            (lc: any) =>
+              lc !== null &&
+              lc !== undefined &&
+              lc.layers &&
+              lc.layers[userPair.pub]
+          )
+        )
+        .subscribe((viu) => {
+          vectorCerts.gun.off();
+          vectorInUser.gun.off();
+          this.dialog.close(vectorPair.pub);
+        });
     });
   }
 
