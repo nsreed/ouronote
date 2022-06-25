@@ -6,7 +6,7 @@
 </h1>
 
 <mat-dialog-content fxFlex="1 0 auto" [gunChain]="vector">
-  <mat-tab-group [selectedIndex]="data.mode === 'people' ? 1 : 0">
+  <mat-tab-group [selectedIndex]="data.mode === 'people' ? 1 : data.mode === 'license' ? 2 : 0">
     <mat-tab label="Collaborators">
       <app-invited-users></app-invited-users>
     </mat-tab>

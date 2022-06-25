@@ -24,6 +24,7 @@ import { VectorGraph } from '../../user/VectorGraph';
 import { MatDialog } from '@angular/material/dialog';
 import { AboutComponent } from '../../components/about/about.component';
 import { LicenseDialogComponent } from '../../components/license-dialog/license-dialog.component';
+import { License } from '../../License';
 
 @Component({
   templateUrl: './view.component.html',
@@ -69,21 +70,32 @@ export class ViewComponent implements OnInit, AfterViewInit {
   }
 
   onCopyrightClick() {
-    this.vectorNode$.subscribe((vectorNode) => {
-      const licenseNode = vectorNode.get('license');
-      from([
-        licenseNode.open().pipe(take(1)),
-        licenseNode.not().pipe(mapTo(undefined)),
-      ])
-        .pipe(mergeAll(), take(1))
-        .subscribe((l) => {
-          this.dialog.open(LicenseDialogComponent, {
-            data: {
-              license: l,
-            },
-          });
-        });
+    this.route.data.pipe(pluck('vector')).subscribe((v) => {
+      this.vectorPub = v._['#'];
+      this.dialog.open(LicenseDialogComponent, {
+        data: {
+          vectorPub: this.vectorPub,
+        },
+      });
     });
+    // this.vectorNode$.subscribe((vectorNode) => {
+    //   const licenseNode = vectorNode.get('license');
+    //   licenseNode.open().subscribe((l) => {
+    //     console.log(l);
+    //   });
+    //   from([
+    //     licenseNode.open().pipe(take(1)),
+    //     licenseNode.not().pipe(mapTo(undefined)),
+    //   ])
+    //     .pipe(mergeAll(), take(1))
+    //     .subscribe((l) => {
+    //       this.dialog.open(LicenseDialogComponent, {
+    //         data: {
+    //           license: l,
+    //         },
+    //       });
+    //     });
+    // });
   }
 
   ngAfterViewInit(): void {

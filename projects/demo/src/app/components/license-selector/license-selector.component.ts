@@ -22,6 +22,7 @@ export class LicenseSelectorComponent implements OnInit {
 
   @Input()
   customControl = this.fb.group({
+    type: 'custom',
     name: null,
     text: [
       `Copyright © ${new Date().getFullYear()} ${

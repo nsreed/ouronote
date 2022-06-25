@@ -3,8 +3,12 @@
     None
   </ng-container>
   <ng-template #License>
-    <pre *ngIf="!license.url && license.name">{{ license.name }}</pre>
-    <a *ngIf="license.url" [href]="license.url" rel="noopener" target="_blank">{{ license.name || license.type || 'website' }}</a>
+    <ng-container *ngIf="!license.text">
+      <pre *ngIf="!license.url && license.name">{{ license.name }}</pre>
+
+      <a *ngIf="license.url" [href]="license.url" rel="noopener" target="_blank">{{ license.name || license.type || 'website' }}</a>
+
+    </ng-container>
     <pre>{{ license.text }}</pre>
   </ng-template>
 </mat-dialog-content>

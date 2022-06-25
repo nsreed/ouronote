@@ -271,19 +271,16 @@ export class EditVectorComponent
   }
 
   onCopyrightClick() {
-    const licenseNode = this.vectorNode.get('license');
-    from([
-      licenseNode.open().pipe(take(1)),
-      licenseNode.not().pipe(mapTo(undefined)),
-    ])
-      .pipe(mergeAll(), take(1))
-      .subscribe((l) => {
-        this.dialog.open(LicenseDialogComponent, {
-          data: {
-            license: l,
-          },
-        });
+    this.vector$.pipe(take(1)).subscribe((v: any) => {
+      this.dialog.open(SettingsDialogComponent, {
+        width: '80%',
+        height: '80%',
+        data: {
+          vectorPub: v._['#'],
+          mode: 'license',
+        },
       });
+    });
   }
 
   onContentValueChange(pt: paper.PointText, value: string) {

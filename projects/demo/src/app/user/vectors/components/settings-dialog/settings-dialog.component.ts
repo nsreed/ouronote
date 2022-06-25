@@ -9,7 +9,7 @@ import { Validators, FormBuilder } from '@angular/forms';
 import { LICENSES } from '../../../../LICENSES';
 
 export interface VectorSettingsData {
-  mode: 'general' | 'people';
+  mode: 'general' | 'people' | 'license';
   vectorPub: string;
 }
 
@@ -52,14 +52,19 @@ export class SettingsDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<any>,
     private fb: FormBuilder
   ) {
+    // this.vector.open().subscribe((v) => {
+    //   console.log(v);
+    // });
     this.vector
       .get('license')
       .open()
       .pipe(filter((l) => l !== null))
-      .subscribe((l: any) => {
+      .subscribe((graphLicense: any) => {
         const license =
-          Object.values(LICENSES).find((ll: any) => ll.type === l.type) ||
-          'custom';
+          Object.values(LICENSES).find(
+            (presetLicense: any) =>
+              presetLicense.type === graphLicense.type && !graphLicense.text
+          ) || 'custom'; // FIXME this won't load custom license text into the form
         this.form.controls.license.setValue(license);
       });
   }
