@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
+import * as Gun from 'gun';
 
 @Component({
   templateUrl: './license-dialog.component.html',
@@ -18,8 +19,15 @@ export class LicenseDialogComponent implements OnInit {
       .get('license')
       .open()
       .subscribe((v: any) => {
-        console.log('license', v);
-        this.license = v;
+        this.vectorNode
+          .get('owner')
+          .once()
+          .subscribe(async (o: any) => {
+            const op = Object.keys(o)[0];
+            const license = v && op ? await Gun.SEA.verify(v, op) : null;
+            // console.log('license by', op, v, license);
+            this.license = license;
+          });
       });
   }
 
