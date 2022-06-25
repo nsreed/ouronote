@@ -14,10 +14,13 @@ export class LicenseDialogComponent implements OnInit {
     public data: any,
     private ngGun: NgGunService
   ) {
-    this.vectorNode.open().subscribe((v: any) => {
-      console.log('license', v.license);
-      this.license = v.license;
-    });
+    this.vectorNode
+      .get('license')
+      .open()
+      .subscribe((v: any) => {
+        console.log('license', v);
+        this.license = v;
+      });
   }
 
   ngOnInit(): void {}

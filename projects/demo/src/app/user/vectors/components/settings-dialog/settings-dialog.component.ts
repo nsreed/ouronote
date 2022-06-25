@@ -7,6 +7,7 @@ import { shareReplay, map, switchMap, filter } from 'rxjs/operators';
 import { GunChain } from '../../../../../../../ng-gun/src/lib/classes/GunChain';
 import { Validators, FormBuilder } from '@angular/forms';
 import { LICENSES } from '../../../../LICENSES';
+import { License } from 'projects/demo/src/app/License';
 
 export interface VectorSettingsData {
   mode: 'general' | 'people' | 'license';
@@ -81,7 +82,13 @@ export class SettingsDialogComponent implements OnInit {
       license.url = license.url || null;
       license.type = license.type || null;
       license.text = license.text || null;
-      this.vector.get('license').put(license);
+      license.name = license.name || null;
+      const licenseNode = this.vector.get('license') as GunChain<License>;
+      licenseNode.put(license);
+
+      licenseNode.get('url').put(license.url);
+      licenseNode.get('type').put(license.type);
+      licenseNode.get('name').put(license.name);
     }
     this.dialogRef.close();
   }
