@@ -60,6 +60,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { DirectivesModule } from './directives/directives.module';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { NoopSharedWorker } from 'projects/ng-gun/src/lib/classes/NoopSharedWorker';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 const RADISK_LOCAL = localStorage.getItem('RADISK_ENABLE');
 const RADISK_ENABLE = RADISK_LOCAL === null ? true : !!JSON.parse(RADISK_LOCAL);
@@ -128,6 +130,12 @@ if (typeof SharedWorker !== 'undefined') {
     ReactiveFormsModule,
     ScrollingModule,
     FilesModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: environment.production,
+      // Register the ServiceWorker as soon as the app is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
   ],
   providers: [
     {

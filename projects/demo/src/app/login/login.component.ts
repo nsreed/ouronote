@@ -22,17 +22,15 @@ import { shareReplay, map, mapTo } from 'rxjs/operators';
 })
 export class LoginComponent implements OnInit {
   error: any;
-
-  unsupportedBrowser = !(host.browser as any).chrome;
-
   navigator = (window as any).navigator;
+  onLine = this.navigator.onLine;
+  submitted = false;
+  unsupportedBrowser = !(host.browser as any).chrome;
 
   onLine$ = fromEvent(this.navigator.connection, 'change').pipe(
     map(() => this.navigator.onLine),
     shareReplay(1)
   );
-
-  onLine = this.navigator.onLine;
 
   private _mode: 'create' | 'login' = 'login';
   public get mode(): 'create' | 'login' {
@@ -47,10 +45,6 @@ export class LoginComponent implements OnInit {
     this.form.controls.password2.updateValueAndValidity();
   }
 
-  submitted = false;
-
-  // FIXME editing password 1 doesn't re-trigger validation
-  // FIXME creating account with existing alias should fail validation
   form = this.fb.group({
     alias: [null, Validators.required],
     password: [

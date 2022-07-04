@@ -52,7 +52,8 @@
             "tsConfig": "projects/demo/tsconfig.app.json",
             "assets": [
               "projects/demo/src/favicon.ico",
-              "projects/demo/src/assets"
+              "projects/demo/src/assets",
+              "projects/demo/src/manifest.webmanifest"
             ],
             "styles": [
               "projects/demo/src/assets/reset.css",
@@ -74,7 +75,9 @@
             "buildOptimizer": false,
             "sourceMap": true,
             "optimization": false,
-            "namedChunks": true
+            "namedChunks": true,
+            "serviceWorker": true,
+            "ngswConfigPath": "projects/demo/ngsw-config.json"
           },
           "configurations": {
             "production": {
@@ -133,7 +136,8 @@
             "karmaConfig": "projects/demo/karma.conf.js",
             "assets": [
               "projects/demo/src/favicon.ico",
-              "projects/demo/src/assets"
+              "projects/demo/src/assets",
+              "projects/demo/src/manifest.webmanifest"
             ],
             "styles": [
               "projects/demo/src/styles.scss"
@@ -212,5 +216,5 @@
       }
     }
   },
-  "defaultProject": "ng-gun"
+  "defaultProject": "demo"
 }
