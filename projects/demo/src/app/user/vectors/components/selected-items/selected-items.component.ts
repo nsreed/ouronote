@@ -133,11 +133,10 @@ export class SelectedItemsComponent implements OnInit {
     this.editVectorComponent.project.deselectAll();
 
     const randomDistance =
-      10 +
-      500 * (1 / this.editVectorComponent.project.view.zoom) * Math.random();
+      25 * (1 / this.editVectorComponent.project.view.zoom);
 
     const randomDirection = new paper.Point(randomDistance, 0);
-    randomDirection.angle = Math.random() * 360;
+    randomDirection.angle = 30;
 
     const parents = items.reduce((acc, item) => {
       acc.set(item, item.parent as any);
