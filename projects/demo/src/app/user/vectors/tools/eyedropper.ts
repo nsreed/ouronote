@@ -12,9 +12,24 @@ export class EyedropperTool extends VectorTool {
     // this.project.currentStyle.strokeColor = color;
 
     this.project.currentStyle = e.item?.style;
+    if (e.item) {
+      copyStyleToItem(e.item, this.project.currentStyle);
+      copyNulls(e.item, this.project.currentStyle);
 
-    copyStyleToItem(e.item, this.project.currentStyle);
-    copyNulls(e.item, this.project.currentStyle);
+      if (
+        Object.keys(this.scope.lastActiveTool?.properties || {}).includes(
+          'scale'
+        )
+      ) {
+        if (!this.scope.lastActiveTool) {
+          return;
+        }
+        const scale = (this.scope.lastActiveTool as any).scale;
+        if (scale) {
+          this.project.currentStyle.strokeWidth *= this.project.view.zoom;
+        }
+      }
+    }
   });
 
   upSub = this.up.subscribe((e: paper.ToolEvent) => {
