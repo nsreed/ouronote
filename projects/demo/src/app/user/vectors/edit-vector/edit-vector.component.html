@@ -5,7 +5,8 @@
       <mat-expansion-panel-header>Tools</mat-expansion-panel-header>
       <ng-template matExpansionPanelContent>
         <div gdColumns="auto auto" id="ToolsContainer">
-          <button mat-button (click)="onUndoClick()" [disabled]="paperDirective.scope?.actions?.length === 0">
+          <button mat-button (click)="onUndoClick()"
+            [disabled]="paperDirective.scope?.actions?.length === 0 || paperDirective.scope?.tool?.name !== 'pen'">
             <mat-icon>undo</mat-icon>
           </button>
           <button mat-button (click)="onInsertImageClick()" matTooltip="insert image">
@@ -41,17 +42,20 @@
         </div> -->
         <div *ngIf="true" [appObject]="paper.project.currentStyle">
           <app-color-form appObjectProperty="strokeColor" [color]="paper.project.currentStyle.strokeColor"
-            *ngIf="paper.scope.tool?.propertyNames?.includes('style')" [style]="paper.scope.tool.style" label="Stroke Color">
+            *ngIf="paper.scope.tool?.propertyNames?.includes('style')" [style]="paper.scope.tool.style"
+            label="Stroke Color">
           </app-color-form>
           <app-color-form appObjectProperty="fillColor" [color]="paper.project.currentStyle.fillColor"
-            [style]="paper.scope.tool.style" *ngIf="paper.scope.tool?.propertyNames?.includes('style')" label="Fill Color">
+            [style]="paper.scope.tool.style" *ngIf="paper.scope.tool?.propertyNames?.includes('style')"
+            label="Fill Color">
           </app-color-form>
           <ng-container *ngIf="paper.scope.tool?.propertyNames?.includes('style')">
             <app-stroke-width-form [tool]="paper.scope.tool" [style]="paper.scope.tool.style"></app-stroke-width-form>
             <p>Stroke Width</p>
           </ng-container>
           <ng-container *ngIf="paper.scope.tool.name === 'text' && paper.scope.tool?.propertyNames?.includes('style')">
-            <app-number-form label="Font Size" [appObject]="paper.scope.tool.style" appObjectProperty="fontSize"></app-number-form>
+            <app-number-form label="Font Size" [appObject]="paper.scope.tool.style" appObjectProperty="fontSize">
+            </app-number-form>
           </ng-container>
           <div *ngIf="paper.scope.tool?.propertyNames?.includes('simplify')">
             <app-boolean-form [appObject]="paper.scope.tool" appObjectProperty="simplify"></app-boolean-form>
@@ -85,7 +89,9 @@
       <mat-expansion-panel-header>Selection</mat-expansion-panel-header>
       <ng-template matExpansionPanelContent>
         <ng-container *ngIf="project.selectedItems?.length === 1 && project.selectedItems[0].className === 'PointText'">
-          <app-text-form [appObject]="project.selectedItems[0]" appObjectProperty="content" (propertyValueChange)="onContentValueChange(project.selectedItems[0], $event)" (blur$)="onContentBlur(project.selectedItems[0], $event)"></app-text-form>
+          <app-text-form [appObject]="project.selectedItems[0]" appObjectProperty="content"
+            (propertyValueChange)="onContentValueChange(project.selectedItems[0], $event)"
+            (blur$)="onContentBlur(project.selectedItems[0], $event)"></app-text-form>
         </ng-container>
         <button mat-button (click)="project.deselectAll()">Clear</button>
         <app-selected-items [selectedItems]="project.selectedItems"></app-selected-items>

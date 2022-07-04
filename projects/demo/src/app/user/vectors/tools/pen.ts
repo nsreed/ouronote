@@ -137,6 +137,9 @@ export class PenTool extends VectorTool {
 
   activate(): void {
     super.activate();
+    if (this.scope) {
+      this.scope.actions = [];
+    }
     if (this.project) {
       this.style.strokeWidth = this.project.currentStyle.strokeWidth;
     }
