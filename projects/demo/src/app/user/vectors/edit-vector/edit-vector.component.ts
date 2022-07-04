@@ -320,7 +320,7 @@ export class EditVectorComponent
       })
       .afterClosed()
       .subscribe(async (files) => {
-        if (files.length === 0) {
+        if (!files || files.length === 0) {
           return;
         }
         this.project.deselectAll();
