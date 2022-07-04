@@ -53,7 +53,7 @@ export class TextTool extends VectorTool {
     this.text.style = this.style;
     this.text.fontFamily = 'sans-serif';
     this.text.fontWeight = 'normal';
-    this.text.fontSize = 20;
+    this.text.fontSize = this.style.fontSize || 20;
     this.text.justification = 'left';
     this.text.strokeWidth = this.style.strokeWidth;
     this.text.strokeColor = this.style.strokeColor;
