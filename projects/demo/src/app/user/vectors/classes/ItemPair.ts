@@ -225,9 +225,25 @@ export class ItemPair extends PaperPair {
       }
       // console.log('saving', shallow);
       this.chain.put(shallow);
-      const prevGun =
-        (this.item.previousSibling as any)?.pair?.chain.gun || null;
-      this.chain.get('previousSibling').put(prevGun as never); // FIXME this breaks for rasters
+
+      const prev = this.item.previousSibling as any;
+      if (!prev.pair?.chain.gun) {
+        this.logger.warn('no pair for previousSibling');
+      } else {
+        const prevGun =
+          (this.item.previousSibling as any)?.pair?.chain.gun || null;
+        if (!prevGun) {
+          this.chain.get('previousSibling').put(prevGun as never);
+        } else {
+          prevGun.on((p: any, k: any, ev: any, n: any) => {
+            if (undefined !== p) {
+              // this.logger.log('saving previousSibling');
+              n.off();
+              this.chain.get('previousSibling').put(prevGun as never); // FIXME this breaks for rasters
+            }
+          });
+        }
+      }
     } else {
       this.savedValue = {
         ...this.savedValue,
@@ -436,21 +452,21 @@ export class ItemPair extends PaperPair {
       path: json._['#'],
     };
 
-    if (Object.keys(this.savedValue).length > 0) {
-      Object.keys(json)
-        .filter((k) => Object.keys(this.savedValue).includes(k))
-        .forEach((k) => {
-          const saved = this.savedValue[k];
-          const graph = json[k];
-          if (graph === saved) {
-            // this.logger.log(`got expected ${k}`);
-            delete this.savedValue[k];
-          } else {
-            // this.logger.log(`got different ${k}`);
-            delete scrubbed[k];
-          }
-        });
-    }
+    // if (Object.keys(this.savedValue).length > 0) {
+    //   Object.keys(json)
+    //     .filter((k) => Object.keys(this.savedValue).includes(k))
+    //     .forEach((k) => {
+    //       const saved = this.savedValue[k];
+    //       const graph = json[k];
+    //       if (graph === saved) {
+    //         // this.logger.log(`got expected ${k}`);
+    //         delete this.savedValue[k];
+    //       } else {
+    //         // this.logger.log(`got different ${k}`);
+    //         delete scrubbed[k];
+    //       }
+    //     });
+    // }
 
     if (scrubbed.className === 'Raster') {
       // TODO how are we supposed to figure out who wrote this data?
@@ -471,16 +487,16 @@ export class ItemPair extends PaperPair {
         scrubbed,
       ] as any) as any;
     } else {
-      Object.keys(json).forEach((k) => {
-        const oldVal = this.graphValue[k];
-        const newVal = json[k];
-        if (oldVal === newVal) {
-          // console.log('no diff for ', k, oldVal, newVal);
-          delete scrubbed[k];
-        } else {
-          // console.log('diff for ', k, oldVal, newVal);
-        }
-      });
+      // Object.keys(json).forEach((k) => {
+      //   const oldVal = this.graphValue[k];
+      //   const newVal = json[k];
+      //   if (oldVal === newVal) {
+      //     // console.log('no diff for ', k, oldVal, newVal);
+      //     delete scrubbed[k];
+      //   } else {
+      //     // console.log('diff for ', k, oldVal, newVal);
+      //   }
+      // });
 
       if (Object.keys(scrubbed).length === 0) {
         // console.log('no keys to import');
