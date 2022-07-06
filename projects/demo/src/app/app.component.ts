@@ -47,7 +47,7 @@ export class AppComponent implements OnInit {
     );
     // logger.out$.subscribe(console.log);
     logger.log('app started');
-    logger.log('Gun Imports', {
+    logger.verbose('Gun Imports', {
       radImporter,
       webRtcImporter,
     });

@@ -100,7 +100,7 @@ export class PaperDirective implements OnInit, AfterViewInit {
   }
 
   setupHammer() {
-    this.logger.log('setting up hammer.js');
+    // this.logger.log('setting up hammer.js');
     this.hammer = new Hammer(this.el.nativeElement);
     this.hammer.get('pinch').set({ enable: true });
     this.setupPen();

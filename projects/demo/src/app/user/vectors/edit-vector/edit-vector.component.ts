@@ -228,7 +228,7 @@ export class EditVectorComponent
   }
 
   onProjectReady(project: paper.Project, gun: GunChain<VectorGraph>) {
-    this.logger.log('project ready');
+    this.logger.verbose(`project ready ${gun.recordPub}`);
     this.projectPair = new ProjectPair(
       gun as any,
       this.paperDirective.project as any,

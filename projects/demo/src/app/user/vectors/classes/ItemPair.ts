@@ -632,7 +632,7 @@ export class ItemPair extends PaperPair {
         .filter((c) => c !== undefined && c !== null) as paper.Item[];
 
       if (toInsert.length > 0) {
-        this.logger.log('inserting %d paper items', toInsert.length);
+        this.logger.verbose('inserting %d paper items', toInsert.length);
         this.item.insertChildren(this.item.children.length, toInsert as any);
         // toInsert.forEach((child) => {
         //   // Look for the item that should be above this one
