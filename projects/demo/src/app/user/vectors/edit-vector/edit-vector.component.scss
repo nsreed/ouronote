@@ -35,6 +35,9 @@ app-invite-requests {
 
 mat-accordion {
   overflow-y: auto;
+  min-height: 0;
+  align-self: stretch;
+  height: calc(100vh - 64px);
 
   &::-webkit-scrollbar {
     width: 10px;
@@ -53,7 +56,6 @@ mat-accordion {
     background: #d1d1d1;
   }
 
-  max-height: 100%;
   mat-expansion-panel {
     flex-shrink: 0;
   }
@@ -96,16 +98,4 @@ p {
   margin-bottom: 0.5em;
   padding-left: 1em;
   padding-bottom: 0.15em;
-}
-
-mat-toolbar {
-  // width: 100%;
-  // & > span {
-  //   max-width: calc(100vw - 416px);
-  //   overflow: hidden;
-  //   text-overflow: ellipsis;
-  // }
-  // & > button.request {
-  //   margin-left: 1em;
-  // }
 }

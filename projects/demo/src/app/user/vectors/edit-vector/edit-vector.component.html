@@ -102,14 +102,14 @@
         </button>
       </mat-menu>
     </mat-toolbar>
-    <div fxLayout="row" fxFlex="1 0 auto">
+    <div fxLayout="row" fxFlex="1 1 auto" fxLayoutAlign="stretch stretch">
       <mat-accordion
         multi
         dense
         displayMode="flat"
         *ngIf="project && (canEdit$ | async)"
         fxLayout="column"
-        fxFlex="0 0 175px"
+        fxFlex="0 1 175px"
         class="ui"
       >
         <mat-expansion-panel expanded>
