@@ -96,7 +96,6 @@ export class FavoriteColorsComponent implements OnInit {
   ngOnInit(): void {}
 
   updateSelected() {
-    console.log('updateSelected()');
     const matched = this.favoriteColors.find(
       (fc: any) => fc.value === this.candidateHex
     );
