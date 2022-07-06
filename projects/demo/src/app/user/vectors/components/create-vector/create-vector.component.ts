@@ -12,6 +12,7 @@ import { NgSeaService } from '../../../../../../../ng-gun/src/lib/ng-sea.service
 import { NameRandomizerService } from '../../../../services/name-randomizer.service';
 import { UserService } from '../../../user.service';
 import { VectorService } from '../../vector.service';
+import { LogService } from '../../../../../../../log/src/lib/log.service';
 
 @Component({
   selector: 'app-create-vector',
@@ -60,7 +61,8 @@ export class CreateVectorComponent implements OnInit {
     private dialog: MatDialogRef<any, any>,
     private router: Router,
     private userService: UserService,
-    private nameRandomizer: NameRandomizerService
+    private nameRandomizer: NameRandomizerService,
+    private logger: LogService
   ) {}
 
   ngOnInit(): void {
@@ -95,7 +97,12 @@ export class CreateVectorComponent implements OnInit {
       const vectorInUser = this.vectorService.vectors.get(
         ('~' + vectorPair.pub) as any
       );
-      const userPair = this.userService.user.userPair;
+      let userPair = this.userService.user.userPair;
+      if (!userPair.priv) {
+        this.logger.warn('user pair did not contain a private key!', userPair);
+        userPair = this.userService.user.gun._.sea;
+        // return;
+      }
       // const titleInUser = vectorInUser.get('title' as never);
       // titleInUser.put(
       //   formValue.title as never,
