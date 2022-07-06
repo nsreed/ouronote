@@ -217,6 +217,16 @@ export class PaperDirective implements OnInit, AfterViewInit {
       this.project.view.element.scrollHeight;
     this.project.view.viewSize.height -= this.project.view.viewSize.height;
     this.project.view.viewSize.height = tempHeight;
+
+    if (this.backgroundLayer) {
+      const rect =
+        this.backgroundLayer.getItem({
+          name: 'background-color',
+        }) || new paper.Shape.Rectangle(this.project.view.viewSize);
+      this.backgroundLayer.insertChild(0, rect);
+      rect.fillColor = new paper.Color(1, 1, 1);
+      rect.strokeColor = null;
+    }
   }
 
   @HostListener('window:resize', ['$event'])
