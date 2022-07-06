@@ -227,7 +227,7 @@ export class ItemPair extends PaperPair {
       this.chain.put(shallow);
 
       const prev = this.item.previousSibling as any;
-      if (!prev.pair?.chain.gun) {
+      if (!prev?.pair?.chain.gun) {
         this.logger.warn('no pair for previousSibling');
       } else {
         const prevGun =
