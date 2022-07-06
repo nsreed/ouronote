@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@angular/core';
+import { Inject, Injectable, Optional } from '@angular/core';
 import { NgGunService } from '../../../ng-gun/src/lib/ng-gun.service';
 
 @Injectable({
@@ -12,7 +12,10 @@ export class SettingsService {
     @Inject('enable-webrtc')
     public enableWebRTC: boolean,
     @Inject('enable-radisk')
-    public enableRadisk: boolean
+    public enableRadisk: boolean,
+    @Optional()
+    @Inject('settings.debug')
+    public debug: boolean
   ) {}
 
   save() {

@@ -52,6 +52,7 @@ import { VectorTool } from '../tools/paper-tool';
 import { tool } from 'paper/dist/paper-core';
 import { layoutVertical } from '../functions/paper-functions';
 import { IEnhancedPaper } from '../../../vector/IEnhancedPaper';
+import { SettingsService } from '../../../settings.service';
 
 @Component({
   templateUrl: './edit-vector.component.html',
@@ -105,7 +106,8 @@ export class EditVectorComponent
     public userService: UserService,
     private cb: ClipboardService,
     private snackbar: MatSnackBar,
-    private el: ElementRef
+    private el: ElementRef,
+    public settings: SettingsService
   ) {
     super(vectorService, route, ngGun, userService);
     this.logger = logger.supplemental('edit-vector');
