@@ -3,7 +3,7 @@
   // width: 100%;
   height: 100%;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
 }
 
 #WorkspaceContainer {
@@ -23,6 +23,10 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
+  pointer-events: none;
+  .ui {
+    pointer-events: visible;
+  }
 }
 
 app-invite-requests {
@@ -95,12 +99,13 @@ p {
 }
 
 mat-toolbar {
-  & > span {
-    max-width: calc(100vw - 416px);
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  & > button.request {
-    margin-left: 1em;
-  }
+  // width: 100%;
+  // & > span {
+  //   max-width: calc(100vw - 416px);
+  //   overflow: hidden;
+  //   text-overflow: ellipsis;
+  // }
+  // & > button.request {
+  //   margin-left: 1em;
+  // }
 }

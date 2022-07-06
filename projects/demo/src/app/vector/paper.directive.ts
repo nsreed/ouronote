@@ -25,6 +25,7 @@ import { PanTool } from '../user/vectors/tools/pan';
 import { UndoStack } from '../user/vectors/tools/undo-stack';
 import { AfterViewInit } from '@angular/core';
 import { IEnhancedPaper } from './IEnhancedPaper';
+import { scan, bufferTime } from 'rxjs/operators';
 
 @Directive({
   selector: '[appPaper]',
@@ -76,6 +77,15 @@ export class PaperDirective implements OnInit, AfterViewInit {
       fromEvent(project.view, 'resize').pipe(shareReplay(1))
     ),
     shareReplay(1)
+  );
+
+  frame$ = this.projectChange.pipe(
+    switchMap((project) => fromEvent(project.view, 'frame'))
+  );
+
+  fps$ = this.frame$.pipe(
+    bufferTime(1000),
+    map((frames) => frames.length)
   );
 
   scope: paper.PaperScope & UndoStack = new paper.PaperScope() as any;

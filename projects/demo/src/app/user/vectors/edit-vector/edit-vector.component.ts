@@ -176,6 +176,7 @@ export class EditVectorComponent
     });
     this.vector$.subscribe((vector: VectorGraph) => {
       if (!this.paperDirective.project) {
+        this.logger.error('vector$ but no paperDirective.project', vector);
         return;
       }
       this.project = this.paperDirective.project;
@@ -461,5 +462,19 @@ export class EditVectorComponent
         },
       });
     });
+  }
+
+  onGenerateTestPatternClick() {
+    if (this.project) {
+      this.logger.log('generating test pattern');
+      this.activateDrawLayer();
+      const r = 10;
+      const max = 10;
+      for (let x = 0; x < r * max; x += r) {
+        const s = new paper.Shape.Rectangle(
+          new paper.Rectangle(new paper.Point(x, x), new paper.Size(r, r))
+        );
+      }
+    }
   }
 }
