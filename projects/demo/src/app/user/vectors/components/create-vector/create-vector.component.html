@@ -15,8 +15,8 @@
     <app-license-selector [control]="form.controls.license" [customControl]="form.controls.customLicense">
     </app-license-selector>
   </span>
+  <mat-error *ngIf="error && !sumbitted">There was a problem creating the vector. <br/>If the issue persists, try logging out and back in.</mat-error>
 </form>
 <div fxFlexAlign="center end" mat-dialog-actions [formGroup]="form">
-  <button mat-raised-button color="primary" [disabled]="sumbitted || !form.valid" (click)="create()">Create</button>
-  <mat-error *ngIf="error && !sumbitted">There was a problem creating the vector. If the issue persists, try logging out and back in.</mat-error>
+    <button mat-raised-button color="primary" [disabled]="sumbitted || !form.valid" (click)="create()">Create</button>
 </div>
