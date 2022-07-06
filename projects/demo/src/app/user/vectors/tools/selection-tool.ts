@@ -3,6 +3,7 @@ import { IEnhancedScope } from '../../../vector/IEnhancedScope';
 import { map, shareReplay } from 'rxjs/operators';
 import { IEnhancedPaper } from '../../../vector/IEnhancedPaper';
 export class SelectionTool extends VectorTool {
+  category = 'edit';
   constructor(scope: IEnhancedScope) {
     super(scope);
 

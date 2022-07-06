@@ -19,6 +19,7 @@ import { map } from 'rxjs/operators';
 import { IEnhancedScope } from '../../../vector/IEnhancedScope';
 
 export class VectorTool extends Tool {
+  category = 'none';
   get isActive() {
     return this.scope.tool === this;
   }

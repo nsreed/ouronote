@@ -6,6 +6,7 @@ import { Property } from '../functions/decorators';
 export type ToolSelectionMode = 'new' | 'add' | 'remove';
 
 export class SelectTool extends VectorTool {
+  category = 'select';
   @Property({
     values: ['new', 'add', 'remove'],
   })
