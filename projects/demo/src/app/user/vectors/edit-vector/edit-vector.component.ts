@@ -285,7 +285,7 @@ export class EditVectorComponent
 
   onContentValueChange(pt: paper.PointText, value: string) {
     pt.content = value;
-    (pt as any).pair.save(['content']);
+    (pt as any).pair.save(['content', 'position']);
   }
 
   onContentBlur(pt: paper.PointText, value: any) {
