@@ -324,7 +324,17 @@ export class GunChain<
   private sources = new Map<string, Observable<any>>();
   protected _auth: GunAuthChain<DataType, ReferenceKey> | null = null;
 
-  putCount = 0;
+  private _pendingMutationCount = 0;
+  public get pendingMutationCount() {
+    return this._pendingMutationCount;
+  }
+  public set pendingMutationCount(value) {
+    if (value < 0) {
+      this.logger.warn('putCount already 0!');
+      return;
+    }
+    this._pendingMutationCount = value;
+  }
 
   from<T>(gun: IGunChainReference<T>): GunChain<T> {
     return new GunChain<T>(this.ngZone, gun as any, this);
@@ -344,7 +354,7 @@ export class GunChain<
     >,
     certificate = this.certificate
   ) {
-    this.putCount++;
+    this.pendingMutationCount++;
     // FIXME "unverified data" - certified put values must be signed?
 
     if (this.isNested && !certificate) {
@@ -355,7 +365,7 @@ export class GunChain<
     (this.gun.put as any)(
       data,
       (ack: any, node: any) => {
-        this.putCount--;
+        this.pendingMutationCount--;
         const err = ack.err;
 
         if (err) {
@@ -556,10 +566,9 @@ export class GunChain<
             at?: any,
             ev?: any
           ) => {
-            if (options?.ignoreLocal && this.putCount > 0) {
+            if (options?.ignoreLocal && this.pendingMutationCount > 0) {
               this.logger.verbose(
-                'ignoring on() for remain put:',
-                this.putCount
+                `ignoring ${this.pendingMutationCount} more puts`
               );
               return;
             }
@@ -580,8 +589,6 @@ export class GunChain<
             if (options?.bypassZone) {
               dispatchHandler();
             } else {
-              // TODO implement opt.changes
-              // put() & set() need to intercept/snapshot _.> timestamps
               this.ngZone.run(dispatchHandler);
             }
           },
