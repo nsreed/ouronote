@@ -13,6 +13,7 @@ import { NameRandomizerService } from '../../../../services/name-randomizer.serv
 import { UserService } from '../../../user.service';
 import { VectorService } from '../../vector.service';
 import { LogService } from '../../../../../../../log/src/lib/log.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-create-vector',
@@ -22,6 +23,8 @@ import { LogService } from '../../../../../../../log/src/lib/log.service';
 export class CreateVectorComponent implements OnInit {
   certificate?: string;
   recordValue?: any;
+  sumbitted = false;
+  error = false;
   form = this.fb.group({
     title: [null, Validators.required],
     license: null,
@@ -62,7 +65,8 @@ export class CreateVectorComponent implements OnInit {
     private router: Router,
     private userService: UserService,
     private nameRandomizer: NameRandomizerService,
-    private logger: LogService
+    private logger: LogService,
+    private snack: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -73,6 +77,8 @@ export class CreateVectorComponent implements OnInit {
     if (!this.form.valid) {
       return;
     }
+    this.sumbitted = true;
+
     const formValue = this.form.value;
     const license =
       formValue.license === 'custom'
@@ -97,11 +103,13 @@ export class CreateVectorComponent implements OnInit {
       const vectorInUser = this.vectorService.vectors.get(
         ('~' + vectorPair.pub) as any
       );
-      let userPair = this.userService.user.userPair;
+      let userPair = this.userService.pair;
       if (!userPair.priv) {
-        this.logger.warn('user pair did not contain a private key!', userPair);
+        this.logger.error('user pair did not contain a private key!', userPair);
         userPair = this.userService.user.gun._.sea;
-        // return;
+        this.error = true;
+        this.sumbitted = false;
+        return;
       }
       // const titleInUser = vectorInUser.get('title' as never);
       // titleInUser.put(

@@ -14,6 +14,7 @@
     </app-license-selector>
   </span>
 </form>
+<mat-error *ngIf="error && !sumbitted">There was a problem creating the vector. If the issue persists, try logging out and back in.</mat-error>
 <div fxFlexAlign="center end" mat-dialog-actions [formGroup]="form">
-  <button mat-raised-button color="primary" [disabled]="!form.valid" (click)="create()">Create</button>
+  <button mat-raised-button color="primary" [disabled]="sumbitted || !form.valid" (click)="create()">Create</button>
 </div>
