@@ -3,7 +3,8 @@ import * as paper from 'paper';
 import { Style } from 'paper';
 import { Property } from '../functions/decorators';
 import { PairedItem } from '../classes/paper-pair';
-export class TextTool extends VectorTool {
+import { DrawTool } from './draw-tool';
+export class TextTool extends DrawTool {
   name = 'text';
   matIconName = 'text_fields';
   shape?: paper.Shape;

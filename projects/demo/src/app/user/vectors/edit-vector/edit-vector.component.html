@@ -40,7 +40,7 @@
         <!-- <div [appObject]="paper.project.currentStyle">
           <app-style-form [style]="paper.project.currentStyle"></app-style-form>
         </div> -->
-        <div *ngIf="true" [appObject]="paper.project.currentStyle">
+        <div *ngIf="paper.project.selectedItems.length === 0 || ['lasso select','rectangle select'].includes(paper.scope.tool?.name)" [appObject]="paper.project.currentStyle">
           <app-color-form appObjectProperty="strokeColor" [color]="paper.project.currentStyle.strokeColor"
             *ngIf="paper.scope.tool?.propertyNames?.includes('style')" [style]="paper.scope.tool.style"
             label="Stroke Color">

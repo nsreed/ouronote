@@ -6,7 +6,8 @@ import { Property } from '../functions/decorators';
 import { VectorTool } from './paper-tool';
 import { copyNulls } from '../functions/paper-functions';
 import { ItemPair } from '../classes/ItemPair';
-export class PenTool extends VectorTool {
+import { DrawTool } from './draw-tool';
+export class PenTool extends DrawTool {
   path!: paper.Path;
   icon = 'marker';
   name = 'pen';

@@ -2,7 +2,8 @@ import { VectorTool } from './paper-tool';
 import * as paper from 'paper';
 import { Style } from 'paper/dist/paper-core';
 import { Property } from '../functions/decorators';
-export class LineTool extends VectorTool {
+import { DrawTool } from './draw-tool';
+export class LineTool extends DrawTool {
   path!: paper.Path;
 
   icon = 'bezier-curve';

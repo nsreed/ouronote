@@ -1,7 +1,8 @@
 import { VectorTool } from './paper-tool';
 import { Path, Point, Style, ToolEvent, Project } from 'paper';
 import * as paper from 'paper';
-export class EraserTool extends VectorTool {
+import { DrawTool } from './draw-tool';
+export class EraserTool extends DrawTool {
   path?: paper.Path | null;
   name = 'eraser';
   icon = 'eraser';

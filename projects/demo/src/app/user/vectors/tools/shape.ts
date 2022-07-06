@@ -2,7 +2,8 @@ import { VectorTool } from './paper-tool';
 import * as paper from 'paper';
 import { Style } from 'paper';
 import { Property } from '../functions/decorators';
-export class ShapeTool extends VectorTool {
+import { DrawTool } from './draw-tool';
+export class ShapeTool extends DrawTool {
   name = 'shapes';
   icon = 'shapes';
   shape?: paper.Shape;
