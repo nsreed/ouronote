@@ -224,6 +224,7 @@ export class PaperDirective implements OnInit, AfterViewInit {
           name: 'background-color',
         }) || new paper.Shape.Rectangle(this.project.view.viewSize);
       this.backgroundLayer.insertChild(0, rect);
+      rect.name = 'background-color';
       rect.fillColor = new paper.Color(1, 1, 1);
       rect.strokeColor = null;
     }
