@@ -2,6 +2,7 @@ import { VectorTool } from './paper-tool';
 import * as paper from 'paper';
 import { filter, mergeMapTo, switchMapTo, tap } from 'rxjs/operators';
 import { Property } from '../functions/decorators';
+import { isIgnored } from '../functions/paper-functions';
 
 export type ToolSelectionMode = 'new' | 'add' | 'remove';
 
@@ -52,6 +53,14 @@ export class SelectTool extends VectorTool {
     this.scope.project.deselectAll();
   });
   //#endregion
+
+  protected deselectIgnored() {
+    this.project?.selectedItems
+      .filter((item) => item.parent.data.ignore || item.data.ignore)
+      .forEach((item) => {
+        item.selected = false;
+      });
+  }
 }
 export class LassoSelectTool extends SelectTool {
   name = 'lasso select';
@@ -164,6 +173,8 @@ export class LassoSelectTool extends SelectTool {
         selected.selected = true;
       }
     }
+
+    this.deselectIgnored();
   });
 }
 
@@ -212,5 +223,6 @@ export class RectangleSelectTool extends SelectTool {
         selected.selected = true;
       }
     }
+    this.deselectIgnored();
   });
 }
