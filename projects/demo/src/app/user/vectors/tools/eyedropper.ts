@@ -5,6 +5,7 @@ import { copyNulls, copyStyleToItem } from '../functions/paper-functions';
 export class EyedropperTool extends VectorTool {
   name = 'Eyedropper';
   icon = 'eye-dropper';
+  category = 'view';
   downSub = this.down.subscribe((e: paper.ToolEvent) => {
     // this will sample a point from a raster. it fails when layers are too big. Use canvas sampling?
     // const raster = this.project.activeLayer.rasterize({ insert: false });
