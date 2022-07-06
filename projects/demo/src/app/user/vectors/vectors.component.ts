@@ -53,7 +53,7 @@ export class VectorsComponent implements OnInit {
 
   async create() {
     const vector = await this.dialog
-      .open(CreateVectorComponent, { width: '90%', height: '90%' })
+      .open(CreateVectorComponent, { width: '35em' })
       .afterClosed()
       .toPromise();
 
