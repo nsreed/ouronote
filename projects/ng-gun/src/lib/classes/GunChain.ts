@@ -53,6 +53,7 @@ export const GUN_NODE = Symbol('GUN_NODE');
 export interface GunChainCallbackOptions {
   includeKeys?: boolean;
   includeNulls?: boolean;
+  ignoreLocal?: boolean;
   changes?: boolean;
   bypassZone?: boolean;
   clean?: boolean;
@@ -77,11 +78,6 @@ export class GunChain<
   ReferenceKey = any,
   IsTop extends 'pre_root' | 'root' | false = false
 > {
-  logger = LogService.getLogger('gun-chain');
-  settings = {
-    retryPut: false,
-  };
-
   public get userPair() {
     const pair = (this.gun.user() as any).is;
     if ('object' === typeof pair?.alias) {
@@ -95,8 +91,6 @@ export class GunChain<
   protected get myKey() {
     return (this.gun as any)._.get;
   }
-
-  private _path!: string[];
   get path() {
     this._path = this._path || gunPath(this.gun as any);
     return this._path;
@@ -107,7 +101,6 @@ export class GunChain<
   get recordPub(): string {
     return this.pubs[0];
   }
-  private _chainArray!: any[];
   get chainArray() {
     this._chainArray = this._chainArray || gunChainArray(this.gun as any);
     return this._chainArray;
@@ -116,8 +109,6 @@ export class GunChain<
     const firstPub = this.path.findIndex((k) => k.startsWith('~'));
     return this.chainArray[firstPub];
   }
-
-  private _pathFromRecord!: any[];
   get pathFromRecord() {
     if (!this._pathFromRecord) {
       const p = [...this.path];
@@ -136,8 +127,6 @@ export class GunChain<
   get isSubRoot() {
     return this.myKey === this.recordPub;
   }
-
-  _allCertificates$!: Observable<ICertStore>;
   get allCertificates$(): Observable<ICertStore> {
     if (!this._allCertificates$) {
       if (this.isNested) {
@@ -158,8 +147,6 @@ export class GunChain<
   get pathCertificates$(): Observable<any> {
     return this.allCertificates$.pipe(pluck(this.keyInRecord));
   }
-
-  private _userCertificate$!: Observable<any>;
   get userCertificate$(): Observable<any> {
     if (!this._userCertificate$) {
       this._userCertificate$ = this.pathCertificates$.pipe(
@@ -170,10 +157,6 @@ export class GunChain<
     }
     return this._userCertificate$;
   }
-
-  private _gun!: IGunChainReference<DataType, ReferenceKey, IsTop> &
-    GunChainFunctions &
-    GunChainMeta;
   public get gun(): IGunChainReference<DataType, ReferenceKey, IsTop> &
     GunChainFunctions &
     GunChainMeta {
@@ -251,8 +234,6 @@ export class GunChain<
       (this.certificate !== null && this.certificate !== undefined)
     );
   }
-
-  private _closestRoot: any;
   get closestRoot(): GunChain {
     if (this._closestRoot) {
       return this._closestRoot;
@@ -286,18 +267,12 @@ export class GunChain<
       this.gun = gun;
     }
   }
-
-  certificate$ = new ReplaySubject<string>(1);
-  private _certificate?: string | undefined;
   public get certificate(): string | undefined {
     return this._certificate || this.back?.certificate;
   }
   public set certificate(value: string | undefined) {
     this._certificate = value;
   }
-
-  certificates$ = new ReplaySubject<ICertStore>(1);
-  private _certificates: ICertStore = {};
   public get certificates(): ICertStore {
     if (!this.isSubRoot && this.closestRoot?.certificates) {
       return this.closestRoot.certificates;
@@ -312,13 +287,6 @@ export class GunChain<
     }
   }
 
-  private sources = new Map<string, Observable<any>>();
-  protected _auth: GunAuthChain<DataType, ReferenceKey> | null = null;
-
-  from<T>(gun: IGunChainReference<T>): GunChain<T> {
-    return new GunChain<T>(this.ngZone, gun as any, this);
-  }
-
   public get updateTime(): number {
     return (
       ((Object.values(this.gun._.put._['>']) as number[]) || {}).reduce(
@@ -326,6 +294,40 @@ export class GunChain<
         0
       ) || 0
     );
+  }
+  logger = LogService.getLogger('gun-chain');
+  settings = {
+    retryPut: false,
+  };
+
+  private _path!: string[];
+  private _chainArray!: any[];
+
+  private _pathFromRecord!: any[];
+
+  _allCertificates$!: Observable<ICertStore>;
+
+  private _userCertificate$!: Observable<any>;
+
+  private _gun!: IGunChainReference<DataType, ReferenceKey, IsTop> &
+    GunChainFunctions &
+    GunChainMeta;
+
+  private _closestRoot: any;
+
+  certificate$ = new ReplaySubject<string>(1);
+  private _certificate?: string | undefined;
+
+  certificates$ = new ReplaySubject<ICertStore>(1);
+  private _certificates: ICertStore = {};
+
+  private sources = new Map<string, Observable<any>>();
+  protected _auth: GunAuthChain<DataType, ReferenceKey> | null = null;
+
+  putCount = 0;
+
+  from<T>(gun: IGunChainReference<T>): GunChain<T> {
+    return new GunChain<T>(this.ngZone, gun as any, this);
   }
 
   get<K extends keyof DataType>(
@@ -342,6 +344,7 @@ export class GunChain<
     >,
     certificate = this.certificate
   ) {
+    this.putCount++;
     // FIXME "unverified data" - certified put values must be signed?
 
     if (this.isNested && !certificate) {
@@ -351,8 +354,10 @@ export class GunChain<
     }
     (this.gun.put as any)(
       data,
-      (...putAck: any[]) => {
-        const err = putAck[0].err;
+      (ack: any, node: any) => {
+        this.putCount--;
+        const err = ack.err;
+
         if (err) {
           switch (err) {
             case 'Unverified data.':
@@ -393,19 +398,18 @@ export class GunChain<
     >,
     certificate = this.certificate
   ) {
-    return this.from(
-      this.gun.set(
-        data,
-        undefined,
-        certificate
-          ? {
-              opt: {
-                cert: certificate,
-              },
-            }
-          : undefined
-      )
+    const setGun = this.gun.set(
+      data,
+      undefined,
+      certificate
+        ? {
+            opt: {
+              cert: certificate,
+            },
+          }
+        : undefined
     );
+    return this.from(setGun);
   }
 
   unset(data: ArrayOf<DataType>) {
@@ -552,6 +556,13 @@ export class GunChain<
             at?: any,
             ev?: any
           ) => {
+            if (options?.ignoreLocal && this.putCount > 0) {
+              this.logger.verbose(
+                'ignoring on() for remain put:',
+                this.putCount
+              );
+              return;
+            }
             if (signal.stopped) {
               return ev.off();
             }
@@ -569,6 +580,8 @@ export class GunChain<
             if (options?.bypassZone) {
               dispatchHandler();
             } else {
+              // TODO implement opt.changes
+              // put() & set() need to intercept/snapshot _.> timestamps
               this.ngZone.run(dispatchHandler);
             }
           },

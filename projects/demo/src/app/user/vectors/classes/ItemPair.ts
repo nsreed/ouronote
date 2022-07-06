@@ -49,7 +49,7 @@ export class ItemPair extends PaperPair {
   };
   graphValue: any;
   savedValue: any = {};
-  readonly graph$ = this.chain.on().pipe(shareReplay(1));
+  readonly graph$ = this.chain.on({ ignoreLocal: true }).pipe(shareReplay(1));
   readonly graphValue$ = this.graph$.pipe(filter((json) => hasRequired(json)));
   readonly graphRemove$ = this.graph$.pipe(filter((json) => json === null));
 
@@ -200,19 +200,22 @@ export class ItemPair extends PaperPair {
       if (this.item.className === 'PointText') {
         shallow = {
           ...shallow,
+          ...defaultsFor(this.item, shallow),
           justification:
             (this.item as paper.PointText).justification ||
             PAPER_STYLE_DEFAULTS.PointText.justification ||
-            PAPER_STYLE_EMPTY.justification,
+            PAPER_STYLE_EMPTY.justification ||
+            null,
           fontFamily:
             (this.item as paper.PointText).fontFamily ||
             PAPER_STYLE_DEFAULTS.PointText.fontFamily ||
-            PAPER_STYLE_EMPTY.fontFamily,
+            PAPER_STYLE_EMPTY.fontFamily ||
+            null,
           fontWeight:
             (this.item as paper.PointText).fontWeight ||
             PAPER_STYLE_DEFAULTS.PointText.fontWeight ||
-            PAPER_STYLE_EMPTY.fontWeight,
-          ...defaultsFor(this.item, shallow),
+            PAPER_STYLE_EMPTY.fontWeight ||
+            null,
         };
       }
       if (this.item.className === 'Raster') {
@@ -425,6 +428,7 @@ export class ItemPair extends PaperPair {
     if (!json) {
       this.logger.warn('  NO JSON! SHOULD REMOVE???');
     }
+
     const scrubbed = this.scrubJSON(json);
 
     scrubbed.data = {
