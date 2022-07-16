@@ -2,9 +2,13 @@
 <div matDialogContent>
   <div fxLayout="column">
     <h2>Description</h2>
-    <textarea matInput
-      placeholder="Please provide a description of the problem and what you were doing/what you expected when you encountered it."
-      [formControl]="descriptionCtl"></textarea>
+    <mat-form-field appearance="fill">
+      <textarea
+        matInput
+        placeholder="Please provide a description of the problem and what you were doing/what you expected when you encountered it."
+        [formControl]="descriptionCtl"
+      ></textarea>
+    </mat-form-field>
     <h2>Options</h2>
     <form [formGroup]="includeForm">
       <h3>Choose what information to include in the report:</h3>
@@ -14,13 +18,18 @@
       <mat-checkbox formControlName="peers">Peer Information</mat-checkbox>
       A list of peers that the application was connected to at the time of the
       bug report.
-      <mat-checkbox formControlName="gunOpts">Database Configuration</mat-checkbox>
+      <mat-checkbox formControlName="gunOpts"
+        >Database Configuration</mat-checkbox
+      >
       Contains information about the relay peers that the database is configured
       to connect to, as well as system configuration options relating to storage
       and communication.
-      <mat-checkbox formControlName="graph">Database Contents</mat-checkbox>
+      <mat-checkbox formControlName="graph" color="warn"
+        >Database Contents</mat-checkbox
+      >
       This is a full copy of the database used by the application at the time of
       the bug report.
+      <b>⚠️ This may produce an extraordinarily large report! ⚠️</b>
       <mat-checkbox formControlName="is">User's Public Key</mat-checkbox>
       Used for identifying ownership of items in the database.
     </form>
@@ -36,6 +45,11 @@
   <button mat-icon-button (click)="download()" matTooltip="Download .json">
     <mat-icon>file_download</mat-icon>
   </button>
-  <a mat-button target="_blank" rel="noopener" href="https://www.github.com/nsreed/ouronote/issues">Create a github
-    issue</a>
+  <a
+    mat-button
+    target="_blank"
+    rel="noopener"
+    href="https://www.github.com/nsreed/ouronote/issues"
+    >Create a github issue</a
+  >
 </div>

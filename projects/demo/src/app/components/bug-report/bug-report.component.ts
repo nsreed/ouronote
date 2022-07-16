@@ -10,6 +10,7 @@ import { VERSION } from 'projects/demo/src/environments/version';
 import { NgGunService } from 'projects/ng-gun/src/lib/ng-gun.service';
 import { debounceTime } from 'rxjs/operators';
 import stringify from 'safe-stable-stringify';
+import { SettingsService } from '../../settings.service';
 
 @Component({
   selector: 'app-bug-report',
@@ -46,6 +47,15 @@ export class BugReportComponent implements OnInit {
     return this.includeForm.value.log ? { log: this.data.messages } : {};
   }
 
+  get settings() {
+    return {
+      debug: this.settingsService.debug,
+      enableRadisk: this.settingsService.enableRadisk,
+      enableWebRTC: this.settingsService.enableWebRTC,
+      ...this.settingsService.input,
+    };
+  }
+
   get gunOpts() {
     return this.includeForm.value.gunOpts
       ? { gunConstructorOptions: this.ngGun.gunOptions }
@@ -60,7 +70,8 @@ export class BugReportComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA)
     private data: any,
     private toaster: MatSnackBar,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    public settingsService: SettingsService
   ) {
     this.generate();
     this.descriptionCtl.valueChanges.pipe(debounceTime(200)).subscribe(() => {
@@ -78,13 +89,13 @@ export class BugReportComponent implements OnInit {
   ngOnInit() {}
 
   generate() {
-    // TODO include WEBRTC and INDEXEDDB in the bug report
     const report = {
       host: window.location.host,
       route: this.router.url,
       timestamp: Date.now(),
       version: VERSION,
       system: host.browser,
+      settings: this.settings,
       ...this.gunOpts,
       ...this.is,
       ...this.log,
