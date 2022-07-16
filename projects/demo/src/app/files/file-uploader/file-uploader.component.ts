@@ -20,12 +20,10 @@ export class FileUploaderComponent implements OnInit {
   constructor(
     private dialog: MatDialogRef<FileUploaderComponent, any>,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) {
-    console.log(this.data);
-  }
+  ) {}
 
   get extensions(): string[] {
-    return this.data.extensions || ['json'];
+    return this.data?.extensions || ['json'];
   }
 
   @ViewChild('fileDropRef', { static: false }) fileDropEl!: ElementRef;
