@@ -331,7 +331,7 @@
         <div class="floating" *ngIf="paper">
           {{ paper.fps$ | async }} fps
           <ng-container *ngIf="settings.debug">
-            <span class="ui">project? {{ !!project }}</span>
+            <!-- <span class="ui">project? {{ !!project }}</span> -->
             <span class="ui">
               <button mat-icon-button [mat-menu-trigger-for]="DebugMenu">
                 <mat-icon>bug_report</mat-icon>
