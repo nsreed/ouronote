@@ -88,15 +88,9 @@ export class VectorService {
         this.logger.log('vector certs loaded', certificates);
         const p = new paper.Project(new paper.Size(100, 100));
         p.importJSON(paperJSON);
-        const g = new ProjectPair(
-          vectorNode as any,
-          p,
-          new paper.PaperScope(),
-          this.logger
-        );
+
         const deep = getDeep(p);
         const layersNode = vectorNode.get('layers' as never);
-
         layersNode.put(deep.layers as never, layersNode.certificate);
       });
     });
