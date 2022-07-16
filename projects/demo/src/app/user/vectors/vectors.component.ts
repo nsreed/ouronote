@@ -69,6 +69,7 @@ export class VectorsComponent implements OnInit {
     this.dialog
       .open(FileUploaderComponent)
       .afterClosed()
+      .pipe(filter((files) => files && files.length > 0))
       .subscribe((files) => {
         console.log(files);
         for (const item of files) {
