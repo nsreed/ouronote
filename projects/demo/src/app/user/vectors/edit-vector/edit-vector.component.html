@@ -13,13 +13,13 @@
       fxLayoutAlign="stretch center"
       fxLayout="row"
     >
-      <span>
+      <div fxFlex="1 1 auto" class="title">
         {{ (vector$ | async)?.title }} -
         <ng-container *ngFor="let owner of owner$ | async | keyvalue">
           @{{ owner.key | alias | async }}
         </ng-container>
-      </span>
-      <div fxFlex="1 1 auto"></div>
+      </div>
+
       <ng-container
         *ngIf="vectorNode && !((layersNode$ | async).userCertificate$ | async)"
       >
@@ -49,6 +49,7 @@
       <button mat-icon-button [mat-menu-trigger-for]="ShareMenu">
         <mat-icon>share</mat-icon>
       </button>
+
       <mat-menu #ShareMenu>
         <button
           mat-menu-item

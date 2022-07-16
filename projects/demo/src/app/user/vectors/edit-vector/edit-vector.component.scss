@@ -99,3 +99,14 @@ p {
   padding-left: 1em;
   padding-bottom: 0.15em;
 }
+mat-toolbar {
+  width: 100%;
+  & > div.title {
+    // max-width: calc(100vw - 46px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  & > button.request {
+    margin-left: 1em;
+  }
+}
