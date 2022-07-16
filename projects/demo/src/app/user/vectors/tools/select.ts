@@ -17,8 +17,6 @@ export class SelectTool extends VectorTool {
   name = 'select';
   selecting = false;
 
-  clickSub = this.click.subscribe((e) => this.project.deselectAll());
-
   //#region sources
   selectDown = this.down.pipe(
     // filter(
@@ -60,6 +58,23 @@ export class SelectTool extends VectorTool {
       .forEach((item) => {
         item.selected = false;
       });
+  }
+
+  onClick(event: paper.ToolEvent) {
+    const selected = this.project.getItem({
+      match: (item: paper.Item) => {
+        return (
+          item.className !== 'Layer' &&
+          item.hitTest(event.point) &&
+          !item.data.ignore &&
+          !item.layer.data.ignore
+        );
+      },
+    });
+    if (selected) {
+      this.project.deselectAll();
+      selected.selected = true;
+    }
   }
 }
 export class LassoSelectTool extends SelectTool {
@@ -163,15 +178,7 @@ export class LassoSelectTool extends SelectTool {
       this.path = null as never;
     } else {
       // this.scope.project.deselectAll();
-      const selected = this.project.getItem({
-        match: (item: paper.Item) => {
-          return item.className !== 'Layer' && item.hitTest(e.point);
-        },
-      });
-      if (selected) {
-        this.project.deselectAll();
-        selected.selected = true;
-      }
+      this.onClick(e);
     }
 
     this.deselectIgnored();
@@ -213,15 +220,7 @@ export class RectangleSelectTool extends SelectTool {
       this.rect = null as never;
     } else {
       // this.scope.project.deselectAll();
-      const selected = this.project.getItem({
-        match: (item: paper.Item) => {
-          return item.className !== 'Layer' && item.hitTest(e.point);
-        },
-      });
-      if (selected) {
-        this.project.deselectAll();
-        selected.selected = true;
-      }
+      this.onClick(e);
     }
     this.deselectIgnored();
   });
