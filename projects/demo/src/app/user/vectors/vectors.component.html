@@ -2,9 +2,7 @@
   <button mat-raised-button color="primary" (click)="create()">
     New Vector
   </button>
-  <!-- <button mat-flat-button (click)="importVector()" [disabled]="true">
-    Import...
-  </button> -->
+  <button mat-flat-button (click)="importVector()">Import...</button>
 </mat-toolbar>
 <!--
 <table>
@@ -45,27 +43,57 @@
   </tr>
 </table> -->
 <!-- RESPONSIVE DESIGN -->
-<div gdColumns.lt-sm="auto" gdColumns.lt-md="repeat(2, 1fr)" gdColumns.md="repeat(3, 1fr)"
-  gdColumns.gt-md="repeat(4, 1fr)" gdColumns.gt-lg="repeat(5, 1fr)" id="VectorList">
-  <ng-container [gunChain]="vector" *ngFor="let vector of vectors | async; let i = index">
+<div
+  gdColumns.lt-sm="auto"
+  gdColumns.lt-md="repeat(2, 1fr)"
+  gdColumns.md="repeat(3, 1fr)"
+  gdColumns.gt-md="repeat(4, 1fr)"
+  gdColumns.gt-lg="repeat(5, 1fr)"
+  id="VectorList"
+>
+  <ng-container
+    [gunChain]="vector"
+    *ngFor="let vector of vectors | async; let i = index"
+  >
     <div class="card-container">
       <app-vector-card></app-vector-card>
     </div>
   </ng-container>
 </div>
 
-<div *ngIf="false" id="Vectors" gdColumns="auto repeat(4, max-content)" appFileDnd class="dropzone">
+<div
+  *ngIf="false"
+  id="Vectors"
+  gdColumns="auto repeat(4, max-content)"
+  appFileDnd
+  class="dropzone"
+>
   <ng-container *ngFor="let vector of vectors | async; let i = index">
     <div class="transparent" [ngClass]="{ odd: i % 2 === 0 }">
-      <a mat-flat-button [routerLink]="['/user/vectors', vector | soul, 'edit']">
+      <a
+        mat-flat-button
+        [routerLink]="['/user/vectors', vector | soul, 'edit']"
+      >
         <!-- <mat-icon>enhanced_encryption</mat-icon> -->
         {{ vector.title }}
       </a>
-      <a mat-flat-button [routerLink]="['/user/vectors', vector | soul, 'edit']">{{ vector | updated | date }}</a>
-      <button mat-icon-button matTooltip="Remove vector" (click)="remove(vector)">
+      <a
+        mat-flat-button
+        [routerLink]="['/user/vectors', vector | soul, 'edit']"
+        >{{ vector | updated | date }}</a
+      >
+      <button
+        mat-icon-button
+        matTooltip="Remove vector"
+        (click)="remove(vector)"
+      >
         <mat-icon>delete</mat-icon>
       </button>
-      <button mat-icon-button matTooltip="Settings" [routerLink]="['/user/vectors', vector | soul, 'permissions']">
+      <button
+        mat-icon-button
+        matTooltip="Settings"
+        [routerLink]="['/user/vectors', vector | soul, 'permissions']"
+      >
         <mat-icon>settings</mat-icon>
       </button>
       <button mat-icon-button matTooltip="Download" (click)="download(vector)">
@@ -75,8 +103,15 @@
   </ng-container>
 </div>
 
-<ng-container *ngIf="[null, undefined, 0, '0'].includes(count$ | async); else HasVectors">
-  <button class="mat-display-1" mat-stroked-button color="primary" (click)="create()">
+<ng-container
+  *ngIf="[null, undefined, 0, '0'].includes(count$ | async); else HasVectors"
+>
+  <button
+    class="mat-display-1"
+    mat-stroked-button
+    color="primary"
+    (click)="create()"
+  >
     Create your first vector!
   </button>
 </ng-container>

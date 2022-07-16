@@ -84,8 +84,8 @@ export class VectorService {
 
     vectorNode.once().subscribe((vectorRecord: any) => {
       this.logger.log('new vector loaded from list', vectorRecord);
-      vectorNode.certificates$.subscribe(() => {
-        this.logger.log('vector certs loaded');
+      vectorNode.certificates$.subscribe((certificates: any) => {
+        this.logger.log('vector certs loaded', certificates);
         const p = new paper.Project(new paper.Size(100, 100));
         p.importJSON(paperJSON);
         const g = new ProjectPair(
@@ -96,11 +96,8 @@ export class VectorService {
         );
         const deep = getDeep(p);
         const layersNode = vectorNode.get('layers' as never);
-        console.log(layersNode.certificate);
-        layersNode.certificate$.subscribe(() => {
-          this.logger.log('loaded certificate for layers');
-          layersNode.put(deep.layers as never);
-        });
+
+        layersNode.put(deep.layers as never, layersNode.certificate);
       });
     });
   }
