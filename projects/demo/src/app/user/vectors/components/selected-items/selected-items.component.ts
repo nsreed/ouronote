@@ -151,11 +151,11 @@ export class SelectedItemsComponent implements OnInit {
       // clone.strokeColor = item.strokeColor || item.style.strokeColor;
       // clone.strokeWidth = item.strokeWidth || item.style.strokeWidth;
       clone.data = {};
-      clone.selected = true;
       clone.translate(randomDirection);
       // copyStyleToItem(item.style, clone);
       // copyStyleToItem(item, clone);
       item.parent.addChild(clone);
+      clone.selected = true;
       clone.pair?.doSave();
 
       return clone;

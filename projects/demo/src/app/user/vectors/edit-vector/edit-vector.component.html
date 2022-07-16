@@ -299,7 +299,7 @@
             </ng-container>
             <button mat-button (click)="project.deselectAll()">Clear</button>
             <app-selected-items
-              [selectedItems]="project.selectedItems"
+              [selectedItems]="project.selectedItems$ | async"
             ></app-selected-items>
           </ng-template>
         </mat-expansion-panel>

@@ -331,6 +331,7 @@ const original = paper.Project.prototype.deselectAll;
 paper.Project.prototype.deselectAll = function () {
   original.call(this);
 };
+
 // tslint:disable: no-string-literal
 const us = (paper.Project.prototype as any)['_updateSelection'];
 (paper.Project.prototype as any)['_updateSelection'] = function (
@@ -338,9 +339,12 @@ const us = (paper.Project.prototype as any)['_updateSelection'];
   item: any
 ) {
   us.call(this, item);
-  this.changes$?.next(['selectedItems', this.selectedItems]);
-  this.selectedItems$?.next(this.selectedItems);
+  const selected = this.selectedItems.filter((i: paper.Item) => !i.data.ignore);
+  this.changes$?.next(['selectedItems', selected]);
+  this.selectedItems$?.next(selected);
+  // console.log('_updateSelection() after', this.selectedItems);
 };
+
 Object.defineProperty(paper.Project.prototype, 'selectedItems$', {
   get() {
     if (!this._selectedItems$) {
@@ -350,6 +354,7 @@ Object.defineProperty(paper.Project.prototype, 'selectedItems$', {
   },
   enumerable: false,
 });
+
 Object.defineProperty(paper.Project.prototype, 'allChanges$', {
   get() {
     if (!this._allChanges$) {
@@ -395,6 +400,7 @@ const toIntercept = [
   paper.View,
   paper.Size,
   paper.Project,
+  // paper.PointText,
 ];
 
 // Add change emitters
