@@ -10,6 +10,7 @@ import { UserService } from '../user.service';
 import { VectorGraph } from '../VectorGraph';
 import { ProjectPair } from './classes/ProjectPair';
 import { getDeep } from './functions/packaging';
+import { GunAuthChain } from '../../../../../ng-gun/src/lib/classes/GunChain';
 
 @Injectable({
   providedIn: 'root',
@@ -78,20 +79,29 @@ export class VectorService {
   }
 
   async importFromPaper(paperJSON: any, vectorGraph: any) {
+    paperJSON =
+      typeof paperJSON === 'string' ? JSON.parse(paperJSON) : paperJSON;
     this.logger.log('Importing Vector', vectorGraph);
+    if (!paperJSON.layers) {
+      this.logger.error('no layers to import!');
+      return;
+    }
     const created = await this.create(vectorGraph);
-    const vectorNode = this.vectors.get(created as any);
+    const vectorNode = this.vectors.get(
+      created as any
+    ) as GunAuthChain<VectorGraph>;
 
     vectorNode.once().subscribe((vectorRecord: any) => {
       this.logger.log('new vector loaded from list', vectorRecord);
       vectorNode.certificates$.subscribe((certificates: any) => {
         this.logger.log('vector certs loaded', certificates);
-        const p = new paper.Project(new paper.Size(100, 100));
-        p.importJSON(paperJSON);
+        vectorNode.get('layers').put(paperJSON.layers as never);
+        // const p = new paper.Project(new paper.Size(100, 100));
+        // p.importJSON(paperJSON);
 
-        const deep = getDeep(p);
-        const layersNode = vectorNode.get('layers' as never);
-        layersNode.put(deep.layers as never, layersNode.certificate);
+        // const deep = getDeep(p);
+        // const layersNode = vectorNode.get('layers' as never);
+        // layersNode.put(deep.layers as never, layersNode.certificate);
       });
     });
   }

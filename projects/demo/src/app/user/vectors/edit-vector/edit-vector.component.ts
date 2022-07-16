@@ -53,6 +53,7 @@ import { tool } from 'paper/dist/paper-core';
 import { layoutVertical } from '../functions/paper-functions';
 import { IEnhancedPaper } from '../../../vector/IEnhancedPaper';
 import { SettingsService } from '../../../settings.service';
+import { VERSION } from '../../../../environments/version';
 
 @Component({
   templateUrl: './edit-vector.component.html',
@@ -385,13 +386,20 @@ export class EditVectorComponent
 
   async download() {
     // console.log(this.project.exportJSON({ asString: false }));
-
-    const jsonBlob = new Blob([this.project.exportJSON()], {
-      type: 'text/plain;charset=utf-8',
-    });
     const username = this.userService.user.alias + '-' || '';
     const title = await this.vectorNode.get('title').once().toPromise();
     const updated = new Date(this.vectorNode.updateTime).toISOString();
+    const projectJSON = {
+      ...getDeep(this.project),
+      title,
+      ouronote: {
+        ...VERSION,
+      },
+    }; // this.project.exportJSON();
+
+    const jsonBlob = new Blob([JSON.stringify(projectJSON)], {
+      type: 'text/plain;charset=utf-8',
+    });
     saveAs(jsonBlob, `${username}${title}-${updated}.json`);
   }
 

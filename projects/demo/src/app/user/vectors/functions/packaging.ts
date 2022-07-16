@@ -1,4 +1,8 @@
-import { EXPECT_KEYED_ARRAY, EXPECT_PRIMITIVE_ARRAY } from './constants';
+import {
+  EXPECT_KEYED_ARRAY,
+  EXPECT_PRIMITIVE_ARRAY,
+  REQUIRES,
+} from './constants';
 import * as paper from 'paper';
 export function unpack(
   value: any,
@@ -119,7 +123,6 @@ export function getDeep(
   item: paper.Item | paper.Project | any,
   createKeys = false
 ): any {
-  const itemJSON = item.exportJSON({ asString: false });
   const deep = getDeepFromJSON(item as any);
   const shallow = item instanceof paper.Project ? {} : getShallow(item);
   return { ...deep, ...shallow };
@@ -136,6 +139,7 @@ export function getShallowFromData(item: any) {
   // remove complex sub-objects
   delete shallow.data;
   delete shallow.children;
+  delete shallow.selected;
 
   // stringify arrays
   Object.keys(shallow).forEach((k) => {
@@ -160,6 +164,34 @@ export function getShallowFromData(item: any) {
  * @returns a shallow representation of the item
  */
 export function getShallow(item: paper.Item): any {
-  const raw = item.exportJSON({ asString: false });
+  const raw = item.exportJSON({ asString: false }) as any;
+  if (Object.keys(REQUIRES).includes(item.className)) {
+    // make sure things are serialized that should be
+    const forcedSerial = [
+      ...REQUIRES[item.className],
+      'fillColor',
+      'strokeColor',
+    ]
+      // .filter((k) => Object.getOwnPropertyNames(item).includes(k))
+      .reduce((p: any, c: any) => {
+        const v = item[c as keyof paper.Item];
+        if (v !== undefined) {
+          if (v === null) {
+            p[c] = null;
+          } else if (v instanceof paper.Color) {
+            const colorJSON = JSON.parse(JSON.stringify(v));
+            colorJSON.shift();
+            p[c] = JSON.stringify(colorJSON);
+          } else {
+            p[c] = 'object' === typeof v ? JSON.stringify(v) : v;
+          }
+        }
+
+        return p;
+      }, {} as any);
+
+    raw[1] = { ...raw[1], ...forcedSerial };
+  }
+
   return getShallowFromData(raw);
 }

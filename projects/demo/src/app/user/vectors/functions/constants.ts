@@ -60,6 +60,7 @@ export const EXPECT_PRIMITIVE_ARRAY = [
   'radius',
   'segments',
   'position',
+  'dashArray',
 ];
 export const EXPECT_KEYED_ARRAY = ['children', 'layers'];
 export const REQUIRED_BY = {
@@ -68,7 +69,13 @@ export const REQUIRED_BY = {
 
 export const REQUIRES = {
   Shape: ['size'],
-  PointText: ['content', 'fontFamily', 'fontSize'],
+  PointText: [
+    'content',
+    'fontFamily',
+    'fontSize',
+    'justification',
+    'fontWeight',
+  ],
 } as any;
 
 export function hasRequired(json: any) {

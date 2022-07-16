@@ -4,6 +4,7 @@ import { Style } from 'paper';
 import { Property } from '../functions/decorators';
 import { PairedItem } from '../classes/paper-pair';
 import { DrawTool } from './draw-tool';
+import { getShallow } from '../functions/packaging';
 export class TextTool extends DrawTool {
   name = 'text';
   matIconName = 'text_fields';
@@ -16,6 +17,7 @@ export class TextTool extends DrawTool {
     strokeJoin: 'round',
     strokeWidth: 3,
     fontSize: 20,
+    fillColor: new paper.Color(0, 0, 0),
   } as paper.Style);
 
   @Property({
@@ -49,7 +51,7 @@ export class TextTool extends DrawTool {
 
     // If no selectable text, create a new text
     this.text = new paper.PointText(e.point);
-    this.text.content = this.content;
+    this.text.content = `${this.content}`;
     this.text.style = this.project.currentStyle;
     this.text.style = this.style;
     this.text.fontFamily = 'sans-serif';
@@ -58,6 +60,8 @@ export class TextTool extends DrawTool {
     this.text.justification = 'left';
     this.text.strokeWidth = this.style.strokeWidth;
     this.text.strokeColor = this.style.strokeColor;
+    this.text.fillColor = this.style.fillColor;
+    this.text.applyMatrix = true;
 
     this.text.pair?.save([
       'content',
@@ -70,6 +74,7 @@ export class TextTool extends DrawTool {
       'justification',
       'position',
     ]);
+    this.text.pair?.doSave();
     this.project.activeLayer.insertChild(
       this.project.activeLayer.children.length,
       this.text
