@@ -139,20 +139,22 @@ export class NgGunSessionService {
       seq,
       args,
     });
-    return await this.response$
-      .pipe(
-        filter(({ data }) => data.rseq === seq),
-        take(1),
-        pluck('data'),
-        map((v) => {
-          if (v.error) {
-            this.logger.error('error encounted in worker', v.error);
-          } else {
-            return v.result;
-          }
-        })
-      )
-      .toPromise();
+    return await this.responseTo(seq).toPromise();
+  }
+
+  private responseTo(seq: number) {
+    return this.response$.pipe(
+      filter(({ data }) => data.rseq === seq),
+      take(1),
+      pluck('data'),
+      map((v) => {
+        if (v.error) {
+          this.logger.error('error encounted in worker', v.error);
+        } else {
+          return v.result;
+        }
+      })
+    );
   }
 
   private getSeq() {
