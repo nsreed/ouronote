@@ -11,6 +11,14 @@ import { NgGunService } from 'projects/ng-gun/src/lib/ng-gun.service';
 import { debounceTime } from 'rxjs/operators';
 import stringify from 'safe-stable-stringify';
 import { SettingsService } from '../../settings.service';
+import { CAPABILITIES } from '../../system.service';
+import { LogMessage } from '../../../../../../dist/log/lib/log.service';
+
+function messageToString(message: LogMessage) {
+  return `${message.timestamp} ${message.name} ${message.message} ${stringify(
+    message.args
+  )}`;
+}
 
 @Component({
   selector: 'app-bug-report',
@@ -43,8 +51,11 @@ export class BugReportComponent implements OnInit {
   }
 
   get log() {
+    const messages = this.data.messages || [];
     // FIXME too many log messages can make stringification fail
-    return this.includeForm.value.log ? { log: this.data.messages } : {};
+    return this.includeForm.value.log
+      ? { log: messages.map(messageToString) }
+      : {};
   }
 
   get settings() {
@@ -68,7 +79,11 @@ export class BugReportComponent implements OnInit {
     private cb: ClipboardService,
     private dialogRef: MatDialogRef<BugReportComponent>,
     @Inject(MAT_DIALOG_DATA)
-    private data: any,
+    private data: Partial<{
+      messages: LogMessage[];
+      gun: any;
+      peers: any;
+    }>,
     private toaster: MatSnackBar,
     private fb: FormBuilder,
     public settingsService: SettingsService
@@ -93,7 +108,8 @@ export class BugReportComponent implements OnInit {
       host: window.location.host,
       route: this.router.url,
       timestamp: Date.now(),
-      version: VERSION,
+      VERSION,
+      capabilities: CAPABILITIES,
       system: host.browser,
       settings: this.settings,
       ...this.gunOpts,
