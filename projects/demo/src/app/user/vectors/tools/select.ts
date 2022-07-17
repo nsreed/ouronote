@@ -72,8 +72,10 @@ export class SelectTool extends VectorTool {
       },
     });
     if (selected) {
-      this.project.deselectAll();
-      selected.selected = true;
+      if (!event.modifiers.shift) {
+        this.project.deselectAll();
+      }
+      selected.selected = !selected.selected;
     }
   }
 }

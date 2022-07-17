@@ -62,7 +62,7 @@ export class RotateTool extends SelectionTool {
       if (item.className === 'Path') {
         saveFields.push('segments');
       }
-      (item as any).pair.save(saveFields);
+      (item as any).pair?.save(saveFields);
     });
   });
 

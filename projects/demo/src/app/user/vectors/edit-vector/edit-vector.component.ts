@@ -371,7 +371,7 @@ export class EditVectorComponent
         await Promise.all(loads);
         layoutVertical(rasters, this.project.view.center);
         rasters.forEach((raster: any) => {
-          raster.pair.doSave();
+          raster.pair?.doSave();
         });
 
         this.tools.find((t: any) => t.name === 'move')?.activate();

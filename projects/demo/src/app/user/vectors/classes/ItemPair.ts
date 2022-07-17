@@ -41,6 +41,7 @@ import { PairedItem } from './paper-pair';
 import { around } from 'aspect-ts';
 import { take, distinct } from 'rxjs/operators';
 import { NgSeaService } from '../../../../../../ng-gun/src/lib/ng-sea.service';
+import { environment } from '../../../../environments/environment';
 
 export class ItemPair extends PaperPair {
   private ipTimer = this.logger.time('ItemPair');
@@ -407,6 +408,10 @@ export class ItemPair extends PaperPair {
     if (!childObj.data.soul) {
       // This is a new child, not yet inserted in the graph
       this.logger.verbose('child not present in graph');
+      if (!environment.persistImages && childObj.className === 'Raster') {
+        this.logger.verbose('ignoring raster');
+        return;
+      }
       const childKey = getSetKey(this.chain).replace(/~.*/, '');
       childNode = this.children.get(childKey);
       childObj.data.soul = childKey;
@@ -574,7 +579,12 @@ export class ItemPair extends PaperPair {
             this.logger.log('got values', values);
           });
 
-        // return;
+        return;
+      }
+
+      if (json.className === 'Raster' && !environment.persistImages) {
+        this.logger.log('ignoring raster');
+        return;
       }
 
       const newChild = this.constructChild(childJSON, key);
