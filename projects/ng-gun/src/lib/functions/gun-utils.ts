@@ -1,7 +1,17 @@
 import * as Gun from 'gun';
 import { IGunChainReference } from 'gun/types/chain';
 import { IGunCertificate } from '../classes/Certificate';
-export const gunUpdateTime = (value: any) => {
+
+export type GunMetadata<T extends any = any> = T & {
+  _: {
+    '>': {
+      [propertyName in keyof T]: number;
+    };
+  };
+};
+
+/** Gets the most recent update time for this node */
+export const gunUpdateTime = (value: GunMetadata) => {
   const updates = Gun.node.is(value) ? (value as any)._['>'] : null;
   if (!updates) {
     return 0;
@@ -10,6 +20,7 @@ export const gunUpdateTime = (value: any) => {
     time > latest ? time : latest
   ) as number;
 };
+
 export const gunChainArray = (value: IGunChainReference) => {
   let c = value as any;
   const path = [];
@@ -66,6 +77,7 @@ export function parseCertificate(cert: string) {
   const scrubbed = cert.replace(RE_SEA_CERT, '');
   return JSON.parse(scrubbed) as IGunCertificate;
 }
+
 export const over = (obj: any) => (fnName: string) => {
   const orig = obj[fnName];
   return (cb: (...args: any[]) => any) => {
@@ -81,6 +93,8 @@ export const over = (obj: any) => (fnName: string) => {
     };
   };
 };
+
+/** Determines if b is a sub-soul (deeper in the same path) of a */
 export function isSubSoul(a: string, b: string) {
   const sa = a.split('/');
   const ba = b.split('/');
@@ -89,13 +103,29 @@ export function isSubSoul(a: string, b: string) {
   }
   return !ba.find((v, i) => i < sa.length && sa[i] !== v);
 }
-function gunUpdates(doc: any) {
-  return doc._ && doc._['>'];
+
+function gunUpdates(doc: GunMetadata) {
+  return (doc._ && doc._['>']) || {};
 }
-export function gunDiff(docA: any, docB: any) {
-  const aup = (docA._ && docA._['>']) || {};
-  const bup = (docB._ && docB._['>']) || {};
-  const allKeys = [...new Set(Object.keys(aup).concat(Object.keys(bup)))];
+
+/**
+ * Gets an array all unique keys for provided objects
+ * @param objects the objects whose keys should be merged
+ * @returns an array containing all unique keys for all provided objects
+ */
+function mergeKeys(...objects: any[]) {
+  return [
+    ...new Set(
+      objects.reduce((p: string[], c: any) => p.concat(Object.keys(c)), [])
+    ),
+  ];
+}
+
+export function gunDiff(docA: GunMetadata, docB: GunMetadata) {
+  const aup = gunUpdates(docA);
+  const bup = gunUpdates(docB);
+
+  const allKeys = mergeKeys(aup, bup);
   const out = allKeys.reduce((acc, k) => {
     const src = aup[k] >= bup[k] ? docA : docB;
     acc[k] = src[k] || docA[k] || docB[k];
