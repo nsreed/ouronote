@@ -68,7 +68,8 @@
               "file-saver",
               "gun",
               "paper",
-              "hammerjs"
+              "hammerjs",
+              "qrcode"
             ],
             "vendorChunk": true,
             "extractLicenses": false,

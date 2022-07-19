@@ -63,6 +63,7 @@ export class EditVectorComponent
   extends RouteVectorDirective
   implements OnInit, AfterViewInit, OnDestroy
 {
+  href = window.location.href;
   @ViewChild('paper')
   private paperDirective!: PaperEditDirective;
 

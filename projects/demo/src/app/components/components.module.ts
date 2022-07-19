@@ -27,6 +27,7 @@ import { SystemSettingsComponent } from './system-settings/system-settings.compo
 import { LicenseComponent } from './license/license.component';
 import { LicenseDialogComponent } from './license-dialog/license-dialog.component';
 import { SessionSelectorComponent } from './session-selector/session-selector.component';
+import { QrCodeComponent } from './qr-code/qr-code.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { SessionSelectorComponent } from './session-selector/session-selector.co
     LicenseComponent,
     LicenseDialogComponent,
     SessionSelectorComponent,
+    QrCodeComponent,
   ],
   imports: [
     CommonModule,
@@ -71,6 +73,7 @@ import { SessionSelectorComponent } from './session-selector/session-selector.co
     LicenseSelectorComponent,
     LicenseComponent,
     SessionSelectorComponent,
+    QrCodeComponent,
   ],
 })
 export class ComponentsModule {}
