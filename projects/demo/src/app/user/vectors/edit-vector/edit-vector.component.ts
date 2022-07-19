@@ -255,6 +255,15 @@ export class EditVectorComponent
     project.currentStyle.strokeWidth = 3;
   }
 
+  onFullscreenClick(event: MouseEvent) {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+      return;
+    }
+
+    window.document.body.requestFullscreen();
+  }
+
   copyViewLink() {
     const linkURL = `${window.location.protocol}//${window.location.host}/view/${this.vectorNode.recordPub}`;
     this.cb.copy(linkURL);
