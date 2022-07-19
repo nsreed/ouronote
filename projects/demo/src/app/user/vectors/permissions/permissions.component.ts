@@ -1,5 +1,5 @@
 import { Component, NgZone, OnInit, AfterViewInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { NgGunService } from 'projects/ng-gun/src/public-api';
@@ -19,7 +19,7 @@ export class PermissionsComponent
     vectorService: VectorService,
     route: ActivatedRoute,
     private ngZone: NgZone,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     ngGun: NgGunService,
     private sanitizer: DomSanitizer,
     public userService: UserService

@@ -1,5 +1,5 @@
 import { Component, OnInit, EventEmitter, Output } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { filter } from 'rxjs/operators';
 import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
 
@@ -14,7 +14,7 @@ export class AliasAutocompleteComponent implements OnInit {
   @Output()
   select$ = new EventEmitter<string>();
 
-  constructor(private fb: FormBuilder, private ngGun: NgGunService) {
+  constructor(private fb: UntypedFormBuilder, private ngGun: NgGunService) {
     this.aliasCtl.valueChanges
       .pipe(filter((alias) => alias !== null))
       .subscribe((alias) => {

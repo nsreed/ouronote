@@ -19,7 +19,7 @@ import {
 } from '../../../../../../../ng-gun/src/lib/classes/GunChain';
 import { ConfirmComponent } from 'projects/demo/src/app/components/confirm/confirm.component';
 import { VectorExportDialogComponent } from '../vector-export-dialog/vector-export-dialog.component';
-import { FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { ReplaySubject } from 'rxjs';
 
 @Component({
@@ -79,7 +79,7 @@ export class VectorCardComponent implements OnInit {
     private userService: UserService,
     private dialog: MatDialog,
     private vectorService: VectorService,
-    private fb: FormBuilder
+    private fb: UntypedFormBuilder
   ) {
     this.vector$.subscribe((vector) => (this.vectorChain = vector as any));
   }

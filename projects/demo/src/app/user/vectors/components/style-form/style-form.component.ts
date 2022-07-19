@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, EventEmitter, Output } from '@angular/core';
 import * as paper from 'paper';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { serializeValue } from '../../functions/packaging';
 import { Style } from 'paper';
 
@@ -128,7 +128,7 @@ export class StyleFormComponent implements OnInit {
     strokeWidth: null,
   });
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: UntypedFormBuilder) {
     this.form.valueChanges.subscribe((v) => {
       const ns = new paper.Style(v);
       this.styleChange.emit(ns);

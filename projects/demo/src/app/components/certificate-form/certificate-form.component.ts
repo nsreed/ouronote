@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-certificate-form',
@@ -13,7 +13,7 @@ export class CertificateFormComponent implements OnInit {
     policies: this.fb.array([]),
     expires: [null, Validators.min(new Date().getTime())],
   });
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: UntypedFormBuilder) {}
 
   ngOnInit(): void {}
 }

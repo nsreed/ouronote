@@ -4,7 +4,7 @@ import {
   ChangeDetectionStrategy,
   Input,
 } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { LICENSES } from '../../LICENSES';
 import { UserService } from '../../user/user.service';
 
@@ -32,7 +32,7 @@ export class LicenseSelectorComponent implements OnInit {
     ],
   });
 
-  constructor(private fb: FormBuilder, private userService: UserService) {}
+  constructor(private fb: UntypedFormBuilder, private userService: UserService) {}
 
   ngOnInit(): void {}
 }

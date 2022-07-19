@@ -24,7 +24,7 @@ import { ProjectPair } from '../classes/ProjectPair';
 import { RouteVectorDirective } from '../route-vector.directive';
 import { VectorService } from '../vector.service';
 import { gunifyProject as gunifyProject } from './converter-functions';
-import { FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { NgGunService } from '../../../../../../ng-gun/src/lib/ng-gun.service';
 import { getDeep, unpack } from '../functions/packaging';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -101,7 +101,7 @@ export class EditVectorComponent
     protected vectorService: VectorService,
     route: ActivatedRoute,
     private ngZone: NgZone,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     ngGun: NgGunService,
     private sanitizer: DomSanitizer,
     private logger: LogService,

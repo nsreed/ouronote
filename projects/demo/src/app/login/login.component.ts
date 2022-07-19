@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {
   AbstractControl,
-  FormBuilder,
-  FormControl,
+  UntypedFormBuilder,
+  UntypedFormControl,
   Validators,
 } from '@angular/forms';
 import { NgGunService } from '../../../../ng-gun/src/lib/ng-gun.service';
@@ -51,7 +51,7 @@ export class LoginComponent implements OnInit {
       null,
       [
         Validators.required,
-        (ctl: FormControl) => {
+        (ctl: UntypedFormControl) => {
           if (this.mode === 'login') {
             return null;
           }
@@ -64,7 +64,7 @@ export class LoginComponent implements OnInit {
     ],
     password2: [
       null,
-      (ctl: FormControl) => {
+      (ctl: UntypedFormControl) => {
         if (this.mode === 'login') {
           return null;
         }
@@ -77,7 +77,7 @@ export class LoginComponent implements OnInit {
   });
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private ngGun: NgGunService,
     router: Router,
     private dialog: MatDialog,

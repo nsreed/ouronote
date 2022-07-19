@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ObjectPropertyDirective } from 'projects/demo/src/app/directives/object-property.directive';
 import { ObjectDirective } from 'projects/demo/src/app/directives/object.directive';
 
@@ -15,7 +15,7 @@ export class NumberFormComponent implements OnInit {
   label = '';
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     public prop: ObjectPropertyDirective,
     public obj: ObjectDirective
   ) {

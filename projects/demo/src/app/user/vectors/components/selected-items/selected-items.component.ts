@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { EditVectorComponent } from '../../edit-vector/edit-vector.component';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ItemPair } from '../../classes/ItemPair';
 import * as paper from 'paper';
 import { LogService } from '../../../../../../../log/src/lib/log.service';
@@ -62,7 +62,7 @@ export class SelectedItemsComponent implements OnInit {
   selectedStyle?: paper.Style;
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     public editVectorComponent: EditVectorComponent,
     private logger: LogService
   ) {

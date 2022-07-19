@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { MessageService } from '../message.service';
 import { Message } from '../../model';
 import { NgGunService } from '../../../../../../ng-gun/src/lib/ng-gun.service';
@@ -15,7 +15,7 @@ export class NewMessageComponent implements OnInit {
     text: this.fb.control(null, Validators.required),
   });
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private messageService: MessageService,
     private ngGun: NgGunService
   ) {}

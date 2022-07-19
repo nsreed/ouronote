@@ -1,5 +1,5 @@
 import { Component, OnInit, NgZone, Inject } from '@angular/core';
-import { FormArray, FormBuilder, Validators } from '@angular/forms';
+import { FormArray, UntypedFormBuilder, Validators } from '@angular/forms';
 import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { delay, filter, mergeMap } from 'rxjs/operators';
@@ -33,7 +33,7 @@ export class CreateCertificateComponent implements OnInit {
 
   pathCtl = this.fb.control(null);
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private ngGun: NgGunService,
     private sea: NgSeaService,
     private chain: ChainDirective,

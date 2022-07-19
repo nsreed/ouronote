@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { ObjectPropertyDirective } from '../../../../directives/object-property.directive';
 import * as paper from 'paper';
 import { Color } from '@angular-material-components/color-picker';
@@ -98,7 +98,7 @@ export class ColorFormComponent implements OnInit {
     );
   }
 
-  constructor(private fb: FormBuilder, public prop: ObjectPropertyDirective) {}
+  constructor(private fb: UntypedFormBuilder, public prop: ObjectPropertyDirective) {}
 
   ngOnInit(): void {
     // TODO re-enable for rgb/cymk editor

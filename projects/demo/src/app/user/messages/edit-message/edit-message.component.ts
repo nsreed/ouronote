@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { take } from 'rxjs/operators';
 import { NgGunService } from '../../../../../../ng-gun/src/lib/ng-gun.service';
@@ -23,7 +23,7 @@ export class EditMessageComponent
     private messageService: MessageService,
     route: ActivatedRoute,
     ngGun: NgGunService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private ngSea: NgSeaService
   ) {
     super(route, ngGun);

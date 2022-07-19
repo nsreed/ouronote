@@ -11,7 +11,7 @@ import {
 import { UserService } from '../../user/user.service';
 import * as Gun from 'gun';
 import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { LogService } from '../../../../../log/src/lib/log.service';
 import { SEA } from 'gun';
 
@@ -51,7 +51,7 @@ export class CertificatesComponent implements OnInit {
     private chainDirective: ChainDirective,
     private userService: UserService,
     private ngGun: NgGunService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private logger: LogService
   ) {
     this.certs$.subscribe((c: any) => {

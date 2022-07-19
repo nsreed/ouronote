@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, SkipSelf } from '@angular/core';
 import { LICENSES } from '../../LICENSES';
-import { FormBuilder, FormControl, FormControlDirective } from '@angular/forms';
+import { UntypedFormBuilder, FormControl, FormControlDirective } from '@angular/forms';
 import { UserService } from '../../user/user.service';
 
 @Component({
@@ -21,7 +21,7 @@ export class LicenseFormComponent implements OnInit {
     } ALL RIGHTS RESERVED`,
   });
 
-  constructor(private fb: FormBuilder, private userService: UserService) {}
+  constructor(private fb: UntypedFormBuilder, private userService: UserService) {}
 
   ngOnInit(): void {}
 }

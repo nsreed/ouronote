@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Validators, FormBuilder } from '@angular/forms';
+import { Validators, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { take } from 'rxjs/operators';
 import { RoutePostDirective } from '../route-post.directive';
@@ -18,7 +18,7 @@ export class EditPostComponent extends RoutePostDirective implements OnInit {
   constructor(
     postService: PostService,
     route: ActivatedRoute,
-    private fb: FormBuilder
+    private fb: UntypedFormBuilder
   ) {
     super(postService, route);
     this.post$.subscribe((m) => {

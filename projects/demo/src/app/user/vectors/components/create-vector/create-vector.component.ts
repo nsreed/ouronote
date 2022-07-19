@@ -1,5 +1,5 @@
 import { Component, Inject, NgZone, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import Gun from 'gun';
@@ -54,7 +54,7 @@ export class CreateVectorComponent implements OnInit {
   );
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private ngGun: NgGunService,
     private sea: NgSeaService,
     private vectorService: VectorService,

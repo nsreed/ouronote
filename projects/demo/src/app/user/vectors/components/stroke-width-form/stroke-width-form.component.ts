@@ -1,6 +1,6 @@
 import { Input } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { VectorTool } from '../../tools/paper-tool';
 import { PenTool } from '../../tools/pen';
 
@@ -29,7 +29,7 @@ export class StrokeWidthFormComponent implements OnInit {
     // console.log((value as any).___PROPERTIES);
   }
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: UntypedFormBuilder) {}
 
   ngOnInit(): void {
     this.widthCtl.valueChanges.subscribe((v) => {

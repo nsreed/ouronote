@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ObjectPropertyDirective } from '../../../../directives/object-property.directive';
 
 @Component({
@@ -10,7 +10,7 @@ import { ObjectPropertyDirective } from '../../../../directives/object-property.
 export class BooleanFormComponent implements OnInit {
   boolCtl = this.fb.control(false);
 
-  constructor(private fb: FormBuilder, public prop: ObjectPropertyDirective) {
+  constructor(private fb: UntypedFormBuilder, public prop: ObjectPropertyDirective) {
     this.boolCtl.valueChanges.subscribe((v) => (prop.value = v));
   }
 

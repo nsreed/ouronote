@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { SettingsService } from '../../settings.service';
 import { Router } from '@angular/router';
 
@@ -14,7 +14,7 @@ export class SystemSettingsComponent implements OnInit {
     enableRadisk: false,
   });
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private settingsService: SettingsService,
     private router: Router
   ) {

@@ -6,7 +6,7 @@ import {
   AfterViewInit,
   Output,
 } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ObjectPropertyDirective } from 'projects/demo/src/app/directives/object-property.directive';
 import { ObjectDirective } from '../../../../directives/object.directive';
 import { EventEmitter } from '@angular/core';
@@ -28,7 +28,7 @@ export class TextFormComponent implements OnInit, AfterViewInit {
   private lastObj: any = null;
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     public prop: ObjectPropertyDirective,
     public obj: ObjectDirective
   ) {

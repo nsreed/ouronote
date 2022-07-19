@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { VectorTool } from '../../tools/paper-tool';
-import { FormBuilder } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { LassoSelectTool } from '../../tools/select';
 
 @Component({
@@ -23,7 +23,7 @@ export class SelectionIntersectModeFormComponent implements OnInit {
     }
   }
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: UntypedFormBuilder) {}
 
   ngOnInit(): void {
     this.inclusiveCtl.valueChanges.subscribe((v) => {

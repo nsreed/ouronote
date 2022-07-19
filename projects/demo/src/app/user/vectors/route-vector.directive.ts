@@ -1,4 +1,3 @@
-import { Route } from '@angular/compiler/src/core';
 import { Directive } from '@angular/core';
 import { VectorService } from './vector.service';
 import { ActivatedRoute } from '@angular/router';

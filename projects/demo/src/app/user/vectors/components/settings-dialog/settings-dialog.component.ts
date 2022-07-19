@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import * as Gun from 'gun';
 import { License } from 'projects/demo/src/app/License';
@@ -54,7 +54,7 @@ export class SettingsDialogComponent implements OnInit {
     private vectorService: VectorService,
     private userService: UserService,
     public dialogRef: MatDialogRef<any>,
-    private fb: FormBuilder
+    private fb: UntypedFormBuilder
   ) {
     // this.vector.open().subscribe((v) => {
     //   console.log(v);

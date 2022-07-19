@@ -16,6 +16,7 @@ import { UserService } from '../../../user.service';
 import { VectorService } from '../../vector.service';
 import { VectorPreviewComponent } from '../../../../vector/vector-preview/vector-preview.component';
 import { ElementRef } from '@angular/core';
+import { saveAs } from 'file-saver';
 
 @Component({
   templateUrl: './vector-export-dialog.component.html',
