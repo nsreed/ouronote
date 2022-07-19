@@ -19,7 +19,10 @@ import { map } from 'rxjs/operators';
 import { IEnhancedScope } from '../../../vector/IEnhancedScope';
 
 export class VectorTool extends Tool {
+  static stack: any[] = [];
+
   category = 'none';
+
   get isActive() {
     return this.scope.tool === this;
   }
@@ -58,7 +61,6 @@ export class VectorTool extends Tool {
     // );
     // this.touch.subscribe((e: any) => this.logger.log('tool touch event', e.touches));
   }
-  static stack: any[] = [];
   private isPointerDown = false;
   icon = 'hand-spock';
 
@@ -79,7 +81,10 @@ export class VectorTool extends Tool {
 
   propertyNames: string[] = [];
 
-  pointerDown: Observable<PenEvent> = fromEvent<PenEvent>(this, 'pointerdown').pipe(
+  pointerDown: Observable<PenEvent> = fromEvent<PenEvent>(
+    this,
+    'pointerdown'
+  ).pipe(
     tap((e: any) => (this.isPointerDown = true)),
     filter((e: any) => this.filterEvent(e))
   );
@@ -87,38 +92,54 @@ export class VectorTool extends Tool {
     tap((e: any) => (this.isPointerDown = false)),
     filter((e: any) => this.filterEvent(e))
   );
-  pointerMove: Observable<PenEvent> = fromEvent<PenEvent>(this, 'pointermove').pipe(
-    filter((e: any) => this.filterEvent(e))
-  );
+  pointerMove: Observable<PenEvent> = fromEvent<PenEvent>(
+    this,
+    'pointermove'
+  ).pipe(filter((e: any) => this.filterEvent(e)));
   pointerDrag: Observable<PenEvent> = this.pointerMove.pipe(
     filter((e: any) => this.filterEvent(e) && this.isPointerDown)
   );
 
   touchMove: Observable<TouchEvent> = fromEvent<TouchEvent>(this, 'touchdown');
-  touchStart: Observable<TouchEvent> = fromEvent<TouchEvent>(this, 'touchstart');
+  touchStart: Observable<TouchEvent> = fromEvent<TouchEvent>(
+    this,
+    'touchstart'
+  );
   touchEnd: Observable<TouchEvent> = fromEvent<TouchEvent>(this, 'touchend');
 
-  move: Observable<paper.ToolEvent>  = fromEvent<paper.ToolEvent>(this, 'mousemove').pipe(
-    filter((e: any) => this.filterEvent(e))
-  );
-  down: Observable<paper.ToolEvent> = fromEvent<paper.ToolEvent>(this, 'mousedown').pipe(
+  move: Observable<paper.ToolEvent> = fromEvent<paper.ToolEvent>(
+    this,
+    'mousemove'
+  ).pipe(filter((e: any) => this.filterEvent(e)));
+  down: Observable<paper.ToolEvent> = fromEvent<paper.ToolEvent>(
+    this,
+    'mousedown'
+  ).pipe(
     filter((e: any) => this.filterEvent(e)),
     tap((e: any) => this.activateDrawLayer())
   );
-  drag: Observable<paper.ToolEvent> = fromEvent<paper.ToolEvent>(this, 'mousedrag').pipe(
-    filter((e: any) => this.filterEvent(e))
-  );
-  up: Observable<paper.ToolEvent> = fromEvent<paper.ToolEvent>(this, 'mouseup').pipe(
-    filter((e: any) => this.filterEvent(e))
-  );
-  click: Observable<paper.ToolEvent> = fromEvent<paper.ToolEvent>(this, 'mouseclick');
-
-  wheel: Observable<WheelEvent|any> = fromEvent<{ event: WheelEvent; point: paper.Point }>(
+  drag: Observable<paper.ToolEvent> = fromEvent<paper.ToolEvent>(
     this,
-    'mousewheel'
+    'mousedrag'
+  ).pipe(filter((e: any) => this.filterEvent(e)));
+  up: Observable<paper.ToolEvent> = fromEvent<paper.ToolEvent>(
+    this,
+    'mouseup'
+  ).pipe(filter((e: any) => this.filterEvent(e)));
+  click: Observable<paper.ToolEvent> = fromEvent<paper.ToolEvent>(
+    this,
+    'mouseclick'
   );
 
-  keydown: Observable<paper.KeyEvent> = fromEvent<paper.KeyEvent>(this, 'keydown');
+  wheel: Observable<WheelEvent | any> = fromEvent<{
+    event: WheelEvent;
+    point: paper.Point;
+  }>(this, 'mousewheel');
+
+  keydown: Observable<paper.KeyEvent> = fromEvent<paper.KeyEvent>(
+    this,
+    'keydown'
+  );
   keyup: Observable<paper.KeyEvent> = fromEvent<paper.KeyEvent>(this, 'keyup');
 
   // FIXME class names get mangled by production build, stop being lazy
