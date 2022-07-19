@@ -201,6 +201,7 @@ export class SelectedItemsComponent implements OnInit {
           ? c.data.previousSibling._['#']
           : null;
         const newPrev = c.previousSibling?.data.path;
+
         return oldPrev !== newPrev;
       }) as (paper.Item & {
         pair?: ItemPair;
@@ -260,13 +261,8 @@ export class SelectedItemsComponent implements OnInit {
 
       changed.forEach((item) => {
         const newPrev = item.previousSibling?.data.path;
-        item.pair?.previousSibling.put(
-          newPrev
-            ? ({
-                '#': newPrev,
-              } as never)
-            : (null as never)
-        );
+        const val = newPrev ? { '#': newPrev } : null;
+        item.pair?.previousSibling.put(val as never);
       });
     }
   }
