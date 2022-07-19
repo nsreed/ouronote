@@ -261,7 +261,9 @@ export class EditVectorComponent
       return;
     }
 
-    window.document.body.requestFullscreen();
+    window.document.body
+      .requestFullscreen()
+      .catch((err) => this.logger.warn(`could not go fullscreen: ${err.name}`));
   }
 
   copyViewLink() {
