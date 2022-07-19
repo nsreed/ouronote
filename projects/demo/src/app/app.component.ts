@@ -57,11 +57,11 @@ export class AppComponent implements OnInit {
 
     // let lastActivated: ChildActivationEnd;
     // router.events
-    //   .pipe(filter((e) => e instanceof ChildActivationEnd))
-    //   .subscribe((e) => (lastActivated = e as any));
+    //   .pipe(filter((e: any) => e instanceof ChildActivationEnd))
+    //   .subscribe((e: any) => (lastActivated = e as any));
     // router.events
-    //   .pipe(filter((e) => e instanceof NavigationEnd))
-    //   .subscribe((e) => {
+    //   .pipe(filter((e: any) => e instanceof NavigationEnd))
+    //   .subscribe((e: any) => {
     //     // console.log('last activated at navigation end', lastActivated);
     //     // this.logger.log(
     //     //   'last activated',

@@ -32,7 +32,7 @@ export class TextTool extends DrawTool {
 
   propertyNames: string[] = ['content', 'style'];
 
-  downSub = this.down.subscribe((e) => {
+  downSub = this.down.subscribe((e: any) => {
     this.activateDrawLayer();
     this.project.deselectAll();
     // Look for text (to select)
@@ -82,7 +82,7 @@ export class TextTool extends DrawTool {
     this.text.selected = true;
   });
 
-  dragSub = this.drag.subscribe((e) => {
+  dragSub = this.drag.subscribe((e: any) => {
     // const prev = (this.scope.settings as any).insertItems;
     // (this.scope.settings as any).insertItems = false;
     // this.shape?.remove();
@@ -101,7 +101,7 @@ export class TextTool extends DrawTool {
     // );
   });
 
-  upSub = this.up.subscribe((e) => {
+  upSub = this.up.subscribe((e: any) => {
     // if (this.shape) {
     //   this.shape.data.ignore = undefined;
     //   this.project.activeLayer.insertChild(

@@ -70,7 +70,7 @@ export function serializeValue(value: any): any {
     return null;
   }
   if (Array.isArray(value)) {
-    return value.map((e) => serializeValue(e));
+    return value.map((e: any) => serializeValue(e));
   }
   if (typeof value === 'object' && value.className === 'Point') {
     return [value.x, value.y];

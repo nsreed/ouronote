@@ -39,7 +39,7 @@ export class VectorTool extends Tool {
   constructor(public readonly scope: IEnhancedScope) {
     super();
 
-    this.wheel.subscribe((e) => {
+    this.wheel.subscribe((e: any) => {
       const zoomDelta = e.event.deltaY;
       const viewPoint = this.scope.view.projectToView(e.point);
       const zoomRate = 0.03 * this.scope.view.zoom;
@@ -56,7 +56,7 @@ export class VectorTool extends Tool {
     // this.pointerMove.subscribe((e: PenEvent) =>
     //   this.logger.log('tool pointer event', e.point)
     // );
-    // this.touch.subscribe((e) => this.logger.log('tool touch event', e.touches));
+    // this.touch.subscribe((e: any) => this.logger.log('tool touch event', e.touches));
   }
   static stack: any[] = [];
   private isPointerDown = false;
@@ -79,47 +79,47 @@ export class VectorTool extends Tool {
 
   propertyNames: string[] = [];
 
-  pointerDown = fromEvent<PenEvent>(this, 'pointerdown').pipe(
-    tap((e) => (this.isPointerDown = true)),
-    filter((e) => this.filterEvent(e))
+  pointerDown: Observable<PenEvent> = fromEvent<PenEvent>(this, 'pointerdown').pipe(
+    tap((e: any) => (this.isPointerDown = true)),
+    filter((e: any) => this.filterEvent(e))
   );
-  pointerUp = fromEvent<PenEvent>(this, 'pointerup').pipe(
-    tap((e) => (this.isPointerDown = false)),
-    filter((e) => this.filterEvent(e))
+  pointerUp: Observable<PenEvent> = fromEvent<PenEvent>(this, 'pointerup').pipe(
+    tap((e: any) => (this.isPointerDown = false)),
+    filter((e: any) => this.filterEvent(e))
   );
-  pointerMove = fromEvent<PenEvent>(this, 'pointermove').pipe(
-    filter((e) => this.filterEvent(e))
+  pointerMove: Observable<PenEvent> = fromEvent<PenEvent>(this, 'pointermove').pipe(
+    filter((e: any) => this.filterEvent(e))
   );
-  pointerDrag = this.pointerMove.pipe(
-    filter((e) => this.filterEvent(e) && this.isPointerDown)
+  pointerDrag: Observable<PenEvent> = this.pointerMove.pipe(
+    filter((e: any) => this.filterEvent(e) && this.isPointerDown)
   );
 
-  touchMove = fromEvent<TouchEvent>(this, 'touchdown');
-  touchStart = fromEvent<TouchEvent>(this, 'touchstart');
-  touchEnd = fromEvent<TouchEvent>(this, 'touchend');
+  touchMove: Observable<TouchEvent> = fromEvent<TouchEvent>(this, 'touchdown');
+  touchStart: Observable<TouchEvent> = fromEvent<TouchEvent>(this, 'touchstart');
+  touchEnd: Observable<TouchEvent> = fromEvent<TouchEvent>(this, 'touchend');
 
-  move = fromEvent<paper.ToolEvent>(this, 'mousemove').pipe(
-    filter((e) => this.filterEvent(e))
+  move: Observable<paper.ToolEvent>  = fromEvent<paper.ToolEvent>(this, 'mousemove').pipe(
+    filter((e: any) => this.filterEvent(e))
   );
-  down = fromEvent<paper.ToolEvent>(this, 'mousedown').pipe(
-    filter((e) => this.filterEvent(e)),
-    tap((e) => this.activateDrawLayer())
+  down: Observable<paper.ToolEvent> = fromEvent<paper.ToolEvent>(this, 'mousedown').pipe(
+    filter((e: any) => this.filterEvent(e)),
+    tap((e: any) => this.activateDrawLayer())
   );
-  drag = fromEvent<paper.ToolEvent>(this, 'mousedrag').pipe(
-    filter((e) => this.filterEvent(e))
+  drag: Observable<paper.ToolEvent> = fromEvent<paper.ToolEvent>(this, 'mousedrag').pipe(
+    filter((e: any) => this.filterEvent(e))
   );
-  up = fromEvent<paper.ToolEvent>(this, 'mouseup').pipe(
-    filter((e) => this.filterEvent(e))
+  up: Observable<paper.ToolEvent> = fromEvent<paper.ToolEvent>(this, 'mouseup').pipe(
+    filter((e: any) => this.filterEvent(e))
   );
-  click = fromEvent<paper.ToolEvent>(this, 'mouseclick');
+  click: Observable<paper.ToolEvent> = fromEvent<paper.ToolEvent>(this, 'mouseclick');
 
-  wheel = fromEvent<{ event: WheelEvent; point: paper.Point }>(
+  wheel: Observable<WheelEvent|any> = fromEvent<{ event: WheelEvent; point: paper.Point }>(
     this,
     'mousewheel'
   );
 
-  keydown = fromEvent<paper.KeyEvent>(this, 'keydown');
-  keyup = fromEvent<paper.KeyEvent>(this, 'keyup');
+  keydown: Observable<paper.KeyEvent> = fromEvent<paper.KeyEvent>(this, 'keydown');
+  keyup: Observable<paper.KeyEvent> = fromEvent<paper.KeyEvent>(this, 'keyup');
 
   // FIXME class names get mangled by production build, stop being lazy
   name = Object.getPrototypeOf(this).constructor.name.replace(/tool/gi, '');
@@ -132,7 +132,7 @@ export class VectorTool extends Tool {
       );
     })
   );
-  keyDelSub = this.keyDel.subscribe((e) => {
+  keyDelSub = this.keyDel.subscribe((e: any) => {
     this.scope.project
       .getItems({
         selected: true,

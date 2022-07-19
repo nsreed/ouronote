@@ -20,14 +20,14 @@ export class SelectTool extends VectorTool {
   //#region sources
   selectDown = this.down.pipe(
     // filter(
-    //   (e) =>
+    //   (e: any) =>
     //     e.modifiers.shift ||
     //     this.scope.project.getItems({
     //       selected: true,
     //       match: (i: paper.Item) => i.className !== 'Layer',
     //     }).length === 0
     // ),
-    tap((e) => {
+    tap((e: any) => {
       this.selecting = true;
       if (!e.modifiers.shift) {
         this.scope.project.deselectAll();
@@ -35,18 +35,18 @@ export class SelectTool extends VectorTool {
     })
   );
 
-  selectDrag = this.drag.pipe(filter((e) => true || this.selecting));
+  selectDrag = this.drag.pipe(filter((e: any) => true || this.selecting));
 
   selectUp = this.up.pipe(
-    filter((e) => true || this.selecting),
-    tap((e) => (this.selecting = false))
+    filter((e: any) => true || this.selecting),
+    tap((e: any) => (this.selecting = false))
   );
 
-  keyEsc = this.keyup.pipe(filter((e) => e.key === 'escape'));
+  keyEsc = this.keyup.pipe(filter((e: any) => e.key === 'escape'));
   //#endregion
 
   //#region subscribers
-  keyEscSub = this.keyEsc.subscribe((e) => {
+  keyEscSub = this.keyEsc.subscribe((e: any) => {
     this.selecting = false;
     this.scope.project.deselectAll();
   });
@@ -88,8 +88,8 @@ export class LassoSelectTool extends SelectTool {
 
   propertyNames: string[] = ['greedySelect'];
 
-  sdSub = this.selectDown.subscribe((e) => {});
-  sdrSub = this.selectDrag.subscribe((e) => {
+  sdSub = this.selectDown.subscribe((e: any) => {});
+  sdrSub = this.selectDrag.subscribe((e: any) => {
     if (!this.path) {
       const prev = (this.scope.settings as any).insertItems;
       (this.scope.settings as any).insertItems = false;
@@ -109,7 +109,7 @@ export class LassoSelectTool extends SelectTool {
     }
     this.path.add(e.point);
   });
-  sduSub = this.selectUp.subscribe((e) => {
+  sduSub = this.selectUp.subscribe((e: any) => {
     // TODO hitTest appears to be able to honor fill, but requires a point, not an item
     if (this.path) {
       const intersected = this.scope.project.getItems({
@@ -190,8 +190,8 @@ export class LassoSelectTool extends SelectTool {
 export class RectangleSelectTool extends SelectTool {
   name = 'area select';
   rect!: paper.Shape;
-  sdSub = this.selectDown.subscribe((e) => {});
-  sdrSub = this.selectDrag.subscribe((e) => {
+  sdSub = this.selectDown.subscribe((e: any) => {});
+  sdrSub = this.selectDrag.subscribe((e: any) => {
     this.rect?.remove();
     const prev = (this.scope.settings as any).insertItems;
     (this.scope.settings as any).insertItems = false;
@@ -208,7 +208,7 @@ export class RectangleSelectTool extends SelectTool {
       this.rect
     );
   });
-  suSub = this.selectUp.subscribe((e) => {
+  suSub = this.selectUp.subscribe((e: any) => {
     if (this.rect) {
       // FIXME this is also selecting Shape.Rectangles OUTSIDE the selection rectangle
       const intersected = this.scope.project.getItems({

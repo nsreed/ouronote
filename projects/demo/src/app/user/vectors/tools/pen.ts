@@ -48,7 +48,7 @@ export class PenTool extends DrawTool {
   penUp: Observable<PenEvent | paper.ToolEvent> = CAPABILITIES.POINTER
     ? this.pointerUp
     : this.up;
-  downSub = this.down.subscribe((e) => {
+  downSub = this.down.subscribe((e: any) => {
     if (this.path) {
       this.logger.warn('pre-existing path on pointer down!');
       this.path = null as any;
@@ -56,25 +56,27 @@ export class PenTool extends DrawTool {
     this.activateDrawLayer();
   });
   dragSub = this.drag.subscribe((e: any) => {
-    if (!this.path) {
-      this.path = new paper.Path(e.point) as any;
-      const pair = (this.path as any).pair;
-      if (pair) {
-        pair.editing = true;
+    requestAnimationFrame(() => {
+      if (!this.path) {
+        this.path = new paper.Path(e.point) as any;
+        const pair = (this.path as any).pair;
+        if (pair) {
+          pair.editing = true;
+        }
+        this.path.style = this.style;
+        this.path.style = this.project.currentStyle;
+        const width = this.scale
+          ? (1 / this.project.view.zoom) * this.project.currentStyle.strokeWidth
+          : this.project.currentStyle.strokeWidth;
+        this.path.strokeWidth = width;
+        this.path.strokeColor = this.project.currentStyle.strokeColor;
+        this.path.fillColor = this.project.currentStyle.fillColor;
       }
-      this.path.style = this.style;
-      this.path.style = this.project.currentStyle;
-      const width = this.scale
-        ? (1 / this.project.view.zoom) * this.project.currentStyle.strokeWidth
-        : this.project.currentStyle.strokeWidth;
-      this.path.strokeWidth = width;
-      this.path.strokeColor = this.project.currentStyle.strokeColor;
-      this.path.fillColor = this.project.currentStyle.fillColor;
-    }
-    this.path.add(e.point);
+      this.path.add(e.point);
+    });
   });
 
-  upSub = this.up.subscribe((e) => {
+  upSub = this.up.subscribe((e: any) => {
     if (this.path) {
       if (this.path.length === 0) {
         this.path.remove();

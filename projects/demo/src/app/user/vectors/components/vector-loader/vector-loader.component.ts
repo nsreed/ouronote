@@ -24,9 +24,9 @@ export class VectorLoaderComponent
     switchMap((v: any) => v.get('layers').openChanges() as Observable<any>),
     shareReplay(1)
   );
-  create$ = this.loadEvent$.pipe(filter((e) => e[0] === 'create'));
-  diff$ = this.loadEvent$.pipe(filter((e) => e[0] === 'diff'));
-  bulk$ = this.loadEvent$.pipe(filter((e) => e[0] === 'bulk'));
+  create$ = this.loadEvent$.pipe(filter((e: any) => e[0] === 'create'));
+  diff$ = this.loadEvent$.pipe(filter((e: any) => e[0] === 'diff'));
+  bulk$ = this.loadEvent$.pipe(filter((e: any) => e[0] === 'bulk'));
 
   ngAfterViewInit(): void {
     console.log('thing', this.vectorNode);

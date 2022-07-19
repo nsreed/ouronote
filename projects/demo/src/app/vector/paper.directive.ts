@@ -126,12 +126,12 @@ export class PaperDirective implements OnInit, AfterViewInit {
         .pipe(
           mergeMap((n) =>
             fromEvent(this.el.nativeElement, n).pipe(
-              map((e) => e as PointerEvent),
+              map((e: any) => e as PointerEvent),
               map((event) => new PenEvent(event, this.point(event)))
             )
           )
         )
-        .subscribe((e) => {
+        .subscribe((e: any) => {
           this.scope.tool.emit(e.event.type, e);
         });
     }
@@ -147,11 +147,11 @@ export class PaperDirective implements OnInit, AfterViewInit {
           mergeMap((n) =>
             fromEvent(this.el.nativeElement, n).pipe(
               // TODO map this to a ToolEvent, or touch events can just be handled by the normal paper event listeners
-              map((e) => e as TouchEvent)
+              map((e: any) => e as TouchEvent)
             )
           )
         )
-        .subscribe((e) => {
+        .subscribe((e: any) => {
           this.scope.tool.emit(e.type, e);
         });
 

@@ -43,7 +43,7 @@ export class LineTool extends DrawTool {
     this.path.add(e.point);
   });
 
-  upSub = this.up.subscribe((e) => {
+  upSub = this.up.subscribe((e: any) => {
     if (this.path) {
       if (this.path.length === 0) {
         this.path.remove();

@@ -10,8 +10,8 @@ export class PanTool extends VectorTool {
     this.lastDelta = null;
   });
   dragSub = this.drag
-    // .pipe(filter((e) => e.delta.length > 0.2))
-    .subscribe((e) => {
+    // .pipe(filter((e: any) => e.delta.length > 0.2))
+    .subscribe((e: any) => {
       const actualDelta = this.lastDelta
         ? this.lastDelta.subtract(e.delta)
         : e.delta;

@@ -12,12 +12,12 @@ export class RotateTool extends SelectionTool {
   selectedBounds!: paper.Rectangle;
   selectedCenter!: paper.Point;
 
-  downSub = this.down.subscribe((e) => {
+  downSub = this.down.subscribe((e: any) => {
     this.dragged = false;
     this.updateSelected();
   });
 
-  dragSub = this.drag.subscribe((e) => {
+  dragSub = this.drag.subscribe((e: any) => {
     this.dragged = this.dragged || e.delta.length > 0;
     const initAngle = this.selectedCenter
       ?.subtract(e.downPoint)
@@ -45,7 +45,7 @@ export class RotateTool extends SelectionTool {
     });
   });
 
-  upSub = this.up.subscribe((e) => {
+  upSub = this.up.subscribe((e: any) => {
     // if (!this.dragged) {
     //   this.scope.tools.find((t: any) => t.name === 'lasso select')?.activate();
     //   this.project.deselectAll();

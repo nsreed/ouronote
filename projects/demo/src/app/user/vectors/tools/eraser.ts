@@ -8,7 +8,7 @@ export class EraserTool extends DrawTool {
   icon = 'eraser';
   allIntersects: paper.Item[] = [];
 
-  downSub = this.down.subscribe((e) => this.activateDrawLayer());
+  downSub = this.down.subscribe((e: any) => this.activateDrawLayer());
 
   dragSub = this.drag.subscribe((e: paper.ToolEvent) => {
     // console.log('eraser drag');
@@ -30,7 +30,7 @@ export class EraserTool extends DrawTool {
     (this.scope.settings as any).insertItems = prev;
   });
 
-  upSub = this.up.subscribe((e) => {
+  upSub = this.up.subscribe((e: any) => {
     this.path = null;
     // TODO re-enable undo when race condition has been fixed
     // this.scope.actions = this.scope.actions || [];

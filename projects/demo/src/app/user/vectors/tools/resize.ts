@@ -12,7 +12,7 @@ export class ResizeTool extends SelectionTool {
   selectedBounds!: paper.Rectangle;
   selectedCenter!: paper.Point;
 
-  downSub = this.down.subscribe((e) => {
+  downSub = this.down.subscribe((e: any) => {
     this.dragged = false;
     this.selectedItems = this.scope.project.getItems({
       selected: true,
@@ -27,7 +27,7 @@ export class ResizeTool extends SelectionTool {
     }
   });
 
-  dragSub = this.drag.subscribe((e) => {
+  dragSub = this.drag.subscribe((e: any) => {
     this.dragged = this.dragged || e.delta.length > 0;
     const initLength = this.selectedCenter
       ?.subtract(e.downPoint)
@@ -49,7 +49,7 @@ export class ResizeTool extends SelectionTool {
     });
   });
 
-  upSub = this.up.subscribe((e) => {
+  upSub = this.up.subscribe((e: any) => {
     // if (!this.dragged) {
     //   this.scope.tools.find((t: any) => t.name === 'lasso select')?.activate();
     //   this.project.deselectAll();
