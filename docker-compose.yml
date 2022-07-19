@@ -9,6 +9,7 @@ services:
     ports:
       - 8080:8081
       - 4430:4430
+      - 8080:8765
     environment:
       - PORT=8081
       - HTTPS_PORT=4430
