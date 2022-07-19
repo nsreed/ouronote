@@ -52,4 +52,10 @@ ouronote-dev.crt
 /licenses.json
 /.angular
 /projects/demo/src/assets/dictionary/blacklist.json
-.yarn
+.yarn/*
+# !.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
