@@ -51,7 +51,7 @@
       </button>
 
       <mat-menu #ShareMenu>
-        <app-qr-code [text]="href"></app-qr-code>
+        <app-qr-code [text]="href" matTooltip="Scan to edit"></app-qr-code>
         <button
           mat-menu-item
           (click)="copyViewLink()"
