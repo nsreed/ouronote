@@ -1,11 +1,13 @@
 <mat-progress-bar mode="indeterminate" *ngIf="submitted"></mat-progress-bar>
 <h1>ouronote</h1>
 
-
 <form [formGroup]="form">
   <div *ngIf="sessionService.workerState.sessions.length > 0" id="Sessions">
     Select an existing session:
-    <app-session-selector [sessions]="sessionService.workerState.sessions" (sessionSelect)="onSessionSelect($event)"></app-session-selector>
+    <app-session-selector
+      [sessions]="sessionService.workerState.sessions"
+      (sessionSelect)="onSessionSelect($event)"
+    ></app-session-selector>
     <p>...or log in below</p>
     <mat-divider></mat-divider>
   </div>
@@ -18,7 +20,9 @@
       placeholder="username"
     />
     <mat-label>username</mat-label>
-    <mat-error *ngIf="form.controls.alias.errors?.aliasTaken">Username has been taken</mat-error>
+    <mat-error *ngIf="form.controls.alias.errors?.aliasTaken"
+      >Username has been taken</mat-error
+    >
     <span matPrefix>@</span>
     <!-- <mat-hint>{{
       mode !== "create"
@@ -33,7 +37,9 @@
   <mat-form-field *ngIf="mode === 'create'">
     <input type="password" matInput formControlName="password2" />
     <mat-label>confirm password</mat-label>
-    <mat-error *ngIf="form.controls.password2.errors?.passwordMatch">Passwords do not match</mat-error>
+    <mat-error *ngIf="form.controls.password2.errors?.passwordMatch"
+      >Passwords do not match</mat-error
+    >
   </mat-form-field>
 
   <div
@@ -53,17 +59,28 @@
 
   <ng-container *ngIf="mode === 'login'; else Create">
     <div fxLayout="row" fxLayoutAlign="center baseline" fxLayoutGap="1em">
-      <button mat-raised-button color="primary" [disabled]="form.invalid || submitted" (click)="onLoginClick()">
+      <button
+        mat-raised-button
+        color="primary"
+        [disabled]="form.invalid || submitted"
+        (click)="onLoginClick()"
+      >
         Log In
       </button>
       or
-      <button mat-button color="primary" [disabled]="submitted" (click)="mode = 'create'">
+      <button
+        mat-button
+        color="primary"
+        [disabled]="submitted"
+        (click)="mode = 'create'"
+      >
         Create Account
       </button>
     </div>
 
     <mat-error *ngIf="!onLine">
-      You are currently offline. You may not be able to log into accounts that you haven't used on this computer.
+      You are currently offline. You may not be able to log into accounts that
+      you haven't used on this computer.
     </mat-error>
     <mat-error *ngIf="requiredFields">
       Username and password are required.
@@ -88,7 +105,9 @@
       >
         Create & Sign In
       </button>
-      <button mat-button (click)="mode = 'login'" [disabled]="submitted">Cancel</button>
+      <button mat-button (click)="mode = 'login'" [disabled]="submitted">
+        Cancel
+      </button>
     </div>
   </ng-template>
   <p></p>

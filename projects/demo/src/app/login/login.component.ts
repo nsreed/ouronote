@@ -13,8 +13,16 @@ import host from '@jsdevtools/host-environment';
 import { UserService } from '../user/user.service';
 import { NgGunSessionService } from '../../../../ng-gun/src/lib/ng-gun-session.service';
 import { LogService } from '../../../../log/src/lib/log.service';
-import { fromEvent } from 'rxjs';
-import { shareReplay, map, mapTo } from 'rxjs/operators';
+import { fromEvent, from, of } from 'rxjs';
+import {
+  shareReplay,
+  map,
+  mapTo,
+  take,
+  mergeAll,
+  distinct,
+} from 'rxjs/operators';
+import { OnlineStatusService, OnlineStatusType } from 'ngx-online-status';
 
 @Component({
   templateUrl: './login.component.html',
@@ -22,14 +30,16 @@ import { shareReplay, map, mapTo } from 'rxjs/operators';
 })
 export class LoginComponent implements OnInit {
   error: any;
-  navigator = (window as any).navigator;
-  onLine = this.navigator.onLine;
   submitted = false;
   unsupportedBrowser = !(host.browser as any).chrome;
+  onLine = false;
 
-  onLine$ = fromEvent(this.navigator.connection, 'change').pipe(
-    map(() => this.navigator.onLine),
-    shareReplay(1)
+  onLine$ = from([
+    of(this.onlineStatusService.getStatus()),
+    this.onlineStatusService.status,
+  ]).pipe(
+    mergeAll(),
+    map((status) => status === OnlineStatusType.ONLINE)
   );
 
   private _mode: 'create' | 'login' = 'login';
@@ -82,7 +92,8 @@ export class LoginComponent implements OnInit {
     router: Router,
     private dialog: MatDialog,
     public sessionService: NgGunSessionService,
-    private logger: LogService
+    private logger: LogService,
+    public onlineStatusService: OnlineStatusService
   ) {
     this.onLine$.subscribe((v) => {
       this.onLine = v;

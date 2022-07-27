@@ -1,4 +1,3 @@
-import { OURONOTE_DEFAULT_TITLE } from './../../../constants';
 import {
   AfterViewInit,
   Component,
@@ -9,51 +8,40 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as paper from 'paper';
-import {
-  take,
-  distinct,
-  map,
-  shareReplay,
-  switchMap,
-  filter,
-} from 'rxjs/operators';
+import { distinct, map, shareReplay, switchMap, take } from 'rxjs/operators';
 import { GunChain } from '../../../../../../ng-gun/src/lib/classes/GunChain';
 import { VectorGraph } from '../../VectorGraph';
 import { ProjectPair } from '../classes/ProjectPair';
+import { OURONOTE_DEFAULT_TITLE } from './../../../constants';
 
-import { RouteVectorDirective } from '../route-vector.directive';
-import { VectorService } from '../vector.service';
-import { gunifyProject as gunifyProject } from './converter-functions';
+import { ElementRef } from '@angular/core';
 import { UntypedFormBuilder, Validators } from '@angular/forms';
-import { NgGunService } from '../../../../../../ng-gun/src/lib/ng-gun.service';
-import { getDeep, unpack } from '../functions/packaging';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { LogService } from 'projects/log/src/public-api';
-import { saveAs } from 'file-saver';
-import { UserService } from '../../user.service';
-import { gunUpdateTime } from 'projects/ng-gun/src/lib/functions/gun-utils';
-import { FileUploaderComponent } from '../../../files/file-uploader/file-uploader.component';
 import { MatDialog } from '@angular/material/dialog';
-import { ClipboardService } from 'ngx-clipboard';
-import { PaperEditDirective } from '../../../vector/paper-edit.directive';
 import {
   MatSnackBar,
   MatSnackBarConfig,
   MatSnackBarRef,
   TextOnlySnackBar,
 } from '@angular/material/snack-bar';
-import { timeout, mergeAll, mapTo } from 'rxjs/operators';
-import { SettingsDialogComponent } from '../components/settings-dialog/settings-dialog.component';
 import { MatTooltip } from '@angular/material/tooltip';
-import { timer, from, fromEvent } from 'rxjs';
-import { ElementRef } from '@angular/core';
-import { LicenseDialogComponent } from '../../../components/license-dialog/license-dialog.component';
-import { VectorTool } from '../tools/paper-tool';
-import { tool } from 'paper/dist/paper-core';
-import { layoutVertical } from '../functions/paper-functions';
-import { IEnhancedPaper } from '../../../vector/IEnhancedPaper';
-import { SettingsService } from '../../../settings.service';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { saveAs } from 'file-saver';
+import { ClipboardService } from 'ngx-clipboard';
+import { LogService } from 'projects/log/src/public-api';
+import { timer } from 'rxjs';
+import { NgGunService } from '../../../../../../ng-gun/src/lib/ng-gun.service';
 import { VERSION } from '../../../../environments/version';
+import { FileUploaderComponent } from '../../../files/file-uploader/file-uploader.component';
+import { SettingsService } from '../../../settings.service';
+import { IEnhancedPaper } from '../../../vector/IEnhancedPaper';
+import { PaperEditDirective } from '../../../vector/paper-edit.directive';
+import { UserService } from '../../user.service';
+import { SettingsDialogComponent } from '../components/settings-dialog/settings-dialog.component';
+import { getDeep } from '../functions/packaging';
+import { layoutVertical } from '../functions/paper-functions';
+import { RouteVectorDirective } from '../route-vector.directive';
+import { VectorTool } from '../tools/paper-tool';
+import { VectorService } from '../vector.service';
 
 @Component({
   templateUrl: './edit-vector.component.html',

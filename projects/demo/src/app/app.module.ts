@@ -62,6 +62,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { NoopSharedWorker } from 'projects/ng-gun/src/lib/classes/NoopSharedWorker';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
+import { OnlineStatusModule } from 'ngx-online-status';
 
 const RADISK_LOCAL = localStorage.getItem('RADISK_ENABLE');
 const RADISK_ENABLE = RADISK_LOCAL === null ? true : !!JSON.parse(RADISK_LOCAL);
@@ -127,6 +128,7 @@ if (typeof SharedWorker !== 'undefined') {
     MatToolbarModule,
     MatTooltipModule,
     NgxMatColorPickerModule,
+    OnlineStatusModule,
     ReactiveFormsModule,
     ScrollingModule,
     FilesModule,

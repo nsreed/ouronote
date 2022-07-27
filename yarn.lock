@@ -7803,6 +7803,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ngx-online-status@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "ngx-online-status@npm:2.0.0"
+  dependencies:
+    tslib: ^2.3.0
+  checksum: 587b53fb40521fd097aeef4101d2e687c3e43c67928915c8e54bf49935dab204c2c5da683d7c7aafa5d7fb1741d7f7ec21ed0c708ed50d375533c3e05218f404
+  languageName: node
+  linkType: hard
+
 "ngx-window-token@npm:>=6.0.0":
   version: 6.0.0
   resolution: "ngx-window-token@npm:6.0.0"
@@ -8271,6 +8280,7 @@ __metadata:
     karma-jasmine-html-reporter: 2.0.0
     ng-packagr: ^14.0.3
     ngx-clipboard: ^15.1.0
+    ngx-online-status: ^2.0.0
     nodemon: ^2.0.7
     paper: ^0.12.15
     protractor: ^7.0.0
