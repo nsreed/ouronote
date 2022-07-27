@@ -35,54 +35,40 @@ export class StyleFormComponent implements OnInit {
   }
   @Input()
   public set style(value: paper.Style) {
-    if (JSON.stringify(this._style) !== JSON.stringify(value)) {
-      this._style = value;
-      console.log('set style', value);
-      if ((value as any).changes$) {
-        console.log('style has changes$ emitter');
-        (value as any).changes$.subscribe((c: any) => console.log({ c }));
-      }
-      this.form.controls.strokeWidth.patchValue(value.strokeWidth, {
-        onlySelf: true,
-        emitEvent: false,
-      });
-      // this.form.controls.strokeColor.patchValue(
-      //   value.strokeColor
-      //     ? typeof value.strokeColor === 'string'
-      //       ? value.strokeColor
-      //       : (value.strokeColor as any).toCSS(true)
-      //     : null,
-      //   { onlySelf: true, emitEvent: false }
-      // );
-      this.form.controls.fillColor.patchValue(getColorValue(value.fillColor), {
-        onlySelf: true,
-        emitEvent: false,
-      });
-      this.form.controls.strokeColor.patchValue(
-        getColorValue(value.strokeColor),
-        {
-          onlySelf: true,
-          emitEvent: false,
-        }
-      );
-      this.form.controls.strokeColor.patchValue(
-        getColorValue(value.strokeColor),
-        {
-          onlySelf: true,
-          emitEvent: false,
-        }
-      );
-      this.form.controls.fontSize.patchValue(value.fontSize, {
-        onlySelf: true,
-        emitEvent: false,
-      });
+    if (JSON.stringify(this._style) === JSON.stringify(value)) {
+      return;
     }
-    // const json = serializeValue(value);
-    // console.log(json);
-    // this.form.patchValue((value as any).exportJSON({ asString: false })[1], {
-    //   onlySelf: true,
-    //   emitEvent: false,
-    // });
+    this._style = value;
+
+    console.log('set style', value);
+
+    // TODO find a much better way to do this
+    this.form.controls.strokeWidth.patchValue(value.strokeWidth, {
+      onlySelf: true,
+      emitEvent: false,
+    });
+    this.form.controls.fillColor.patchValue(getColorValue(value.fillColor), {
+      onlySelf: true,
+      emitEvent: false,
+    });
+    this.form.controls.strokeColor.patchValue(
+      getColorValue(value.strokeColor),
+      {
+        onlySelf: true,
+        emitEvent: false,
+      }
+    );
+    this.form.controls.shadowColor.patchValue(
+      getColorValue(value.shadowColor),
+      {
+        onlySelf: true,
+        emitEvent: false,
+      }
+    );
+    this.form.controls.fontSize.patchValue(value.fontSize, {
+      onlySelf: true,
+      emitEvent: false,
+    });
   }
 
   @Output()
