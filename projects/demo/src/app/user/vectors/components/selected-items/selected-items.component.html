@@ -1,11 +1,26 @@
-
-<app-style-form [style]="selectedStyle" (styleChange)="onStyleChange($event)" (stylePropChange)="onStylePropChange($event)"></app-style-form>
+<app-style-form
+  [style]="selectedStyle"
+  (styleChange)="onStyleChange($event)"
+  (stylePropChange)="onStylePropChange($event)"
+></app-style-form>
 <mat-list>
-  <div mat-subheader>{{ selectedItems?.length || 0 }} item{{ selectedItems?.length === 1 ? '' : 's' }}</div>
-  <button mat-flat-button (click)="onBringToFrontClick()">Bring to Front</button>
+  <div mat-subheader>
+    {{ selectedItems?.length || 0 }} item{{
+      selectedItems?.length === 1 ? "" : "s"
+    }}
+  </div>
+  <button mat-flat-button (click)="onBringToFrontClick()">
+    Bring to Front
+  </button>
   <button mat-flat-button (click)="onSendToBackClick()">Send to Back</button>
   <button mat-flat-button (click)="onCloneClick()">Clone</button>
-  <button mat-flat-button (click)="onLayoutVerticalClick()">Layout Vertical</button>
-  <button mat-flat-button (click)="onDebugSelectedClick()">Debug Items</button>
-  <button mat-flat-button (click)="onForceSaveClick()">Force Save</button>
+  <ng-container *ngIf="settings.debug">
+    <button mat-flat-button (click)="onLayoutVerticalClick()">
+      Layout Vertical
+    </button>
+    <button mat-flat-button (click)="onDebugSelectedClick()">
+      Debug Items
+    </button>
+    <button mat-flat-button (click)="onForceSaveClick()">Force Save</button>
+  </ng-container>
 </mat-list>

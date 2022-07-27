@@ -4,6 +4,7 @@ import { UntypedFormBuilder } from '@angular/forms';
 import { ItemPair } from '../../classes/ItemPair';
 import * as paper from 'paper';
 import { LogService } from '../../../../../../../log/src/lib/log.service';
+import { SettingsService } from '../../../../settings.service';
 import {
   copyStyleToItem,
   layoutVertical,
@@ -64,7 +65,8 @@ export class SelectedItemsComponent implements OnInit {
   constructor(
     private fb: UntypedFormBuilder,
     public editVectorComponent: EditVectorComponent,
-    private logger: LogService
+    private logger: LogService,
+    public settings: SettingsService
   ) {
     logger.name = 'selected-items';
   }
