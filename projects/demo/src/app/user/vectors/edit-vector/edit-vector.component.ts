@@ -115,7 +115,7 @@ export class EditVectorComponent
     this.logger = logger.supplemental('edit-vector');
   }
   ngOnDestroy(): void {
-    this.projectPair.destroy();
+    this.projectPair?.destroy();
   }
 
   ngAfterViewInit(): void {
