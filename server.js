@@ -16,6 +16,7 @@ console.log("starting ouronote server");
 
 const PORT = process.env.PORT || 80;
 const HTTPS_PORT = process.env.HTTPS_PORT || 443;
+const RADATA = process.env.RADATA || path.join(__dirname, 'radata');
 
 console.log({ PORT, HTTPS_PORT });
 
@@ -43,4 +44,4 @@ try {
 }
 
 const server = app.listen(PORT);
-const gun = Gun({ web: httpsServer || server });
+const gun = Gun({ web: httpsServer || server, file: RADATA });

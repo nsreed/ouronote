@@ -4,10 +4,9 @@ services:
     build: .
     working_dir: /usr/src/app
     # user: "node"
-    volumes:
-      - ./:/usr/src/app
+    # volumes:
+    #   - ./:/usr/src/app
     ports:
-      - 8080:8081
       - 4430:4430
       - 8080:8765
     environment:
