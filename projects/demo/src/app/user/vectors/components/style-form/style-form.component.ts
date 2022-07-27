@@ -139,6 +139,6 @@ export class StyleFormComponent implements OnInit {
   }
 
   onChange(name: string, value: any) {
-    this.form.get(name)?.setValue(value, { emitEvent: false, onlySelf: true });
+    this.form.get(name)?.setValue(value);
   }
 }
