@@ -11,7 +11,7 @@ import { ChainDirective } from './chain.directive';
 })
 export class RouteChainDirective<T = any> extends ChainDirective<T> {
   @Output()
-  chain$ = this.route.data.pipe(
+  routeChain$ = this.route.data.pipe(
     map((data) => {
       const d = data[this.dataKey];
       const soul = Gun.node.soul(d);
@@ -32,6 +32,6 @@ export class RouteChainDirective<T = any> extends ChainDirective<T> {
     private dataKey: string = 'chain'
   ) {
     super(ngGun);
-    this.data$.subscribe((data) => console.log({ data }));
+    this.routeChain$.subscribe((rc) => (this.chain = rc));
   }
 }

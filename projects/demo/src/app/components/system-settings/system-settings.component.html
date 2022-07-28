@@ -2,13 +2,37 @@
 <h2>Database Configuration</h2>
 <form [formGroup]="settingsForm">
   <mat-checkbox formControlName="enableWebRTC">WebRTC</mat-checkbox>
-  WebRTC allows ouronote to connect directly to other machines running the application in a peer-to-peer network.
-  This is generally much faster than connecting solely to the server.
-  Disabling WebRTC may help diagnose synchonization and performance issues within ouronote. It is recommended you leave
-  WebRTC enabled for normal use.
+  WebRTC allows ouronote to connect directly to other machines running the
+  application in a peer-to-peer network. This is generally much faster than
+  connecting solely to the server. Disabling WebRTC may help diagnose
+  synchonization and performance issues within ouronote. It is recommended you
+  leave WebRTC enabled for normal use.
   <mat-checkbox formControlName="enableRadisk">Radisk</mat-checkbox>
-  When enabled, ouronote will use your browser's IndexedDB feature to save your data instead of LocalStorage. IndexedDB
-  offers increased storage limits and is more performant than LocalStorage. This setting is made available for debugging
-  purposes only. It is recommended you leave Radisk enabled for normal use.
+  When enabled, ouronote will use your browser's IndexedDB feature to save your
+  data instead of LocalStorage. IndexedDB offers increased storage limits and is
+  more performant than LocalStorage. This setting is made available for
+  debugging purposes only. It is recommended you leave Radisk enabled for normal
+  use.
 </form>
 <button mat-button color="primary" (click)="save()">Save Settings</button>
+<!-- <ng-container #Settings [gunChain]="settingsGun">
+  <ng-container #Machine="gunGet" gunGet="machine">
+    <pre>{{ Machine.chain$ | open | async | json }}</pre>
+    <ng-container #Gun="gunGet" gunGet="gun/file">
+      <pre>{{ Gun.chain$ | open | async | json }}</pre>
+    </ng-container>
+    <div
+      *gunMapOf="
+        Machine.chain$ | async;
+        let chain = chain;
+        let k = key;
+        let s = $implicit
+      "
+    >
+      {{ k }}
+      <div *gunMapOf="chain; let sk = key; let sub = chain; let sv = $implicit">
+        {{ k }}.{{ sk }}
+      </div>
+    </div>
+  </ng-container>
+</ng-container> -->

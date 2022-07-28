@@ -474,7 +474,7 @@ export class GunChain<
       (handler: any, signal: { stopped: boolean }) => {
         signal.stopped = true;
       }
-    ).pipe(debounceTime(25));
+    );
   }
 
   openChanges() {
@@ -580,7 +580,7 @@ export class GunChain<
             }
             const dispatchHandler = () => {
               if (options?.includeKeys) {
-                handler(data, key);
+                handler(data, key, at, ev);
               } else {
                 handler(data);
               }

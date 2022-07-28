@@ -9,6 +9,9 @@ import { RouteChainDirective } from './route-chain.directive';
 import { GunMapDirective } from './gun-map.directive';
 import { LogModule } from '../../../log/src/lib/log.module';
 import { OwnerPipe } from './owner.pipe';
+import { GetDirective } from './directives/get.directive';
+import { OnPipe } from './pipes/on.pipe';
+import { OpenPipe } from './pipes/open.pipe';
 
 @NgModule({
   imports: [LogModule],
@@ -22,6 +25,9 @@ import { OwnerPipe } from './owner.pipe';
     RouteChainDirective,
     GunMapDirective,
     OwnerPipe,
+    GetDirective,
+    OnPipe,
+    OpenPipe,
   ],
   exports: [
     NgGunComponent,
@@ -33,6 +39,9 @@ import { OwnerPipe } from './owner.pipe';
     RouteChainDirective,
     GunMapDirective,
     OwnerPipe,
+    GetDirective,
+    OnPipe,
+    OpenPipe,
   ],
   providers: [{ provide: 'gun-route-data-key', useValue: 'chain' }],
 })
