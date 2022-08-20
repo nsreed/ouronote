@@ -1,174 +1,220 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <!-- <script defer src="/assets/fontawesome-free-5.15.4-web/js/all.js"></script> -->
 
-<head>
-  <meta charset="utf-8"/>
-  <!-- <script defer src="/assets/fontawesome-free-5.15.4-web/js/all.js"></script> -->
-
-  <style>
-    /* This style lets us effeciently load up web fonts without contacting google, thus avoiding a call to a 3rd party. 
-       by embedding here we can also kick off loading font files before downloading/parsing the other .css import 
+    <style>
+      /* This style lets us effeciently load up web fonts without contacting google, thus avoiding a call to a 3rd party.
+       by embedding here we can also kick off loading font files before downloading/parsing the other .css import
        Note: since fonts are static, we don't need to cache-bust, they should be fine to cache
        used https://google-webfonts-helper.herokuapp.com/fonts/ to generate compatible fonts
     */
 
-    /* Angular Material Icons */
-    /* fallback */
-    @font-face {
-      font-family: 'Material Icons';
-      font-style: normal;
-      font-weight: 400;
-      src: url('/assets/web-fonts/material-design-icons/MaterialIcons-Regular.eot');
-      src: local('Material Icons'),
-        url('/assets/web-fonts/material-design-icons/MaterialIcons-Regular.eot?#iefix') format('embedded-opentype'),
-        url('/assets/web-fonts/material-design-icons/MaterialIcons-Regular.woff2') format('woff2'),
-        url('/assets/web-fonts/material-design-icons/MaterialIcons-Regular.woff') format('woff'),
-        url('/assets/web-fonts/material-design-icons/MaterialIcons-Regular.ttf') format('truetype');
-    }
+      /* Angular Material Icons */
+      /* fallback */
+      @font-face {
+        font-family: "Material Icons";
+        font-style: normal;
+        font-weight: 400;
+        src: url("/assets/web-fonts/material-design-icons/MaterialIcons-Regular.eot");
+        src: local("Material Icons"),
+          url("/assets/web-fonts/material-design-icons/MaterialIcons-Regular.eot?#iefix")
+            format("embedded-opentype"),
+          url("/assets/web-fonts/material-design-icons/MaterialIcons-Regular.woff2")
+            format("woff2"),
+          url("/assets/web-fonts/material-design-icons/MaterialIcons-Regular.woff")
+            format("woff"),
+          url("/assets/web-fonts/material-design-icons/MaterialIcons-Regular.ttf")
+            format("truetype");
+      }
 
-    .material-icons {
-      font-family: 'Material Icons';
-      font-weight: normal;
-      font-style: normal;
-      font-size: 24px;
-      line-height: 1;
-      letter-spacing: normal;
-      text-transform: none;
-      display: inline-block;
-      white-space: nowrap;
-      word-wrap: normal;
-      direction: ltr;
+      .material-icons {
+        font-family: "Material Icons";
+        font-weight: normal;
+        font-style: normal;
+        font-size: 24px;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
 
-      /* font smoothing settings*/
-      font-feature-settings: 'liga';
-      /*IE*/
-      -webkit-font-feature-settings: 'liga';
-      /*WebKit*/
-      -webkit-font-smoothing: antialiased;
-      /*WebKit*/
-      text-rendering: optimizeLegibility;
-      /*safari & chrome*/
-      -moz-osx-font-smoothing: grayscale;
-      /*firefox*/
-    }
+        /* font smoothing settings*/
+        font-feature-settings: "liga";
+        /*IE*/
+        -webkit-font-feature-settings: "liga";
+        /*WebKit*/
+        -webkit-font-smoothing: antialiased;
+        /*WebKit*/
+        text-rendering: optimizeLegibility;
+        /*safari & chrome*/
+        -moz-osx-font-smoothing: grayscale;
+        /*firefox*/
+      }
 
+      /* roboto-300 - latin-ext_latin */
+      @font-face {
+        font-family: "Roboto";
+        font-style: normal;
+        font-weight: 300;
+        font-display: swap;
+        src: url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-300.eot");
+        src: local(""),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-300.eot?#iefix")
+            format("embedded-opentype"),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-300.woff2")
+            format("woff2"),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-300.woff")
+            format("woff"),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-300.ttf")
+            format("truetype"),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-300.svg#Roboto")
+            format("svg");
+      }
 
-    /* roboto-300 - latin-ext_latin */
-    @font-face {
-      font-family: 'Roboto';
-      font-style: normal;
-      font-weight: 300;
-      font-display: swap;
-      src: url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-300.eot');
-      src: local(''),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-300.eot?#iefix') format('embedded-opentype'),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-300.woff2') format('woff2'),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-300.woff') format('woff'),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-300.ttf') format('truetype'),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-300.svg#Roboto') format('svg');
-    }
+      /* roboto-300italic - latin-ext_latin */
+      @font-face {
+        font-family: "Roboto";
+        font-style: italic;
+        font-weight: 300;
+        font-display: swap;
+        src: url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-300italic.eot");
+        src: local(""),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-300italic.eot?#iefix")
+            format("embedded-opentype"),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-300italic.woff2")
+            format("woff2"),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-300italic.woff")
+            format("woff"),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-300italic.ttf")
+            format("truetype"),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-300italic.svg#Roboto")
+            format("svg");
+      }
 
-    /* roboto-300italic - latin-ext_latin */
-    @font-face {
-      font-family: 'Roboto';
-      font-style: italic;
-      font-weight: 300;
-      font-display: swap;
-      src: url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-300italic.eot');
-      src: local(''),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-300italic.eot?#iefix') format('embedded-opentype'),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-300italic.woff2') format('woff2'),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-300italic.woff') format('woff'),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-300italic.ttf') format('truetype'),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-300italic.svg#Roboto') format('svg');
-    }
+      /* roboto-regular - latin-ext_latin */
+      @font-face {
+        font-family: "Roboto";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-regular.eot");
+        src: local(""),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-regular.eot?#iefix")
+            format("embedded-opentype"),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-regular.woff2")
+            format("woff2"),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-regular.woff")
+            format("woff"),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-regular.ttf")
+            format("truetype"),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-regular.svg#Roboto")
+            format("svg");
+      }
 
-    /* roboto-regular - latin-ext_latin */
-    @font-face {
-      font-family: 'Roboto';
-      font-style: normal;
-      font-weight: 400;
-      font-display: swap;
-      src: url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-regular.eot');
-      src: local(''),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-regular.eot?#iefix') format('embedded-opentype'),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-regular.woff2') format('woff2'),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-regular.woff') format('woff'),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-regular.ttf') format('truetype'),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-regular.svg#Roboto') format('svg');
-    }
+      /* roboto-italic - latin-ext_latin */
+      @font-face {
+        font-family: "Roboto";
+        font-style: italic;
+        font-weight: 400;
+        font-display: swap;
+        src: url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-italic.eot");
+        src: local(""),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-italic.eot?#iefix")
+            format("embedded-opentype"),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-italic.woff2")
+            format("woff2"),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-italic.woff")
+            format("woff"),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-italic.ttf")
+            format("truetype"),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-italic.svg#Roboto")
+            format("svg");
+      }
 
-    /* roboto-italic - latin-ext_latin */
-    @font-face {
-      font-family: 'Roboto';
-      font-style: italic;
-      font-weight: 400;
-      font-display: swap;
-      src: url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-italic.eot');
-      src: local(''),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-italic.eot?#iefix') format('embedded-opentype'),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-italic.woff2') format('woff2'),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-italic.woff') format('woff'),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-italic.ttf') format('truetype'),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-italic.svg#Roboto') format('svg');
-    }
+      /* roboto-500 - latin-ext_latin */
+      @font-face {
+        font-family: "Roboto";
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+        src: url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-500.eot");
+        src: local(""),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-500.eot?#iefix")
+            format("embedded-opentype"),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-500.woff2")
+            format("woff2"),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-500.woff")
+            format("woff"),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-500.ttf")
+            format("truetype"),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-500.svg#Roboto")
+            format("svg");
+      }
 
-    /* roboto-500 - latin-ext_latin */
-    @font-face {
-      font-family: 'Roboto';
-      font-style: normal;
-      font-weight: 500;
-      font-display: swap;
-      src: url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-500.eot');
-      src: local(''),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-500.eot?#iefix') format('embedded-opentype'),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-500.woff2') format('woff2'),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-500.woff') format('woff'),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-500.ttf') format('truetype'),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-500.svg#Roboto') format('svg');
-    }
+      /* roboto-500italic - latin-ext_latin */
+      @font-face {
+        font-family: "Roboto";
+        font-style: italic;
+        font-weight: 500;
+        font-display: swap;
+        src: url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-500italic.eot");
+        src: local(""),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-500italic.eot?#iefix")
+            format("embedded-opentype"),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-500italic.woff2")
+            format("woff2"),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-500italic.woff")
+            format("woff"),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-500italic.ttf")
+            format("truetype"),
+          url("/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-500italic.svg#Roboto")
+            format("svg");
+      }
+    </style>
 
-    /* roboto-500italic - latin-ext_latin */
-    @font-face {
-      font-family: 'Roboto';
-      font-style: italic;
-      font-weight: 500;
-      font-display: swap;
-      src: url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-500italic.eot');
-      src: local(''),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-500italic.eot?#iefix') format('embedded-opentype'),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-500italic.woff2') format('woff2'),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-500italic.woff') format('woff'),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-500italic.ttf') format('truetype'),
-        url('/assets/web-fonts/roboto/roboto-v29-latin-ext_latin-500italic.svg#Roboto') format('svg');
-    }
-  </style>
+    <title>ouronote</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- <link rel="icon" type="image/x-icon" href="favicon.ico"> -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📓</text></svg>"
+    />
 
-  <title>ouronote</title>
-  <base href="/"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <!-- <link rel="icon" type="image/x-icon" href="favicon.ico"> -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📓</text></svg>"/>
+    <meta name="twitter:card" content="summary" />
+    <meta
+      name="twitter:image"
+      content="https://HOSTNAME/assets/images/ouronote_avatar_500x500.jpg"
+    />
+    <meta
+      name="description"
+      content="A Free &amp; Open Source P2P Multiplayer Whiteboard."
+    />
+    <meta
+      name="twitter:description"
+      content="A Free &amp; Open Source P2P Multiplayer Whiteboard."
+    />
+    <meta
+      data-rh="true"
+      property="og:image"
+      content="https://HOSTNAME/assets/images/ouronote_avatar_500x500.jpg"
+    />
+    <meta property="og:image:width" content="500" />
+    <meta property="og:image:height" content="500" />
 
-  <meta name="twitter:card" content="summary"/>
-  <meta name="twitter:image" content="https://HOSTNAME/assets/images/ouronote_avatar_500x500.jpg"/>
-  <meta name="description" content="A Free &amp; Open Source P2P Multiplayer Whiteboard."/>
-  <meta name="twitter:description" content="A Free &amp; Open Source P2P Multiplayer Whiteboard."/>
-  <meta data-rh="true" property="og:image" content="https://HOSTNAME/assets/images/ouronote_avatar_500x500.jpg"/>
-  <meta property="og:image:width" content="500"/>
-  <meta property="og:image:height" content="500"/>
+    <!--<link rel="manifest" href="manifest.webmanifest">-->
+    <meta name="theme-color" content="#1976d2" />
+  </head>
 
-
-  <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#1976d2">
-</head>
-
-<body class="mat-typography">
-  <noscript>
-    <img src="/assets/images/ouronote_avatar_500x500.jpg" />
-    You must have javascript enabled to use ouronote
-  </noscript>
-  <app-root></app-root>
-</body>
-
+  <body class="mat-typography">
+    <noscript>
+      <img src="/assets/images/ouronote_avatar_500x500.jpg" />
+      You must have javascript enabled to use ouronote
+    </noscript>
+    <app-root></app-root>
+  </body>
 </html>
