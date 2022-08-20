@@ -160,7 +160,7 @@
                         [appTool]="tool"
                         (click)="tool.activate()"
                         [matTooltip]="tool.name"
-                        [matTooltipShowDelay]="900"
+                        [matTooltipShowDelay]="3000"
                         [ngClass]="{
                           active: tool === paper.scope.tool
                         }"
@@ -336,8 +336,8 @@
       <div id="WorkspaceContainer" fxFlex="1 0 auto">
         <canvas id="Workspace" appPaperEdit #paper="appPaperEdit"></canvas>
         <div class="floating" *ngIf="paper">
-          {{ paper.fps$ | async }} fps
-          <ng-container *ngIf="settings.debug">
+          <ng-container *ngIf="false && settings.debug">
+            {{ paper.fps$ | async }} fps
             <!-- <span class="ui">project? {{ !!project }}</span> -->
             <span class="ui">
               <button mat-icon-button [mat-menu-trigger-for]="DebugMenu">
