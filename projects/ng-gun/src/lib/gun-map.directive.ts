@@ -26,12 +26,18 @@ export class GunMapDirective {
       .map()
       .on({ includeKeys: true })
       .subscribe(([data, key]: any) => {
-        if (!this.soulViews.get(Gun.node.soul(data))) {
+        if (data === undefined) {
+          const embed = this.soulViews.get(key);
+          if (embed) {
+            embed.destroy();
+            this.soulViews.delete(key);
+          }
+        } else if (!this.soulViews.get(key)) {
           const embed = this.viewContainer.createEmbeddedView(
             this.templateRef,
             new GunMapContext(data, key, value.get(key))
           );
-          this.soulViews.set(Gun.node.soul(data), embed);
+          this.soulViews.set(key, embed);
         }
       });
   }
