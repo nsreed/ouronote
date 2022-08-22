@@ -1,9 +1,6 @@
 {
   "name": "ouronote-app-server",
   "packageManager": "yarn@3.2.1",
-  "scripts": {
-    "postinstall": "node version.js"
-  },
   "dependencies": {
     "@peculiar/webcrypto": "^1.4.0",
     "express": "^4.18.1",

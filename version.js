@@ -1,4 +1,4 @@
-const { version } = require("../package.json");
+const { version } = require("./package.json");
 const { resolve, relative } = require("path");
 const { writeFileSync } = require("fs-extra");
 const { hashElement } = require('folder-hash');
@@ -19,7 +19,6 @@ hashElement('./dist', opt).then(dirHash => {
 
   const file = resolve(
     __dirname,
-    "..",
     "projects",
     "demo",
     "src",
@@ -38,7 +37,7 @@ hashElement('./dist', opt).then(dirHash => {
   //tslint:disable-next-line:no-console
   console.log(
     `Wrote version info ${JSON.stringify({ version, hash })} to ${relative(
-      resolve(__dirname, ".."),
+      resolve(__dirname),
       file
     )}`
   );

@@ -5,7 +5,7 @@ COPY /node_modules/gun/ /usr/src/gun/
 WORKDIR /usr/src/gun
 RUN npm link
 WORKDIR /usr/src/app
-COPY version.js ./
+# COPY version.js ./
 COPY package*.json ./
 COPY server.js ./
 

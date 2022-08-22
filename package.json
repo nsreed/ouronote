@@ -12,7 +12,7 @@
     "build:watch": "ng build demo --watch",
     "build:watch:prod": "ng build demo --configuration production --watch",
     "docker:build": "docker-compose build",
-    "postinstall": "cp -r dist app-server/dist && node app-server/version.js",
+    "postinstall": "node version.js && cp -r dist app-server/dist",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
