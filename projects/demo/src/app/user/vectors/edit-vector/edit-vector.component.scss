@@ -74,6 +74,17 @@ app-qr-code {
 
 #ToolsContainer {
   justify-items: center;
+  mat-divider {
+    grid-column-start: span;
+  }
+}
+
+.toolTip {
+  user-select: none;
+  pointer-events: none;
+  &:hover {
+    display: none;
+  }
 }
 
 .tool {

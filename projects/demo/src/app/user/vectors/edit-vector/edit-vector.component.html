@@ -120,8 +120,13 @@
       >
         <mat-expansion-panel expanded>
           <ng-template matExpansionPanelContent>
-            <div fxLayout="column" id="ToolsContainer">
-              <div gdColumns="auto auto">
+            <div
+              gdColumns="1fr 1fr"
+              cols="2"
+              rowHeight="1:1"
+              id="ToolsContainer"
+            >
+              <ng-container>
                 <button
                   mat-button
                   (click)="onUndoClick()"
@@ -130,23 +135,23 @@
                     paperDirective.scope?.tool?.name !== 'pen'
                   "
                   class="tool"
+                  title="undo"
                 >
                   <mat-icon>undo</mat-icon>
                 </button>
                 <button
                   mat-button
                   (click)="onInsertImageClick()"
-                  matTooltip="insert image"
+                  title="insert image"
                   class="tool"
                 >
                   <mat-icon>photo_library</mat-icon>
                 </button>
-              </div>
+              </ng-container>
               <ng-container
                 *ngFor="let toolCategory of ['view', 'draw', 'select', 'edit']"
               >
-                <mat-divider></mat-divider>
-                <div gdColumns="1fr 1fr">
+                <ng-container>
                   <ng-container *ngFor="let tool of paper.scope.tools">
                     <ng-container
                       *ngIf="
@@ -159,8 +164,7 @@
                         [value]="tool"
                         [appTool]="tool"
                         (click)="tool.activate()"
-                        [matTooltip]="tool.name"
-                        [matTooltipShowDelay]="3000"
+                        [title]="tool.name"
                         [ngClass]="{
                           active: tool === paper.scope.tool
                         }"
@@ -184,7 +188,7 @@
                       </button>
                     </ng-container>
                   </ng-container>
-                </div>
+                </ng-container>
               </ng-container>
             </div>
             <mat-divider></mat-divider>
@@ -335,8 +339,12 @@
       </mat-accordion>
       <div id="WorkspaceContainer" fxFlex="1 0 auto">
         <canvas id="Workspace" appPaperEdit #paper="appPaperEdit"></canvas>
-        <div class="floating" *ngIf="paper">
-          <ng-container *ngIf="false && settings.debug">
+        <div class="floating">
+          <ng-container *ngIf="!paper.project">
+            <h1>Loading...</h1>
+          </ng-container>
+
+          <ng-container *ngIf="paper && settings.debug">
             {{ paper.fps$ | async }} fps
             <!-- <span class="ui">project? {{ !!project }}</span> -->
             <span class="ui">
