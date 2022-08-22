@@ -1,7 +1,8 @@
 version: "3"
 services:
   ouronote-web:
-    build: .
+    build: ./app-server
+
     working_dir: /usr/src/app
     # user: "node"
     # volumes:

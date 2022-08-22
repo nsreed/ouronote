@@ -3,8 +3,8 @@ const { writeFileSync } = require("fs-extra");
 
 const licenses = require('./licenses.json');
 
-for(const k in licenses) {
-  if(k.startsWith('ouronote')){
+for (const k in licenses) {
+  if (k.startsWith('ouronote')) {
     delete licenses[k];
     continue;
   }
@@ -15,6 +15,6 @@ for(const k in licenses) {
 writeFileSync(
   resolve(
     __dirname, 'projects', 'demo', 'src', 'assets', 'licenses.json'),
-    JSON.stringify(licenses),
-    {encoding: 'utf-8'}
-  );
+  JSON.stringify(licenses),
+  { encoding: 'utf-8' }
+);

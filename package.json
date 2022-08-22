@@ -12,7 +12,7 @@
     "build:watch": "ng build demo --watch",
     "build:watch:prod": "ng build demo --configuration production --watch",
     "docker:build": "docker-compose build",
-    "postinstall": "node version.js",
+    "postinstall": "cp -r dist app-server/dist && node app-server/version.js",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -87,5 +87,8 @@
   },
   "engines": {
     "node": ">=14.x"
-  }
+  },
+  "workspaces": [
+    "app-server/**/*"
+  ]
 }

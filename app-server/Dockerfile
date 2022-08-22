@@ -1,6 +1,7 @@
 
-FROM node:18-alpine
+FROM node:18-alpine3.16
 COPY /node_modules/gun/ /usr/src/gun/
+# Hmm... is this useful anymore?
 WORKDIR /usr/src/gun
 RUN npm link
 WORKDIR /usr/src/app
@@ -19,6 +20,5 @@ EXPOSE 80
 EXPOSE 8080
 
 VOLUME [ "/usr/src/app/radata" ]
-
 
 CMD ["node", "server.js"]
