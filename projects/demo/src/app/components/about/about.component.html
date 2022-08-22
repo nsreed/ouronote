@@ -5,24 +5,51 @@
 </h1>
 <mat-dialog-content>
   <blockquote>version {{ version.version }}</blockquote>
+  <blockquote>build {{ version.hash }}</blockquote>
+  <br />
   <p>
     ouronote is a free, open-source, peer-to-peer real-time whiteboard
     application.
   </p>
   <mat-divider></mat-divider>
   <h2>Links</h2>
-  <a mat-flat-button target="_blank" rel="noopener" href="https://www.patreon.com/nsreed"><i class="fab fa-patreon"></i>
-    patreon</a>
-  <a mat-flat-button target="_blank" rel="noopener" href="https://www.paypal.com/paypalme/praetorlabs"><i
-      class="fab fa-paypal"></i> paypal</a>
-  <a mat-flat-button target="_blank" rel="noopener" href="https://twitter.com/ouronote">
+  <a
+    mat-flat-button
+    target="_blank"
+    rel="noopener"
+    href="https://www.patreon.com/nsreed"
+    ><i class="fab fa-patreon"></i> patreon</a
+  >
+  <a
+    mat-flat-button
+    target="_blank"
+    rel="noopener"
+    href="https://www.paypal.com/paypalme/praetorlabs"
+    ><i class="fab fa-paypal"></i> paypal</a
+  >
+  <a
+    mat-flat-button
+    target="_blank"
+    rel="noopener"
+    href="https://twitter.com/ouronote"
+  >
     <i class="fab fa-twitter"></i>
     twitter
   </a>
-  <a mat-flat-button target="_blank" rel="noopener" href="https://www.github.com/nsreed/ouronote"><i
-      class="fab fa-github"></i> github</a>
-  <a mat-flat-button target="_blank" rel="noopener" href="https://www.github.com/nsreed/ouronote/issues"><i
-      class="fab fa-github"></i> issues</a>
+  <a
+    mat-flat-button
+    target="_blank"
+    rel="noopener"
+    href="https://www.github.com/nsreed/ouronote"
+    ><i class="fab fa-github"></i> github</a
+  >
+  <a
+    mat-flat-button
+    target="_blank"
+    rel="noopener"
+    href="https://www.github.com/nsreed/ouronote/issues"
+    ><i class="fab fa-github"></i> issues</a
+  >
   <mat-divider></mat-divider>
   <h2>Attributions</h2>
   <div *ngFor="let source of attributions">
@@ -32,10 +59,14 @@
       <ng-container *ngFor="let resource of source.resources">
         <a href="{{ resource.url }}" rel="noopener" target="_blank">{{
           resource.attribution
-          }}</a>
+        }}</a>
         &mdash;
-        <a href="{{ resource.licenseURL || source.licenseURL }}" target="_blank" rel="noopener">{{ resource.license
-          }}</a>
+        <a
+          href="{{ resource.licenseURL || source.licenseURL }}"
+          target="_blank"
+          rel="noopener"
+          >{{ resource.license }}</a
+        >
         &mdash; ({{ resource.modifications }})
       </ng-container>
     </div>
@@ -50,7 +81,7 @@
       </mat-expansion-panel-header>
       <a target="_blank" rel="noopener" [href]="lkv.value.repository">{{
         lkv.value.repository
-        }}</a>
+      }}</a>
       <mat-divider></mat-divider>
       <pre>{{ lkv.value.licenseText }}</pre>
     </mat-expansion-panel>

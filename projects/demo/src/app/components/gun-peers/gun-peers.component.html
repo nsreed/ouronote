@@ -1,5 +1,11 @@
 <h1>Peers</h1>
-<div gdColumns="max-content max-content max-content auto repeat(3, max-content)" gdGap="1em" gdAlignRows="stretch">
+<div
+  gdColumns="max-content max-content max-content auto repeat(3, max-content)"
+  gdGap="1em"
+  gdAlignRows="stretch"
+  gdAlignColumn="middle"
+  id="Peers"
+>
   <h3>disconnect</h3>
   <h3>id</h3>
   <h3>met</h3>
@@ -7,16 +13,17 @@
   <h3>last</h3>
   <h3>queue</h3>
   <h3>tail</h3>
-  <ng-container *ngFor="let peer of peers|keyvalue">
+  <ng-container *ngFor="let peer of peers | keyvalue">
     <button mat-button (click)="disconnect(peer.key)">disconnect</button>
-    <div>{{peer.key}}</div>
-    <div>{{peer.met||0}}</div>
-    <div>{{peer.value.wire?.readyState}}</div>
-    <div>{{peer.value.last}}</div>
-    <div>{{peer.value.queue?.length}}</div>
-    <div>{{peer.value.tail}}</div>
+    <div>{{ peer.key }}</div>
+    <div>{{ peer.met || 0 }}</div>
+    <div>{{ peer.value.wire?.readyState }}</div>
+    <div>{{ peer.value.last }}</div>
+    <div>{{ peer.value.queue?.length }}</div>
+    <div>{{ peer.value.tail }}</div>
   </ng-container>
 </div>
-<pre>{{diagnostics.storeStats|json}}</pre>
-<pre>{{diagnostics.missingPeers|json}}</pre>
-<button mat-button (click)="logGun()">console.log gun</button>
+<!-- <pre>{{diagnostics.storeStats|json}}</pre>
+<pre>{{diagnostics.missingPeers|json}}</pre> -->
+
+<!-- <button mat-button (click)="logGun()">console.log gun</button> -->
