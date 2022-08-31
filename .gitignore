@@ -61,3 +61,4 @@ projects/demo/src/assets/dictionary/blacklist.json
 !.yarn/sdks
 !.yarn/versions
 /*.*profile
+package-lock.json
