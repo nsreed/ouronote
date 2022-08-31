@@ -1,15 +1,15 @@
 
 FROM node:18-alpine3.16
-COPY /node_modules/gun/ /usr/src/gun/
+# COPY /node_modules/gun/ /usr/src/gun/
 # Hmm... is this useful anymore?
-WORKDIR /usr/src/gun
-RUN npm link
+# WORKDIR /usr/src/gun
+# RUN npm link
 WORKDIR /usr/src/app
 # COPY version.js ./
 COPY package*.json ./
 COPY server.js ./
 
-RUN npm install /usr/src/gun/
+# RUN npm install /usr/src/gun/
 RUN npm install
 COPY /dist/demo/ ./dist/demo/
 COPY /ouronote-dev.crt ./

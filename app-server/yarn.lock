@@ -329,7 +329,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gun@npm:^0.2020.1238":
+"gun@npm:^0.2020.520":
   version: 0.2020.1238
   resolution: "gun@npm:0.2020.1238"
   dependencies:
@@ -514,7 +514,7 @@ __metadata:
     express: ^4.18.1
     folder-hash: ^4.0.2
     fs-extra: ^10.1.0
-    gun: ^0.2020.1238
+    gun: ^0.2020.520
     ws: ^8.8.1
   languageName: unknown
   linkType: soft

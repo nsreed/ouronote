@@ -7,7 +7,7 @@ require("gun/lib/radix");
 require("gun/lib/radisk");
 require("gun/lib/store");
 require("gun/lib/rindexed");
-require("gun/nts");
+// require("gun/nts");
 require("gun/lib/webrtc");
 var https = require("https");
 var http = require("http");
@@ -37,7 +37,9 @@ try {
     key: privateKey,
     cert: certificate,
   };
-  httpsServer = https.createServer(EXPRESS_OPTS, app).listen(HTTPS_PORT);
+  // TODO un-comment this for local deploys?
+  // httpsServer = https.createServer(EXPRESS_OPTS, app).listen(HTTPS_PORT);
+
 } catch (e) {
   console.error("Error starting HTTPS server: ", e);
   console.log("will default to HTTP");
