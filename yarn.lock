@@ -5934,7 +5934,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gun@https://github.com/nsreed/gun.git":
+"gun@https://github.com/nsreed/gun.git#ouronote":
   version: 0.2020.520
   resolution: "gun@https://github.com/nsreed/gun.git#commit=6e9a25158a6e614f2727567c995ea1c50e3b43fe"
   dependencies:
@@ -8280,7 +8280,7 @@ __metadata:
     express: ^4.17.1
     file-saver: ^2.0.5
     folder-hash: ^4.0.2
-    gun: "https://github.com/nsreed/gun.git"
+    gun: "https://github.com/nsreed/gun.git#ouronote"
     hammerjs: ^2.0.8
     jasmine-core: 4.2.0
     jasmine-spec-reporter: 7.0.0

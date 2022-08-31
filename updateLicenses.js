@@ -1,7 +1,10 @@
 const { resolve, relative } = require("path");
 const { writeFileSync } = require("fs-extra");
 
-const licenses = require('./licenses.json');
+console.log('updating licenses...');
+const licenseJSONFile = resolve(
+  __dirname, 'projects', 'demo', 'src', 'assets', 'licenses.json');
+const licenses = require(licenseJSONFile);
 
 for (const k in licenses) {
   if (k.startsWith('ouronote')) {
@@ -13,8 +16,7 @@ for (const k in licenses) {
 }
 
 writeFileSync(
-  resolve(
-    __dirname, 'projects', 'demo', 'src', 'assets', 'licenses.json'),
+  licenseJSONFile,
   JSON.stringify(licenses),
   { encoding: 'utf-8' }
 );

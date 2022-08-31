@@ -12,7 +12,9 @@
     "build:watch": "ng build demo --watch",
     "build:watch:prod": "ng build demo --configuration production --watch",
     "docker:build": "docker-compose build",
-    "postinstall": "node version.js && cp -r dist app-server/dist",
+    "postinstall": "node version.js && licenses && cp -r dist app-server/dist",
+    "licenses": "license-checker --production --customPath licenseFormat.json --json > projects/demo/src/assets/licenses.json && node updateLicenses.js",
+    "prepublish": "licenses",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
