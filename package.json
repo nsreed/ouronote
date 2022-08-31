@@ -40,7 +40,7 @@
     "esbuild": "^0.14.49",
     "express": "^4.17.1",
     "file-saver": "^2.0.5",
-    "gun": "https://github.com/nsreed/gun.git",
+    "gun": "https://github.com/nsreed/gun.git#ouronote",
     "hammerjs": "^2.0.8",
     "ngx-clipboard": "^15.1.0",
     "ngx-online-status": "^2.0.0",
