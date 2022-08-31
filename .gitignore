@@ -59,3 +59,4 @@ ouronote-dev.crt
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+/*.*profile
