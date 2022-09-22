@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "pwa-chrome",
+      "type": "chrome",
       "request": "launch",
       "name": "ouronote - chrome",
       "url": "http://localhost:4200",
@@ -16,15 +16,11 @@
       "port": 9222,
       "request": "attach",
       "type": "chrome",
-      "webRoot": "${workspaceFolder}",
-      "linux": {
-        "runtimeExecutable": "/snap/bin/chromium"
-      }
+      "webRoot": "${workspaceFolder}"
     },
     {
       "type": "firefox",
       "request": "launch",
-      "reAttach": true,
       "name": "Launch Firefox against localhost",
       "url": "http://localhost:4200",
       "webRoot": "${workspaceFolder}"
