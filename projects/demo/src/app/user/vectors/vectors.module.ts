@@ -60,6 +60,7 @@ import { ColorGradientComponent } from './components/color-gradient/color-gradie
 import { VectorLoaderComponent } from './components/vector-loader/vector-loader.component';
 import { NumberFormComponent } from './components/number-form/number-form.component';
 import { ToolPickerComponent } from './components/tool-picker/tool-picker.component';
+import { ToolPropertiesComponent } from './components/tool-properties/tool-properties.component';
 
 @NgModule({
   declarations: [
@@ -88,6 +89,7 @@ import { ToolPickerComponent } from './components/tool-picker/tool-picker.compon
     VectorLoaderComponent,
     NumberFormComponent,
     ToolPickerComponent,
+    ToolPropertiesComponent,
   ],
   imports: [
     CertificatesModule,

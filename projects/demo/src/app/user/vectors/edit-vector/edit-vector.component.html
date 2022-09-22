@@ -108,6 +108,7 @@
         </button>
       </mat-menu>
     </mat-toolbar>
+
     <div fxLayout="row" fxFlex="1 1 auto" fxLayoutAlign="stretch stretch">
       <mat-accordion
         multi
@@ -123,89 +124,18 @@
             <app-tool-picker
               [paperDirective]="paperDirective"
             ></app-tool-picker>
+
+            <app-tool-properties
+              [paperDirective]="paperDirective"
+              [activeTool]="paper.project.tool"
+              [paperEditDirective]="paper"
+            ></app-tool-properties>
+
             <mat-divider></mat-divider>
-            <!-- <div [appObject]="paper.project.currentStyle">
-  <app-style-form [style]="paper.project.currentStyle"></app-style-form>
-</div> -->
-            <div
-              *ngIf="
-                paper.project.selectedItems.length === 0 ||
-                ['lasso select', 'rectangle select'].includes(
-                  paper.scope.tool?.name
-                )
-              "
-              [appObject]="paper.project.currentStyle"
-            >
-              <app-color-form
-                appObjectProperty="strokeColor"
-                [color]="paper.project.currentStyle.strokeColor"
-                *ngIf="paper.scope.tool?.propertyNames?.includes('style')"
-                [style]="paper.scope.tool.style"
-                label="Stroke Color"
-              >
-              </app-color-form>
-              <app-color-form
-                appObjectProperty="fillColor"
-                [color]="paper.project.currentStyle.fillColor"
-                [style]="paper.scope.tool.style"
-                *ngIf="paper.scope.tool?.propertyNames?.includes('style')"
-                label="Fill Color"
-              >
-              </app-color-form>
-              <ng-container
-                *ngIf="paper.scope.tool?.propertyNames?.includes('style')"
-              >
-                <app-stroke-width-form
-                  [tool]="paper.scope.tool"
-                  [style]="paper.scope.tool.style"
-                ></app-stroke-width-form>
-                <p>Stroke Width</p>
-              </ng-container>
-              <ng-container
-                *ngIf="
-                  paper.scope.tool.name === 'text' &&
-                  paper.scope.tool?.propertyNames?.includes('style')
-                "
-              >
-                <app-number-form
-                  label="Font Size"
-                  [appObject]="paper.scope.tool.style"
-                  appObjectProperty="fontSize"
-                >
-                </app-number-form>
-              </ng-container>
-              <div
-                *ngIf="paper.scope.tool?.propertyNames?.includes('simplify')"
-              >
-                <app-boolean-form
-                  [appObject]="paper.scope.tool"
-                  appObjectProperty="simplify"
-                ></app-boolean-form>
-              </div>
-              <div
-                *ngIf="
-                  paper.scope.tool?.propertyNames?.includes(
-                    'smoothingStrength'
-                  ) && paper.scope.tool?.simplify
-                "
-              >
-                <app-slider-form
-                  [appObject]="paper.scope.tool"
-                  appObjectProperty="smoothingStrength"
-                ></app-slider-form>
-              </div>
-              <div *ngIf="paper.scope.tool?.propertyNames?.includes('scale')">
-                <app-boolean-form
-                  [appObject]="paper.scope.tool"
-                  appObjectProperty="scale"
-                ></app-boolean-form>
-              </div>
-              <app-selection-intersect-mode-form
-                [tool]="paper.scope.tool"
-                *ngIf="
-                  paper.scope.tool?.propertyNames?.includes('greedySelect')
-                "
-              ></app-selection-intersect-mode-form>
+            <div [appObject]="paper.project.currentStyle">
+              <app-style-form
+                [style]="paper.project.currentStyle"
+              ></app-style-form>
             </div>
           </ng-template>
         </mat-expansion-panel>

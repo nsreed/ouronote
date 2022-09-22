@@ -16,13 +16,15 @@ import { RotateTool } from '../user/vectors/tools/rotate';
 import { ResizeTool } from '../user/vectors/tools/resize';
 import { TextTool } from '../user/vectors/tools/text';
 import { PanTool } from '../user/vectors/tools/pan';
+import { VectorTool } from '../user/vectors/tools/paper-tool';
+import { Observable } from 'rxjs';
 
 @Directive({
   selector: '[appPaperEdit]',
   exportAs: 'appPaperEdit',
 })
 export class PaperEditDirective extends PaperDirective implements OnInit {
-  tool$ = propertyChange$(this.scope, 'tool').pipe(shareReplay(1));
+  tool$: Observable<VectorTool> = propertyChange$(this.scope, 'tool').pipe(shareReplay(1) as any);
   public pen = new PenTool(this.scope as any);
   public eraser = new EraserTool(this.scope as any);
   public shape = new ShapeTool(this.scope as any);
@@ -45,6 +47,8 @@ export class PaperEditDirective extends PaperDirective implements OnInit {
       0,
       0
     ) as any;
+
+    // this.tool$.subscribe(console.log);
 
     // (this.project as any).on('change', (e: any) => {
     //   // TODO use this

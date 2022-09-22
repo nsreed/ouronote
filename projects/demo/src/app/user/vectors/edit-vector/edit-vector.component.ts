@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
   NgZone,
   OnDestroy,
@@ -126,7 +127,8 @@ export class EditVectorComponent
     private cb: ClipboardService,
     private snackbar: MatSnackBar,
     private el: ElementRef,
-    public settings: SettingsService
+    public settings: SettingsService,
+    private changes: ChangeDetectorRef
   ) {
     super(vectorService, route, ngGun, userService);
     this.logger = logger.supplemental('edit-vector');
@@ -280,6 +282,7 @@ export class EditVectorComponent
       this.selectedItems = items;
     });
     project.currentStyle.strokeWidth = 3;
+    this.changes.markForCheck();
   }
 
   onFullscreenClick(event: MouseEvent) {

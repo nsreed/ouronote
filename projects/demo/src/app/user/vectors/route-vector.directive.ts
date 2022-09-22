@@ -25,6 +25,7 @@ export class RouteVectorDirective {
     // tap((node: any) => console.log('ROUTE NODE', node)),
     shareReplay(1)
   ) as Observable<GunChain<VectorGraph>>;
+
   vector$: Observable<VectorGraph> = this.vectorNode$.pipe(
     switchMap((node) => node.on())
   );

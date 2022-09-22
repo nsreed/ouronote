@@ -1,0 +1,72 @@
+<div
+  *ngIf="
+    paperEditDirective &&
+    activeTool &&
+    (selectedItems.length === 0 ||
+      ['lasso select', 'rectangle select'].includes(activeTool.name))
+  "
+  [appObject]="paperEditDirective.project.currentStyle"
+>
+  <app-color-form
+    appObjectProperty="strokeColor"
+    [color]="paperEditDirective.project.currentStyle.strokeColor"
+    *ngIf="activeTool?.propertyNames?.includes('style')"
+    [style]="activeTool.style"
+    label="Stroke Color"
+  >
+  </app-color-form>
+  <app-color-form
+    appObjectProperty="fillColor"
+    [color]="paperEditDirective.project.currentStyle.fillColor"
+    [style]="activeTool.style"
+    *ngIf="activeTool?.propertyNames?.includes('style')"
+    label="Fill Color"
+  >
+  </app-color-form>
+  <ng-container *ngIf="activeTool?.propertyNames?.includes('style')">
+    <app-stroke-width-form
+      [tool]="activeTool"
+      [style]="activeTool.style"
+    ></app-stroke-width-form>
+    <p>Stroke Width</p>
+  </ng-container>
+  <ng-container
+    *ngIf="
+      activeTool.name === 'text' && activeTool?.propertyNames?.includes('style')
+    "
+  >
+    <app-number-form
+      label="Font Size"
+      [appObject]="activeTool.style"
+      appObjectProperty="fontSize"
+    >
+    </app-number-form>
+  </ng-container>
+  <div *ngIf="activeTool?.propertyNames?.includes('simplify')">
+    <app-boolean-form
+      [appObject]="activeTool"
+      appObjectProperty="simplify"
+    ></app-boolean-form>
+  </div>
+  <div
+    *ngIf="
+      activeTool?.propertyNames?.includes('smoothingStrength') &&
+      activeTool?.simplify
+    "
+  >
+    <app-slider-form
+      [appObject]="activeTool"
+      appObjectProperty="smoothingStrength"
+    ></app-slider-form>
+  </div>
+  <div *ngIf="activeTool?.propertyNames?.includes('scale')">
+    <app-boolean-form
+      [appObject]="activeTool"
+      appObjectProperty="scale"
+    ></app-boolean-form>
+  </div>
+  <app-selection-intersect-mode-form
+    [tool]="activeTool"
+    *ngIf="activeTool?.propertyNames?.includes('greedySelect')"
+  ></app-selection-intersect-mode-form>
+</div>

@@ -10,7 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import * as Hammer from 'hammerjs';
 import { LogService } from 'log';
 import * as paper from 'paper';
-import { from, fromEvent, timer, ReplaySubject } from 'rxjs';
+import { from, fromEvent, timer, ReplaySubject, Observable } from 'rxjs';
 import {
   map,
   mergeMap,
@@ -36,7 +36,7 @@ export class PaperDirective implements OnInit, AfterViewInit {
     private el: ElementRef<HTMLCanvasElement>,
     private snackBar: MatSnackBar,
     private logger: LogService
-  ) {}
+  ) { }
 
   get canvas(): HTMLCanvasElement {
     return this.el.nativeElement;
@@ -45,15 +45,10 @@ export class PaperDirective implements OnInit, AfterViewInit {
   @Output()
   appPaperChange = new EventEmitter();
 
-  projectChange = new ReplaySubject<paper.Project>(1);
-  selectedItemsChange = this.projectChange.pipe(
-    tap((p: any) => console.log('project', p)),
-    switchMap((p: any) =>
-      p.changes$.pipe(
-        filter((c: any) => c[0] === 'selectedItems'),
-        map((c: [string, paper.Item[]]) => c[1])
-      )
-    ),
+  projectChange = new ReplaySubject<IEnhancedPaper>(1);
+  selectedItemsChange: Observable<paper.Item[]> = this.projectChange.pipe(
+    tap((p) => console.log('project', p)),
+    switchMap(p => p.selectedItems$),
     shareReplay(1)
   );
 
@@ -88,7 +83,7 @@ export class PaperDirective implements OnInit, AfterViewInit {
     map((frames) => frames.length)
   );
 
-  scope: paper.PaperScope & UndoStack = new paper.PaperScope() as any;
+  public scope: paper.PaperScope & UndoStack = new paper.PaperScope() as any;
 
   ignore(fn: any, ...args: any[]) {
     let item: any;

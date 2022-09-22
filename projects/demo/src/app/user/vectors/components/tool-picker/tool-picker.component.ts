@@ -13,7 +13,7 @@ import { PaperEditDirective } from '../../../../vector/paper-edit.directive';
   selector: 'app-tool-picker',
   templateUrl: './tool-picker.component.html',
   styleUrls: ['./tool-picker.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class ToolPickerComponent implements OnInit {
 
