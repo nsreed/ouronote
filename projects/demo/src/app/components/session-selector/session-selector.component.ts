@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, Optional } from '@angular/core';
 import { NgGunSessionService } from '../../../../../ng-gun/src/lib/ng-gun-session.service';
 
 @Component({
@@ -11,7 +11,7 @@ export class SessionSelectorComponent implements OnInit {
   sessions = [];
   @Output()
   sessionSelect = new EventEmitter();
-  constructor(public sessionService: NgGunSessionService) {}
+  constructor(@Optional() public sessionService: NgGunSessionService) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 }

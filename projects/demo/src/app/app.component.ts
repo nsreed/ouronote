@@ -5,7 +5,6 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ClipboardService } from 'ngx-clipboard';
 import { LogMessage, LogService } from '../../../log/src/lib/log.service';
-import { NgGunSessionService } from '../../../ng-gun/src/lib/ng-gun-session.service';
 import { NgGunService } from '../../../ng-gun/src/lib/ng-gun.service';
 import { AboutComponent } from './components/about/about.component';
 import { GunPeersComponent } from './components/gun-peers/gun-peers.component';
@@ -36,8 +35,7 @@ export class AppComponent implements OnInit {
     @Optional()
     private webRtcImporter: GunWebrtcImporterService,
     private matIconRegistry: MatIconRegistry,
-    private domSanitizer: DomSanitizer,
-    private session: NgGunSessionService
+    private domSanitizer: DomSanitizer
   ) {
     this.matIconRegistry.addSvgIcon(
       'lasso',

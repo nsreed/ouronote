@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Optional } from '@angular/core';
 import {
   AbstractControl,
   UntypedFormBuilder,
@@ -23,6 +23,7 @@ import {
   distinct,
 } from 'rxjs/operators';
 import { OnlineStatusService, OnlineStatusType } from 'ngx-online-status';
+import { IGunCryptoKeyPair } from 'gun/types/types';
 
 @Component({
   templateUrl: './login.component.html',
@@ -86,22 +87,28 @@ export class LoginComponent implements OnInit {
     ],
   });
 
+  sessions: IGunCryptoKeyPair[] = [];
+
   constructor(
     private fb: UntypedFormBuilder,
     private ngGun: NgGunService,
-    router: Router,
+    private router: Router,
     private dialog: MatDialog,
-    public sessionService: NgGunSessionService,
+    @Optional() protected sessionService: NgGunSessionService,
     private logger: LogService,
     public onlineStatusService: OnlineStatusService
   ) {
+    logger.name = 'login';
+  }
+
+  ngOnInit(): void {
     this.onLine$.subscribe((v) => {
       this.onLine = v;
     });
-    logger.name = 'login';
-    ngGun.auth().auth$.subscribe((data) => {
+    this.sessions = this.sessionService?.workerState.sessions || [];
+    this.ngGun.auth().auth$.subscribe((data) => {
       // console.log('auth data', data);
-      router.navigateByUrl('/user/vectors');
+      this.router.navigateByUrl('/user/vectors');
     });
     this.form.controls.alias.addAsyncValidators(
       async (ctl: AbstractControl) => {
@@ -111,16 +118,13 @@ export class LoginComponent implements OnInit {
           // console.log(match);
           return match
             ? {
-                aliasTaken: true,
-              }
+              aliasTaken: true,
+            }
             : null;
         }
         return null;
       }
     );
-  }
-
-  ngOnInit(): void {
     this.form.updateValueAndValidity();
   }
 

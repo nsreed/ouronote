@@ -2,10 +2,10 @@
 <h1>ouronote</h1>
 
 <form [formGroup]="form">
-  <div *ngIf="sessionService.workerState.sessions.length > 0" id="Sessions">
+  <div *ngIf="sessions.length > 0" id="Sessions">
     Select an existing session:
     <app-session-selector
-      [sessions]="sessionService.workerState.sessions"
+      [sessions]="sessions"
       (sessionSelect)="onSessionSelect($event)"
     ></app-session-selector>
     <p>...or log in below</p>

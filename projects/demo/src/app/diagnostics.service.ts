@@ -95,8 +95,10 @@ export class DiagnosticsService {
             'disconnecting stalled peer: %s',
             peer.url || peer.id || peer
           );
+          if (peer.url) {
+            this.tryLater[peer.url] = peer;
+          }
           this.dam.disconnect(peer);
-          this.dam.connect(peer);
         });
       });
     this.logger.log('capabilities', CAPABILITIES);
@@ -120,7 +122,7 @@ export class DiagnosticsService {
 
   poll$ = timer(5000, POLL);
 
-  tryLater$ = timer(TRYEVERY + POLL, TRYEVERY).pipe(map(() => this.tryLater));
+  // tryLater$ = timer(TRYEVERY + POLL, TRYEVERY).pipe(map(() => this.tryLater));
 
   get disconnected() {
     return this.peers.filter(
@@ -161,6 +163,10 @@ export class DiagnosticsService {
     map(() => this.missingPeers),
     shareReplay(1)
   );
+
+  disconnectAll() {
+    this.ngGun.gun.back(-1); // this is dam
+  }
 
   bugReport() {
     // LogService.buffer$.pipe(take(1)).subscribe((messages) => {

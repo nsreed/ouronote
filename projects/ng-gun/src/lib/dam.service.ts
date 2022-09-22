@@ -8,13 +8,9 @@ import { over } from './functions/gun-utils';
 })
 export class DamService {
   mesh: IGunMesh = this.ngGun.gun.back('opt.mesh' as any) as any;
-  constructor(private ngGun: NgGunService) {}
+  constructor(private ngGun: NgGunService) { }
   disconnect(peer: any) {
-    if (peer.tries) {
-      peer.tries--;
-      return;
-    }
-    console.log('disconnect', peer);
+    peer.retries = 0;
     this.mesh.bye(peer);
   }
   connect(peer: any, tries = peer.tries || 5) {
