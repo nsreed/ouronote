@@ -1,7 +1,7 @@
 import {
   MAT_COLOR_FORMATS,
   NgxMatColorPickerModule,
-  NGX_MAT_COLOR_FORMATS,
+  NGX_MAT_COLOR_FORMATS
 } from '@angular-material-components/color-picker';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { HttpClientModule } from '@angular/common/http';
@@ -25,13 +25,15 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatSliderModule } from '@angular/material/slider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSliderModule } from '@angular/material/slider';
 import {
   MatSnackBarModule,
-  MAT_SNACK_BAR_DEFAULT_OPTIONS,
+  MAT_SNACK_BAR_DEFAULT_OPTIONS
 } from '@angular/material/snack-bar';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -39,9 +41,12 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { OnlineStatusModule } from 'ngx-online-status';
+import { NoopSharedWorker } from 'projects/ng-gun/src/lib/classes/NoopSharedWorker';
 import { LogModule } from '../../../log/src/lib/log.module';
 import { LogService } from '../../../log/src/lib/log.service';
 import { NgGunService } from '../../../ng-gun/src/lib/ng-gun.service';
+import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CertificatesModule } from './certificates/certificates.module';
@@ -49,6 +54,7 @@ import { CertificateFormComponent } from './components/certificate-form/certific
 import { CertificatesComponent } from './components/certificates/certificates.component';
 import { ComponentsModule } from './components/components.module';
 import { ConfirmComponent } from './components/confirm/confirm.component';
+import { DirectivesModule } from './directives/directives.module';
 import { FilesModule } from './files/files.module';
 import { FormsUiModule } from './forms-ui/forms-ui.module';
 import { LoginComponent } from './login/login.component';
@@ -56,13 +62,6 @@ import { GunRadImporterService } from './services/gun-rad-importer.service';
 import { GunWebrtcImporterService } from './services/gun-webrtc-importer.service';
 import { SessionInfoComponent } from './session-info/session-info.component';
 import { WelcomeComponent } from './welcome/welcome.component';
-import { MatSelectModule } from '@angular/material/select';
-import { DirectivesModule } from './directives/directives.module';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { NoopSharedWorker } from 'projects/ng-gun/src/lib/classes/NoopSharedWorker';
-import { ServiceWorkerModule } from '@angular/service-worker';
-import { environment } from '../environments/environment';
-import { OnlineStatusModule } from 'ngx-online-status';
 
 const RADISK_LOCAL = localStorage.getItem('RADISK_ENABLE');
 const RADISK_ENABLE = RADISK_LOCAL === null ? true : !!JSON.parse(RADISK_LOCAL);
@@ -140,10 +139,10 @@ if (typeof SharedWorker !== 'undefined') {
     // }),
   ],
   providers: [
-    {
-      provide: SharedWorker,
-      useValue: worker,
-    },
+    // {
+    //   provide: SharedWorker,
+    //   useValue: worker,
+    // },
     { provide: MAT_COLOR_FORMATS, useValue: NGX_MAT_COLOR_FORMATS },
     {
       provide: 'gun-options',
@@ -151,6 +150,7 @@ if (typeof SharedWorker !== 'undefined') {
         localStorage: !RADISK_ENABLE,
         sharedWorkerURL: '/assets/gun-shared.worker.js',
         sharedWorker: {
+          enabled: false,
           disconnectRedundantWebRTC: true,
         },
         peers: [
@@ -195,4 +195,4 @@ if (typeof SharedWorker !== 'undefined') {
   exports: [CertificatesComponent],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

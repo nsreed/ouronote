@@ -42,6 +42,18 @@ import { layoutVertical } from '../functions/paper-functions';
 import { RouteVectorDirective } from '../route-vector.directive';
 import { VectorTool } from '../tools/paper-tool';
 import { VectorService } from '../vector.service';
+import { EraserTool } from '../tools/eraser';
+import { EyedropperTool } from '../tools/eyedropper';
+import { LineTool } from '../tools/line';
+import { MoveTool } from '../tools/move';
+import { PanTool } from '../tools/pan';
+import { PenTool } from '../tools/pen';
+import { ResizeTool } from '../tools/resize';
+import { RotateTool } from '../tools/rotate';
+import { RectangleSelectTool, LassoSelectTool } from '../tools/select';
+import { ShapeTool } from '../tools/shape';
+import { TextTool } from '../tools/text';
+import { around } from 'aspect-ts';
 
 @Component({
   templateUrl: './edit-vector.component.html',
@@ -58,6 +70,8 @@ export class EditVectorComponent
   previewSVG?: SafeHtml;
   project!: paper.Project;
   projectPair!: ProjectPair;
+
+  selectedItems: paper.Item[] = [];
 
   vectorForm = this.fb.group({
     title: [null, Validators.required],
@@ -79,6 +93,23 @@ export class EditVectorComponent
   editRequestsTooltip?: MatTooltip;
 
   editToast?: MatSnackBarRef<TextOnlySnackBar>;
+
+  get toolClasses(): any[] {
+    return [
+      PenTool,
+      EraserTool,
+      ShapeTool,
+      LineTool,
+      TextTool,
+      EyedropperTool,
+      PanTool,
+      RectangleSelectTool,
+      LassoSelectTool,
+      MoveTool,
+      RotateTool,
+      ResizeTool,
+    ];
+  }
 
   get tools(): VectorTool[] {
     return this.paperDirective.scope.tools as any;
@@ -228,6 +259,15 @@ export class EditVectorComponent
       this.paperDirective.scope as any,
       new LogService()
     );
+    let count = 0;
+    // around(project.view, 'update', (...args: any[]) => {
+    //   if (count++ % 8 === 0) {
+    //     return;
+    //   }
+    //   const n = args.pop();
+    //   n(...args);
+    // });
+    // this.logger.monitor(project.view, 'update', 1000 / 60, 1000);
     let lastSelected: paper.Item[] = [];
     (project as IEnhancedPaper).selectedItems$.subscribe((items) => {
       lastSelected.forEach((item) => {
@@ -239,6 +279,7 @@ export class EditVectorComponent
         }
       });
       lastSelected = items;
+      this.selectedItems = items;
     });
     project.currentStyle.strokeWidth = 3;
   }

@@ -6,7 +6,7 @@ import {
   SkipSelf,
 } from '@angular/core';
 import { Subject } from 'rxjs';
-import { scan, shareReplay, take, filter } from 'rxjs/operators';
+import { scan, shareReplay, take, filter, bufferTime } from 'rxjs/operators';
 import { around } from 'aspect-ts';
 export enum LogLevel {
   VERBOSE,
@@ -84,6 +84,7 @@ export class LogService {
   private static longestName = 14;
   private static timers = new Map<string, Stopwatch>();
   private static elapsed = new Map<string, number>();
+  private static count = new Map<string, number>();
 
   public static readonly root = new LogService('root');
 
@@ -200,12 +201,20 @@ export class LogService {
     this._out$.emit(packed);
   }
 
-  monitor(ctx: any, name: string, threshold = 1) {
+  monitor(ctx: any, name: string, threshold = 1, countMod = 20) {
+    if (!LogService.count.has(name)) {
+      LogService.count.set(name, 0);
+    }
     around(ctx, name, (...args: any[]) => {
       const notify = args.pop();
       const t = this.time(name);
       const ret = notify(...args);
       const dur = this.timeEnd(name, threshold);
+      const callCount = LogService.count.get(name) || 0;
+      LogService.count.set(name, callCount + 1);
+      if (callCount % 1000 === 0) {
+        this.log(`${name} called ${callCount} times`);
+      }
       const prev: number = LogService.elapsed.get(name) || 0;
 
       return ret;
@@ -229,6 +238,19 @@ export class LogService {
       console.log('%s %f (%f total)', label, t.elapsed, prev + t.elapsed);
     }
     return t.elapsed;
+  }
+
+  eventTap(name: string) {
+    const e$ = new EventEmitter();
+    e$.pipe(
+      bufferTime(1000, 1000),
+      filter((times) => times.length > 0)
+    ).subscribe((times) => {
+      this.log(`${this.name}${name} event @ ${times.length} per second`);
+    });
+    return () => {
+      e$.emit(Date.now());
+    };
   }
 
   supplemental(name: string): LogService {

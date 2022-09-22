@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { UntypedFormBuilder } from '@angular/forms';
+import { UntypedFormBuilder, FormBuilder } from '@angular/forms';
 import { SettingsService } from '../../settings.service';
 import { Router } from '@angular/router';
 import { GunChain } from 'projects/ng-gun/src/lib/classes/GunChain';
@@ -7,9 +7,22 @@ import { timer } from 'rxjs';
 
 export interface SettingsGraph {
   gun: {
-    peers: string;
+    file: string;
+    peers: string[];
+    enableWebRTC: boolean;
+    enableLocalStorage: boolean;
   };
-  debug: boolean;
+  debug:
+    | {
+        enabled: boolean;
+      }
+    | boolean;
+  log: {
+    level: number;
+  };
+  system: {
+    enableImages: boolean;
+  };
 }
 
 function Property(config?: any) {
@@ -23,29 +36,51 @@ function Property(config?: any) {
 
 class GunSettings {
   @Property()
-  peers = `[]`;
-  @Property()
   file = 'radata';
   @Property()
-  localStorage = false;
-  time = 0;
+  peers = [];
   @Property()
-  webRTC = false;
+  enableWebRTC = false;
+  @Property()
+  enableLocalStorage = false;
+  time = Date.now();
 }
 
-class Settings {
+class CapabilitySettings {
+  touch = false;
+  pen = false;
+}
+
+class LogSettings {
+  level = 3;
+}
+
+class SystemSettings {
+  enableImages = false;
+}
+
+class Settings implements SettingsGraph {
   @Property({ ref: GunSettings })
   gun = new GunSettings();
-  @Property()
+  @Property({
+    type: 'boolean',
+  })
   debug = false;
-  capabilities = {
-    touch: {
-      enabled: false,
-    },
-    pen: {
-      enabled: false,
-    },
-  };
+  @Property({
+    ref: CapabilitySettings,
+  })
+  capabilities = new CapabilitySettings();
+  @Property({
+    ref: LogSettings,
+  })
+  log = new LogSettings();
+  @Property({ ref: SystemSettings })
+  system = new SystemSettings();
+}
+
+function propsFor(con: any) {
+  const proto = con.prototype || Object.getPrototypeOf(con);
+  return proto.___PROPERTIES;
 }
 
 export interface SettingsRoot {
@@ -65,13 +100,22 @@ export class SystemSettingsComponent implements OnInit {
 
   settingsGun = this.settingsService.gun as GunChain<SettingsRoot>;
 
+  defaultSettings = new Settings();
+
   constructor(
     private fb: UntypedFormBuilder,
+    private tfb: FormBuilder,
     private settingsService: SettingsService,
     private router: Router
   ) {
+    tfb.group<Partial<Settings>>({
+      debug: true,
+    });
     const s = new Settings();
-    console.log('settings props', (Settings.prototype as any)['___PROPERTIES']);
+
+    const settingsProps = propsFor(Settings);
+    console.log('settings props', settingsProps);
+
     this.settingsForm.patchValue({
       enableWebRTC: settingsService.enableWebRTC,
       enableRadisk: settingsService.enableRadisk,

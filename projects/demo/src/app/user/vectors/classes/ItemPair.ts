@@ -149,13 +149,13 @@ export class ItemPair extends PaperPair {
     //   this.logger.log(this.item.className + 'CHANGE CHANGE CHANGE', e)
     // );
     // TODO Verify images + enable user denylist
-    // this.logger.monitor(this, 'setup', 20);
-    // this.logger.monitor(this, 'onGraphChildren', 20);
-    // this.logger.monitor(this, 'onGraphChild', 20);
-    // this.logger.monitor(this, 'onLocalChildren', 20);
-    // this.logger.monitor(this, 'onLocalChild', 20);
-    // this.logger.monitor(this, 'arrangeLocalChildren', 20);
-    // this.logger.monitor(this, 'constructChild', 20);
+    this.logger.monitor(this, 'setup', 20);
+    this.logger.monitor(this, 'onGraphChildren', 20);
+    this.logger.monitor(this, 'onGraphChild', 20);
+    this.logger.monitor(this, 'onLocalChildren', 20);
+    this.logger.monitor(this, 'onLocalChild', 20);
+    this.logger.monitor(this, 'arrangeLocalChildren', 20);
+    this.logger.monitor(this, 'constructChild', 20);
     this.logger.timeEnd('ItemPair');
     this.setup();
   }

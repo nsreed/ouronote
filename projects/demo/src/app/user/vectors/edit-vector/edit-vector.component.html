@@ -152,7 +152,7 @@
                 *ngFor="let toolCategory of ['view', 'draw', 'select', 'edit']"
               >
                 <ng-container>
-                  <ng-container *ngFor="let tool of paper.scope.tools">
+                  <ng-container *ngFor="let tool of tools">
                     <ng-container
                       *ngIf="
                         tool.category === toolCategory && tool.enabled$ | async
@@ -290,27 +290,27 @@
 </mat-action-row>
 </mat-expansion-panel> -->
 
-        <mat-expansion-panel *ngIf="project.selectedItems?.length > 0" expanded>
+        <mat-expansion-panel *ngIf="selectedItems.length > 0" expanded>
           <mat-expansion-panel-header>Selection</mat-expansion-panel-header>
           <ng-template matExpansionPanelContent>
             <ng-container
               *ngIf="
-                project.selectedItems?.length === 1 &&
-                project.selectedItems[0].className === 'PointText'
+                selectedItems?.length === 1 &&
+                selectedItems[0].className === 'PointText'
               "
             >
               <app-text-form
-                [appObject]="project.selectedItems[0]"
+                [appObject]="selectedItems[0]"
                 appObjectProperty="content"
                 (propertyValueChange)="
-                  onContentValueChange(project.selectedItems[0], $event)
+                  onContentValueChange(selectedItems[0], $event)
                 "
-                (blur$)="onContentBlur(project.selectedItems[0], $event)"
+                (blur$)="onContentBlur(selectedItems[0], $event)"
               ></app-text-form>
             </ng-container>
             <button mat-button (click)="project.deselectAll()">Clear</button>
             <app-selected-items
-              [selectedItems]="project.selectedItems$ | async"
+              [selectedItems]="selectedItems"
             ></app-selected-items>
           </ng-template>
         </mat-expansion-panel>

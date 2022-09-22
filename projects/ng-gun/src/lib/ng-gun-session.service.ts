@@ -1,5 +1,5 @@
 import { Injectable, EventEmitter, Optional } from '@angular/core';
-import { fromEvent, Observable } from 'rxjs';
+import { fromEvent, Observable, of } from 'rxjs';
 import { LogService } from '../../../log/src/lib/log.service';
 import { NgGunService } from './ng-gun.service';
 import { IGunCryptoKeyPair } from 'gun/types/types';
@@ -15,9 +15,7 @@ import {
   shareReplay,
 } from 'rxjs/operators';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class NgGunSessionService {
   private _seq = 0;
   workerState = {
@@ -25,9 +23,9 @@ export class NgGunSessionService {
   } as ISharedWorkerState;
   pid = sessionStorage.getItem('pid') ?? getUUID(this.gunService);
 
-  message$ = fromEvent(this.worker.port, 'message').pipe(
+  message$ = this.worker ? fromEvent(this.worker.port, 'message').pipe(
     shareReplay(1)
-  ) as Observable<any>;
+  ) as Observable<any> : of();
   response$ = this.message$.pipe(
     filter(({ data }) => Object.keys(data).includes('rseq'))
   );
@@ -55,9 +53,9 @@ export class NgGunSessionService {
     pluck('data')
   );
 
-  error$ = fromEvent(this.worker, 'error').pipe(
+  error$ = this.worker ? fromEvent(this.worker, 'error').pipe(
     shareReplay(1)
-  ) as Observable<any>;
+  ) as Observable<any> : of();
 
   constructor(
     private logger: LogService,
@@ -65,28 +63,33 @@ export class NgGunSessionService {
     @Optional()
     private worker: SharedWorker
   ) {
-    if (worker instanceof NoopSharedWorker) {
-      this.logger.warn('using noop service worker');
+    try {
+      if (worker instanceof NoopSharedWorker) {
+        this.logger.warn('using noop service worker');
+      }
+      this.logger.name = `session ${this.pid}`;
+      worker.port.start();
+      sessionStorage.setItem('pid', this.pid);
+      // this.log$.subscribe((data) => {
+      //   this.logger.log('WORKER: %s %o', data.msg, data.data || '');
+      // });
+      this.command$.subscribe((command: any) => this.onCommand(command));
+      this.event$.subscribe((e: any) => {
+        // this.logger.log('got event', e);
+      });
+      this.change$.subscribe((change: any) => {
+        // this.logger.log('got change event', change);
+        (this.workerState as any)[change.change] = change.value;
+      });
+      this.gunService.auth(true).auth$.subscribe((a) => {
+        // this.logger.log('got auth event', a);
+        this.setSession(a.sea);
+      });
+      this.init();
+
+    } catch (err) {
+      logger.error('there was an error starting the session service', err);
     }
-    this.logger.name = `session ${this.pid}`;
-    worker.port.start();
-    sessionStorage.setItem('pid', this.pid);
-    // this.log$.subscribe((data) => {
-    //   this.logger.log('WORKER: %s %o', data.msg, data.data || '');
-    // });
-    this.command$.subscribe((command: any) => this.onCommand(command));
-    this.event$.subscribe((e: any) => {
-      // this.logger.log('got event', e);
-    });
-    this.change$.subscribe((change: any) => {
-      // this.logger.log('got change event', change);
-      (this.workerState as any)[change.change] = change.value;
-    });
-    this.gunService.auth(true).auth$.subscribe((a) => {
-      // this.logger.log('got auth event', a);
-      this.setSession(a.sea);
-    });
-    this.init();
   }
 
   async init() {

@@ -47,6 +47,7 @@ export class AppComponent implements OnInit {
     );
     // logger.out$.subscribe(console.log);
     logger.log('app started');
+
     logger.verbose('Gun Imports', {
       radImporter,
       webRtcImporter,
@@ -81,7 +82,7 @@ export class AppComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     // if (typeof Worker !== 'undefined') {
     //   const worker = new Worker(
     //     new URL('./gun-worker.worker', import.meta.url)
@@ -92,6 +93,23 @@ export class AppComponent implements OnInit {
     //   worker.postMessage({
     //     call: 'getSession',
     //   });
+    // }
+
+    // if (navigator.storage && navigator.storage.estimate) {
+    //   let quota = {} as any;
+    //   quota = { ...quota, ...(await navigator.storage.estimate()) };
+    //   // quota.usage -> Number of bytes used.
+    //   // quota.quota -> Maximum number of bytes available.
+    //   if (quota === undefined) {
+    //     return;
+    //   } else {
+    //     const percentageUsed = (quota.usage / quota.quota) * 100;
+    //     console.log(`You've used ${percentageUsed}% of the available storage.`);
+    //     const remaining = quota.quota - quota.usage;
+    //     console.log(`You can write up to ${remaining} more bytes.`);
+    //   }
+
+    //   // await navigator.storage.persist();
     // }
   }
 

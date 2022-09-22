@@ -12,9 +12,10 @@ import { OwnerPipe } from './owner.pipe';
 import { GetDirective } from './directives/get.directive';
 import { OnPipe } from './pipes/on.pipe';
 import { OpenPipe } from './pipes/open.pipe';
+import { SchemaModule } from './schema/schema.module';
 
 @NgModule({
-  imports: [LogModule],
+  imports: [LogModule, SchemaModule],
   declarations: [
     NgGunComponent,
     SoulPipe,

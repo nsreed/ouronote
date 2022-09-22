@@ -12,6 +12,11 @@ export class PenTool extends DrawTool {
   icon = 'marker';
   name = 'pen';
 
+  constructor(scope: any) {
+    super(scope);
+    this.logger.monitor(this, 'handleDrag');
+  }
+
   @Property()
   style = new paper.Style({
     strokeCap: 'round',
@@ -55,26 +60,25 @@ export class PenTool extends DrawTool {
     }
     this.activateDrawLayer();
   });
-  dragSub = this.drag.subscribe((e: any) => {
-    requestAnimationFrame(() => {
-      if (!this.path) {
-        this.path = new paper.Path(e.point) as any;
-        const pair = (this.path as any).pair;
-        if (pair) {
-          pair.editing = true;
-        }
-        this.path.style = this.style;
-        this.path.style = this.project.currentStyle;
-        const width = this.scale
-          ? (1 / this.project.view.zoom) * this.project.currentStyle.strokeWidth
-          : this.project.currentStyle.strokeWidth;
-        this.path.strokeWidth = width;
-        this.path.strokeColor = this.project.currentStyle.strokeColor;
-        this.path.fillColor = this.project.currentStyle.fillColor;
+  handleDrag = (e: any) => {
+    if (!this.path) {
+      this.path = new paper.Path(e.point) as any;
+      const pair = (this.path as any).pair;
+      if (pair) {
+        pair.editing = true;
       }
-      this.path.add(e.point);
-    });
-  });
+      this.path.style = this.style;
+      this.path.style = this.project.currentStyle;
+      const width = this.scale
+        ? (1 / this.project.view.zoom) * this.project.currentStyle.strokeWidth
+        : this.project.currentStyle.strokeWidth;
+      this.path.strokeWidth = width;
+      this.path.strokeColor = this.project.currentStyle.strokeColor;
+      this.path.fillColor = this.project.currentStyle.fillColor;
+    }
+    this.path.add(e.point);
+  };
+  dragSub = this.drag.subscribe((e) => this.handleDrag(e));
 
   upSub = this.up.subscribe((e: any) => {
     if (this.path) {

@@ -15,10 +15,13 @@ import { EventEmitter } from '@angular/core';
 import { PenEvent } from '../classes/PenEvent';
 import { propertyChange$ } from '../functions/paper-chain';
 import { IEnhancedPaper } from '../../../vector/IEnhancedPaper';
-import { map } from 'rxjs/operators';
+import { map, bufferTime } from 'rxjs/operators';
 import { IEnhancedScope } from '../../../vector/IEnhancedScope';
 
 export class VectorTool extends Tool {
+  // FIXME class names get mangled by production build, stop being lazy
+  name = Object.getPrototypeOf(this).constructor.name.replace(/tool/gi, '');
+  readonly logger = LogService.getLogger(`${this.name}`);
   static stack: any[] = [];
 
   category = 'none';
@@ -41,6 +44,7 @@ export class VectorTool extends Tool {
 
   constructor(public readonly scope: IEnhancedScope) {
     super();
+    this.logger.name = this.name;
 
     this.wheel.subscribe((e: any) => {
       const zoomDelta = e.event.deltaY;
@@ -110,7 +114,10 @@ export class VectorTool extends Tool {
   move: Observable<paper.ToolEvent> = fromEvent<paper.ToolEvent>(
     this,
     'mousemove'
-  ).pipe(filter((e: any) => this.filterEvent(e)));
+  ).pipe(
+    tap(this.logger.eventTap(`mousemove`)),
+    filter((e: any) => this.filterEvent(e))
+  );
   down: Observable<paper.ToolEvent> = fromEvent<paper.ToolEvent>(
     this,
     'mousedown'
@@ -121,7 +128,10 @@ export class VectorTool extends Tool {
   drag: Observable<paper.ToolEvent> = fromEvent<paper.ToolEvent>(
     this,
     'mousedrag'
-  ).pipe(filter((e: any) => this.filterEvent(e)));
+  ).pipe(
+    tap(this.logger.eventTap(`mousedrag`)),
+    filter((e: any) => this.filterEvent(e))
+  );
   up: Observable<paper.ToolEvent> = fromEvent<paper.ToolEvent>(
     this,
     'mouseup'
@@ -142,9 +152,6 @@ export class VectorTool extends Tool {
   );
   keyup: Observable<paper.KeyEvent> = fromEvent<paper.KeyEvent>(this, 'keyup');
 
-  // FIXME class names get mangled by production build, stop being lazy
-  name = Object.getPrototypeOf(this).constructor.name.replace(/tool/gi, '');
-
   keyDel = this.keyup.pipe(
     filter((e: any) => {
       return (
@@ -164,7 +171,6 @@ export class VectorTool extends Tool {
       });
   });
 
-  readonly logger = LogService.getLogger(`${this.name}`);
   protected setup() {
     this.pointerDown.subscribe(() => (this.isPointerDown = true));
     this.pointerUp.subscribe(() => (this.isPointerDown = false));

@@ -14,8 +14,9 @@
   debugging purposes only. It is recommended you leave Radisk enabled for normal
   use.
 </form>
+
 <button mat-button color="primary" (click)="save()">Save Settings</button>
-<!-- <ng-container #Settings [gunChain]="settingsGun">
+<ng-container *ngIf="false" #Settings [gunChain]="settingsGun">
   <ng-container #Machine="gunGet" gunGet="machine">
     <pre>{{ Machine.chain$ | open | async | json }}</pre>
     <ng-container #Gun="gunGet" gunGet="gun/file">
@@ -29,10 +30,10 @@
         let s = $implicit
       "
     >
-      {{ k }}
+      [{{ k }}]
       <div *gunMapOf="chain; let sk = key; let sub = chain; let sv = $implicit">
-        {{ k }}.{{ sk }}
+        {{ k }}.{{ sk }} {{ sv }}
       </div>
     </div>
   </ng-container>
-</ng-container> -->
+</ng-container>
