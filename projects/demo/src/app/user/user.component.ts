@@ -12,7 +12,7 @@ import { ConfirmComponent } from '../components/confirm/confirm.component';
 @Component({
   selector: 'app-user',
   templateUrl: './user.component.html',
-  styleUrls: ['./user.component.css'],
+  styleUrls: ['./user.component.scss'],
 })
 export class UserComponent implements OnInit {
   authPoll$ = timer(1000, 1000).pipe(map((t) => this.ngGun.auth().alias));
@@ -32,7 +32,7 @@ export class UserComponent implements OnInit {
       if (
         // Math.random() < 0.5 ||
         this.lastAlias !==
-          'LKDHFS:LSKDHFDSYFNBWEOHFPOSIDHGS:DLKN:LSDKFHOIFYSODHFGS:DGHSDYLIEHTLKHLGSHDGHSDGF:I SDYUFISYDFNBSDOIFNPSDOIFNUDSPOGUNPSDOGSDPOGSHEPGOIEMGESIOGHMSEGPOSEHG' &&
+        'LKDHFS:LSKDHFDSYFNBWEOHFPOSIDHGS:DLKN:LSDKFHOIFYSODHFGS:DGHSDYLIEHTLKHLGSHDGHSDGF:I SDYUFISYDFNBSDOIFNPSDOIFNUDSPOGUNPSDOGSDPOGSHEPGOIEMGESIOGHMSEGPOSEHG' &&
         this.lastAlias !== undefined &&
         this.lastAlias !== alias
       ) {

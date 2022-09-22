@@ -38,7 +38,6 @@ import { PaperEditDirective } from '../../../vector/paper-edit.directive';
 import { UserService } from '../../user.service';
 import { SettingsDialogComponent } from '../components/settings-dialog/settings-dialog.component';
 import { getDeep } from '../functions/packaging';
-import { layoutVertical } from '../functions/paper-functions';
 import { RouteVectorDirective } from '../route-vector.directive';
 import { VectorTool } from '../tools/paper-tool';
 import { VectorService } from '../vector.service';
@@ -61,11 +60,10 @@ import { around } from 'aspect-ts';
 })
 export class EditVectorComponent
   extends RouteVectorDirective
-  implements OnInit, AfterViewInit, OnDestroy
-{
+  implements OnInit, AfterViewInit, OnDestroy {
   href = window.location.href;
   @ViewChild('paper')
-  private paperDirective!: PaperEditDirective;
+  public paperDirective!: PaperEditDirective;
 
   previewSVG?: SafeHtml;
   project!: paper.Project;
@@ -356,68 +354,6 @@ export class EditVectorComponent
     }
   }
 
-  onInsertImageClick() {
-    this.dialog
-      .open(FileUploaderComponent, {
-        data: {
-          extensions: ['png', 'jpg', 'jpeg'],
-        },
-      })
-      .afterClosed()
-      .subscribe(async (files) => {
-        if (!files || files.length === 0) {
-          return;
-        }
-        this.project.deselectAll();
-        this.logger.log('processing files');
-        this.activateDrawLayer();
-
-        const readers = files.map((file: File) => {
-          const reader = new FileReader();
-          return new Promise((res, rej) => {
-            reader.onloadend = () => {
-              res(reader.result);
-            };
-            reader.onerror = (ev: ProgressEvent<FileReader>) => {
-              this.logger.error(
-                'Error: %s event reading file "%s": %s',
-                ev.target?.error?.name,
-                file.name,
-                ev.target?.error?.message,
-                ev.target?.error?.stack
-              );
-            };
-            reader.readAsDataURL(file);
-          });
-        });
-
-        const results = await Promise.all(readers);
-        const rasters = results.map((result) => {
-          const b64 = result;
-          const raster = new paper.Raster(b64 as string);
-          raster.selected = true;
-
-          return raster;
-        });
-
-        const loads = rasters
-          .filter((r) => !r.loaded)
-          .map(
-            (raster) =>
-              new Promise((res, rej) => {
-                raster.onLoad = res;
-                raster.onError = rej;
-              })
-          );
-        await Promise.all(loads);
-        layoutVertical(rasters, this.project.view.center);
-        rasters.forEach((raster: any) => {
-          raster.pair?.doSave();
-        });
-
-        this.tools.find((t: any) => t.name === 'move')?.activate();
-      });
-  }
 
   addLayer() {
     this.logger.log('adding layer');
@@ -491,13 +427,6 @@ export class EditVectorComponent
 
   favorite() {
     this.userService.user.get('vectors').set(this.vectorNode.gun as never);
-  }
-
-  onUndoClick() {
-    if (this.paperDirective.scope?.actions) {
-      const undoAction = this.paperDirective.scope.actions.pop();
-      undoAction?.undoFn();
-    }
   }
 
   onPeopleClick() {

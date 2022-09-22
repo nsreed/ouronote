@@ -1,0 +1,62 @@
+<div gdColumns="1fr 1fr" cols="2" rowHeight="1:1" id="ToolsContainer">
+  <ng-container *ngIf="paperDirective && paper && tools.length">
+    <button
+      mat-button
+      (click)="onUndoClick()"
+      [disabled]="
+        paperDirective?.scope?.actions?.length === 0 ||
+        paperDirective?.scope?.tool?.name !== 'pen'
+      "
+      class="tool"
+      title="undo"
+    >
+      <mat-icon>undo</mat-icon>
+    </button>
+    <button
+      mat-button
+      (click)="onInsertImageClick()"
+      title="insert image"
+      class="tool"
+    >
+      <mat-icon>photo_library</mat-icon>
+    </button>
+  </ng-container>
+  <ng-container *ngFor="let toolCategory of ['view', 'draw', 'select', 'edit']">
+    <ng-container>
+      <ng-container *ngFor="let tool of tools">
+        <ng-container
+          *ngIf="tool.category === toolCategory && tool.enabled$ | async"
+        >
+          <button
+            mat-button
+            [checked]="tool === activeTool"
+            [value]="tool"
+            [appTool]="tool"
+            (click)="tool.activate()"
+            [title]="tool.name"
+            [ngClass]="{
+              active: tool === activeTool
+            }"
+            class="tool"
+          >
+            <ng-container *ngIf="tool.matIconName; else MatIcon">
+              <mat-icon>{{ tool.matIconName }}</mat-icon>
+            </ng-container>
+            <ng-template #MatIcon>
+              <mat-icon
+                *ngIf="tool.matIcon; else FaIcon"
+                [svgIcon]="tool.matIcon"
+              ></mat-icon>
+            </ng-template>
+            <ng-template #FaIcon>
+              <mat-icon
+                style="width: unset"
+                class="{{ 'fa fa-' + tool.icon }}"
+              ></mat-icon>
+            </ng-template>
+          </button>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+</div>

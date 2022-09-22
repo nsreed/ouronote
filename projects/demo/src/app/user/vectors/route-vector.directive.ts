@@ -48,7 +48,8 @@ export class RouteVectorDirective {
     ),
     map((lc) => {
       return lc !== null && lc !== undefined;
-    })
+    }),
+    shareReplay(1)
   );
   layersNode$ = this.vectorNode$.pipe(map((v) => v.get('layers')));
   constructor(
