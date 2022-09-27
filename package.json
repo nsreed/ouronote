@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "yarn",
     "start": "nodemon server.js",
-    "start:live": "ng serve",
+    "start:live": "ng serve --configuration development",
     "start:live:prod": "ng serve --configuration production",
     "build": "ng build demo",
     "build:all": "ng build log && ng build demo",
