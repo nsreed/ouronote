@@ -183,7 +183,7 @@ if (typeof SharedWorker !== 'undefined') {
     },
     {
       provide: 'settings.debug',
-      useValue: !environment.production,
+      useValue: JSON.parse(localStorage.getItem('settings.debug') || 'false'),
     },
     {
       provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
