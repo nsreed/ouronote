@@ -50,6 +50,13 @@ import 'zone.js'; // Included with Angular CLI.
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
+// TODO This is part 1 of tracking down our phone bugs
+// (AppModule as any)['messaging'] = {
+//   say: function (data: any) { window.dispatchEvent(new MessageEvent('message', data)) },
+//   statusListener: window.addEventListener('message', function (ev) {
+//     console.log(ev.data);
+//   })
+// };
 
 /* GUN IMPORT */
 // TODO move GUN.js imports to a better place
@@ -76,7 +83,7 @@ import 'gun/lib/unset';
 // These are here to make sure they're done before the app loads
 
 import * as paper from 'paper';
-import { EventEmitter } from '@angular/core';
+import { EventEmitter, ɵpublishGlobalUtil } from '@angular/core';
 
 // FIXME GunSharedWorkerPlugin loses data when using one tab
 // import { GunSharedWorkerPlugin } from 'projects/ng-gun/src/lib/classes/GunSharedWorkerPlugin';
@@ -89,6 +96,8 @@ import {
   MUTATION_METHODS,
   MUTATION_PROPERTIES,
 } from './app/user/vectors/functions/constants';
+import { DebugTracingFeature, ɵwithPreloading } from '@angular/router';
+import { AppModule } from './app/app.module';
 
 // tslint:disable: space-before-function-paren
 // tslint:disable: only-arrow-functions
