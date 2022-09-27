@@ -9,7 +9,7 @@
   >
     <mat-toolbar
       class="ui"
-      *ngIf="vectorNode"
+      *ngIf="vectorNode$ | async"
       fxLayoutAlign="stretch center"
       fxLayout="row"
     >
@@ -21,7 +21,10 @@
       </div>
 
       <ng-container
-        *ngIf="vectorNode && !((layersNode$ | async).userCertificate$ | async)"
+        *ngIf="
+          (vectorNode$ | async) &&
+          !((layersNode$ | async).userCertificate$ | async)
+        "
       >
         <button
           color="primary"
@@ -132,7 +135,7 @@
                 (click)="onUndoClick()"
                 [disabled]="
                   paperDirective?.scope?.actions?.length === 0 ||
-                  paperDirective?.scope?.tool?.name !== 'pen'
+                  activeTool.name !== 'pen'
                 "
                 class="tool"
                 title="undo"
@@ -150,21 +153,15 @@
             </div>
             <app-tool-picker
               [paperDirective]="paperDirective"
-              [activeTool]="paperDirective.project.tool"
+              [activeTool]="activeTool"
             ></app-tool-picker>
 
             <app-tool-properties
-              [activeTool]="paperDirective.project.tool"
+              [activeTool]="activeTool"
               [paperEditDirective]="paperDirective"
             ></app-tool-properties>
 
             <mat-divider></mat-divider>
-            <div>
-              <app-style-form
-                [appObject]="paper.project.currentStyle"
-                [style]="paper.project.currentStyle"
-              ></app-style-form>
-            </div>
           </ng-template>
         </mat-expansion-panel>
 

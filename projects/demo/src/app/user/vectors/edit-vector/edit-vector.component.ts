@@ -92,6 +92,7 @@ export class EditVectorComponent
   editRequestsTooltip?: MatTooltip;
 
   editToast?: MatSnackBarRef<TextOnlySnackBar>;
+  activeTool?: VectorTool;
 
   get toolClasses(): any[] {
     return [
@@ -270,6 +271,7 @@ export class EditVectorComponent
     // this.logger.monitor(project.view, 'update', 1000 / 60, 1000);
     let lastSelected: paper.Item[] = [];
     (project as IEnhancedPaper).selectedItems$.subscribe((items) => {
+      this.logger.log('selected items change', items);
       lastSelected.forEach((item) => {
         // Do sanity checks?
         if (item instanceof paper.PointText) {
@@ -283,6 +285,10 @@ export class EditVectorComponent
     });
     project.currentStyle.strokeWidth = 3;
     this.changes.markForCheck();
+    this.activeTool = this.paperDirective.scope.tool as any;
+    this.paperDirective.tool$.subscribe(tool => {
+      this.activeTool = tool;
+    });
   }
 
   onFullscreenClick(event: MouseEvent) {
@@ -341,8 +347,8 @@ export class EditVectorComponent
   }
 
   activateDrawLayer() {
-    if (this.project.activeLayer.data.ignore) {
-      const drawLayer = this.project.getItem({
+    if (this.project?.activeLayer.data.ignore) {
+      const drawLayer = this.project?.getItem({
         className: 'Layer',
         data: {
           ignore: undefined,
@@ -478,7 +484,7 @@ export class EditVectorComponent
         if (!files || files.length === 0) {
           return;
         }
-        this.project.deselectAll();
+        this.project?.deselectAll();
         this.logger.log('processing files');
         this.activateDrawLayer();
 
@@ -520,7 +526,7 @@ export class EditVectorComponent
               })
           );
         await Promise.all(loads);
-        layoutVertical(rasters, this.project.view.center);
+        layoutVertical(rasters, this.project?.view.center);
         rasters.forEach((raster: any) => {
           raster.pair?.doSave();
         });

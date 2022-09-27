@@ -167,6 +167,7 @@ export class VectorTool extends Tool {
         match: (i: paper.Item) => i.className !== 'Layer',
       })
       .forEach((i) => {
+        i.selected = false; // TODO fix selection change emitter to listen to remove events
         i.remove();
       });
   });
