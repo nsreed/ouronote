@@ -5,7 +5,7 @@ import {
   NgZone,
   OnDestroy,
   OnInit,
-  ViewChild,
+  ViewChild
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as paper from 'paper';
@@ -22,7 +22,7 @@ import {
   MatSnackBar,
   MatSnackBarConfig,
   MatSnackBarRef,
-  TextOnlySnackBar,
+  TextOnlySnackBar
 } from '@angular/material/snack-bar';
 import { MatTooltip } from '@angular/material/tooltip';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -39,22 +39,21 @@ import { PaperEditDirective } from '../../../vector/paper-edit.directive';
 import { UserService } from '../../user.service';
 import { SettingsDialogComponent } from '../components/settings-dialog/settings-dialog.component';
 import { getDeep } from '../functions/packaging';
+import { layoutVertical } from '../functions/paper-functions';
 import { RouteVectorDirective } from '../route-vector.directive';
-import { VectorTool } from '../tools/paper-tool';
-import { VectorService } from '../vector.service';
 import { EraserTool } from '../tools/eraser';
 import { EyedropperTool } from '../tools/eyedropper';
 import { LineTool } from '../tools/line';
 import { MoveTool } from '../tools/move';
 import { PanTool } from '../tools/pan';
+import { VectorTool } from '../tools/paper-tool';
 import { PenTool } from '../tools/pen';
 import { ResizeTool } from '../tools/resize';
 import { RotateTool } from '../tools/rotate';
-import { RectangleSelectTool, LassoSelectTool } from '../tools/select';
+import { LassoSelectTool, RectangleSelectTool } from '../tools/select';
 import { ShapeTool } from '../tools/shape';
 import { TextTool } from '../tools/text';
-import { around } from 'aspect-ts';
-import { layoutVertical } from '../functions/paper-functions';
+import { VectorService } from '../vector.service';
 
 @Component({
   templateUrl: './edit-vector.component.html',

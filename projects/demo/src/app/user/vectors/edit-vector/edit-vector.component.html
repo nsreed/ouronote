@@ -150,12 +150,12 @@
             </div>
             <app-tool-picker
               [paperDirective]="paperDirective"
+              [activeTool]="paperDirective.project.tool"
             ></app-tool-picker>
 
             <app-tool-properties
-              [paperDirective]="paperDirective"
-              [activeTool]="paper.project.tool"
-              [paperEditDirective]="paper"
+              [activeTool]="paperDirective.project.tool"
+              [paperEditDirective]="paperDirective"
             ></app-tool-properties>
 
             <mat-divider></mat-divider>

@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { PaperEditDirective } from '../../../../vector/paper-edit.directive';
-import { VectorTool } from '../../tools/paper-tool';
 import { EditVectorComponent } from '../../edit-vector/edit-vector.component';
-import { Subscription } from 'rxjs';
+import { VectorTool } from '../../tools/paper-tool';
 
 @Component({
   selector: 'app-tool-properties',
@@ -22,6 +21,7 @@ export class ToolPropertiesComponent implements OnInit {
     console.log('got paper edit directive')
     this.onPaperEdit();
   }
+
   private _activeTool!: VectorTool;
   public get activeTool(): VectorTool {
     return this._activeTool;
@@ -31,7 +31,9 @@ export class ToolPropertiesComponent implements OnInit {
     this._activeTool = value;
     this.changes.markForCheck();
   }
+
   selectedItems: paper.Item[] = [];
+
   constructor(private workspace: EditVectorComponent, private changes: ChangeDetectorRef) { }
 
   ngOnInit(): void {
@@ -45,6 +47,7 @@ export class ToolPropertiesComponent implements OnInit {
       return;
     }
     this._subs = true;
+    this.activeTool = this.paperEditDirective.scope.tool as any;
     this.paperEditDirective.tool$.subscribe(tool => {
       this.activeTool = tool;
       this.changes.markForCheck();

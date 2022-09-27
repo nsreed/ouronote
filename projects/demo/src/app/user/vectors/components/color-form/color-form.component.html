@@ -2,19 +2,34 @@
   <!-- colorCtr.value: {{colorCtr.value}} -->
   <form [formGroup]="colorForm" (submit)="onSubmit($event)">
     <mat-form-field>
-      <mat-label *ngIf="label">{{label}}</mat-label>
-      <input matInput [ngxMatColorPicker]="picker" [formControl]="colorCtr"/>
+      <mat-label *ngIf="label">{{ label }}</mat-label>
+      <input
+        autocomplete="off"
+        matInput
+        [ngxMatColorPicker]="picker"
+        [formControl]="colorCtr"
+      />
       <ngx-mat-color-toggle matSuffix [for]="picker"></ngx-mat-color-toggle>
-      <ngx-mat-color-picker #picker [color]="pickerColor"></ngx-mat-color-picker>
-      <button mat-icon-button matSuffix (click)="showFavorites = !showFavorites">
-      <mat-icon >arrow_drop_down</mat-icon>
-    </button>
-
-  </mat-form-field>
-  <ng-container *ngIf="showFavorites">
-    <app-favorite-colors [candidate]="color" #FavoriteColors (color$)="onFavoriteColorClick($event)"></app-favorite-colors>
-    <!-- <button mat-button (click)="FavoriteColors.add(this.color)">favorite</button> -->
-  </ng-container>
+      <ngx-mat-color-picker
+        #picker
+        [color]="pickerColor"
+      ></ngx-mat-color-picker>
+      <button
+        mat-icon-button
+        matSuffix
+        (click)="showFavorites = !showFavorites"
+      >
+        <mat-icon>arrow_drop_down</mat-icon>
+      </button>
+    </mat-form-field>
+    <ng-container *ngIf="showFavorites">
+      <app-favorite-colors
+        [candidate]="color"
+        #FavoriteColors
+        (color$)="onFavoriteColorClick($event)"
+      ></app-favorite-colors>
+      <!-- <button mat-button (click)="FavoriteColors.add(this.color)">favorite</button> -->
+    </ng-container>
   </form>
   <!-- <app-color-gradient></app-color-gradient> -->
 </div>

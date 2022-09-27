@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { ObjectPropertyDirective } from '../../../../directives/object-property.directive';
 import * as paper from 'paper';
@@ -33,6 +33,7 @@ function paperColorToPicker(color: paper.Color) {
   selector: 'app-color-form',
   templateUrl: './color-form.component.html',
   styleUrls: ['./color-form.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ColorFormComponent implements OnInit {
   @Input()
@@ -98,7 +99,7 @@ export class ColorFormComponent implements OnInit {
     );
   }
 
-  constructor(private fb: UntypedFormBuilder, public prop: ObjectPropertyDirective) {}
+  constructor(private fb: UntypedFormBuilder, public prop: ObjectPropertyDirective) { }
 
   ngOnInit(): void {
     // TODO re-enable for rgb/cymk editor
