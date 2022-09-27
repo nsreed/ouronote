@@ -54,6 +54,7 @@ import { RectangleSelectTool, LassoSelectTool } from '../tools/select';
 import { ShapeTool } from '../tools/shape';
 import { TextTool } from '../tools/text';
 import { around } from 'aspect-ts';
+import { layoutVertical } from '../functions/paper-functions';
 
 @Component({
   templateUrl: './edit-vector.component.html',
@@ -457,5 +458,75 @@ export class EditVectorComponent
         );
       }
     }
+  }
+  onUndoClick() {
+    if (this.paperDirective?.scope?.actions) {
+      const undoAction = this.paperDirective.scope.actions.pop();
+      undoAction?.undoFn();
+    }
+  }
+
+
+  onInsertImageClick() {
+    this.dialog
+      .open(FileUploaderComponent, {
+        data: {
+          extensions: ['png', 'jpg', 'jpeg'],
+        },
+      })
+      .afterClosed()
+      .subscribe(async (files) => {
+        if (!files || files.length === 0) {
+          return;
+        }
+        this.project.deselectAll();
+        this.logger.log('processing files');
+        this.activateDrawLayer();
+
+        const readers = files.map((file: File) => {
+          const reader = new FileReader();
+          return new Promise((res, rej) => {
+            reader.onloadend = () => {
+              res(reader.result);
+            };
+            reader.onerror = (ev: ProgressEvent<FileReader>) => {
+              this.logger.error(
+                'Error: %s event reading file "%s": %s',
+                ev.target?.error?.name,
+                file.name,
+                ev.target?.error?.message,
+                ev.target?.error?.stack
+              );
+            };
+            reader.readAsDataURL(file);
+          });
+        });
+
+        const results = await Promise.all(readers);
+        const rasters = results.map((result) => {
+          const b64 = result;
+          const raster = new paper.Raster(b64 as string);
+          raster.selected = true;
+
+          return raster;
+        });
+
+        const loads = rasters
+          .filter((r) => !r.loaded)
+          .map(
+            (raster) =>
+              new Promise((res, rej) => {
+                raster.onLoad = res;
+                raster.onError = rej;
+              })
+          );
+        await Promise.all(loads);
+        layoutVertical(rasters, this.project.view.center);
+        rasters.forEach((raster: any) => {
+          raster.pair?.doSave();
+        });
+
+        this.tools.find((t: any) => t.name === 'move')?.activate();
+      });
   }
 }

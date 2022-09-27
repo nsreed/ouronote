@@ -1,0 +1,10 @@
+
+
+.tool {
+  width: 100%;
+  padding: 0.65em 0;
+  &.active {
+    color: blueviolet;
+    background-color: rgba(0, 0, 0, 0.07);
+  }
+}

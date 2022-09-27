@@ -1,26 +1,4 @@
 <div gdColumns="1fr 1fr" cols="2" rowHeight="1:1" id="ToolsContainer">
-  <ng-container *ngIf="paperDirective && paper && tools.length">
-    <button
-      mat-button
-      (click)="onUndoClick()"
-      [disabled]="
-        paperDirective?.scope?.actions?.length === 0 ||
-        paperDirective?.scope?.tool?.name !== 'pen'
-      "
-      class="tool"
-      title="undo"
-    >
-      <mat-icon>undo</mat-icon>
-    </button>
-    <button
-      mat-button
-      (click)="onInsertImageClick()"
-      title="insert image"
-      class="tool"
-    >
-      <mat-icon>photo_library</mat-icon>
-    </button>
-  </ng-container>
   <ng-container *ngFor="let toolCategory of ['view', 'draw', 'select', 'edit']">
     <ng-container>
       <ng-container *ngFor="let tool of tools">

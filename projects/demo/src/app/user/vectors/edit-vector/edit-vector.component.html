@@ -121,6 +121,33 @@
       >
         <mat-expansion-panel expanded>
           <ng-template matExpansionPanelContent>
+            <div
+              gdColumns="1fr 1fr"
+              cols="2"
+              rowHeight="1:1"
+              *ngIf="paperDirective && paper && tools.length"
+            >
+              <button
+                mat-button
+                (click)="onUndoClick()"
+                [disabled]="
+                  paperDirective?.scope?.actions?.length === 0 ||
+                  paperDirective?.scope?.tool?.name !== 'pen'
+                "
+                class="tool"
+                title="undo"
+              >
+                <mat-icon>undo</mat-icon>
+              </button>
+              <button
+                mat-button
+                (click)="onInsertImageClick()"
+                title="insert image"
+                class="tool"
+              >
+                <mat-icon>photo_library</mat-icon>
+              </button>
+            </div>
             <app-tool-picker
               [paperDirective]="paperDirective"
             ></app-tool-picker>
@@ -132,8 +159,9 @@
             ></app-tool-properties>
 
             <mat-divider></mat-divider>
-            <div [appObject]="paper.project.currentStyle">
+            <div>
               <app-style-form
+                [appObject]="paper.project.currentStyle"
                 [style]="paper.project.currentStyle"
               ></app-style-form>
             </div>
