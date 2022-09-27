@@ -214,6 +214,9 @@
           "configurations": {
             "production": {
               "tsConfig": "projects/log/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/log/tsconfig.lib.json"
             }
           }
         },
