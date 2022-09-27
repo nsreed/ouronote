@@ -49,9 +49,10 @@ Thumbs.db
 /radata
 ouronote-dev.key
 ouronote-dev.crt
-/licenses.json
+licenses.json
+projects/demo/src/assets/licenses.json
 /.angular
-/projects/demo/src/assets/dictionary/blacklist.json
+projects/demo/src/assets/dictionary/blacklist.json
 .yarn/*
 # !.yarn/cache
 !.yarn/patches
@@ -60,3 +61,4 @@ ouronote-dev.crt
 !.yarn/sdks
 !.yarn/versions
 /*.*profile
+package-lock.json

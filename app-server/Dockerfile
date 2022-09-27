@@ -12,8 +12,6 @@ COPY server.js ./
 # RUN npm install /usr/src/gun/
 RUN npm install
 COPY /dist/demo/ ./dist/demo/
-COPY /ouronote-dev.crt ./
-COPY /ouronote-dev.key ./
 EXPOSE 433
 EXPOSE 4330
 EXPOSE 80
