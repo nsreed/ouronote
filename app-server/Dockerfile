@@ -7,7 +7,7 @@ FROM node:18-alpine3.16
 WORKDIR /usr/src/app
 # COPY version.js ./
 COPY package*.json ./
-COPY server.js ./
+COPY index.js ./
 
 # RUN npm install /usr/src/gun/
 RUN npm install
@@ -19,4 +19,4 @@ EXPOSE 8080
 
 VOLUME [ "/usr/src/app/radata" ]
 
-CMD ["node", "server.js"]
+CMD ["node", "index.js"]
