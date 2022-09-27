@@ -2,26 +2,28 @@ import { Injectable } from '@angular/core';
 import { NgGunService } from './ng-gun.service';
 import { IGunMesh } from './types/gun-mesh';
 import { over } from './functions/gun-utils';
+import { LogService } from '../../../log/src/lib/log.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DamService {
   mesh: IGunMesh = this.ngGun.gun.back('opt.mesh' as any) as any;
-  constructor(private ngGun: NgGunService) { }
+  constructor(private ngGun: NgGunService, private logger: LogService) { logger.name = 'dam.service' }
   disconnect(peer: any) {
+    this.logger.log('peer disconnected.');
     peer.retries = 0;
     this.mesh.bye(peer);
   }
   connect(peer: any, tries = peer.tries || 5) {
-    console.log('connecting', peer, tries);
+    // console.log('connecting', peer, tries);
     if ('object' === typeof peer) {
       if (peer.wire) {
         if (peer.wire.readyState === 1) {
-          console.warn('trying to connect already connected peer', peer);
+          // console.warn('trying to connect already connected peer', peer);
           return;
         }
-        console.log('endpoint with unready wire... odd');
+        // console.log('endpoint with unready wire... odd');
       }
 
       this.mesh.hi(peer);
