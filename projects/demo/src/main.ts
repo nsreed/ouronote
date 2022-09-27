@@ -10,11 +10,22 @@ import { environment } from './environments/environment';
 //   data: 'bootstrapping'
 // }));
 
+AppModule.status.addTask('bootstrap');
 if (environment.production) {
   enableProdMode();
 }
 // setTimeout(() => {
-platformBrowserDynamic()
-  .bootstrapModule(AppModule)
-  .catch((err) => console.error(err));
+
+
+async function main() {
+  try {
+    await platformBrowserDynamic()
+      .bootstrapModule(AppModule);
+    // AppModule.status.hideOverlay();
+  } catch (err: any) {
+    console.error(err);
+    AppModule.status.handleError(err);
+  }
+}
 // }, 4000);
+main();

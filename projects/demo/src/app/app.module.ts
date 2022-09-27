@@ -167,7 +167,9 @@ if (typeof SharedWorker !== 'undefined') {
     NgGunService,
     {
       provide: GunWebrtcImporterService,
-      useFactory: () => (WEBRTC_ENABLE ? new GunWebrtcImporterService() : null),
+      useFactory: () => {
+        return (WEBRTC_ENABLE ? new GunWebrtcImporterService() : null);
+      },
     },
     {
       provide: GunRadImporterService,
@@ -195,4 +197,6 @@ if (typeof SharedWorker !== 'undefined') {
   exports: [CertificatesComponent],
   bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {
+  static status: any;
+}

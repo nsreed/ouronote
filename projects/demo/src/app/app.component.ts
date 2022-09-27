@@ -1,4 +1,4 @@
-import { Component, OnInit, Optional } from '@angular/core';
+import { Component, OnInit, Optional, AfterViewInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -19,7 +19,7 @@ import { User } from './user/model';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
   user: any;
   messages: LogMessage[] = [];
   constructor(
@@ -109,6 +109,10 @@ export class AppComponent implements OnInit {
 
     //   // await navigator.storage.persist();
     // }
+  }
+
+  ngAfterViewInit(): void {
+    (window as any).AppModule.status.hideOverlay();
   }
 
   logout() {

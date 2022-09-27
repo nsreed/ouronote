@@ -51,12 +51,34 @@ import 'zone.js'; // Included with Angular CLI.
  * APPLICATION IMPORTS
  */
 // TODO This is part 1 of tracking down our phone bugs
-// (AppModule as any)['messaging'] = {
-//   say: function (data: any) { window.dispatchEvent(new MessageEvent('message', data)) },
-//   statusListener: window.addEventListener('message', function (ev) {
-//     console.log(ev.data);
-//   })
-// };
+(AppModule as any)['status'] = {
+  tasks: [],
+  addTask: (task: any) => {
+    AppModule['status'].tasks.push(task);
+    const loadingOverlay = document.getElementById('ɵLoading') as HTMLPreElement;
+    loadingOverlay.innerHTML = AppModule['status'].tasks.join('\n');
+  },
+  hideOverlay: () => {
+    const loadingOverlay = document.getElementById('ɵLoading') as HTMLPreElement;
+    // loadingOverlay.innerHTML = AppModule['status'].tasks.join('\n');
+    loadingOverlay.style.display = 'none';
+  },
+  log: (message: any, ...args: any[]) => {
+    const loadingOverlay = document.getElementById('ɵLoading') as HTMLPreElement;
+    loadingOverlay.innerHTML = AppModule['status'].tasks.join('\n') + `\n[LOG] ${message} ${JSON.stringify(args)}`;
+  },
+  handleError: (error: Error) => {
+    AppModule.status.log(`Error: ${error.message}\n${error.stack}`)
+  },
+  say: function (data: any) { window.dispatchEvent(new MessageEvent('message', data)) },
+  statusListener: window.addEventListener('message', function (ev) {
+    console.log(ev.data);
+  })
+};
+
+AppModule.status.addTask('polyfills');
+
+(window as any).AppModule = AppModule;
 
 /* GUN IMPORT */
 // TODO move GUN.js imports to a better place
