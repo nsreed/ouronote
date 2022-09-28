@@ -9,7 +9,7 @@ import { firstValueFrom, Observable, of } from 'rxjs';
 import { catchError, filter, map, take, tap, timeout } from 'rxjs/operators';
 import { NgGunService } from './ng-gun.service';
 import { Router } from '@angular/router';
-import { LogService } from '../../../log/src/lib/log.service';
+import { LogService } from 'log';
 import { NgGunSessionService } from './ng-gun-session.service';
 
 @Injectable({
@@ -21,8 +21,8 @@ export class GunAuthGuard implements CanActivateChild {
     private router: Router,
     private logger: LogService,
     @Optional() private sessionService?: NgGunSessionService
-  ) { }
-  sessionOrRedirect() { }
+  ) {}
+  sessionOrRedirect() {}
   async canActivateChild(
     childRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
@@ -51,7 +51,8 @@ export class GunAuthGuard implements CanActivateChild {
     if (!recall || !pair) {
       this.logger.log('no session for this tab');
       try {
-        const sessions = await this.sessionService?.getSessions();
+        const sessions: any[] =
+          (await this.sessionService?.getSessions()) || [];
 
         if (sessions.length === 1) {
           this.ngGun
@@ -63,7 +64,6 @@ export class GunAuthGuard implements CanActivateChild {
         }
       } catch (err: any) {
         this.logger.error('error retrieving sessions:', err);
-
       }
     }
 

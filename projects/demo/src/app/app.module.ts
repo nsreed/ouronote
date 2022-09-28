@@ -1,19 +1,27 @@
 import {
   MAT_COLOR_FORMATS,
   NgxMatColorPickerModule,
-  NGX_MAT_COLOR_FORMATS
+  NGX_MAT_COLOR_FORMATS,
 } from '@angular-material-components/color-picker';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MatAutocompleteDefaultOptions, MatAutocompleteModule, MAT_AUTOCOMPLETE_DEFAULT_OPTIONS } from '@angular/material/autocomplete';
+import {
+  MatAutocompleteDefaultOptions,
+  MatAutocompleteModule,
+  MAT_AUTOCOMPLETE_DEFAULT_OPTIONS,
+} from '@angular/material/autocomplete';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatFormFieldDefaultOptions, MatFormFieldModule, MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
+import {
+  MatFormFieldDefaultOptions,
+  MatFormFieldModule,
+  MAT_FORM_FIELD_DEFAULT_OPTIONS,
+} from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
@@ -22,16 +30,15 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import {
   MatSnackBarModule,
-  MAT_SNACK_BAR_DEFAULT_OPTIONS
+  MAT_SNACK_BAR_DEFAULT_OPTIONS,
 } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { OnlineStatusModule } from 'ngx-online-status';
 import { NoopSharedWorker } from 'projects/ng-gun/src/lib/classes/NoopSharedWorker';
-import { LogModule } from '../../../log/src/lib/log.module';
-import { LogService } from '../../../log/src/lib/log.service';
-import { NgGunService } from '../../../ng-gun/src/lib/ng-gun.service';
+import { LogModule, LogService } from 'log';
+import { NgGunService } from 'ng-gun';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -49,6 +56,7 @@ import { GunWebrtcImporterService } from './services/gun-webrtc-importer.service
 import { SessionInfoComponent } from './session-info/session-info.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 const RADISK_LOCAL = localStorage.getItem('RADISK_ENABLE');
 const RADISK_ENABLE = RADISK_LOCAL === null ? true : !!JSON.parse(RADISK_LOCAL);
@@ -76,7 +84,7 @@ const GUN_OPTIONS = {
     enabled: false,
     disconnectRedundantWebRTC: true,
   },
-  peers: [],
+  peers: [...GUN_PEERS],
 };
 @NgModule({
   declarations: [
@@ -109,6 +117,7 @@ const GUN_OPTIONS = {
     MatListModule,
     MatMenuModule,
     MatNativeDateModule,
+    MatProgressBarModule,
     MatRadioModule,
     MatSidenavModule,
     MatSnackBarModule,
@@ -129,16 +138,27 @@ const GUN_OPTIONS = {
     //   provide: SharedWorker,
     //   useValue: worker,
     // },
-    { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'outline', color: 'primary' } as MatFormFieldDefaultOptions },
+    {
+      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+      useValue: {
+        appearance: 'outline',
+        color: 'primary',
+      } as MatFormFieldDefaultOptions,
+    },
     { provide: MAT_COLOR_FORMATS, useValue: NGX_MAT_COLOR_FORMATS },
-    { provide: MAT_AUTOCOMPLETE_DEFAULT_OPTIONS, useValue: { autoActiveFirstOption: true } as MatAutocompleteDefaultOptions },
+    {
+      provide: MAT_AUTOCOMPLETE_DEFAULT_OPTIONS,
+      useValue: {
+        autoActiveFirstOption: true,
+      } as MatAutocompleteDefaultOptions,
+    },
     {
       provide: 'gun-options',
       useValue: GUN_OPTIONS,
     },
     {
       provide: 'gun-peers',
-      useValue: GUN_PEERS
+      useValue: GUN_PEERS,
     },
     {
       provide: LogService,
@@ -148,7 +168,7 @@ const GUN_OPTIONS = {
     {
       provide: GunWebrtcImporterService,
       useFactory: () => {
-        return (WEBRTC_ENABLE ? new GunWebrtcImporterService() : null);
+        return WEBRTC_ENABLE ? new GunWebrtcImporterService() : null;
       },
     },
     {

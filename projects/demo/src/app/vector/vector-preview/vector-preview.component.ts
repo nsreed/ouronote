@@ -7,7 +7,7 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { ProjectPair } from '../../user/vectors/classes/ProjectPair';
-import { LogService } from 'projects/log/src/public-api';
+import { LogService } from 'log';
 import { PaperDirective } from 'projects/demo/src/app/vector/paper.directive';
 
 @Component({

@@ -1,10 +1,7 @@
 import { of } from 'rxjs';
 import { filter, map, mapTo, switchMap } from 'rxjs/operators';
-import { LogService } from '../../../../../../log/src/lib/log.service';
-import {
-  GunChain,
-  GunChainCallbackOptions,
-} from '../../../../../../ng-gun/src/lib/classes/GunChain';
+import { LogService } from 'log';
+import { GunChain, GunChainCallbackOptions } from 'ng-gun';
 import { after$, before$, returned } from '../../../functions/aspect-rx';
 import { VectorGraph } from '../../VectorGraph';
 import { getUUID } from '../edit-vector/converter-functions';

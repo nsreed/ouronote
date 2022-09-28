@@ -201,17 +201,21 @@ function getHttp(app, args) {
 
 function startLocalServer(args) {
   console.log('starting local server configuration');
-  // console.dir({ args });
+  console.dir({ args });
   const { Gun, app } = getExpress(args);
   const httpServer = getHttp(app, args);
   const httpsServer = getHttps(app, args);
   if (!httpsServer) {
     console.error('https not started!');
   }
-  const gun = Gun({
+  const gun = new Gun({
     web: httpsServer || httpServer,
-    file: args.data_dir
+    file: args.data_dir,
+    axe: false,
+    port: args.http_port,
+    multicast: false
   });
+  return gun;
 }
 
 function startHerokuServer(args) {

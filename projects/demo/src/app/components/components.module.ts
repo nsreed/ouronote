@@ -16,7 +16,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { NgGunModule } from '../../../../ng-gun/src/lib/ng-gun.module';
+import { NgGunModule } from 'ng-gun';
 import { AboutComponent } from './about/about.component';
 import { AliasAutocompleteComponent } from './alias-autocomplete/alias-autocomplete.component';
 import { BugReportComponent } from './bug-report/bug-report.component';
@@ -66,7 +66,7 @@ import { RouterModule } from '@angular/router';
     MatToolbarModule,
     NgGunModule,
     ReactiveFormsModule,
-    RouterModule
+    RouterModule,
   ],
   exports: [
     BugReportComponent,
@@ -80,4 +80,4 @@ import { RouterModule } from '@angular/router';
     QrCodeComponent,
   ],
 })
-export class ComponentsModule { }
+export class ComponentsModule {}

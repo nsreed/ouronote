@@ -7,7 +7,7 @@ import host from '@jsdevtools/host-environment';
 import { saveAs } from 'file-saver';
 import { ClipboardService } from 'ngx-clipboard';
 import { VERSION } from 'projects/demo/src/environments/version';
-import { NgGunService } from 'projects/ng-gun/src/lib/ng-gun.service';
+import { NgGunService } from 'ng-gun';
 import { debounceTime } from 'rxjs/operators';
 import stringify from 'safe-stable-stringify';
 import { SettingsService } from '../../settings.service';

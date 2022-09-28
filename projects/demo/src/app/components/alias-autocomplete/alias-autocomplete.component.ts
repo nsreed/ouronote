@@ -1,7 +1,7 @@
 import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { filter } from 'rxjs/operators';
-import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
+import { NgGunService } from 'ng-gun';
 
 @Component({
   selector: 'app-alias-autocomplete',

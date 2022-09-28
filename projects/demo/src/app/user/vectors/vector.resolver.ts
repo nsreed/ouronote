@@ -17,9 +17,9 @@ import {
   combineAll,
 } from 'rxjs/operators';
 import { VectorService } from './vector.service';
-import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
+import { NgGunService } from 'ng-gun';
 import { catchError } from 'rxjs/operators';
-import { LogService } from '../../../../../log/src/lib/log.service';
+import { LogService } from 'log';
 
 @Injectable({
   providedIn: 'root',

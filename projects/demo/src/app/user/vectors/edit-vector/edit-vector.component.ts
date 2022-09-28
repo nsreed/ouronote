@@ -5,12 +5,12 @@ import {
   NgZone,
   OnDestroy,
   OnInit,
-  ViewChild
+  ViewChild,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as paper from 'paper';
 import { distinct, map, shareReplay, switchMap, take } from 'rxjs/operators';
-import { GunChain } from '../../../../../../ng-gun/src/lib/classes/GunChain';
+import { GunChain } from 'ng-gun';
 import { VectorGraph } from '../../VectorGraph';
 import { ProjectPair } from '../classes/ProjectPair';
 import { OURONOTE_DEFAULT_TITLE } from './../../../constants';
@@ -22,15 +22,15 @@ import {
   MatSnackBar,
   MatSnackBarConfig,
   MatSnackBarRef,
-  TextOnlySnackBar
+  TextOnlySnackBar,
 } from '@angular/material/snack-bar';
 import { MatTooltip } from '@angular/material/tooltip';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { saveAs } from 'file-saver';
+import { NgGunService } from 'ng-gun';
 import { ClipboardService } from 'ngx-clipboard';
-import { LogService } from 'projects/log/src/public-api';
+import { LogService } from 'log';
 import { timer } from 'rxjs';
-import { NgGunService } from '../../../../../../ng-gun/src/lib/ng-gun.service';
 import { VERSION } from '../../../../environments/version';
 import { FileUploaderComponent } from '../../../files/file-uploader/file-uploader.component';
 import { SettingsService } from '../../../settings.service';
@@ -61,7 +61,8 @@ import { VectorService } from '../vector.service';
 })
 export class EditVectorComponent
   extends RouteVectorDirective
-  implements OnInit, AfterViewInit, OnDestroy {
+  implements OnInit, AfterViewInit, OnDestroy
+{
   href = window.location.href;
   @ViewChild('paper')
   public paperDirective!: PaperEditDirective;
@@ -256,7 +257,7 @@ export class EditVectorComponent
     });
     project.currentStyle.strokeWidth = 3;
     this.activeTool = this.paperDirective.scope.tool as any;
-    this.paperDirective.tool$.subscribe(tool => {
+    this.paperDirective.tool$.subscribe((tool) => {
       this.activeTool = tool;
     });
     this.changes.markForCheck();
@@ -333,7 +334,6 @@ export class EditVectorComponent
       }
     }
   }
-
 
   addLayer() {
     this.logger.log('adding layer');
@@ -441,7 +441,6 @@ export class EditVectorComponent
       undoAction?.undoFn();
     }
   }
-
 
   onInsertImageClick() {
     this.dialog

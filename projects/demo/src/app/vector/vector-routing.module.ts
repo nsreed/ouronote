@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { VectorComponent } from './vector.component';
 import { ViewComponent } from './view/view.component';
-import { SoulResolverService } from '../../../../ng-gun/src/lib/soul-resolver.service';
+import { SoulResolverService } from 'ng-gun';
 
 const routes: Routes = [
   { path: '', component: VectorComponent },

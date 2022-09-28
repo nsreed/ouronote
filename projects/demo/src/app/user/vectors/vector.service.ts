@@ -3,14 +3,14 @@ import { Router } from '@angular/router';
 import { SEA } from 'gun';
 import * as paper from 'paper';
 import { mapTo, take } from 'rxjs/operators';
-import { LogService } from '../../../../../log/src/lib/log.service';
-import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
-import { NgSeaService } from '../../../../../ng-gun/src/lib/ng-sea.service';
+import { LogService } from 'log';
+import { NgGunService } from 'ng-gun';
+import { NgSeaService } from 'ng-gun';
 import { UserService } from '../user.service';
 import { VectorGraph } from '../VectorGraph';
 import { ProjectPair } from './classes/ProjectPair';
 import { getDeep } from './functions/packaging';
-import { GunAuthChain } from '../../../../../ng-gun/src/lib/classes/GunChain';
+import { GunAuthChain } from 'ng-gun';
 
 @Injectable({
   providedIn: 'root',
@@ -89,7 +89,7 @@ export class VectorService {
     const created = await this.create(vectorGraph);
     const vectorNode = this.vectors.get(
       created as any
-    ) as GunAuthChain<VectorGraph>;
+    ) as unknown as GunAuthChain<VectorGraph>;
 
     vectorNode.once().subscribe((vectorRecord: any) => {
       this.logger.log('new vector loaded from list', vectorRecord);

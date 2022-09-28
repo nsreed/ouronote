@@ -4,8 +4,8 @@ import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ClipboardService } from 'ngx-clipboard';
-import { LogMessage, LogService } from '../../../log/src/lib/log.service';
-import { NgGunService } from '../../../ng-gun/src/lib/ng-gun.service';
+import { LogMessage, LogService } from 'log';
+import { NgGunService } from 'ng-gun';
 import { AboutComponent } from './components/about/about.component';
 import { GunPeersComponent } from './components/gun-peers/gun-peers.component';
 import { OURONOTE_DEFAULT_TITLE } from './constants';
@@ -92,7 +92,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     //     call: 'getSession',
     //   });
     // }
-
     // if (navigator.storage && navigator.storage.estimate) {
     //   let quota = {} as any;
     //   quota = { ...quota, ...(await navigator.storage.estimate()) };
@@ -106,7 +105,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     //     const remaining = quota.quota - quota.usage;
     //     console.log(`You can write up to ${remaining} more bytes.`);
     //   }
-
     //   // await navigator.storage.persist();
     // }
   }

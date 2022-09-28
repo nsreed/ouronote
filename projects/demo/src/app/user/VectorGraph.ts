@@ -1,5 +1,5 @@
 import { LayerGraph } from './LayerGraph';
-import { ICertChain } from '../../../../ng-gun/src/lib/interfaces/IAuthGraph';
+import { ICertChain } from 'ng-gun';
 import { User } from './model';
 import { License } from '../License';
 

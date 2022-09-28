@@ -2,7 +2,7 @@ import { Inject, Injectable, Optional } from '@angular/core';
 import { NgGunService } from './ng-gun.service';
 import { IGunMesh } from './types/gun-mesh';
 import { over } from './functions/gun-utils';
-import { LogService } from '../../../log/src/lib/log.service';
+import { LogService } from 'log';
 import { timer } from 'rxjs';
 import { GunPeer } from './GunPeer';
 

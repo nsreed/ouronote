@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
+import { NgGunService } from 'ng-gun';
 import * as Gun from 'gun';
 
 @Component({

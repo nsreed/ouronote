@@ -1,4 +1,4 @@
-import { GunChain } from '../../../../../../ng-gun/src/lib/classes/GunChain';
+import { GunChain } from 'ng-gun';
 import * as Gun from 'gun';
 import {
   concatMap,

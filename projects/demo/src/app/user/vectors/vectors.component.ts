@@ -1,11 +1,11 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { VectorService } from './vector.service';
 import { map, filter, shareReplay } from 'rxjs/operators';
-import { gunUpdateTime } from '../../../../../ng-gun/src/lib/functions/gun-utils';
+import { gunUpdateTime } from 'ng-gun';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmComponent } from '../../components/confirm/confirm.component';
 import { CreateVectorComponent } from './components/create-vector/create-vector.component';
-import { LogService } from '../../../../../log/src/lib/log.service';
+import { LogService } from 'log';
 import { FileUploaderComponent } from '../../files/file-uploader/file-uploader.component';
 import { VectorExportDialogComponent } from './components/vector-export-dialog/vector-export-dialog.component';
 import { OURONOTE_DEFAULT_TITLE } from '../../constants';

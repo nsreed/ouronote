@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { MessagesComponent } from './messages.component';
 import { MessageComponent } from './message/message.component';
 import { EditMessageComponent } from './edit-message/edit-message.component';
-import { GunResolverService } from '../../../../../ng-gun/src/lib/gun-resolver.service';
+import { GunResolverService } from 'ng-gun';
 
 const routes: Routes = [
   {

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { RouteChainDirective } from '../../../../../../ng-gun/src/lib/route-chain.directive';
+import { RouteChainDirective } from 'ng-gun';
 
 @Component({
   templateUrl: './message.component.html',
@@ -7,6 +7,7 @@ import { RouteChainDirective } from '../../../../../../ng-gun/src/lib/route-chai
 })
 export class MessageComponent
   extends RouteChainDirective<any>
-  implements OnInit {
+  implements OnInit
+{
   ngOnInit(): void {}
 }

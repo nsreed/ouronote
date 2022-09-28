@@ -1,9 +1,6 @@
-import { Component, Inject, Input } from '@angular/core';
-import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
+import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { GunPeers } from '../../../../../ng-gun/src/lib/GunPeers';
-import { distinct } from 'rxjs/operators';
-import { DamService } from '../../../../../ng-gun/src/lib/dam.service';
+import { DamService, GunPeers, NgGunService } from 'ng-gun';
 import { DiagnosticsService } from '../../diagnostics.service';
 
 @Component({

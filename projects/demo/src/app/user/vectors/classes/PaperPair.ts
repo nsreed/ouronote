@@ -1,7 +1,7 @@
 import { EventEmitter } from '@angular/core';
 import * as paper from 'paper';
 import { buffer, bufferTime, filter, map } from 'rxjs/operators';
-import { LogService } from '../../../../../../log/src/lib/log.service';
+import { LogService } from 'log';
 import {
   EXPECT_PRIMITIVE_ARRAY,
   hasRequired,

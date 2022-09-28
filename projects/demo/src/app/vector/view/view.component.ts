@@ -19,7 +19,7 @@ import {
   takeUntil,
   takeWhile,
 } from 'rxjs/operators';
-import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
+import { NgGunService } from 'ng-gun';
 import { VectorGraph } from '../../user/VectorGraph';
 import { MatDialog } from '@angular/material/dialog';
 import { AboutComponent } from '../../components/about/about.component';

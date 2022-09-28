@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ChainDirective } from '../../../../../../../ng-gun/src/lib/chain.directive';
+import { ChainDirective } from 'ng-gun';
 import { switchMap, shareReplay, map } from 'rxjs/operators';
 
 @Component({

@@ -5,8 +5,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { CertificatesComponent } from '../components/certificates/certificates.component';
 import { timer } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { LogService } from '../../../../log/src/lib/log.service';
-import { NgGunService } from '../../../../ng-gun/src/lib/ng-gun.service';
+import { LogService } from 'log';
+import { NgGunService } from 'ng-gun';
 import { ConfirmComponent } from '../components/confirm/confirm.component';
 
 @Component({
@@ -32,7 +32,7 @@ export class UserComponent implements OnInit {
       if (
         // Math.random() < 0.5 ||
         this.lastAlias !==
-        'LKDHFS:LSKDHFDSYFNBWEOHFPOSIDHGS:DLKN:LSDKFHOIFYSODHFGS:DGHSDYLIEHTLKHLGSHDGHSDGF:I SDYUFISYDFNBSDOIFNPSDOIFNUDSPOGUNPSDOGSDPOGSHEPGOIEMGESIOGHMSEGPOSEHG' &&
+          'LKDHFS:LSKDHFDSYFNBWEOHFPOSIDHGS:DLKN:LSDKFHOIFYSODHFGS:DGHSDYLIEHTLKHLGSHDGHSDGF:I SDYUFISYDFNBSDOIFNPSDOIFNUDSPOGUNPSDOGSDPOGSHEPGOIEMGESIOGHMSEGPOSEHG' &&
         this.lastAlias !== undefined &&
         this.lastAlias !== alias
       ) {

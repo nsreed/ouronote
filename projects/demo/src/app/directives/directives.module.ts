@@ -16,7 +16,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { NgGunModule } from '../../../../ng-gun/src/lib/ng-gun.module';
+import { NgGunModule } from 'ng-gun';
 import { ObjectPropertyDirective } from './object-property.directive';
 import { ObjectDirective } from './object.directive';
 

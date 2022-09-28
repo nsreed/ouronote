@@ -1,9 +1,8 @@
-import { enableProdMode, NgModule, platformCore } from '@angular/core';
+import { enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
-
 
 // TODO this is part 2
 // window.dispatchEvent(new MessageEvent('message', {
@@ -16,16 +15,16 @@ if (environment.production) {
 }
 // setTimeout(() => {
 
-
-async function main() {
-  try {
-    await platformBrowserDynamic()
-      .bootstrapModule(AppModule);
-    // AppModule.status.hideOverlay();
-  } catch (err: any) {
-    console.error(err);
-    loader.handleError(err);
-  }
-}
+// try {
+platformBrowserDynamic()
+  .bootstrapModule(AppModule)
+  .catch((reason) => {
+    loader.handleError(reason);
+    console.error(reason);
+  });
+// AppModule.status.hideOverlay();
+// } catch (err: any) {
+//   console.error(err);
+//   loader.handleError(err);
+// }
 // }, 4000);
-main();

@@ -3,9 +3,9 @@ import { VectorService } from './vector.service';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { map, switchMap, tap, shareReplay, filter } from 'rxjs/operators';
-import { GunChain } from '../../../../../ng-gun/src/lib/classes/GunChain';
+import { GunChain } from 'ng-gun';
 import { VectorGraph } from '../VectorGraph';
-import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
+import { NgGunService } from 'ng-gun';
 import { UserService } from '../user.service';
 
 @Directive({
@@ -24,7 +24,7 @@ export class RouteVectorDirective {
     ),
     // tap((node: any) => console.log('ROUTE NODE', node)),
     shareReplay(1)
-  ) as Observable<GunChain<VectorGraph>>;
+  ) as unknown as Observable<GunChain<VectorGraph>>;
 
   vector$: Observable<VectorGraph> = this.vectorNode$.pipe(
     switchMap((node) => node.on())

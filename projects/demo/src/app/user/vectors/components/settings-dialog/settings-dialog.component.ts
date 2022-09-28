@@ -4,7 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import * as Gun from 'gun';
 import { License } from 'projects/demo/src/app/License';
 import { filter, map, shareReplay } from 'rxjs/operators';
-import { GunChain } from '../../../../../../../ng-gun/src/lib/classes/GunChain';
+import { GunChain } from 'ng-gun';
 import { LICENSES } from '../../../../LICENSES';
 import { UserService } from '../../../user.service';
 import { VectorGraph } from '../../../VectorGraph';

@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { take } from 'rxjs/operators';
-import { NgGunService } from '../../../../../../ng-gun/src/lib/ng-gun.service';
-import { NgSeaService } from '../../../../../../ng-gun/src/lib/ng-sea.service';
-import { RouteChainDirective } from '../../../../../../ng-gun/src/lib/route-chain.directive';
+import { NgGunService } from 'ng-gun';
+import { NgSeaService } from 'ng-gun';
+import { RouteChainDirective } from 'ng-gun';
 import { MessageService } from '../message.service';
 @Component({
   templateUrl: './edit-message.component.html',
@@ -12,7 +12,8 @@ import { MessageService } from '../message.service';
 })
 export class EditMessageComponent
   extends RouteChainDirective
-  implements OnInit {
+  implements OnInit
+{
   userSearch = this.fb.control(null);
   user: any = null;
   messageForm = this.fb.group({

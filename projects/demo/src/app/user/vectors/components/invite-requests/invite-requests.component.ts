@@ -1,12 +1,12 @@
 import { Component, Inject, NgZone, OnInit } from '@angular/core';
-import { ChainDirective } from '../../../../../../../ng-gun/src/lib/chain.directive';
+import { ChainDirective } from 'ng-gun';
 import { map, switchMap, shareReplay, delay } from 'rxjs/operators';
 import { UserService } from '../../../user.service';
-import { LogService } from '../../../../../../../log/src/lib/log.service';
+import { LogService } from 'log';
 import { VectorService } from '../../vector.service';
-import { NgSeaService } from '../../../../../../../ng-gun/src/lib/ng-sea.service';
+import { NgSeaService } from 'ng-gun';
 import { SEA } from 'gun';
-import { NgGunService } from '../../../../../../../ng-gun/src/lib/ng-gun.service';
+import { NgGunService } from 'ng-gun';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';

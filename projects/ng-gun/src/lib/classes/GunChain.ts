@@ -16,6 +16,7 @@ import {
   DisallowPrimitives,
   IGunCryptoKeyPair,
 } from 'gun/types/types';
+import { LogService } from 'log';
 import {
   from,
   fromEventPattern,
@@ -40,13 +41,12 @@ import {
   tap,
   timeout,
 } from 'rxjs/operators';
-import { LogService } from '../../../../log/src/lib/log.service';
+import '../functions/gun-open-changes';
 import { gunChainArray, gunPath } from '../functions/gun-utils';
 import { GunRuntimeOpts } from '../GunRuntimeOpts';
 import { NgGunSessionService } from '../ng-gun-session.service';
 import { ICertStore } from './ICertStore';
 import { LexicalQuery } from './LexicalQuery';
-import '../functions/gun-open-changes';
 
 export const GUN_NODE = Symbol('GUN_NODE');
 
@@ -79,14 +79,18 @@ export class GunChain<
   IsTop extends 'pre_root' | 'root' | false = false
 > {
   public get userPair() {
-    const pair = (this.gun.user() as any).is;
+    const pair = this.gun._.root.sea || (this.gun.user() as any).is;
     if ('object' === typeof pair?.alias) {
       return pair.alias;
     }
     return pair;
   }
   public get userPub() {
-    return this.userPair.pub;
+    return (
+      this.userPair?.pub ||
+      this.gun._.root.sea?.pub ||
+      (this.gun.user() as any).is?.pub
+    );
   }
   protected get myKey() {
     return (this.gun as any)._.get;
@@ -337,7 +341,7 @@ export class GunChain<
   }
 
   from<T>(gun: IGunChainReference<T>): GunChain<T> {
-    return new GunChain<T>(this.ngZone, gun as any, this);
+    return new GunChain<T>(this.ngZone, gun as any, this as any);
   }
 
   get<K extends keyof DataType>(
@@ -804,7 +808,11 @@ export class GunAuthChain<
     );
     loginOrAuth$.subscribe((ack) => {
       // this.logger.log('login() ack', ack);
-      this.is = ack.sea || ack.root.userPair;
+      if (ack.err) {
+        this.logger.error('loginOrAuth$ error', ack.err);
+        return;
+      }
+      this.is = ack.sea || ack.root?.userPair;
     });
     return loginOrAuth$;
   }

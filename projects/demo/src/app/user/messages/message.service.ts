@@ -1,12 +1,9 @@
 import { Injectable } from '@angular/core';
 import { UserService } from '../user.service';
 import { Message } from '../model';
-import { LogService } from '../../../../../log/src/lib/log.service';
-import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
-import {
-  GunAuthChain,
-  GunChain,
-} from '../../../../../ng-gun/src/lib/classes/GunChain';
+import { LogService } from 'log';
+import { NgGunService } from 'ng-gun';
+import { GunAuthChain, GunChain } from 'ng-gun';
 import * as Gun from 'gun';
 
 @Injectable({

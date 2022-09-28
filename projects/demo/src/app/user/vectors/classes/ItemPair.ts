@@ -13,11 +13,8 @@ import {
   switchMap,
   tap,
 } from 'rxjs/operators';
-import { LogService } from '../../../../../../log/src/lib/log.service';
-import {
-  GunChain,
-  GunChainCallbackOptions,
-} from '../../../../../../ng-gun/src/lib/classes/GunChain';
+import { LogService } from 'log';
+import { GunChain, GunChainCallbackOptions } from 'ng-gun';
 import { after$, before$, returned } from '../../../functions/aspect-rx';
 import { ItemGraph } from '../../ItemGraph';
 import { getUUID as getSetKey } from '../edit-vector/converter-functions';
@@ -40,7 +37,7 @@ import { defaultsFor } from '../functions/paper-functions';
 import { PairedItem } from './paper-pair';
 import { around } from 'aspect-ts';
 import { take, distinct } from 'rxjs/operators';
-import { NgSeaService } from '../../../../../../ng-gun/src/lib/ng-sea.service';
+import { NgSeaService } from 'ng-gun';
 import { environment } from '../../../../environments/environment';
 
 export class ItemPair extends PaperPair {

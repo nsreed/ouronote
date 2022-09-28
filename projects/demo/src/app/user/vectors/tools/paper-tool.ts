@@ -10,7 +10,7 @@ import {
   tap,
   shareReplay,
 } from 'rxjs/operators';
-import { LogService } from '../../../../../../log/src/lib/log.service';
+import { LogService } from 'log';
 import { EventEmitter } from '@angular/core';
 import { PenEvent } from '../classes/PenEvent';
 import { propertyChange$ } from '../functions/paper-chain';

@@ -1,6 +1,12 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnInit,
+} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { LogService } from '../../../../../../../log/src/lib/log.service';
+import { LogService } from 'log';
 import { PaperEditDirective } from '../../../../vector/paper-edit.directive';
 import { EditVectorComponent } from '../../edit-vector/edit-vector.component';
 import { VectorTool } from '../../tools/paper-tool';
@@ -9,11 +15,15 @@ import { VectorTool } from '../../tools/paper-tool';
   selector: 'app-tool-picker',
   templateUrl: './tool-picker.component.html',
   styleUrls: ['./tool-picker.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ToolPickerComponent implements OnInit {
-
-  constructor(private logger: LogService, public editWorkspace: EditVectorComponent, private changes: ChangeDetectorRef, private dialog: MatDialog) { }
+  constructor(
+    private logger: LogService,
+    public editWorkspace: EditVectorComponent,
+    private changes: ChangeDetectorRef,
+    private dialog: MatDialog
+  ) {}
   @Input()
   tools: VectorTool[] = [];
 
@@ -45,12 +55,10 @@ export class ToolPickerComponent implements OnInit {
       this.tools = this.paperDirective.scope.tools as any;
       this.activeTool = this.paperDirective.scope.tool as any;
       this.changes.markForCheck();
-      this.paperDirective.tool$.subscribe(tool => {
+      this.paperDirective.tool$.subscribe((tool) => {
         this.activeTool = tool as any;
         this.changes.markForCheck();
       });
     }
   }
-
-
 }

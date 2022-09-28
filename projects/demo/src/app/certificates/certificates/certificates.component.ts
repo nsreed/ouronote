@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ChainDirective } from '../../../../../ng-gun/src/lib/chain.directive';
+import { ChainDirective } from 'ng-gun';
 import {
   filter,
   map,
@@ -10,9 +10,9 @@ import {
 } from 'rxjs/operators';
 import { UserService } from '../../user/user.service';
 import * as Gun from 'gun';
-import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
+import { NgGunService } from 'ng-gun';
 import { UntypedFormBuilder } from '@angular/forms';
-import { LogService } from '../../../../../log/src/lib/log.service';
+import { LogService } from 'log';
 import { SEA } from 'gun';
 
 @Component({

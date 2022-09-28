@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { MessageService } from '../message.service';
 import { Message } from '../../model';
-import { NgGunService } from '../../../../../../ng-gun/src/lib/ng-gun.service';
+import { NgGunService } from 'ng-gun';
 
 @Component({
   selector: 'app-new-message',

@@ -1,5 +1,5 @@
 import { Injectable, EventEmitter } from '@angular/core';
-import { NgGunService } from '../../../ng-gun/src/lib/ng-gun.service';
+import { NgGunService } from 'ng-gun';
 import { MatDialog } from '@angular/material/dialog';
 import { GunPeer } from 'projects/ng-gun/src/public-api';
 import {
@@ -12,10 +12,10 @@ import {
   timeout,
 } from 'rxjs/operators';
 import { BugReportComponent } from './components/bug-report/bug-report.component';
-import { LogMessage, LogService } from '../../../log/src/lib/log.service';
+import { LogMessage, LogService } from 'log';
 import { timer, Observable, of } from 'rxjs';
 import { CAPABILITIES } from './system.service';
-import { DamService } from '../../../ng-gun/src/lib/dam.service';
+import { DamService } from 'ng-gun';
 import { HttpClient } from '@angular/common/http';
 import { distinct, bufferTime } from 'rxjs/operators';
 import { SettingsService } from './settings.service';

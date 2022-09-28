@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../user.service';
 import { SEA } from 'gun';
-import { NgSeaService } from '../../../../../ng-gun/src/lib/ng-sea.service';
+import { NgSeaService } from 'ng-gun';
 
 @Component({
   selector: 'app-settings',

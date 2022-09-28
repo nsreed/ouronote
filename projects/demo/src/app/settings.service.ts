@@ -1,6 +1,6 @@
 import { Inject, Injectable, Optional, NgZone } from '@angular/core';
-import { NgGunService } from '../../../ng-gun/src/lib/ng-gun.service';
-import { GunChain } from '../../../ng-gun/src/lib/classes/GunChain';
+import { NgGunService } from 'ng-gun';
+import { GunChain } from 'ng-gun';
 import * as Gun from 'gun';
 
 export type GunSettingsSchema = {
@@ -12,15 +12,15 @@ export type GunSettingsSchema = {
 };
 
 export type SettingsSchema = {
-  gun: GunSettingsSchema,
+  gun: GunSettingsSchema;
   diagnostics: {
-    timeout: number,
-    interval: number,
-    reconnectAfter: number
-  },
+    timeout: number;
+    interval: number;
+    reconnectAfter: number;
+  };
   debug: {
-    enabled: boolean
-  }
+    enabled: boolean;
+  };
 };
 
 @Injectable({
@@ -49,7 +49,7 @@ export class SettingsService {
     @Inject('settings.debug')
     public debug: boolean,
     private ngZone: NgZone
-  ) { }
+  ) {}
 
   save() {
     localStorage.setItem('WEBRTC_ENABLE', JSON.stringify(this.enableWebRTC));

@@ -3,7 +3,7 @@ import { AsyncPipe } from '@angular/common';
 import { NgGunService } from './ng-gun.service';
 import { map, switchMap, shareReplay } from 'rxjs/operators';
 import { of, Observable } from 'rxjs';
-import { LogService } from '../../../log/src/lib/log.service';
+import { LogService } from 'log';
 import { GunAuthChain, GunChain } from './classes/GunChain';
 
 @Pipe({

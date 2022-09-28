@@ -3,7 +3,7 @@ import { EditVectorComponent } from '../../edit-vector/edit-vector.component';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ItemPair } from '../../classes/ItemPair';
 import * as paper from 'paper';
-import { LogService } from '../../../../../../../log/src/lib/log.service';
+import { LogService } from 'log';
 import { SettingsService } from '../../../../settings.service';
 import {
   copyStyleToItem,

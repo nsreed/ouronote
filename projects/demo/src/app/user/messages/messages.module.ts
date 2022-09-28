@@ -10,7 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { NgGunModule } from '../../../../../ng-gun/src/lib/ng-gun.module';
+import { NgGunModule } from 'ng-gun';
 import { ComponentsModule } from '../../components/components.module';
 import { EditMessageComponent } from './edit-message/edit-message.component';
 import { MessageComponent } from './message/message.component';

@@ -1,5 +1,5 @@
 import { Inject, Injectable, NgZone } from '@angular/core';
-import * as Gun from 'gun';
+import Gun from 'gun';
 import { SEA } from 'gun';
 import { IGunConstructorOptions } from 'gun/types/options';
 import { IGunCryptoKeyPair } from 'gun/types/types';

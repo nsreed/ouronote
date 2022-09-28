@@ -11,7 +11,7 @@ import {
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
 import { GunChain } from 'projects/ng-gun/src/lib/classes/GunChain';
-import { LogService } from '../../../../../../../log/src/lib/log.service';
+import { LogService } from 'log';
 import { UserService } from '../../../user.service';
 import { VectorService } from '../../vector.service';
 import { VectorPreviewComponent } from '../../../../vector/vector-preview/vector-preview.component';

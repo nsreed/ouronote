@@ -1,10 +1,10 @@
 import { Component, OnInit, NgZone, Inject } from '@angular/core';
 import { FormArray, UntypedFormBuilder, Validators } from '@angular/forms';
-import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
+import { NgGunService } from 'ng-gun';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { delay, filter, mergeMap } from 'rxjs/operators';
-import { NgSeaService } from '../../../../../ng-gun/src/lib/ng-sea.service';
-import { ChainDirective } from '../../../../../ng-gun/src/lib/chain.directive';
+import { NgSeaService } from 'ng-gun';
+import { ChainDirective } from 'ng-gun';
 import { from, Subject } from 'rxjs';
 import { SEA } from 'gun';
 import { Router } from '@angular/router';

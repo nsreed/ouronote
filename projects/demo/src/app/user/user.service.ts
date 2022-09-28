@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { NgGunService } from '../../../../ng-gun/src/lib/ng-gun.service';
+import { NgGunService } from 'ng-gun';
 import { User } from './model';
 import { mergeMap, map, mapTo, shareReplay, mergeAll } from 'rxjs/operators';
 import { from, of } from 'rxjs';

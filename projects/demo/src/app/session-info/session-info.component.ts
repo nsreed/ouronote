@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NgGunService } from '../../../../ng-gun/src/lib/ng-gun.service';
+import { NgGunService } from 'ng-gun';
 import { User } from '../user/model';
 
 @Component({

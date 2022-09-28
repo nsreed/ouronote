@@ -3,7 +3,7 @@ import { ChangeDetectorRef, Pipe, PipeTransform } from '@angular/core';
 import { NgGunService } from './ng-gun.service';
 import { map, take, shareReplay } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { LogService } from '../../../log/src/lib/log.service';
+import { LogService } from 'log';
 
 @Pipe({
   name: 'alias',

@@ -37,17 +37,29 @@ const doOnce = (fn: any) => {
     }
     LogService.seen.add(args[0]);
     fn(...args);
-  }
+  };
 };
-const stringifyMessage = ({ level, name, message, args, timestamp }: any) => `${timestamp} [${level}] ${name} ${message}`;
-const buildMessage = (level: any, name: string, message: string, ...args: any[]) => ({ level, name, message, args, timestamp: Date.now() });
+const stringifyMessage = ({ level, name, message, args, timestamp }: any) =>
+  `${timestamp} [${level}] ${name} ${message}`;
+const buildMessage = (
+  level: any,
+  name: string,
+  message: string,
+  ...args: any[]
+) => ({ level, name, message, args, timestamp: Date.now() });
 
-const outLevel = (minLevel: LogLevel = LogLevel.ERROR, logLevel = () => LogLevel.VERBOSE, out = (message: string, ...args: any[]) => { }) => (message: string, ...args: any[]) => {
-  if (minLevel > logLevel()) {
-    return;
-  }
-  out(message, ...args);
-}
+const filterLevel =
+  (
+    minLevel: LogLevel = LogLevel.ERROR,
+    logLevel = () => LogLevel.VERBOSE,
+    out = (message: string, ...args: any[]) => {}
+  ) =>
+  (message: string, ...args: any[]) => {
+    if (minLevel > logLevel()) {
+      return;
+    }
+    out(message, ...args);
+  };
 
 class Stopwatch {
   startTime!: number;
@@ -170,14 +182,21 @@ export class LogService {
   log = this.outLog;
   warn = this.outWarn;
   error = this.outError;
-  once = doOnce(outLevel(LogLevel.INFO, () => this.level, (message: string, ...args: any[]) => this.out$.emit(buildMessage(this.level, this.name, message, ...args))));
+  once = doOnce(
+    filterLevel(
+      LogLevel.INFO,
+      () => this.level,
+      (message: string, ...args: any[]) =>
+        this.out$.emit(buildMessage(this.level, this.name, message, ...args))
+    )
+  );
 
   static getLogger(name: string) {
     return new LogService(name, LogService.root);
   }
 
   updatePiping() {
-    const noop = () => { };
+    const noop = () => {};
     ['verbose', 'log', 'warn', 'error'].forEach((l: string, i) => {
       const name = !this.consoleOnly
         ? `out${l.slice(0, 1).toUpperCase()}${l.slice(1)}`
@@ -264,7 +283,7 @@ export class LogService {
   }
 
   eventTap(name: string) {
-    return () => { };
+    return () => {};
     const e$ = new EventEmitter();
     e$.pipe(
       bufferTime(1000, 1000),

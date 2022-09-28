@@ -6,17 +6,14 @@ import {
   ViewChildren,
   QueryList,
 } from '@angular/core';
-import { ChainDirective } from '../../../../../../../ng-gun/src/lib/chain.directive';
-import { NgGunService } from '../../../../../../../ng-gun/src/lib/ng-gun.service';
+import { ChainDirective } from 'ng-gun';
+import { NgGunService } from 'ng-gun';
 import { UserService } from '../../../user.service';
 import { map, filter, switchMap } from 'rxjs/operators';
 import { VectorGraph } from '../../../VectorGraph';
 import { MatDialog } from '@angular/material/dialog';
 import { VectorService } from '../../vector.service';
-import {
-  GunAuthChain,
-  GunChain,
-} from '../../../../../../../ng-gun/src/lib/classes/GunChain';
+import { GunAuthChain, GunChain } from 'ng-gun';
 import { ConfirmComponent } from 'projects/demo/src/app/components/confirm/confirm.component';
 import { VectorExportDialogComponent } from '../vector-export-dialog/vector-export-dialog.component';
 import { UntypedFormBuilder, Validators } from '@angular/forms';

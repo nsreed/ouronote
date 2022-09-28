@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { GunAuthGuard } from '../../../ng-gun/src/lib/gun-auth.guard';
+import { GunAuthGuard } from 'ng-gun';
 import { LoginComponent } from './login/login.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { SystemSettingsComponent } from './components/system-settings/system-settings.component';

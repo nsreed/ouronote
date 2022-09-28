@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { CertificateFormComponent } from '../certificate-form/certificate-form.component';
-import { ChainDirective } from '../../../../../ng-gun/src/lib/chain.directive';
-import { NgGunService } from '../../../../../ng-gun/src/lib/ng-gun.service';
+import { ChainDirective } from 'ng-gun';
+import { NgGunService } from 'ng-gun';
 
 @Component({
   selector: 'app-certificates',

@@ -5,14 +5,14 @@ import {
   UntypedFormControl,
   Validators,
 } from '@angular/forms';
-import { NgGunService } from '../../../../ng-gun/src/lib/ng-gun.service';
+import { NgGunService } from 'ng-gun';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { AboutComponent } from '../components/about/about.component';
 import host from '@jsdevtools/host-environment';
 import { UserService } from '../user/user.service';
-import { NgGunSessionService } from '../../../../ng-gun/src/lib/ng-gun-session.service';
-import { LogService } from '../../../../log/src/lib/log.service';
+import { NgGunSessionService } from 'ng-gun';
+import { LogService } from 'log';
 import { fromEvent, from, of } from 'rxjs';
 import {
   shareReplay,
@@ -99,6 +99,7 @@ export class LoginComponent implements OnInit {
     public onlineStatusService: OnlineStatusService
   ) {
     logger.name = 'login';
+    logger.log('login page started');
   }
 
   ngOnInit(): void {
@@ -107,7 +108,7 @@ export class LoginComponent implements OnInit {
     });
     this.sessions = this.sessionService?.workerState.sessions || [];
     this.ngGun.auth().auth$.subscribe((data) => {
-      // console.log('auth data', data);
+      console.log('auth data', data);
       this.router.navigateByUrl('/user/vectors');
     });
     this.form.controls.alias.addAsyncValidators(
@@ -118,8 +119,8 @@ export class LoginComponent implements OnInit {
           // console.log(match);
           return match
             ? {
-              aliasTaken: true,
-            }
+                aliasTaken: true,
+              }
             : null;
         }
         return null;
@@ -148,12 +149,12 @@ export class LoginComponent implements OnInit {
   }
 
   onLoginClick() {
+    this.logger.log('login', this.form.value);
     if (!this.form.valid) {
       return;
     }
     this.submitted = true;
     this.error = null;
-    // console.log('login', this.form.value);
     this.ngGun
       .auth()
       .login(this.form.value.alias, this.form.value.password)

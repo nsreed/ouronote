@@ -1,11 +1,12 @@
 import { Injectable, EventEmitter, Optional } from '@angular/core';
 import { fromEvent, Observable, of } from 'rxjs';
-import { LogService } from '../../../log/src/lib/log.service';
+import { LogService } from 'log';
 import { NgGunService } from './ng-gun.service';
 import { IGunCryptoKeyPair } from 'gun/types/types';
-import { getUUID } from '../../../demo/src/app/user/vectors/edit-vector/converter-functions';
+
 import { ISharedWorkerState } from './types/shared-worker';
 import { NoopSharedWorker } from './classes/NoopSharedWorker';
+import { GunChain } from './classes/GunChain';
 import {
   filter,
   take,
@@ -15,17 +16,28 @@ import {
   shareReplay,
 } from 'rxjs/operators';
 
+function getUUID(parent: GunChain) {
+  try {
+    return (parent.gun as any)._.root.user._.opt.uuid();
+  } catch (e: any) {
+    return `${Date.now().toString(16)}${Math.random()
+      .toString()
+      .replace('.', '_')}`;
+  }
+}
 @Injectable()
 export class NgGunSessionService {
   private _seq = 0;
   workerState = {
     sessions: [],
   } as ISharedWorkerState;
-  pid = sessionStorage.getItem('pid') ?? getUUID(this.gunService);
+  pid = sessionStorage.getItem('pid') ?? '1'; // getUUID(this.gunService);
 
-  message$ = this.worker ? fromEvent(this.worker.port, 'message').pipe(
-    shareReplay(1)
-  ) as Observable<any> : of();
+  message$ = this.worker
+    ? (fromEvent(this.worker.port, 'message').pipe(
+        shareReplay(1)
+      ) as Observable<any>)
+    : of();
   response$ = this.message$.pipe(
     filter(({ data }) => Object.keys(data).includes('rseq'))
   );
@@ -53,13 +65,12 @@ export class NgGunSessionService {
     pluck('data')
   );
 
-  error$ = this.worker ? fromEvent(this.worker, 'error').pipe(
-    shareReplay(1)
-  ) as Observable<any> : of();
+  error$ = this.worker
+    ? (fromEvent(this.worker, 'error').pipe(shareReplay(1)) as Observable<any>)
+    : of();
 
   constructor(
     private logger: LogService,
-    private gunService: NgGunService,
     @Optional()
     private worker: SharedWorker
   ) {
@@ -81,21 +92,20 @@ export class NgGunSessionService {
         // this.logger.log('got change event', change);
         (this.workerState as any)[change.change] = change.value;
       });
-      this.gunService.auth(true).auth$.subscribe((a) => {
-        // this.logger.log('got auth event', a);
-        this.setSession(a.sea);
-      });
+      // this.gunService.auth(true).auth$.subscribe((a) => {
+      //   // this.logger.log('got auth event', a);
+      //   this.setSession(a.sea);
+      // });
       this.init();
-
     } catch (err) {
       logger.error('there was an error starting the session service', err);
     }
   }
 
   async init() {
-    const is = this.gunService.auth().is;
-    const pair = is?.priv ? is : is?.alias;
-    const response = await this.setSession(pair);
+    // const is = this.gunService.auth().is;
+    // const pair = is?.priv ? is : is?.alias;
+    // const response = await this.setSession(pair);
   }
 
   async onCommand(command: any) {
@@ -104,7 +114,7 @@ export class NgGunSessionService {
         this.result(command, true);
         break;
       case 'getSession':
-        this.result(command, this.gunService.auth().is);
+        // this.result(command, this.gunService.auth().is);
         break;
     }
   }
