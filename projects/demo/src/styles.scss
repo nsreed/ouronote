@@ -1,5 +1,7 @@
-@import "@angular/material/prebuilt-themes/deeppurple-amber.css";
+// @import "@angular/material/prebuilt-themes/deeppurple-amber.css";
+
 @import "./assets/fontawesome-free-5.15.4-web/scss/solid.scss";
+
 /* You can add global styles to this file, and also import other style files */
 html {
   overflow: hidden;
@@ -39,6 +41,7 @@ app-root {
   min-width: 100vw;
   min-width: -webkit-fill-available;
 }
+
 body > app-root {
   overflow-y: auto;
   background: rgb(107, 106, 122);
@@ -48,143 +51,123 @@ body > app-root {
     rgba(255, 255, 255, 0.3659663694579395) 6%,
     rgba(0, 212, 255, 0) 43%
   );
-  // padding-bottom: 6%;
-}
-nav {
-  display: flex;
-  position: sticky;
-  top: 0;
-  gap: 1em;
-  align-items: baseline;
-  & > button {
-    margin-left: auto;
-  }
-  background-color: rgb(53, 21, 42);
-  color: white;
-}
-a {
-  color: inherit;
-  font-weight: bold;
-}
-.list {
-  display: grid;
-  column-gap: 0.25rem;
-  align-items: baseline;
-  a {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
+
+  router-outlet + * {
+    flex-grow: 1;
+    flex-shrink: 1;
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    max-height: 100vh;
+    max-height: -webkit-fill-available;
   }
 }
-.list,
-nav,
-form {
-  padding: 1em;
-}
-// button,
-// input[type="button"] {
-//   padding: 0.5em 0.75em;
-//   font-size: medium;
-//   line-height: 1.2rem;
-//   border: none;
-//   text-transform: uppercase;
-//   outline: inset 2px #ffeeee;
-//   background-image: linear-gradient(
-//     to bottom,
-//     rgba(243, 237, 237, 0.246),
-//     rgb(235, 227, 227)
-//   );
-
-//   &:hover {
-//     outline-color: #b0c0c099;
-//   }
-// }
-// h1,
-// h2,
-// h3,
-// h4,
-// h5,
-// h6,
-// header {
-//   font-size: large;
-//   line-height: 1.5rem;
-// }
-form {
-  display: flex;
-  flex-direction: column;
-
-  align-items: stretch;
-  // flex: 1 1 auto;
-  textarea {
-    flex: 1 1 auto;
-  }
-}
-router-outlet + * {
-  flex-grow: 1;
-  flex-shrink: 1;
-
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-}
-
-.mat-tooltip {
-  font-size: large;
-  padding: 0.5em;
-}
-
-.row,
-.column {
-  display: flex;
-  align-items: stretch;
-
-  &.wrapped {
-    flex-wrap: wrap;
-  }
-}
-
-.column {
-  flex-direction: column;
-}
-
-.row {
-  flex-direction: row;
-}
-.grow {
-  flex-grow: 1;
-}
-
-.shrink {
-  flex-shrink: 1;
-}
-
-.stretch-items {
-  align-items: stretch;
-}
-
-body {
-  [dense] .mat-expansion-panel-body {
-    padding: 0;
-  }
-}
-
 mat-radio-group {
   mat-radio-button {
     margin-right: 1em;
   }
 }
-code,
-pre {
-  font-family: monospace;
-}
-i {
-  font-family: sans-serif;
-  font-style: italic;
-  font-weight: normal;
-}
 
-[routerLink].active {
-  mat-icon {
-    color: blue;
-  }
-}
+// nav {
+//   display: flex;
+//   position: sticky;
+//   top: 0;
+//   gap: 1em;
+//   align-items: baseline;
+
+//   &>button {
+//     margin-left: auto;
+//   }
+
+//   background-color: rgb(53, 21, 42);
+//   color: white;
+// }
+
+// [routerLink].active {
+//   mat-icon {
+//     color: blue;
+//   }
+// }
+
+// a {
+//   color: inherit;
+//   font-weight: bold;
+// }
+
+// .list {
+//   display: grid;
+//   column-gap: 0.25rem;
+//   align-items: baseline;
+
+//   a {
+//     white-space: nowrap;
+//     text-overflow: ellipsis;
+//     overflow: hidden;
+//   }
+// }
+
+// .list,
+// nav,
+// form {
+//   padding: 1em;
+// }
+
+// form {
+//   display: flex;
+//   flex-direction: column;
+
+//   align-items: stretch;
+
+//   // flex: 1 1 auto;
+//   textarea {
+//     flex: 1 1 auto;
+//   }
+// }
+
+// .mat-tooltip {
+//   font-size: large;
+//   padding: 0.5em;
+// }
+
+// .row,
+// .column {
+//   display: flex;
+//   align-items: stretch;
+
+//   &.wrapped {
+//     flex-wrap: wrap;
+//   }
+// }
+
+// .column {
+//   flex-direction: column;
+// }
+
+// .row {
+//   flex-direction: row;
+// }
+
+// .grow {
+//   flex-grow: 1;
+// }
+
+// .shrink {
+//   flex-shrink: 1;
+// }
+
+// .stretch-items {
+//   align-items: stretch;
+// }
+
+// code,
+// pre {
+//   font-family: monospace;
+// }
+
+// i {
+//   font-family: sans-serif;
+//   font-style: italic;
+//   font-weight: normal;
+// }

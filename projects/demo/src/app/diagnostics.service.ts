@@ -18,6 +18,7 @@ import { CAPABILITIES } from './system.service';
 import { DamService } from '../../../ng-gun/src/lib/dam.service';
 import { HttpClient } from '@angular/common/http';
 import { distinct, bufferTime } from 'rxjs/operators';
+import { SettingsService } from './settings.service';
 
 const TIMEOUT = 60 * 1000;
 const POLL = 10 * 1000;
@@ -37,8 +38,10 @@ export class DiagnosticsService {
     private dialog: MatDialog,
     private logger: LogService,
     private dam: DamService,
-    private http: HttpClient
+    private http: HttpClient,
+    private settings: SettingsService
   ) {
+    settings.gun.get('diagnostics');
     LogService.buffer$.subscribe((buff: LogMessage[]) => {
       // console.log('got message', buff);
       this.messages = buff;
@@ -84,12 +87,12 @@ export class DiagnosticsService {
           }
           const age = Date.now() - peer.met;
           console.log(`met ${age}ms ago`);
-          if (age < 20 * 1000) {
+          if (age < 30 * 1000) {
             return;
           }
-          if (peer.onOpen) {
-            peer.onOpen();
-          }
+          // if (peer.onOpen) {
+          //   peer.onOpen();
+          // }
 
           this.logger.log(
             'disconnecting stalled peer: %s',

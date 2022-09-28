@@ -58,7 +58,8 @@
             "styles": [
               "projects/demo/src/assets/reset.css",
               "projects/demo/src/assets/fontawesome-free-5.15.4-web/css/all.css",
-              "projects/demo/src/styles.scss"
+              "projects/demo/src/styles.scss",
+              "projects/demo/src/theme.scss"
             ],
             "scripts": [
               "projects/demo/src/assets/gun-session.worker.js"
@@ -69,7 +70,8 @@
               "gun",
               "paper",
               "hammerjs",
-              "qrcode"
+              "qrcode",
+              "reflect-metadata"
             ],
             "vendorChunk": true,
             "extractLicenses": false,
@@ -88,7 +90,16 @@
                   "with": "projects/demo/src/environments/environment.prod.ts"
                 }
               ],
-              "optimization": true,
+              "optimization": {
+                "fonts": {
+                  "inline": true
+                },
+                "scripts": true,
+                "styles": {
+                  "inlineCritical": true,
+                  "minify": true
+                }
+              },
               "outputHashing": "all",
               "sourceMap": true,
               "namedChunks": true,

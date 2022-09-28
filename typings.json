@@ -4,7 +4,8 @@
     "hammerjs": "registry:dt/hammerjs#2.0.8+20161224203613",
     "node": "registry:dt/node#7.0.0+20170322231424",
     "paper": "registry:dt/paper#0.9.22+20170310065207",
-    "qrcode": "registry:dt/qrcode#0.0.0+20161105203411"
+    "qrcode": "registry:dt/qrcode#0.0.0+20161105203411",
+    "reflect-metadata": "registry:dt/reflect-metadata#0.0.0+20161005184000"
   },
   "globalDevDependencies": {
     "karma": "registry:dt/karma#0.13.9+20160811111312",

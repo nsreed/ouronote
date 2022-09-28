@@ -4,17 +4,35 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+
+  max-height: 100vh;
+  max-height: -webkit-fill-available;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
 }
 
 #WorkspaceContainer {
   overflow: auto;
-  height: 100%;
+  max-height: 100vh;
+  max-height: -webkit-fill-available;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
 
   canvas#Workspace {
     // outline: solid 10px gray;
-    touch-action: pinch-zoom;
+    touch-action: none;
     position: absolute;
     // height: 100vh;
+  }
+}
+
+#NavContainer {
+  max-height: 100vh;
+  max-height: -webkit-fill-available;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  & > *:not(mat-toolbar) {
+    min-height: 0;
   }
 }
 
@@ -34,17 +52,22 @@ app-invite-requests {
 }
 
 mat-accordion {
-  overflow-y: auto;
-  min-height: 0;
+  overflow-y: scroll;
+  max-height: 100vh;
+  max-height: -webkit-fill-available;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
   align-self: stretch;
-  height: calc(100vh - 64px);
 
   &::-webkit-scrollbar {
-    width: 10px;
+    width: 0.5em;
+    &:disabled {
+      opacity: 0;
+    }
   }
   &::-webkit-scrollbar-track {
     background: #fafafa;
-    box-shadow: inset 0 0 3px grey;
+    box-shadow: inset 0 0 3px whitesmoke;
     border-radius: 3px;
   }
   &::-webkit-scrollbar-thumb {
@@ -55,9 +78,19 @@ mat-accordion {
   &::-webkit-scrollbar-thumb:hover {
     background: #d1d1d1;
   }
+  // &::-webkit-scrollbar-button {
+  //   background: #f1f1f1;
+  //   box-shadow: inset 0 0 2px slategray;
+  //   border-radius: 3px;
+  // }
+  scrollbar-width: thin;
+  scrollbar-color: slategray;
 
   mat-expansion-panel {
     flex-shrink: 0;
+    .mat-expansion-panel-body {
+      padding: 0 0.25em;
+    }
   }
 }
 

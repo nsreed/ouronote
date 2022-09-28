@@ -1,7 +1,13 @@
 <mat-progress-bar mode="indeterminate" *ngIf="submitted"></mat-progress-bar>
 <h1>ouronote</h1>
 
-<form [formGroup]="form">
+<div
+  [formGroup]="form"
+  fxLayout="column"
+  fxLayoutAlign="center center"
+  autocomplete="off"
+  aria-autocomplete="none"
+>
   <div *ngIf="sessions.length > 0" id="Sessions">
     Select an existing session:
     <app-session-selector
@@ -14,16 +20,18 @@
   <mat-form-field>
     <input
       id="alias"
-      name="alias"
+      type="text"
       matInput
       formControlName="alias"
       placeholder="username"
+      autocomplete="off"
+      aria-autocomplete="none"
     />
     <mat-label>username</mat-label>
     <mat-error *ngIf="form.controls.alias.errors?.aliasTaken"
       >Username has been taken</mat-error
     >
-    <span matPrefix>@</span>
+    <!-- <mat-hint matPrefix>@</mat-hint> -->
     <!-- <mat-hint>{{
       mode !== "create"
         ? "Type your username here."
@@ -112,15 +120,19 @@
   </ng-template>
   <p></p>
   <div>
-    <a mat-icon-button routerLink="/settings">
+    <a
+      mat-icon-button
+      routerLink="/settings"
+      matTooltip="Go to system settings"
+    >
       <mat-icon>settings</mat-icon>
     </a>
-    <a mat-icon-button (click)="about()">
+    <a mat-icon-button (click)="about()" matTooltip="About ouronote">
       <mat-icon>info</mat-icon>
     </a>
   </div>
   <!-- <button mat-flat-button (click)="about()">About</button> -->
-</form>
+</div>
 <img
   height="100"
   id="HeaderImage"

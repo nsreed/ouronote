@@ -1,8 +1,46 @@
+// @use "sass:math";
+// $hue_shifts: 0, 1, -1, 100, 200;
 
+// :host {
+//   counter-reset: toolIndex;
+
+//   @for $i from 1 through 10 {
+//     // $shift: nth($hue_shifts, $i);
+//     .tool:nth-child(#{$i}) {
+//       $adjusted: adjust-color(
+//         $color: #ff0000,
+//         $hue: math.div($i, 10) * 360,
+//         $saturation: 0%,
+//         $lightness: 0%,
+//         $alpha: -0.5,
+//       );
+//       --adjusted: "#{$adjusted}";
+//       &::after {
+//         // background:$color;
+//         --content: "#{$i/2}";
+//       }
+//       &.active {
+//         color: blueviolet;
+//         // background-color: rgba(0, 0, 0, 0.07);
+//         box-shadow: 0 0 0 10px adjust-color($color: whitesmoke, $alpha: -0.5),
+//           inset 0 0 1em 15px #{$adjusted};
+//         // border-style: inset;
+//       }
+//     }
+//   }
+//   .tool {
+//     &::after {
+//       content: var(--adjusted);
+//     }
+//     counter-increment: toolIndex 1;
+//     width: 100%;
+//     padding: 0.65em 0;
+//   }
+// }
 
 .tool {
   width: 100%;
-  padding: 0.65em 0;
+  padding: 0.3em 0;
   &.active {
     color: blueviolet;
     background-color: rgba(0, 0, 0, 0.07);

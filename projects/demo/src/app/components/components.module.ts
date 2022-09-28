@@ -28,6 +28,8 @@ import { LicenseComponent } from './license/license.component';
 import { LicenseDialogComponent } from './license-dialog/license-dialog.component';
 import { SessionSelectorComponent } from './session-selector/session-selector.component';
 import { QrCodeComponent } from './qr-code/qr-code.component';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -61,8 +63,10 @@ import { QrCodeComponent } from './qr-code/qr-code.component';
     MatSelectModule,
     MatStepperModule,
     MatTooltipModule,
+    MatToolbarModule,
     NgGunModule,
     ReactiveFormsModule,
+    RouterModule
   ],
   exports: [
     BugReportComponent,
@@ -76,4 +80,4 @@ import { QrCodeComponent } from './qr-code/qr-code.component';
     QrCodeComponent,
   ],
 })
-export class ComponentsModule {}
+export class ComponentsModule { }

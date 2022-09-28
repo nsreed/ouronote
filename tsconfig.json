@@ -18,16 +18,25 @@
         "dist/log/log",
         "dist/log"
       ],
-      "ng-gun": ["dist/ng-gun/ng-gun", "dist/ng-gun"],
-      "ng-gun-forms": ["dist/ng-gun-forms/ng-gun-forms", "dist/ng-gun-forms"]
+      "ng-gun": [
+        "dist/ng-gun/ng-gun",
+        "dist/ng-gun"
+      ],
+      "ng-gun-forms": [
+        "dist/ng-gun-forms/ng-gun-forms",
+        "dist/ng-gun-forms"
+      ]
     },
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "es2020",
     "module": "es2020",
-    "lib": ["es2018", "dom"],
-
+    "lib": [
+      "es2018",
+      "dom"
+    ],
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

@@ -171,7 +171,7 @@ export class GunChain<
 
     if (!this.userPair) {
       // TODO figure out how to handle this case
-      this.logger.warn(
+      this.logger.verbose(
         'User is not logged in, certificates for %s will not be loaded.',
         this.myKey
       );
@@ -398,13 +398,13 @@ export class GunChain<
   set(
     data: AlwaysDisallowedType<
       DataType extends Array<infer U>
-        ? U extends {
-            [key: string]: any;
-            [key: number]: any;
-          }
-          ? ArrayOf<DataType>
-          : never
-        : never
+      ? U extends {
+        [key: string]: any;
+        [key: number]: any;
+      }
+      ? ArrayOf<DataType>
+      : never
+      : never
     >,
     certificate = this.certificate
   ) {
@@ -413,10 +413,10 @@ export class GunChain<
       undefined,
       certificate
         ? {
-            opt: {
-              cert: certificate,
-            },
-          }
+          opt: {
+            cert: certificate,
+          },
+        }
         : undefined
     );
     return this.from(setGun);
@@ -611,9 +611,9 @@ export class GunChain<
             data:
               | AlwaysDisallowedType<ArrayAsRecord<DataType>>
               | DisallowPrimitives<
-                  IsTop,
-                  AlwaysDisallowedType<ArrayAsRecord<DataType>>
-                >
+                IsTop,
+                AlwaysDisallowedType<ArrayAsRecord<DataType>>
+              >
               | undefined,
             key,
             at?: any,
@@ -869,4 +869,4 @@ export class GunAuthChain<
  * gun.user(pub) : UserChain
  * gun.get('~@alias') : GunChain<{pub: string}>
  */
-export class GunCertChain extends GunChain {}
+export class GunCertChain extends GunChain { }

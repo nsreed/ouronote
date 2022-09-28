@@ -7,9 +7,6 @@
         >
           <button
             mat-button
-            [checked]="tool === activeTool"
-            [value]="tool"
-            [appTool]="tool"
             (click)="tool.activate()"
             [title]="tool.name"
             [ngClass]="{

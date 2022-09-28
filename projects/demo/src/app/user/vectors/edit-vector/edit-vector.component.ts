@@ -152,35 +152,6 @@ export class EditVectorComponent
         return;
       }
 
-      // const p = new paper.Project(new paper.Size(300, 300));
-      // node
-      //   .get('layers')
-      //   .open()
-      //   .subscribe((layers) => {
-      //     // const layersJSON = JSON.stringify(unpack(layers));
-      //     // // console.log('layers', layersJSON);
-      //     // p.clear();
-      //     // p.importJSON(layersJSON);
-      //     // const layersSVG = p.exportSVG({ asString: true }) as string;
-      //     // // console.log('SVG', layersSVG);
-      //     // this.preview.project.activate();
-      //     // this.preview.project.clear();
-      //     // this.preview.project.importSVG(layersSVG);
-      //     // this.preview.project.view.update();
-      //     // // (this.preview.project as any).draw();
-      //     // this.paperDirective.project.activate();
-      //     // this.previewSVG = this.sanitizer.bypassSecurityTrustHtml(
-      //     //   layersSVG
-      //     // ) as string;
-      //     // this.preview.project.activate();
-      //     // this.preview.project.clear();
-      //     // try {
-      //     //   this.preview.project.importJSON(layersJSON);
-      //     // } catch (e: any) {
-      //     //   console.log('problem importing', e);
-      //     // }
-      //     // this.paperDirective.project.activate();
-      //   });
       this.onProjectReady(this.paperDirective.project as any, node as any);
       node
         .get('title')
@@ -284,11 +255,11 @@ export class EditVectorComponent
       this.selectedItems = items;
     });
     project.currentStyle.strokeWidth = 3;
-    this.changes.markForCheck();
     this.activeTool = this.paperDirective.scope.tool as any;
     this.paperDirective.tool$.subscribe(tool => {
       this.activeTool = tool;
     });
+    this.changes.markForCheck();
   }
 
   onFullscreenClick(event: MouseEvent) {

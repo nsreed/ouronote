@@ -1,0 +1,17 @@
+:host {
+  display: flex;
+  min-width: 100vw;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  align-items: center;
+  justify-self: center;
+  align-self: center;
+  text-align: left;
+  justify-content: safe;
+}
+
+section {
+  display: inline-flex;
+  flex-direction: column;
+  max-width: 600px;
+}

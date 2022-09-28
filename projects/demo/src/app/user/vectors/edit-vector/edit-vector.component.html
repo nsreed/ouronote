@@ -4,13 +4,14 @@
     fxFlex="1 1 auto"
     fxLayout="column"
     fxLayoutAlign="stretch stretch"
-    id="CanvasContainer"
+    id="NavContainer"
     #Container
   >
     <mat-toolbar
       class="ui"
       *ngIf="vectorNode$ | async"
       fxLayoutAlign="stretch center"
+      fxFlex="0 0 auto"
       fxLayout="row"
     >
       <div fxFlex="1 1 auto" class="title">
@@ -117,9 +118,8 @@
         multi
         dense
         displayMode="flat"
-        *ngIf="project && (canEdit$ | async)"
-        fxLayout="column"
-        fxFlex="0 1 175px"
+        *ngIf="paper.project && (canEdit$ | async)"
+        fxFlex="0 1 14em"
         class="ui"
       >
         <mat-expansion-panel expanded>
@@ -155,13 +155,11 @@
               [paperDirective]="paperDirective"
               [activeTool]="activeTool"
             ></app-tool-picker>
-
+            <mat-divider></mat-divider>
             <app-tool-properties
               [activeTool]="activeTool"
               [paperEditDirective]="paperDirective"
             ></app-tool-properties>
-
-            <mat-divider></mat-divider>
           </ng-template>
         </mat-expansion-panel>
 

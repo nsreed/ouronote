@@ -1,0 +1,39 @@
+@use "@angular/material" as mat;
+// Define a dark theme
+
+$dark-primary: mat.define-palette(mat.$pink-palette);
+$dark-accent: mat.define-palette(mat.$blue-grey-palette);
+
+$dark-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $dark-primary,
+      accent: $dark-accent,
+    ),
+    density: -3,
+  )
+);
+
+@include mat.all-component-themes($dark-theme);
+
+[dense] {
+  // $denser-theme: mat.define-light-theme(
+  //   (
+  //     density: -3,
+  //   )
+  // );
+  // @include mat.expansion-theme($denser-theme);
+
+  .mat-expansion-panel {
+    .mat-expansion-panel-body {
+      padding: 0 0.4rem 1em;
+
+      .mat-form-field {
+        width: 100%;
+        width: -webkit-fill-available;
+      }
+    }
+  }
+}
+
+@include mat.core();
