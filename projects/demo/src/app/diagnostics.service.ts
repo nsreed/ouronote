@@ -81,12 +81,12 @@ export class DiagnosticsService {
             return;
           }
           if (!peer.met) {
-            console.log('have never met peer');
+            this.logger.log(`peer.met is ${peer.met}`, peer);
             this.dam.connect(peer);
             return;
           }
           const age = Date.now() - peer.met;
-          console.log(`met ${age}ms ago`);
+          this.logger.log(`met ${age}ms ago`);
           if (age < 30 * 1000) {
             return;
           }
@@ -104,7 +104,6 @@ export class DiagnosticsService {
           this.dam.disconnect(peer);
         });
       });
-    this.logger.log('capabilities', CAPABILITIES);
   }
 
   configuredPeers = Array.isArray(this.ngGun.gunOptions.peers)

@@ -64,6 +64,20 @@ if (typeof SharedWorker !== 'undefined') {
   worker = new NoopSharedWorker();
 }
 
+const GUN_PEERS = [
+  location.origin.match(/localhost/)
+    ? 'http://localhost:8765/gun'
+    : location.origin + '/gun',
+];
+const GUN_OPTIONS = {
+  localStorage: !RADISK_ENABLE,
+  sharedWorkerURL: '/assets/gun-shared.worker.js',
+  sharedWorker: {
+    enabled: false,
+    disconnectRedundantWebRTC: true,
+  },
+  peers: [],
+};
 @NgModule({
   declarations: [
     AppComponent,
@@ -120,19 +134,11 @@ if (typeof SharedWorker !== 'undefined') {
     { provide: MAT_AUTOCOMPLETE_DEFAULT_OPTIONS, useValue: { autoActiveFirstOption: true } as MatAutocompleteDefaultOptions },
     {
       provide: 'gun-options',
-      useValue: {
-        localStorage: !RADISK_ENABLE,
-        sharedWorkerURL: '/assets/gun-shared.worker.js',
-        sharedWorker: {
-          enabled: false,
-          disconnectRedundantWebRTC: true,
-        },
-        peers: [
-          location.origin.match(/localhost/)
-            ? 'http://localhost:8765/gun'
-            : location.origin + '/gun',
-        ],
-      },
+      useValue: GUN_OPTIONS,
+    },
+    {
+      provide: 'gun-peers',
+      useValue: GUN_PEERS
     },
     {
       provide: LogService,

@@ -3,7 +3,7 @@ import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import Gun from 'gun';
-import { map, pluck, shareReplay, take, filter } from 'rxjs/operators';
+import { map, pluck, shareReplay, take, filter, tap, first } from 'rxjs/operators';
 import {
   GunOptions,
   NgGunService,
@@ -14,6 +14,8 @@ import { UserService } from '../../../user.service';
 import { VectorService } from '../../vector.service';
 import { LogService } from '../../../../../../../log/src/lib/log.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { firstValueFrom } from 'rxjs';
+import { IGunCryptoKeyPair } from 'gun/types/types';
 
 @Component({
   selector: 'app-create-vector',
@@ -30,9 +32,8 @@ export class CreateVectorComponent implements OnInit {
     license: null,
     customLicense: this.fb.group({
       name: null,
-      text: `Copyright © ${new Date().getFullYear()} ${
-        this.userService.user.alias
-      } ALL RIGHTS RESERVED`,
+      text: `Copyright © ${new Date().getFullYear()} ${this.userService.user.alias
+        } ALL RIGHTS RESERVED`,
     }),
   });
 
@@ -43,11 +44,11 @@ export class CreateVectorComponent implements OnInit {
     map((l) =>
       typeof l === 'object' && l.text
         ? {
-            ...l,
-            text: l.text
-              .replace('{{ licensor }}', this.userService.user.alias)
-              .replace('{{ year }}', new Date().getFullYear()),
-          }
+          ...l,
+          text: l.text
+            .replace('{{ licensor }}', this.userService.user.alias)
+            .replace('{{ year }}', new Date().getFullYear()),
+        }
         : l
     ),
     shareReplay(1)
@@ -67,13 +68,14 @@ export class CreateVectorComponent implements OnInit {
     private nameRandomizer: NameRandomizerService,
     private logger: LogService,
     private snack: MatSnackBar
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.randomizeName();
   }
 
   async create() {
+    this.logger.log('create()');
     if (!this.form.valid) {
       return;
     }
@@ -88,63 +90,82 @@ export class CreateVectorComponent implements OnInit {
       title: formValue.title,
       // license,
     };
-    this.vectorPair$.subscribe(async (vectorPair: any) => {
-      const vector = await this.vectorService.initializeCertificates(
-        vg,
-        vectorPair
+    const vectorPair = (await firstValueFrom(this.sea.pair())) as unknown as IGunCryptoKeyPair;
+    const vector = await this.vectorService.initializeCertificates(
+      vg,
+      vectorPair
+    );
+    this.recordValue = vector;
+    this.logger.log('vector object', vector);
+
+    this.logger.log('awaiting detached gun...');
+    // Create a detached gun instance for the vector itself
+    const vectorRoot = await this.ngGun.detached(vectorPair);
+    this.logger.log('got detached gun');
+    const vectorAuth = vectorRoot.auth();
+    if (!vectorAuth.is?.priv) {
+      this.logger.error(`detached gun isn't authenticated!`)
+    }
+
+    vectorAuth.put(vector);
+    this.vectorService.vectors.set(vectorAuth.gun as any);
+
+    const vectorInUser = this.vectorService.vectors.get(
+      ('~' + vectorPair.pub) as any
+    );
+    let userPair = this.userService.pair;
+    if (!userPair.priv) {
+      this.logger.error('user pair did not contain a private key!', userPair);
+      userPair = this.userService.user.gun._.sea;
+      this.error = true;
+      this.sumbitted = false;
+      return;
+    }
+    // const titleInUser = vectorInUser.get('title' as never);
+    // titleInUser.put(
+    //   formValue.title as never,
+    //   vector.certs.title[userPair.pub]
+    // );
+    // // TODO sign & save license
+
+    if (license) {
+      this.logger.log('signing license', license);
+      const signedLicense = await Gun.SEA.sign(license, userPair);
+      const licenseInUser = vectorInUser.get('license' as never);
+      licenseInUser.put(
+        signedLicense as never,
+        vector.certs.license[userPair.pub]
       );
-      this.recordValue = vector;
+    }
 
-      // Create a detached gun instance for the vector itself
-      const detachedGun = await this.ngGun.detached(vectorPair);
-      detachedGun.auth().put(vector);
-      this.vectorService.vectors.set(detachedGun.auth().gun as any);
-
-      const vectorInUser = this.vectorService.vectors.get(
-        ('~' + vectorPair.pub) as any
-      );
-      let userPair = this.userService.pair;
-      if (!userPair.priv) {
-        this.logger.error('user pair did not contain a private key!', userPair);
-        userPair = this.userService.user.gun._.sea;
-        this.error = true;
-        this.sumbitted = false;
-        return;
-      }
-      // const titleInUser = vectorInUser.get('title' as never);
-      // titleInUser.put(
-      //   formValue.title as never,
-      //   vector.certs.title[userPair.pub]
-      // );
-      // // TODO sign & save license
-
-      if (license) {
-        // console.log({ license });
-        const signedLicense = await Gun.SEA.sign(license, userPair);
-        const licenseInUser = vectorInUser.get('license' as never);
-        licenseInUser.put(
-          signedLicense as never,
-          vector.certs.license[userPair.pub]
-        );
-      }
-      const vectorCerts = vectorInUser.get('certs' as never);
-      vectorCerts
-        .open()
-        .pipe(
-          filter(
-            (lc: any) =>
-              lc !== null &&
-              lc !== undefined &&
-              lc.layers &&
-              lc.layers[userPair.pub]
-          )
-        )
-        .subscribe((viu) => {
-          vectorCerts.gun.off();
-          vectorInUser.gun.off();
-          this.dialog.close(vectorPair.pub);
-        });
-    });
+    this.logger.log(`awaiting certs for ${userPair.pub}`);
+    const vectorCerts = vectorInUser.get('certs' as never);
+    const userLayerCertNode = vectorCerts.get('layers').get(userPair.pub);
+    const userLayerCert$ = userLayerCertNode.on().pipe(filter(ciu => ciu !== undefined && ciu !== null));
+    const userLayerCert = await firstValueFrom(userLayerCert$);
+    vectorCerts.gun.off();
+    vectorInUser.gun.off();
+    userLayerCertNode.gun.off();
+    if (!userLayerCert) {
+      this.logger.error('USER LAYER CERT WAS FALSY');
+    }
+    this.dialog.close(vectorPair.pub);
+    // vectorCerts
+    //   .open()
+    //   .pipe(
+    //     filter(
+    //       (lc: any) =>
+    //         lc !== null &&
+    //         lc !== undefined &&
+    //         lc.layers &&
+    //         lc.layers[userPair.pub]
+    //     )
+    //   )
+    //   .subscribe((viu) => {
+    //     vectorCerts.gun.off();
+    //     vectorInUser.gun.off();
+    //     this.dialog.close(vectorPair.pub);
+    //   });
   }
 
   randomizeName() {

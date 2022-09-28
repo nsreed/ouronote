@@ -171,7 +171,7 @@ export class GunChain<
 
     if (!this.userPair) {
       // TODO figure out how to handle this case
-      this.logger.verbose(
+      this.logger.once(
         'User is not logged in, certificates for %s will not be loaded.',
         this.myKey
       );
@@ -398,13 +398,13 @@ export class GunChain<
   set(
     data: AlwaysDisallowedType<
       DataType extends Array<infer U>
-      ? U extends {
-        [key: string]: any;
-        [key: number]: any;
-      }
-      ? ArrayOf<DataType>
-      : never
-      : never
+        ? U extends {
+            [key: string]: any;
+            [key: number]: any;
+          }
+          ? ArrayOf<DataType>
+          : never
+        : never
     >,
     certificate = this.certificate
   ) {
@@ -413,10 +413,10 @@ export class GunChain<
       undefined,
       certificate
         ? {
-          opt: {
-            cert: certificate,
-          },
-        }
+            opt: {
+              cert: certificate,
+            },
+          }
         : undefined
     );
     return this.from(setGun);
@@ -611,9 +611,9 @@ export class GunChain<
             data:
               | AlwaysDisallowedType<ArrayAsRecord<DataType>>
               | DisallowPrimitives<
-                IsTop,
-                AlwaysDisallowedType<ArrayAsRecord<DataType>>
-              >
+                  IsTop,
+                  AlwaysDisallowedType<ArrayAsRecord<DataType>>
+                >
               | undefined,
             key,
             at?: any,
@@ -659,6 +659,7 @@ export class GunChain<
   }
 
   onEvent(event: string, node = this.gun): Observable<any> {
+    // this.logger.log(`onEvent(${event})`);
     if (!this.sources.has(event)) {
       const source = fromEventPattern((handler: (...arg0: any[]) => void) => {
         // this.logger.log('add handler');
@@ -680,7 +681,7 @@ export class GunChain<
   }
 }
 
-interface AuthAck {
+export interface IAuthAck {
   put: any;
   $: any;
   err: any;
@@ -721,17 +722,18 @@ export class GunAuthChain<
   }
   alias!: string;
   auth$ = this.root.onEvent('auth').pipe(
-    tap((ack: AuthAck) => {
+    tap((ack: IAuthAck) => {
       this.logger.log(
-        'authentication event. put present? %s; is gun node? %s',
+        'root.on(auth) put present? %s; is gun node? %s; has private key? %s',
         ack.put ? 'yes' : 'no',
-        ack.$ ? 'yes' : 'no'
+        ack.$ ? 'yes' : 'no',
+        ack.sea.priv ? 'yes' : 'no'
       );
       if (!ack.err) {
-        this.is = ack.put || ack.root?.user?.is;
+        this.is = ack.sea || ack.put || ack.root?.user?.is;
         this.session?.setSession(this.is);
       } else {
-        this.logger.warn('authentication error: ', ack.put);
+        this.logger.warn('authentication error: ', ack.err);
       }
     }),
     shareReplay(1)
@@ -764,10 +766,11 @@ export class GunAuthChain<
   }
 
   login(alias: string | IGunCryptoKeyPair, pass?: string) {
+    this.logger.log(`login(${typeof alias}, ${typeof pass})`);
     const auth$ = this.root.onEvent('auth').pipe(
-      filter((ack: AuthAck) => !ack.err),
-      filter((ack: AuthAck) => {
-        return ack.put.alias === alias;
+      filter((ack: IAuthAck) => !ack.err),
+      filter((ack: IAuthAck) => {
+        return ack.put.alias === alias || ack.sea === alias;
       }),
       take(1)
     );
@@ -799,7 +802,10 @@ export class GunAuthChain<
       take(1),
       shareReplay(1)
     );
-    loginOrAuth$.subscribe();
+    loginOrAuth$.subscribe((ack) => {
+      // this.logger.log('login() ack', ack);
+      this.is = ack.sea || ack.root.userPair;
+    });
     return loginOrAuth$;
   }
 
@@ -869,4 +875,4 @@ export class GunAuthChain<
  * gun.user(pub) : UserChain
  * gun.get('~@alias') : GunChain<{pub: string}>
  */
-export class GunCertChain extends GunChain { }
+export class GunCertChain extends GunChain {}
