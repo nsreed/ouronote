@@ -4,6 +4,7 @@ FROM node:18-alpine3.16
 # Hmm... is this useful anymore?
 # WORKDIR /usr/src/gun
 # RUN npm link
+USER node:node
 WORKDIR /usr/src/app
 # COPY version.js ./
 COPY package*.json ./
@@ -19,4 +20,4 @@ EXPOSE 8080
 
 VOLUME [ "/usr/src/app/radata" ]
 
-CMD ["node", "index.js"]
+CMD ["node", "index.js", "heroku"]

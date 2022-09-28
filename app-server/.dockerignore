@@ -1,3 +1,6 @@
 .git
 .gitignore
 .yarn
+radata
+yarn.lock
+node_modules

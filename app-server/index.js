@@ -1,13 +1,15 @@
-const fs = require("fs");
-const path = require("path");
-const { resolve, relative } = require("path");
-const express = require("express");
-const process = require("process");
-const { ArgumentParser, SUPPRESS, FileType } = require('argparse');
-const sub = require('argparse/lib/sub');
-const { version } = require('./package.json');
 const { ArgumentError } = require("argparse");
+const { ArgumentParser, SUPPRESS, FileType } = require('argparse');
 const { ArgumentTypeError } = require("argparse");
+const { resolve, relative } = require("path");
+const { version } = require('./package.json');
+const express = require("express");
+const fs = require("fs");
+const http = require("http");
+const https = require("https");
+const path = require("path");
+const process = require("process");
+const sub = require('argparse/lib/sub');
 
 const lowerKeys = obj => Object.entries(obj).reduce((p, c) => {
   p[c[0].toLowerCase()] = c[1];
@@ -61,16 +63,18 @@ const PathType = _callable(class PT extends Function {
   }
 });
 
+const commonParser = new ArgumentParser({ add_help: false });
+commonParser.add_argument('-d', '--dry', { help: 'Skips launching the server, instead shows config.', action: 'store_const', dest: 'next', const: showArgs });
 
 const serverParser = new ArgumentParser({ add_help: false });
 const serverGroup = serverParser.add_argument_group({ title: 'Web Server' });
-serverGroup.add_argument('--app-root', { default: path.resolve('./dist/demo') });
-serverGroup.add_argument('--app-index', { default: path.resolve(path.resolve('./dist/demo'), 'index.html') });
+serverGroup.add_argument('--web-root', { default: path.resolve('./dist/demo') });
+// serverGroup.add_argument('--app-index', { default: path.resolve(path.resolve('./dist/demo'), 'index.html') });
 serverGroup.add_argument('--data-dir', { type: PathType(), help: 'Path to store data', default: './radata' });
 
 const httpParser = new ArgumentParser({ add_help: false, description: 'HTTP Options' });
 const httpGroup = httpParser.add_argument_group({ title: 'HTTP Options' });
-httpGroup.add_argument('-p', '--port', { type: Number, default: 80, help: 'HTTP Port' });
+httpGroup.add_argument('-p', '--port', { type: Number, default: 8765, dest: 'http_port', help: 'HTTP Port' });
 
 const httpsParser = new ArgumentParser({ add_help: false });
 const httpsGroup = httpsParser.add_argument_group({ title: 'HTTPS Options' });
@@ -86,19 +90,27 @@ logGroup.add_argument('--log-level', { choices: ['verbose', 'info', 'warn', 'err
 const parser = new ArgumentParser({
   description: 'starts the ouronote webserver',
   argument_default: SUPPRESS,
-  parents: [serverParser, httpParser, logParser],
+  parents: [serverParser, httpParser, logParser, commonParser],
 });
+parser.set_defaults({ next: startHerokuServer });
 
 const commands = parser.add_subparsers({ description: 'Select a server configuration to run', required: false, dest: 'subparser_name', title: 'Configurations', metavar: 'COMMAND' });
-const localServerParser = commands.add_parser('local', { help: 'Launches the local server configuration', aliases: [], description: 'Local Server', parents: [serverParser, httpParser, httpsParser] });
+
+const localServerParser = commands.add_parser('local', { help: 'Launches the local server configuration', description: 'Local Server', parents: [serverParser, httpParser, httpsParser, logParser, commonParser] });
 localServerParser.set_defaults({
   https: true,
   ...envToNamespace(localServerParser, process.env)
 });
 localServerParser.set_defaults({ next: startLocalServer });
 
+// const herokuServerParser = commands.add_parser('heroku', { help: 'Launches the heroku server configuration', description: 'Heroku Server', parents: [serverParser, httpParser, logParser, commonParser] });
+// herokuServerParser.set_defaults({
+//   ...envToNamespace(herokuServerParser, process.env)
+// });
+// herokuServerParser.set_defaults({ next: startHerokuServer });
+
 parser.add_argument('-v', '--version', { action: 'version', version });
-parser.set_defaults({ next: startHerokuServer });
+
 
 function envToNamespace(parsersOrParser, env) {
   const lowEnv = lowerKeys(env);
@@ -137,25 +149,84 @@ function envToNamespace(parsersOrParser, env) {
   }, {});
 }
 
-function startLocalServer(args) {
-  console.log('starting local server configuration');
-  console.dir({ args });
+function showArgs(args) {
+  console.log('would run with config:');
+  console.dir(args);
 }
 
-function startHerokuServer(args) {
-  console.log('starting heroku server configuration');
-  console.dir({ args });
-}
-
-function main(...args) {
+function importGun() {
   const Gun = require("gun");
   require("gun/lib/radix");
   require("gun/lib/radisk");
   require("gun/lib/store");
   require("gun/lib/rindexed");
   require("gun/lib/webrtc");
-  var https = require("https");
-  var http = require("http");
+  return Gun;
+}
+
+function getExpress(args) {
+  const Gun = importGun();
+  const app = express();
+  app.use(Gun.serve);
+  app.use(express.static(args.web_root));
+  app.get("/*", function (req, res) {
+    res.sendFile(path.resolve(args.web_root, "index.html"));
+  });
+  return {
+    Gun,
+    app
+  };
+}
+
+function getHttps(app, args) {
+  let httpsServer;
+  try {
+    const EXPRESS_OPTS = {
+      key: fs.readFileSync(args.https_key),
+      cert: fs.readFileSync(args.https_crt),
+    };
+    // TODO un-comment this for local deploys?
+    httpsServer = https.createServer(EXPRESS_OPTS, app).listen(args.https_port);
+    return httpsServer;
+  } catch (e) {
+    console.error("Error starting HTTPS server: ", e);
+    console.log("will default to HTTP");
+    return null;
+  }
+}
+
+function getHttp(app, args) {
+  return app.listen(args.http_port);
+}
+
+function startLocalServer(args) {
+  console.log('starting local server configuration');
+  // console.dir({ args });
+  const { Gun, app } = getExpress(args);
+  const httpServer = getHttp(app, args);
+  const httpsServer = getHttps(app, args);
+  if (!httpsServer) {
+    console.error('https not started!');
+  }
+  const gun = Gun({
+    web: httpsServer || httpServer,
+    file: args.data_dir
+  });
+}
+
+function startHerokuServer(args) {
+  console.log('starting heroku server configuration');
+  // console.dir({ args });
+  const { Gun, app } = getExpress(args);
+  const httpServer = getHttp(app, args);
+  const gun = Gun({
+    web: httpServer,
+    file: args.data_dir
+  });
+}
+
+function main(...args) {
+  const Gun = importGun();
   console.log("starting ouronote server");
 
   const PORT = process.env.PORT || 80;
@@ -193,10 +264,10 @@ function main(...args) {
   const gun = Gun({ web: httpsServer || server, file: RADATA });
 }
 
-main();
+// main();
 
-// const me = parser.parse_args(process.argv.slice(2), envToNamespace(parser, process.env));
-// const next = me.next;
-// if ('function' === typeof next) {
-//   next(me);
-// }
+const [current, remaining] = parser.parse_known_args(process.argv.slice(2), envToNamespace(parser, process.env));
+const next = current.next;
+if ('function' === typeof next) {
+  next(current);
+}
