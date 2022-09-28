@@ -112,7 +112,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    (window as any).AppModule.status.hideOverlay();
+    (window as any).loader.hideOverlay();
   }
 
   logout() {

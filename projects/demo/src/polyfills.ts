@@ -51,34 +51,35 @@ import 'zone.js'; // Included with Angular CLI.
  * APPLICATION IMPORTS
  */
 // TODO This is part 1 of tracking down our phone bugs
-(AppModule as any)['status'] = {
-  tasks: [],
-  addTask: (task: any) => {
-    AppModule['status'].tasks.push(task);
-    const loadingOverlay = document.getElementById('ɵLoading') as HTMLPreElement;
-    loadingOverlay.innerHTML = AppModule['status'].tasks.join('\n');
-  },
-  hideOverlay: () => {
-    const loadingOverlay = document.getElementById('ɵLoading') as HTMLPreElement;
-    // loadingOverlay.innerHTML = AppModule['status'].tasks.join('\n');
-    loadingOverlay.style.display = 'none';
-  },
-  log: (message: any, ...args: any[]) => {
-    const loadingOverlay = document.getElementById('ɵLoading') as HTMLPreElement;
-    loadingOverlay.innerHTML = AppModule['status'].tasks.join('\n') + `\n[LOG] ${message} ${JSON.stringify(args)}`;
-  },
-  handleError: (error: Error) => {
-    AppModule.status.log(`Error: ${error.message}\n${error.stack}`)
-  },
-  say: function (data: any) { window.dispatchEvent(new MessageEvent('message', data)) },
-  statusListener: window.addEventListener('message', function (ev) {
-    console.log(ev.data);
-  })
+function Loader() {
+  function loader() { }
+  loader.tasks = [] as any[],
+    loader.addTask = (task: any) => {
+      loader.tasks.push(task);
+      const loadingOverlay = document.getElementById('ɵLoading') as HTMLPreElement;
+      loadingOverlay.innerHTML = loader.tasks.join('\n');
+    },
+    loader.hideOverlay = () => {
+      const loadingOverlay = document.getElementById('ɵLoading') as HTMLPreElement;
+      // loadingOverlay.innerHTML = AppModule['status'].tasks.join('\n');
+      loadingOverlay.style.display = 'none';
+    },
+    loader.log = (message: any, ...args: any[]) => {
+      const loadingOverlay = document.getElementById('ɵLoading') as HTMLPreElement;
+      loadingOverlay.innerHTML = loader.tasks.join('\n') + `\n[LOG] ${message} ${JSON.stringify(args)}`;
+    },
+    loader.handleError = (error: Error) => {
+      loader.log(`Error: ${error.message}\n${error.stack}`)
+    },
+    loader.say = function (data: any) { window.dispatchEvent(new MessageEvent('message', data)) },
+    loader.statusListener = window.addEventListener('message', function (ev) {
+      console.log(ev.data);
+    });
+  return loader;
 };
-
-AppModule.status.addTask('polyfills');
-
-(window as any).AppModule = AppModule;
+const loader = Loader();
+(window as any)['loader'] = loader;
+loader.addTask('polyfills');
 
 /* GUN IMPORT */
 // TODO move GUN.js imports to a better place
@@ -119,7 +120,6 @@ import {
   MUTATION_PROPERTIES,
 } from './app/user/vectors/functions/constants';
 import { DebugTracingFeature, ɵwithPreloading } from '@angular/router';
-import { AppModule } from './app/app.module';
 
 // tslint:disable: space-before-function-paren
 // tslint:disable: only-arrow-functions

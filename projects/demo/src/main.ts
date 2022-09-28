@@ -9,8 +9,8 @@ import { environment } from './environments/environment';
 // window.dispatchEvent(new MessageEvent('message', {
 //   data: 'bootstrapping'
 // }));
-
-AppModule.status.addTask('bootstrap');
+const loader = (window as any)['loader'];
+loader.addTask('bootstrap');
 if (environment.production) {
   enableProdMode();
 }
@@ -24,7 +24,7 @@ async function main() {
     // AppModule.status.hideOverlay();
   } catch (err: any) {
     console.error(err);
-    AppModule.status.handleError(err);
+    loader.handleError(err);
   }
 }
 // }, 4000);
