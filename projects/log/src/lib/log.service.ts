@@ -29,6 +29,26 @@ export interface LogMessage {
   args: any[];
 }
 
+const doOnce = (fn: any) => {
+  return (...args: any[]) => {
+    if (LogService.seen.has(args[0])) {
+      // console.log('only once!')
+      return;
+    }
+    LogService.seen.add(args[0]);
+    fn(...args);
+  }
+};
+const stringifyMessage = ({ level, name, message, args, timestamp }: any) => `${timestamp} [${level}] ${name} ${message}`;
+const buildMessage = (level: any, name: string, message: string, ...args: any[]) => ({ level, name, message, args, timestamp: Date.now() });
+
+const outLevel = (minLevel: LogLevel = LogLevel.ERROR, logLevel = () => LogLevel.VERBOSE, out = (message: string, ...args: any[]) => { }) => (message: string, ...args: any[]) => {
+  if (minLevel > logLevel()) {
+    return;
+  }
+  out(message, ...args);
+}
+
 class Stopwatch {
   startTime!: number;
   endTime!: number;
@@ -55,6 +75,7 @@ class Stopwatch {
   providedIn: 'root',
 })
 export class LogService {
+  static seen = new Set<string>();
   set name(value: string) {
     this._name = value;
     LogService.longestName =
@@ -91,7 +112,7 @@ export class LogService {
   static readonly buffer$ = LogService.root.out$.pipe(
     scan((acc, val) => {
       acc.push(val as never);
-      if (acc.length > 1000) {
+      if (acc.length > 300) {
         acc.shift();
       }
       return acc;
@@ -149,13 +170,14 @@ export class LogService {
   log = this.outLog;
   warn = this.outWarn;
   error = this.outError;
+  once = doOnce(outLevel(LogLevel.INFO, () => this.level, (message: string, ...args: any[]) => this.out$.emit(buildMessage(this.level, this.name, message, ...args))));
 
   static getLogger(name: string) {
     return new LogService(name, LogService.root);
   }
 
   updatePiping() {
-    const noop = () => {};
+    const noop = () => { };
     ['verbose', 'log', 'warn', 'error'].forEach((l: string, i) => {
       const name = !this.consoleOnly
         ? `out${l.slice(0, 1).toUpperCase()}${l.slice(1)}`
@@ -202,6 +224,7 @@ export class LogService {
   }
 
   monitor(ctx: any, name: string, threshold = 1, countMod = 20) {
+    return;
     if (!LogService.count.has(name)) {
       LogService.count.set(name, 0);
     }
@@ -241,6 +264,7 @@ export class LogService {
   }
 
   eventTap(name: string) {
+    return () => { };
     const e$ = new EventEmitter();
     e$.pipe(
       bufferTime(1000, 1000),
