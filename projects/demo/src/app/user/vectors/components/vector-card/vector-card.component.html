@@ -3,6 +3,7 @@
     <ng-container *ngIf="!editing; else Editing">
       <a
         id="Title"
+        class="mat-title"
         fxFlex="1 1 auto"
         [routerLink]="['/user/vectors', vector | soul, 'edit']"
         [matTooltip]="vector.title"
@@ -10,6 +11,7 @@
       >
       <button
         mat-icon-button
+        color="accent"
         (click)="editing = true"
         [disabled]="!(canEditTitle$ | async)"
       >
@@ -39,8 +41,8 @@
       </button>
     </ng-template>
   </mat-card-title>
-  <mat-card-subtitle
-    >@{{
+  <mat-card-subtitle>
+    by @{{
       vector.owner ? (vector | owner | async) : "(looking up owner)"
     }}
     &mdash; {{ vector | updated | date }}</mat-card-subtitle

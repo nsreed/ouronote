@@ -3,7 +3,10 @@ import {
   ElementRef,
   EventEmitter,
   HostListener,
+  inject,
+  InjectionToken,
   OnInit,
+  Optional,
   Output,
 } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -23,21 +26,51 @@ import { CAPABILITIES } from '../system.service';
 import { PenEvent } from '../user/vectors/classes/PenEvent';
 import { PanTool } from '../user/vectors/tools/pan';
 import { UndoStack } from '../user/vectors/tools/undo-stack';
-import { AfterViewInit } from '@angular/core';
+import { AfterViewInit, Input } from '@angular/core';
 import { IEnhancedPaper } from './IEnhancedPaper';
 import { scan, bufferTime } from 'rxjs/operators';
-
+import { IEnhancedScope } from './IEnhancedScope';
+const BACKGROUND_LAYER = new InjectionToken('background-layer');
 @Directive({
   selector: '[appPaper]',
   exportAs: 'appPaper',
+  providers: [
+    {
+      provide: 'background-layer',
+      multi: false,
+      useFactory: () => {
+        const pd = inject(PaperDirective);
+        return (
+          pd.project.getItem({
+            className: 'Layer',
+            name: 'background-layer',
+          }) ||
+          pd.project.insertLayer(
+            0,
+            new paper.Layer({
+              name: 'background-layer',
+              data: {
+                ignore: true,
+              },
+            })
+          )
+        );
+      },
+    },
+  ],
 })
 export class PaperDirective implements OnInit, AfterViewInit {
   constructor(
+    @Optional()
     private el: ElementRef<HTMLCanvasElement>,
     private snackBar: MatSnackBar,
     private logger: LogService
-  ) { }
+  ) {}
 
+  @Input()
+  set canvas(value: HTMLCanvasElement) {
+    this.el = new ElementRef(value);
+  }
   get canvas(): HTMLCanvasElement {
     return this.el.nativeElement;
   }
@@ -45,10 +78,12 @@ export class PaperDirective implements OnInit, AfterViewInit {
   @Output()
   appPaperChange = new EventEmitter();
 
+  @Output()
   projectChange = new ReplaySubject<IEnhancedPaper>(1);
+  @Output()
   selectedItemsChange: Observable<paper.Item[]> = this.projectChange.pipe(
     tap((p) => console.log('project', p)),
-    switchMap(p => p.selectedItems$),
+    switchMap((p) => p.selectedItems$),
     shareReplay(1)
   );
 
@@ -56,6 +91,7 @@ export class PaperDirective implements OnInit, AfterViewInit {
   public get project(): IEnhancedPaper {
     return this._project;
   }
+  @Input()
   public set project(value: IEnhancedPaper) {
     if (value !== this._project) {
       this._project = value;
@@ -64,7 +100,6 @@ export class PaperDirective implements OnInit, AfterViewInit {
   }
 
   backgroundLayer!: paper.Layer;
-
   hammer!: HammerManager;
 
   resize$ = this.projectChange.pipe(
@@ -83,7 +118,14 @@ export class PaperDirective implements OnInit, AfterViewInit {
     map((frames) => frames.length)
   );
 
-  public scope: paper.PaperScope & UndoStack = new paper.PaperScope() as any;
+  private _scope: IEnhancedScope = new paper.PaperScope() as any;
+  public get scope(): IEnhancedScope {
+    return this._scope;
+  }
+  @Input()
+  public set scope(value: IEnhancedScope) {
+    this._scope = value;
+  }
 
   ignore(fn: any, ...args: any[]) {
     let item: any;
@@ -94,13 +136,13 @@ export class PaperDirective implements OnInit, AfterViewInit {
       // this.scope.settings.insertItems = true;
       return item;
     } finally {
-      if (item) {
-        if (fn.name === 'Layer') {
-          (item as paper.Layer).insertAbove(this.project.activeLayer);
-        } else {
-          this.project.activeLayer.insertChild(0, item);
-        }
-      }
+      // if (item) {
+      //   if (fn.name === 'Layer') {
+      //     (item as paper.Layer).insertAbove(this.project.activeLayer);
+      //   } else {
+      //     this.project.activeLayer.insertChild(0, item);
+      //   }
+      // }
     }
   }
 
@@ -167,20 +209,26 @@ export class PaperDirective implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.setupHammer();
-    this.scope.setup(this.el.nativeElement);
+    if (!this.canvas) {
+      this.logger.log('no canvas! setting up fake canvas?');
+      this.scope.setup(new paper.Size(560, 560));
+      this.canvas = this.scope.project.view.element;
+    } else {
+      this.scope.setup(this.canvas);
+    }
     this.scope.actions = [];
+    this.setupHammer();
 
     // const hammer = new Hammer(this.el.nativeElement);
 
     this.project = this.scope.project as any;
-
     this.project.activate();
     this.scope.project = this.project as any;
     // this.project.currentStyle.strokeWidth = 5;
 
     // CREATE BACKGROUND LAYER
     this.scope.settings.insertItems = false;
+
     this.backgroundLayer = new paper.Layer() as any;
     this.backgroundLayer.data.ignore = true;
     this.backgroundLayer.name = 'background';
@@ -222,22 +270,30 @@ export class PaperDirective implements OnInit, AfterViewInit {
       this.project.view.element.scrollHeight;
     this.project.view.viewSize.height -= this.project.view.viewSize.height;
     this.project.view.viewSize.height = tempHeight;
+    this.drawBackground();
+  }
 
+  drawBackground() {
     if (this.backgroundLayer) {
+      this.logger.log('updating background layer');
       const rect =
         this.backgroundLayer.getItem({
           name: 'background-color',
         }) || new paper.Shape.Rectangle(this.project.view.viewSize);
-      this.backgroundLayer.insertChild(0, rect);
       rect.name = 'background-color';
       rect.fillColor = new paper.Color(1, 1, 1);
       rect.strokeColor = null;
+      rect.data.ignore = true;
+      this.backgroundLayer.insertChild(0, rect);
+
+      // rect.fitBounds(this.project.view.bounds);
+      rect.bounds = this.project.view.bounds;
     }
   }
 
   @HostListener('window:resize', ['$event'])
   onHostResize(event?: any) {
-    // console.log('host resize');
+    this.logger.log('onHostResize');
     this.updateViewSize();
   }
 
@@ -254,8 +310,8 @@ export class PaperDirective implements OnInit, AfterViewInit {
       new paper.Point(event.offsetX, event.offsetY)
     );
     this.scope.view.emit('mousewheel', { event, point });
-
     this.scope.tool?.emit('mousewheel', { event, point });
+    this.drawBackground();
     event.preventDefault();
   }
 

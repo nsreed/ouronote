@@ -2,9 +2,11 @@ import {
   AfterViewInit,
   ChangeDetectorRef,
   Component,
+  Inject,
   NgZone,
   OnDestroy,
   OnInit,
+  Optional,
   ViewChild,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -130,10 +132,14 @@ export class EditVectorComponent
     private snackbar: MatSnackBar,
     private el: ElementRef,
     public settings: SettingsService,
-    private changes: ChangeDetectorRef
+    private changes: ChangeDetectorRef,
+    @Optional()
+    @Inject('background-layer')
+    private bgLayer: paper.Layer
   ) {
     super(vectorService, route, ngGun, userService);
     this.logger = logger.supplemental('edit-vector');
+    this.logger.log('bgLayer', { bgLayer });
   }
   ngOnDestroy(): void {
     this.projectPair?.destroy();
@@ -180,6 +186,7 @@ export class EditVectorComponent
       if (ce) {
         // TODO don't select pen tool if user has already panned
         this.paperDirective.pen.activate();
+        this.changes.detectChanges();
       }
     });
   }
@@ -260,7 +267,7 @@ export class EditVectorComponent
     this.paperDirective.tool$.subscribe((tool) => {
       this.activeTool = tool;
     });
-    this.changes.markForCheck();
+    this.changes.detectChanges();
   }
 
   onFullscreenClick(event: MouseEvent) {

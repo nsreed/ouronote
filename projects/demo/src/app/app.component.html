@@ -1,22 +1,14 @@
 <mat-sidenav-container fxFlexFill>
   <mat-sidenav #nav [mode]="'side'" [opened]="user.is">
-    <!-- <mat-toolbar>
-      <button mat-icon-button (click)="nav.toggle()">
-        <mat-icon>chevron_left</mat-icon>
-      </button>
-    </mat-toolbar> -->
     <mat-action-list style="padding-top: 0; height: 100%" fxLayout="column">
-      <mat-list-item routerLinkActive="active" routerLink="/user/vectors" matTooltip="Vectors">
+      <mat-list-item
+        routerLinkActive="active"
+        routerLink="/user/vectors"
+        matTooltip="Vectors"
+      >
         <mat-icon class="back">chevron_left</mat-icon>
         <i class="fas fa-folder-open"></i>
       </mat-list-item>
-      <!-- <mat-list-item
-        routerLinkActive="active"
-        routerLink="/user/messages"
-        matTooltip="Messages"
-      >
-        <mat-icon mat-list-icon>message</mat-icon>
-      </mat-list-item> -->
       <div fxFlex="1 0 auto"></div>
       <mat-divider></mat-divider>
 
@@ -24,14 +16,27 @@
         <mat-icon mat-list-icon color="primary">more_horiz</mat-icon>
       </mat-list-item>
       <mat-menu #toolsMenu>
-        <button mat-menu-item (click)="bugReport()" matTooltip="Open bug report dialog">
+        <button
+          mat-menu-item
+          (click)="bugReport()"
+          matTooltip="Open bug report dialog"
+        >
           <mat-icon mat-list-icon>bug_report</mat-icon>
           Bug Report
         </button>
-        <button mat-menu-item (click)="peers()" matTooltip="Open peer statistics">
-          <mat-icon mat-list-icon [matBadge]="
+        <button
+          mat-menu-item
+          (click)="peers()"
+          matTooltip="Open peer statistics"
+        >
+          <mat-icon
+            mat-list-icon
+            [matBadge]="
               (diagnosticsService.disconnectedPeers$ | async)?.length || null
-            " matBadgeColor="warn" matBadgeSize="small">
+            "
+            matBadgeColor="warn"
+            matBadgeSize="small"
+          >
             signal_wifi_4_bar
           </mat-icon>
           Peers
@@ -41,19 +46,16 @@
           About Ouronote
         </button>
       </mat-menu>
-      <mat-list-item [matMenuTriggerFor]="sessionMenu" [matTooltip]="'@' + ngGun.auth().alias">
+      <mat-list-item
+        [matMenuTriggerFor]="sessionMenu"
+        [matTooltip]="'@' + ngGun.auth().alias"
+      >
         <mat-icon mat-list-icon color="primary">account_circle</mat-icon>
       </mat-list-item>
       <mat-menu #sessionMenu>
-        <!-- <button mat-menu-item routerLink="/user/settings">Settings</button> -->
         <button mat-menu-item (click)="logout()">Log Out</button>
       </mat-menu>
     </mat-action-list>
-    <!-- <ng-template #pubMenu>
-      <mat-action-list>
-        <mat-list-item routerLink="/login">Log In</mat-list-item>
-      </mat-action-list>
-    </ng-template> -->
   </mat-sidenav>
   <mat-sidenav-content>
     <router-outlet></router-outlet>

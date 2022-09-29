@@ -61,6 +61,7 @@ import { VectorLoaderComponent } from './components/vector-loader/vector-loader.
 import { NumberFormComponent } from './components/number-form/number-form.component';
 import { ToolPickerComponent } from './components/tool-picker/tool-picker.component';
 import { ToolPropertiesComponent } from './components/tool-properties/tool-properties.component';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @NgModule({
   declarations: [
@@ -99,6 +100,7 @@ import { ToolPropertiesComponent } from './components/tool-properties/tool-prope
     FilesModule,
     FlexLayoutModule,
     LogModule,
+    MatAutocompleteModule,
     MatBadgeModule,
     MatButtonModule,
     MatButtonToggleModule,

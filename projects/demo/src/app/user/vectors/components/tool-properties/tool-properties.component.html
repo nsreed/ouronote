@@ -24,11 +24,11 @@
   >
   </app-color-form>
   <ng-container *ngIf="activeTool?.propertyNames?.includes('style')">
+    <mat-hint matSuffix>Stroke Width</mat-hint>
     <app-stroke-width-form
       [tool]="activeTool"
       [style]="activeTool.style"
     ></app-stroke-width-form>
-    <p>Stroke Width</p>
   </ng-container>
   <ng-container
     *ngIf="

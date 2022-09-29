@@ -11,7 +11,7 @@
       class="ui"
       *ngIf="vectorNode$ | async"
       fxLayoutAlign="stretch center"
-      fxFlex="0 0 auto"
+      fxFlex="0 1 auto"
       fxLayout="row"
     >
       <div fxFlex="1 1 auto" class="title">
@@ -119,7 +119,7 @@
         dense
         displayMode="flat"
         *ngIf="paper.project && (canEdit$ | async)"
-        fxFlex="0 1 14em"
+        fxFlex="0 1 12em"
         class="ui"
       >
         <mat-expansion-panel expanded>

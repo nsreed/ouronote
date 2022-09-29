@@ -15,14 +15,17 @@
     "resolveJsonModule": true,
     "paths": {
       "log": [
+        "projects/log",
         "dist/log/fesm2020",
         "dist/log"
       ],
       "ng-gun": [
+        "projects/ng-gun",
         "dist/ng-gun/fesm2020",
         "dist/ng-gun"
       ],
       "ng-gun-forms": [
+        "projects/ng-gun-forms",
         "dist/ng-gun-forms/fesm2020",
         "dist/ng-gun-forms"
       ]

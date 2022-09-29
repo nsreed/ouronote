@@ -1,6 +1,6 @@
 {
   "name": "ouronote",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "scripts": {
     "ng": "yarn",
     "start": "node app-server local --https-port 4321 --https-crt app-server/ouronote-dev.crt --https-key app-server/ouronote-dev.key --data-dir data/radata",
@@ -36,7 +36,6 @@
     "@fortawesome/fontawesome-svg-core": "6.1.1",
     "@fortawesome/free-solid-svg-icons": "6.1.1",
     "@jsdevtools/host-environment": "^2.1.2",
-    "@types/gun": "^0.9.3",
     "aspect-ts": "^1.0.6",
     "esbuild": "^0.14.49",
     "express": "^4.17.1",
@@ -60,6 +59,7 @@
     "@angular/compiler-cli": "^14.0.6",
     "@schematics/angular": "14.0.6",
     "@types/file-saver": "^2.0.5",
+    "@types/gun": "^0.9.3",
     "@types/hammerjs": "^2.0.39",
     "@types/jasmine": "4.0.3",
     "@types/node": "18.0.6",

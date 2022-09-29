@@ -1,22 +1,36 @@
-<h1 mat-dialog-title>
-  Create Vector
-</h1>
+<h1 mat-dialog-title>Create Vector</h1>
 <form fxFlex="1 0 auto" [formGroup]="form" mat-dialog-content>
-  <div fxLayout="row">
+  <div fxLayoutAlign="stretch center" fxLayout="row">
     <mat-form-field fxFlex="1 0 auto">
       <mat-label>Title</mat-label>
-      <input matInput formControlName="title">
+      <input matInput formControlName="title" />
+      <button mat-icon-button (click)="randomizeName()" matSuffix>
+        <mat-icon
+          style="width: unset; align-self: center"
+          class="fas fa-dice"
+        ></mat-icon>
+      </button>
     </mat-form-field>
-    <button mat-icon-button (click)="randomizeName()">
-      <i class="fas fa-dice"></i>
-    </button>
   </div>
   <span fxLayout="column">
-    <app-license-selector [control]="form.controls.license" [customControl]="form.controls.customLicense">
+    <app-license-selector
+      [control]="form.controls.license"
+      [customControl]="form.controls.customLicense"
+    >
     </app-license-selector>
   </span>
-  <mat-error *ngIf="error && !sumbitted">There was a problem creating the vector. <br/>If the issue persists, try logging out and back in.</mat-error>
+  <mat-error *ngIf="error && !sumbitted"
+    >There was a problem creating the vector. <br />If the issue persists, try
+    logging out and back in.</mat-error
+  >
 </form>
 <div fxFlexAlign="center end" mat-dialog-actions [formGroup]="form">
-    <button mat-raised-button color="primary" [disabled]="sumbitted || !form.valid" (click)="create()">Create</button>
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="sumbitted || !form.valid"
+    (click)="create()"
+  >
+    Create
+  </button>
 </div>

@@ -9,11 +9,11 @@
 </mat-radio-group> -->
 
 <mat-form-field>
-  <mat-label>License</mat-label>
+  <mat-label>Select a License</mat-label>
   <mat-select [formControl]="control">
     <mat-option>NONE</mat-option>
     <mat-option value="custom">Custom...</mat-option>
-    <mat-option *ngFor="let lkv of licenses|keyvalue" [value]="lkv.value">
+    <mat-option *ngFor="let lkv of licenses | keyvalue" [value]="lkv.value">
       {{ lkv.value.type || lkv.value.name }}
     </mat-option>
   </mat-select>

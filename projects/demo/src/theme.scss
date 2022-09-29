@@ -1,39 +1,73 @@
 @use "@angular/material" as mat;
 // Define a dark theme
+@include mat.core();
 
-$dark-primary: mat.define-palette(mat.$pink-palette);
-$dark-accent: mat.define-palette(mat.$blue-grey-palette);
+$dark-primary: mat.define-palette(mat.$indigo-palette);
+$dark-accent: mat.define-palette(mat.$blue-gray-palette);
+$dark-tertiary: mat.define-palette(mat.$cyan-palette);
+$dark-warn: mat.define-palette(mat.$red-palette);
 
-$dark-theme: mat.define-light-theme(
+$typos: mat.define-typography-config(
+  $title: mat.define-typography-level(1em, 2rem, 400, $letter-spacing: 0.05rem),
+  $headline:
+    mat.define-typography-level(
+      1.2em,
+      $line-height: 2rem,
+      $letter-spacing: -0.5rem
+    ),
+  $caption: mat.define-typography-level(0.6em, 0.6em, 300),
+  $button:
+    mat.define-typography-level(1em, 200rem, 500, $letter-spacing: 0.95rem),
+  $input: mat.define-typography-level(1em, 1, 300),
+);
+
+$dark-theme: mat.define-dark-theme(
   (
     color: (
       primary: $dark-primary,
       accent: $dark-accent,
+      warn: $dark-warn,
     ),
     density: -3,
   )
 );
 
-@include mat.all-component-themes($dark-theme);
+$light-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $dark-primary,
+      accent: $dark-accent,
+      tertiary: $dark-accent,
+      warn: $dark-warn,
+    ),
+    density: -3,
+  )
+);
 
-[dense] {
-  // $denser-theme: mat.define-light-theme(
-  //   (
-  //     density: -3,
-  //   )
-  // );
-  // @include mat.expansion-theme($denser-theme);
+body {
+  @include mat.all-component-themes($light-theme);
+  @include mat.all-component-typographies($typos);
+  // .mat-icon-button {
+  //   width: 20px;
+  //   height: 20px;
+  // }
+  .mat-icon[data-mat-icon-type="svg"] > svg g {
+    stroke: currentColor;
+    stroke-width: 50px;
+  }
+  [dense] {
+    .mat-expansion-panel {
+      .mat-expansion-panel-body {
+        padding: 0.4rem 0.4rem 4em;
 
-  .mat-expansion-panel {
-    .mat-expansion-panel-body {
-      padding: 0 0.4rem 1em;
-
-      .mat-form-field {
-        width: 100%;
-        width: -webkit-fill-available;
+        .mat-form-field {
+          width: 100%;
+          width: -webkit-fill-available;
+        }
+        .mat-divider {
+          margin: 0.5rem -0.4rem;
+        }
       }
     }
   }
 }
-
-@include mat.core();
