@@ -42,6 +42,7 @@ export class PenTool extends DrawTool {
   })
   scale = false;
 
+  // @Reflect.metadata('design:enumerables', {})
   propertyNames = ['style', 'simplify', 'smoothingStrength', 'scale'];
 
   penDown: Observable<PenEvent | paper.ToolEvent> = CAPABILITIES.POINTER
@@ -70,8 +71,8 @@ export class PenTool extends DrawTool {
       this.path.style = this.style;
       this.path.style = this.project.currentStyle;
       const width = this.scale
-        ? (1 / this.project.view.zoom) * this.project.currentStyle.strokeWidth
-        : this.project.currentStyle.strokeWidth;
+        ? (1 / this.project.view.zoom) * this.style.strokeWidth
+        : this.style.strokeWidth;
       this.path.strokeWidth = width;
       this.path.strokeColor = this.project.currentStyle.strokeColor;
       this.path.fillColor = this.project.currentStyle.fillColor;
@@ -116,15 +117,23 @@ export class PenTool extends DrawTool {
         const actualTolerance = // calculate the actual applied tolerance
           defaultSmoothingTolerance * scalingFactor * this.smoothingStrength;
         // This value can be modified by the user to impact the smoothing strength
+        // TODO move the smothing options into discrete features
+        // this.path.smooth({ type: 'continuous', factor: 0.1 });
+        //const sizeBefore = JSON.stringify(this.path).length;
         this.path.simplify(actualTolerance);
+        //const sizeAfter = JSON.stringify(this.path).length;
 
         // Gloating
-        const difference = segmentCount - this.path.segments.length;
-        const percentage =
-          100 - Math.round((this.path.segments.length / segmentCount) * 100);
-        console.log(
-          `Smoothing: ${difference} of the ${segmentCount} segments were removed, saving ${percentage}%`
-        );
+        //const difference = segmentCount - this.path.segments.length;
+        //const percentage =
+        //  100 - Math.round((this.path.segments.length / segmentCount) * 100);
+        //
+        // console.log(
+        //   `Smoothing: removed ${difference} of the ${segmentCount} segments, or (${percentage}%) segments... `,
+        //   `went from ${sizeBefore} to ${sizeAfter} bytes, or ${Math.round(
+        //     (sizeAfter / sizeBefore) * 100
+        //   )}% original`
+        // );
       }
 
       const pair = (this.path as any).pair as ItemPair;

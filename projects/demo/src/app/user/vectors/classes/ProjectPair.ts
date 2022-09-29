@@ -46,6 +46,9 @@ export class ProjectPair extends PaperPair {
     logger: LogService
   ) {
     super(project, project, scope, logger); // UGN
+    this.layers.on().subscribe(() => {
+      this.project.activate();
+    });
     this.setupProject();
     // this.logger.log('new ProjectPair');
     (project as any).pair = this;

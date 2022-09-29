@@ -3,7 +3,7 @@
 @include mat.core();
 
 $dark-primary: mat.define-palette(mat.$indigo-palette);
-$dark-accent: mat.define-palette(mat.$blue-gray-palette);
+$dark-accent: mat.define-palette(mat.$light-blue-palette);
 $dark-tertiary: mat.define-palette(mat.$cyan-palette);
 $dark-warn: mat.define-palette(mat.$red-palette);
 
@@ -51,6 +51,9 @@ body {
   //   width: 20px;
   //   height: 20px;
   // }
+  .mat-drawer-content {
+    position: unset;
+  }
   .mat-icon[data-mat-icon-type="svg"] > svg g {
     stroke: currentColor;
     stroke-width: 50px;
@@ -58,14 +61,15 @@ body {
   [dense] {
     .mat-expansion-panel {
       .mat-expansion-panel-body {
-        padding: 0.4rem 0.4rem 4em;
+        padding: 0 0.4rem 0.4rem;
 
         .mat-form-field {
           width: 100%;
           width: -webkit-fill-available;
         }
         .mat-divider {
-          margin: 0.5rem -0.4rem;
+          -webkit-margin-collapse: collapse;
+          padding: 0.5rem -0.4rem;
         }
       }
     }

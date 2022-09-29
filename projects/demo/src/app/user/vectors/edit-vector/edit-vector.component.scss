@@ -9,6 +9,40 @@
   max-height: -webkit-fill-available;
   min-height: 100vh;
   min-height: -webkit-fill-available;
+
+  mat-toolbar {
+    width: 100%;
+    z-index: 7;
+    & > div.title {
+      // max-width: calc(100vw - 46px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    & > button.request {
+      margin-left: 1em;
+    }
+    &:nth-of-type(2) {
+      mat-toolbar-row {
+        display: flex;
+        flex-wrap: wrap;
+        overflow: visible;
+        height: 18px;
+        justify-content: space-around;
+        margin-top: -14px;
+        z-index: 1;
+        & > * {
+          z-index: 8;
+        }
+        .oro-action {
+          margin-top: 14px;
+          flex-grow: 0;
+          flex-shrink: 0;
+          align-self: stretch;
+          justify-self: stretch;
+        }
+      }
+    }
+  }
 }
 
 #WorkspaceContainer {
@@ -18,11 +52,17 @@
   min-height: 100vh;
   min-height: -webkit-fill-available;
 
-  canvas#Workspace {
+  canvas {
     // outline: solid 10px gray;
     touch-action: none;
     position: absolute;
+    z-index: 0;
+
     // height: 100vh;
+  }
+  canvas#Foreground {
+    opacity: 100%;
+    pointer-events: none;
   }
 }
 
@@ -136,22 +176,11 @@ mat-list-item.active {
 //   border-top: solid 1px rgba(0,0,0,.12);
 // }
 
-p {
-  margin-top: -1em;
-  padding-top: 0;
+// p {
+//   margin-top: -1em;
+//   padding-top: 0;
 
-  margin-bottom: 0.5em;
-  padding-left: 1em;
-  padding-bottom: 0.15em;
-}
-mat-toolbar {
-  width: 100%;
-  & > div.title {
-    // max-width: calc(100vw - 46px);
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  & > button.request {
-    margin-left: 1em;
-  }
-}
+//   margin-bottom: 0.5em;
+//   padding-left: 1em;
+//   padding-bottom: 0.15em;
+// }

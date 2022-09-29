@@ -1,12 +1,28 @@
-<div gdColumns="1fr 1fr" cols="2" rowHeight="1:1" id="ToolsContainer">
-  <ng-container *ngFor="let toolCategory of ['view', 'draw', 'select', 'edit']">
-    <ng-container>
-      <ng-container *ngFor="let tool of tools">
-        <ng-container
-          *ngIf="tool.category === toolCategory && tool.enabled$ | async"
-        >
+<ng-container *ngFor="let tkv of sortedCategories">
+  <button
+    mat-fab
+    [ngClass]="{
+      'mat-elevation-z3': activeCategory === tkv.key,
+      active: activeCategory === tkv.key,
+      'mat-elevation-z0': activeCategory !== tkv.key
+    }"
+    class="category"
+    (click)="onCategoryClick(tkv, catTrigger, GroupMenu)"
+    [cdkMenuTriggerFor]="GroupMenu"
+    #catTrigger="cdkMenuTriggerFor"
+    [disabled]="disabledCategories[tkv.key]"
+  >
+    <app-tool-icon
+      [tool]="activeCategory === tkv.key ? activeTool : tkv.value[0]"
+    ></app-tool-icon>
+  </button>
+  <ng-template #GroupMenu>
+    <div cdkMenu @myInsertRemoveTrigger>
+      <ng-container *ngFor="let tool of tkv.value | slice: 0">
+        <ng-container *ngIf="tool.enabled$ | async">
           <button
-            mat-button
+            mat-fab
+            cdkMenuItem
             (click)="tool.activate()"
             [title]="tool.name"
             [ngClass]="{
@@ -14,24 +30,10 @@
             }"
             class="tool"
           >
-            <ng-container *ngIf="tool.matIconName; else MatIcon">
-              <mat-icon>{{ tool.matIconName }}</mat-icon>
-            </ng-container>
-            <ng-template #MatIcon>
-              <mat-icon
-                *ngIf="tool.matIcon; else FaIcon"
-                [svgIcon]="tool.matIcon"
-              ></mat-icon>
-            </ng-template>
-            <ng-template #FaIcon>
-              <mat-icon
-                style="width: unset"
-                class="{{ 'fa fa-' + tool.icon }}"
-              ></mat-icon>
-            </ng-template>
+            <app-tool-icon [tool]="tool"></app-tool-icon>
           </button>
         </ng-container>
       </ng-container>
-    </ng-container>
-  </ng-container>
-</div>
+    </div>
+  </ng-template>
+</ng-container>

@@ -90,12 +90,29 @@ mat-radio-group {
 //     color: blue;
 //   }
 // }
-
-a {
-  color: inherit;
-  font-weight: bold;
+.sheet-backdrop {
+  filter: url(#f1);
+  background-color: rgba(255, 255, 255, 0.6);
+  // opacity: 20%;
 }
-
+body {
+  .cdk-overlay-container {
+    .mat-bottom-sheet-container,
+    .mat-bottom-sheet-container-large {
+      background-color: transparent;
+      box-shadow: unset;
+    }
+  }
+  a {
+    color: inherit;
+    font-weight: bold;
+  }
+  .mat-sidenav-container {
+    position: unset;
+    min-height: -webkit-fill-available;
+    max-height: -webkit-fill-available;
+  }
+}
 // .list {
 //   display: grid;
 //   column-gap: 0.25rem;

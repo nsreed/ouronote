@@ -10,11 +10,40 @@ import { LogService } from 'log';
 import { PaperEditDirective } from '../../../../vector/paper-edit.directive';
 import { EditVectorComponent } from '../../edit-vector/edit-vector.component';
 import { VectorTool } from '../../tools/paper-tool';
+import { TemplateRef } from '@angular/core';
+import { CdkMenuTrigger, ContextMenuTracker } from '@angular/cdk/menu';
+import { MatMenuTrigger } from '@angular/material/menu';
+import {
+  transition,
+  animate,
+  style,
+  trigger,
+  state,
+} from '@angular/animations';
 
 @Component({
   selector: 'app-tool-picker',
   templateUrl: './tool-picker.component.html',
   styleUrls: ['./tool-picker.component.scss'],
+  animations: [
+    trigger('flyInOut', [
+      state('in', style({ transform: 'translatX(0)' })),
+      transition('void => *', [
+        style({ transform: 'translateX(-100)' }),
+        animate(100),
+      ]),
+      transition('* => void', [
+        animate(100, style({ transform: 'translateX(100%)' })),
+      ]),
+    ]),
+    trigger('myInsertRemoveTrigger', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('400ms', style({ opacity: 1 })),
+      ]),
+      transition(':leave', [animate('400ms', style({ opacity: 0 }))]),
+    ]),
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ToolPickerComponent implements OnInit {
@@ -22,11 +51,95 @@ export class ToolPickerComponent implements OnInit {
     private logger: LogService,
     public editWorkspace: EditVectorComponent,
     private changes: ChangeDetectorRef,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private menus: ContextMenuTracker
   ) {}
-  @Input()
-  tools: VectorTool[] = [];
 
+  @Input()
+  toolCategories: string[] = ['view', 'draw', 'select', 'edit'];
+  categories = {
+    view: [],
+    draw: [],
+    select: [],
+    edit: [],
+  } as Record<string, VectorTool[]>;
+  sortedCategories = [] as { key: string; value: VectorTool[] }[];
+  disabledCategories = {} as Record<string, string>;
+
+  checkCategories() {
+    Object.entries(this.categories).forEach(([name, tools]) => {
+      if (!tools.some((t) => t.enabled)) {
+        this.disabledCategories[name] = 'no tools enabled';
+      } else {
+        delete this.disabledCategories[name];
+      }
+    });
+    this.changes.detectChanges();
+  }
+
+  private _tools: VectorTool[] = [];
+  public get tools(): VectorTool[] {
+    return this._tools;
+  }
+  @Input()
+  public set tools(value: VectorTool[]) {
+    this._tools = value;
+    value
+      ?.filter((tool) => !this.categories[tool.category].includes(tool))
+      .forEach((tool) => {
+        (this.categories as any)[tool.category].push(tool);
+        tool.enabled$.subscribe((enabled) => {
+          // if(!enabled){
+          if (!this.categories[tool.category].some((t) => t.enabled)) {
+            this.disabledCategories[tool.category] = 'no tools are enabled!';
+          } else {
+            delete this.disabledCategories[tool.category];
+          }
+          // }
+          this.changes.detectChanges();
+        });
+        this.sortedCategories = [
+          {
+            key: 'view',
+            value: this.categories.view,
+          },
+          {
+            key: 'select',
+            value: this.categories.select,
+          },
+          {
+            key: 'draw',
+            value: this.categories.draw,
+          },
+          {
+            key: 'edit',
+            value: this.categories.edit,
+          },
+        ] as any;
+      });
+
+    this.checkCategories();
+  }
+
+  @Input()
+  orient: 'vertical' | 'horizontal' = 'vertical';
+
+  private _selectedItems: any[] = [];
+  public get selectedItems(): any[] {
+    return this._selectedItems;
+  }
+  @Input()
+  public set selectedItems(value: any[]) {
+    this._selectedItems = value;
+    if (value.length > 0) {
+      delete this.disabledCategories.edit;
+    } else {
+      this.disabledCategories.edit = 'no selection';
+    }
+    this.changes.detectChanges();
+  }
+
+  activeCategory?: string;
   private _activeTool?: VectorTool | undefined;
   public get activeTool(): VectorTool | undefined {
     return this._activeTool;
@@ -34,7 +147,27 @@ export class ToolPickerComponent implements OnInit {
   @Input()
   public set activeTool(value: VectorTool | undefined) {
     this._activeTool = value;
-    this.changes.markForCheck();
+    if (value) {
+      this.activeCategory = value?.category as any;
+      if (this.activeCategory !== undefined) {
+        const sortedCategory = this.sortedCategories.find(
+          (c) => c.key === this.activeCategory
+        );
+        if (sortedCategory) {
+          sortedCategory.value = [
+            value,
+            ...sortedCategory.value.filter((t) => t !== value),
+          ];
+        }
+        // this.sortedCategories[this.activeCategory] = [
+        //   value,
+        //   ...this.sortedCategories[this.activeCategory].filter(
+        //     (t) => t !== value
+        //   ),
+        // ];
+      }
+    }
+    this.changes.detectChanges();
   }
 
   @Input()
@@ -47,18 +180,38 @@ export class ToolPickerComponent implements OnInit {
   @Input()
   public set paperDirective(value: PaperEditDirective | undefined) {
     this._paperDirective = value;
+    value?.selectedItemsChange.subscribe((items) => {
+      this.selectedItems = items;
+      this.changes.detectChanges();
+    });
     this.changes.markForCheck();
   }
 
-  ngOnInit(): void {
-    if (this.paperDirective?.scope?.tools) {
-      this.tools = this.paperDirective.scope.tools as any;
-      this.activeTool = this.paperDirective.scope.tool as any;
-      this.changes.markForCheck();
-      this.paperDirective.tool$.subscribe((tool) => {
-        this.activeTool = tool as any;
-        this.changes.markForCheck();
-      });
+  onCategoryClick(
+    cat: any,
+    catTrigger: CdkMenuTrigger,
+    ref: TemplateRef<unknown>
+  ) {
+    if (cat.value[0] !== this.activeTool) {
+      // catTrigger.closed.subscribe(() => {
+      //   console.log('a menusl');
+      // });
+      cat.value[0].activate();
+      // cat.value.find((t: VectorTool) => t.enabled).activate();
+      // const menu = catTrigger.getMenu();
+      // menu?.menuStack?.closeAll();
     }
+  }
+
+  ngOnInit(): void {
+    // if (this.paperDirective?.scope?.tools) {
+    //   this.tools = this.paperDirective.scope.tools as any;
+    //   this.activeTool = this.paperDirective.scope.tool as any;
+    //   this.changes.markForCheck();
+    //   this.paperDirective.tool$.subscribe((tool) => {
+    //     this.activeTool = tool as any;
+    //     this.changes.markForCheck();
+    //   });
+    // }
   }
 }

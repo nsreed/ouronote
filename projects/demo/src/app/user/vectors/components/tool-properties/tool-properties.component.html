@@ -23,13 +23,18 @@
     label="Fill Color"
   >
   </app-color-form>
-  <ng-container *ngIf="activeTool?.propertyNames?.includes('style')">
+  <ng-container
+    [appObject]="activeTool"
+    *ngIf="activeTool?.propertyNames?.includes('style')"
+  >
     <mat-hint matSuffix>Stroke Width</mat-hint>
     <app-stroke-width-form
       [tool]="activeTool"
       [style]="activeTool.style"
+      appObjectProperty="strokeWidth"
     ></app-stroke-width-form>
   </ng-container>
+
   <ng-container
     *ngIf="
       activeTool.name === 'text' && activeTool?.propertyNames?.includes('style')

@@ -17,7 +17,7 @@ import { VectorGraph } from '../../VectorGraph';
 import { ProjectPair } from '../classes/ProjectPair';
 import { OURONOTE_DEFAULT_TITLE } from './../../../constants';
 
-import { ElementRef } from '@angular/core';
+import { ElementRef, TemplateRef } from '@angular/core';
 import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -56,6 +56,18 @@ import { LassoSelectTool, RectangleSelectTool } from '../tools/select';
 import { ShapeTool } from '../tools/shape';
 import { TextTool } from '../tools/text';
 import { VectorService } from '../vector.service';
+import {
+  MatBottomSheet,
+  matBottomSheetAnimations,
+} from '@angular/material/bottom-sheet';
+import {
+  CdkDragMove,
+  DragDrop,
+  DragRef,
+  DragRefConfig,
+  Point,
+} from '@angular/cdk/drag-drop';
+import { AnimationTriggerMetadata } from '@angular/animations';
 
 @Component({
   templateUrl: './edit-vector.component.html',
@@ -133,16 +145,46 @@ export class EditVectorComponent
     private el: ElementRef,
     public settings: SettingsService,
     private changes: ChangeDetectorRef,
-    @Optional()
-    @Inject('background-layer')
-    private bgLayer: paper.Layer
+    public matBottomSheet: MatBottomSheet,
+    public dragDrop: DragDrop
   ) {
     super(vectorService, route, ngGun, userService);
     this.logger = logger.supplemental('edit-vector');
-    this.logger.log('bgLayer', { bgLayer });
+    console.log({ matBottomSheetAnimations });
   }
   ngOnDestroy(): void {
     this.projectPair?.destroy();
+  }
+
+  @ViewChild('BottomSheet')
+  bottomSheet?: TemplateRef<any>;
+
+  // onConstrainDrag(
+  //   upp: Point,
+  //   dragRef: DragRef,
+  //   dimensions: ClientRect,
+  //   pickupPositionInEl: Point
+  // ) {
+  //   return {
+  //     x: dragRef.getRootElement().offsetLeft,
+  //     y: dragRef.getRootElement().offsetTop,
+  //   };
+  // }
+  onBottomBarDrag(event: CdkDragMove) {
+    if (Math.abs(event.distance.y) > 40) {
+      console.log('you did it!');
+      if (this.bottomSheet && !this.matBottomSheet._openedBottomSheetRef) {
+        this.matBottomSheet
+          .open(this.bottomSheet)
+          .afterDismissed()
+          .subscribe(() => {
+            this.dragDrop.createDrag(event.source.element);
+          });
+        event.source._dragRef.reset();
+        event.source.reset();
+        event.source._dragRef.dispose();
+      }
+    }
   }
 
   ngAfterViewInit(): void {
@@ -250,7 +292,7 @@ export class EditVectorComponent
     // this.logger.monitor(project.view, 'update', 1000 / 60, 1000);
     let lastSelected: paper.Item[] = [];
     (project as IEnhancedPaper).selectedItems$.subscribe((items) => {
-      this.logger.log('selected items change', items);
+      this.logger.verbose('selected items change', items.length);
       lastSelected.forEach((item) => {
         // Do sanity checks?
         if (item instanceof paper.PointText) {

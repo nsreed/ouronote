@@ -1,10 +1,12 @@
 import {
+  AfterViewInit,
   Directive,
   ElementRef,
   EventEmitter,
   HostListener,
-  inject,
+  Inject,
   InjectionToken,
+  Input,
   OnInit,
   Optional,
   Output,
@@ -13,94 +15,25 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import * as Hammer from 'hammerjs';
 import { LogService } from 'log';
 import * as paper from 'paper';
-import { from, fromEvent, timer, ReplaySubject, Observable } from 'rxjs';
+import { from, fromEvent, Observable, ReplaySubject, timer } from 'rxjs';
 import {
+  bufferTime,
   map,
   mergeMap,
-  switchMap,
   shareReplay,
-  filter,
+  switchMap,
   tap,
 } from 'rxjs/operators';
 import { CAPABILITIES } from '../system.service';
 import { PenEvent } from '../user/vectors/classes/PenEvent';
-import { PanTool } from '../user/vectors/tools/pan';
-import { UndoStack } from '../user/vectors/tools/undo-stack';
-import { AfterViewInit, Input } from '@angular/core';
 import { IEnhancedPaper } from './IEnhancedPaper';
-import { scan, bufferTime } from 'rxjs/operators';
 import { IEnhancedScope } from './IEnhancedScope';
-const BACKGROUND_LAYER = new InjectionToken('background-layer');
-@Directive({
-  selector: '[appPaper]',
-  exportAs: 'appPaper',
-  providers: [
-    {
-      provide: 'background-layer',
-      multi: false,
-      useFactory: () => {
-        const pd = inject(PaperDirective);
-        return (
-          pd.project.getItem({
-            className: 'Layer',
-            name: 'background-layer',
-          }) ||
-          pd.project.insertLayer(
-            0,
-            new paper.Layer({
-              name: 'background-layer',
-              data: {
-                ignore: true,
-              },
-            })
-          )
-        );
-      },
-    },
-  ],
-})
-export class PaperDirective implements OnInit, AfterViewInit {
-  constructor(
-    @Optional()
-    private el: ElementRef<HTMLCanvasElement>,
-    private snackBar: MatSnackBar,
-    private logger: LogService
-  ) {}
+import { PaperScope } from './paper-scope.directive';
 
-  @Input()
-  set canvas(value: HTMLCanvasElement) {
-    this.el = new ElementRef(value);
-  }
-  get canvas(): HTMLCanvasElement {
-    return this.el.nativeElement;
-  }
-
-  @Output()
-  appPaperChange = new EventEmitter();
-
+@Directive()
+export class PaperBase implements OnInit, AfterViewInit {
   @Output()
   projectChange = new ReplaySubject<IEnhancedPaper>(1);
-  @Output()
-  selectedItemsChange: Observable<paper.Item[]> = this.projectChange.pipe(
-    tap((p) => console.log('project', p)),
-    switchMap((p) => p.selectedItems$),
-    shareReplay(1)
-  );
-
-  private _project!: IEnhancedPaper;
-  public get project(): IEnhancedPaper {
-    return this._project;
-  }
-  @Input()
-  public set project(value: IEnhancedPaper) {
-    if (value !== this._project) {
-      this._project = value;
-      this.projectChange.next(value);
-    }
-  }
-
-  backgroundLayer!: paper.Layer;
-  hammer!: HammerManager;
 
   resize$ = this.projectChange.pipe(
     switchMap((project) =>
@@ -117,32 +50,170 @@ export class PaperDirective implements OnInit, AfterViewInit {
     bufferTime(1000),
     map((frames) => frames.length)
   );
+  constructor(
+    @Optional()
+    protected el: ElementRef<HTMLCanvasElement>,
+    protected snackBar: MatSnackBar,
+    protected logger: LogService,
+    @Inject(PaperScope)
+    protected ps: PaperScope & IEnhancedScope & paper.PaperScope
+  ) {}
+
+  ngOnInit(): void {
+    if (!this.canvas) {
+      this.logger.log('no canvas! setting up fake canvas?');
+      this.scope.setup(new paper.Size(560, 560));
+      this.canvas = this.scope.project.view.element;
+    } else {
+      this.scope.setup(this.canvas);
+    }
+    this.scope.actions = [];
+    this.project = this.scope.project as any;
+    this.project.activate();
+    this.scope.project = this.project as any;
+  }
+
+  ngAfterViewInit() {
+    // update the view size after a delay to account for UI loading time
+    timer(1000).subscribe(() => this.updateViewSize());
+  }
+
+  private _project!: IEnhancedPaper;
+  public get project(): IEnhancedPaper {
+    return this._project;
+  }
+  @Input()
+  public set project(value: IEnhancedPaper) {
+    if (value !== this._project) {
+      this._project = value;
+      this.projectChange.next(value);
+    }
+  }
 
   private _scope: IEnhancedScope = new paper.PaperScope() as any;
   public get scope(): IEnhancedScope {
-    return this._scope;
+    return this._scope as IEnhancedScope;
   }
   @Input()
   public set scope(value: IEnhancedScope) {
     this._scope = value;
   }
 
-  ignore(fn: any, ...args: any[]) {
+  @Input()
+  set canvas(value: HTMLCanvasElement) {
+    this.el = new ElementRef(value);
+  }
+  get canvas(): HTMLCanvasElement {
+    return this.el.nativeElement;
+  }
+
+  updateViewSize() {}
+}
+
+@Directive({
+  selector: '[paperMirror]',
+  exportAs: 'paperMirror',
+})
+export class PaperMirrorDirective extends PaperBase {
+  private cursor!: paper.Shape.Circle;
+  private _source!: PaperDirective;
+  public get source(): PaperDirective {
+    return this._source;
+  }
+  @Input('paperMirror')
+  public set source(value: PaperDirective) {
+    this._source = value;
+    this.source.viewBounds$.subscribe(() => this.updateFromSource());
+    this.projectChange.subscribe((p) => {
+      this.updateFromSource();
+
+      this.cursor = (this.project.getItem({ name: 'cursor' }) ||
+        new this.ps.Shape.Circle(this.project.view.center, 50)) as any;
+      this.cursor.name = 'cursor';
+      this.project.activeLayer.addChild(this.cursor);
+
+      value.project.view.on('mousewheel', (e: any) => {
+        this.cursor.position = e.point;
+      });
+
+      [
+        'click',
+        'doubleclick',
+        'mousemove',
+        'mousedown',
+        'mousedrag',
+        'mouseup',
+        'mouseenter',
+        'mouseleave',
+      ].forEach((eType) => {
+        value.project.view.on(eType, (e: any) => {
+          this.cursor.position = e.point;
+          this.updateCursor();
+          this.project.view.emit(eType, {
+            ...e,
+            currentTarget: value.project.view,
+            target: this.project.view,
+            bubbles: true,
+          } as MouseEvent);
+        });
+      });
+    });
+  }
+
+  updateCursor() {
+    if (this.cursor) {
+      if (CAPABILITIES.POINTER || CAPABILITIES.TOUCH) {
+        this.cursor.remove();
+        return;
+      }
+      let s =
+        (this.source.scope.tool as any).effectiveStyle ||
+        this.source.project.currentStyle;
+      this.cursor.strokeWidth = s.strokeWidth;
+      this.cursor.strokeColor = s.strokeColor;
+      this.cursor.style.strokeScaling =
+        (this.source.scope.tool as any).scale || s.strokeScaling;
+    }
+  }
+
+  updateViewSize(): void {
+    this.updateFromSource();
+  }
+
+  updateFromSource() {
+    this.project.view.autoUpdate = false;
+    this.project.view.center = this.source.project.view.center;
+    this.project.view.zoom = this.source.project.view.zoom;
+    this.project.view.viewSize = this.source.project.view.viewSize;
+    this.project.activate();
+    this.source.project.activate();
+    this.project.view.autoUpdate = true;
+    this.project.view.update();
+  }
+}
+
+@Directive({
+  selector: '[appPaper]',
+  exportAs: 'appPaper',
+})
+export class PaperDirective extends PaperBase implements OnInit, AfterViewInit {
+  backgroundLayer!: paper.Layer;
+  hammer!: HammerManager;
+
+  @Output()
+  selectedItemsChange: Observable<paper.Item[]> = this.projectChange.pipe(
+    tap((p) => console.log('project', p)),
+    switchMap((p) => p.selectedItems$),
+    shareReplay(1)
+  );
+
+  newIgnored(fn: any, ...args: any[]) {
     let item: any;
     try {
-      // this.scope.settings.insertItems = false;
       item = new fn(...args);
       item.data.ignore = true;
-      // this.scope.settings.insertItems = true;
       return item;
     } finally {
-      // if (item) {
-      //   if (fn.name === 'Layer') {
-      //     (item as paper.Layer).insertAbove(this.project.activeLayer);
-      //   } else {
-      //     this.project.activeLayer.insertChild(0, item);
-      //   }
-      // }
     }
   }
 
@@ -169,6 +240,7 @@ export class PaperDirective implements OnInit, AfterViewInit {
           )
         )
         .subscribe((e: any) => {
+          this.scope.view.emit(e.event.type, e);
           this.scope.tool.emit(e.event.type, e);
         });
     }
@@ -209,21 +281,8 @@ export class PaperDirective implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    if (!this.canvas) {
-      this.logger.log('no canvas! setting up fake canvas?');
-      this.scope.setup(new paper.Size(560, 560));
-      this.canvas = this.scope.project.view.element;
-    } else {
-      this.scope.setup(this.canvas);
-    }
-    this.scope.actions = [];
+    super.ngOnInit();
     this.setupHammer();
-
-    // const hammer = new Hammer(this.el.nativeElement);
-
-    this.project = this.scope.project as any;
-    this.project.activate();
-    this.scope.project = this.project as any;
     // this.project.currentStyle.strokeWidth = 5;
 
     // CREATE BACKGROUND LAYER
@@ -234,11 +293,6 @@ export class PaperDirective implements OnInit, AfterViewInit {
     this.backgroundLayer.name = 'background';
     (this.project as any).insertLayer(0, this.backgroundLayer);
     this.scope.settings.insertItems = true;
-  }
-
-  ngAfterViewInit() {
-    // update the view size after a delay to account for UI loading time
-    timer(1000).subscribe(() => this.updateViewSize());
   }
 
   updateViewSize() {
@@ -260,22 +314,17 @@ export class PaperDirective implements OnInit, AfterViewInit {
     this.project.view.viewSize.width -= this.project.view.viewSize.width;
     this.project.view.viewSize.width = tempWidth;
 
-    // if (this.project.view.element.parentElement !== null) {
-    //   tempHeight = this.project.view.element.parentElement.scrollHeight;
-    // } else {
-    //   tempHeight = this.project.view.element.scrollHeight;
-    // }
     tempHeight =
       this.project.view.element.parentElement?.scrollHeight ||
       this.project.view.element.scrollHeight;
     this.project.view.viewSize.height -= this.project.view.viewSize.height;
     this.project.view.viewSize.height = tempHeight;
-    this.drawBackground();
+    this.onViewBounds();
   }
 
   drawBackground() {
     if (this.backgroundLayer) {
-      this.logger.log('updating background layer');
+      // this.logger.log('updating background layer');
       const rect =
         this.backgroundLayer.getItem({
           name: 'background-color',
@@ -311,12 +360,15 @@ export class PaperDirective implements OnInit, AfterViewInit {
     );
     this.scope.view.emit('mousewheel', { event, point });
     this.scope.tool?.emit('mousewheel', { event, point });
-    this.drawBackground();
+    this.onViewBounds();
     event.preventDefault();
   }
 
+  public viewBounds$ = new ReplaySubject(1);
   onViewBounds() {
-    console.log('view bounds');
+    // console.log('view bounds');
+    this.viewBounds$.next(this.project.view.bounds);
+    this.drawBackground();
   }
 
   private point(event: { offsetX: number; offsetY: number }) {

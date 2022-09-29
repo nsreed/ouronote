@@ -13,6 +13,8 @@
     "declaration": false,
     "downlevelIteration": true,
     "resolveJsonModule": true,
+    "disableReferencedProjectLoad": true,
+    "disableSourceOfProjectReferenceRedirect": true,
     "paths": {
       "log": [
         "projects/log",

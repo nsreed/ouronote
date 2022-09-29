@@ -70,8 +70,8 @@ export class DamService {
     return new Promise((resolve, reject) => {
       const ws = new WebSocket(peer.replace(/^http/, 'ws'));
       ws.onerror = (ev: Event) => {
-        this.logger.error(`onerror for ${peer}!`);
-        reject('websocket error');
+        this.logger.error(`onerror for ${peer}!`, ev);
+        reject(ev);
       };
       ws.onopen = (ev: Event) => {
         this.logger.verbose(`onopen for ${peer}!`);
@@ -84,10 +84,6 @@ export class DamService {
       timer(10000).subscribe(() => {
         ws.onerror = null;
         ws.onopen = null;
-        if (ws.removeAllListeners) {
-          ws.removeAllListeners('close');
-          ws.removeAllListeners('error');
-        }
         reject(new Error(`${peer} timed out`));
       });
     });

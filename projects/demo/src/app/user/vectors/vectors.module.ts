@@ -1,10 +1,14 @@
 import { NgxMatColorPickerModule } from '@angular-material-components/color-picker';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { CdkMenuModule } from '@angular/cdk/menu';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
@@ -19,50 +23,51 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { HammerModule } from '@angular/platform-browser';
 import { LogModule } from 'log';
 import { NgGunModule } from 'ng-gun';
 import { CertificatesModule } from '../../certificates/certificates.module';
 import { ComponentsModule } from '../../components/components.module';
+import { DirectivesModule } from '../../directives/directives.module';
 import { FilesModule } from '../../files/files.module';
+import { VectorModule } from '../../vector/vector.module';
+import { BooleanFormComponent } from './components/boolean-form/boolean-form.component';
 import { ColorFormComponent } from './components/color-form/color-form.component';
+import { ColorGradientComponent } from './components/color-gradient/color-gradient.component';
 import { CreateVectorComponent } from './components/create-vector/create-vector.component';
+import { FavoriteColorsComponent } from './components/favorite-colors/favorite-colors.component';
 import { InviteRequestsComponent } from './components/invite-requests/invite-requests.component';
+import { InvitedUsersComponent } from './components/invited-users/invited-users.component';
 import { LayerListComponent } from './components/layer-list/layer-list.component';
+import { NumberFormComponent } from './components/number-form/number-form.component';
+import { SelectedItemsComponent } from './components/selected-items/selected-items.component';
+import { SelectionIntersectModeFormComponent } from './components/selection-intersect-mode-form/selection-intersect-mode-form.component';
+import { SettingsDialogComponent } from './components/settings-dialog/settings-dialog.component';
+import { SliderFormComponent } from './components/slider-form/slider-form.component';
 import { StrokeWidthFormComponent } from './components/stroke-width-form/stroke-width-form.component';
 import { StyleFormComponent } from './components/style-form/style-form.component';
+import { TextFormComponent } from './components/text-form/text-form.component';
+import { ToolIconComponent } from './components/tool-icon/tool-icon.component';
+import { ToolPickerComponent } from './components/tool-picker/tool-picker.component';
+import { ToolPropertiesComponent } from './components/tool-properties/tool-properties.component';
+import { VectorCardComponent } from './components/vector-card/vector-card.component';
 import { VectorExportDialogComponent } from './components/vector-export-dialog/vector-export-dialog.component';
 import { VectorFormComponent } from './components/vector-form/vector-form.component';
+import { VectorLoaderComponent } from './components/vector-loader/vector-loader.component';
 import { EditVectorComponent } from './edit-vector/edit-vector.component';
 import { PermissionsComponent } from './permissions/permissions.component';
 import { RouteVectorDirective } from './route-vector.directive';
 import { VectorsRoutingModule } from './vectors-routing.module';
 import { VectorsComponent } from './vectors.component';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { SelectionIntersectModeFormComponent } from './components/selection-intersect-mode-form/selection-intersect-mode-form.component';
-import { VectorCardComponent } from './components/vector-card/vector-card.component';
-import { VectorModule } from '../../vector/vector.module';
-import { SettingsDialogComponent } from './components/settings-dialog/settings-dialog.component';
-import { InvitedUsersComponent } from './components/invited-users/invited-users.component';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { DirectivesModule } from '../../directives/directives.module';
-import { SelectedItemsComponent } from './components/selected-items/selected-items.component';
-import { BooleanFormComponent } from './components/boolean-form/boolean-form.component';
-import { SliderFormComponent } from './components/slider-form/slider-form.component';
-import { TextFormComponent } from './components/text-form/text-form.component';
-import { FavoriteColorsComponent } from './components/favorite-colors/favorite-colors.component';
-import { ColorGradientComponent } from './components/color-gradient/color-gradient.component';
-import { VectorLoaderComponent } from './components/vector-loader/vector-loader.component';
-import { NumberFormComponent } from './components/number-form/number-form.component';
-import { ToolPickerComponent } from './components/tool-picker/tool-picker.component';
-import { ToolPropertiesComponent } from './components/tool-properties/tool-properties.component';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-
 @NgModule({
   declarations: [
     ColorFormComponent,
@@ -91,14 +96,19 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     NumberFormComponent,
     ToolPickerComponent,
     ToolPropertiesComponent,
+    ToolIconComponent,
   ],
   imports: [
     CertificatesModule,
+    CdkMenuModule,
     CommonModule,
+    DragDropModule,
     ComponentsModule,
     DirectivesModule,
+    MatBottomSheetModule,
     FilesModule,
     FlexLayoutModule,
+    HammerModule,
     LogModule,
     MatAutocompleteModule,
     MatBadgeModule,
@@ -120,6 +130,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     MatMenuModule,
     MatProgressSpinnerModule,
     MatProgressBarModule,
+    MatSidenavModule,
     MatSliderModule,
     MatSlideToggleModule,
     MatStepperModule,
@@ -133,6 +144,6 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     VectorsRoutingModule,
     VectorModule,
   ],
-  exports: [],
+  exports: [ToolIconComponent],
 })
 export class VectorsModule {}

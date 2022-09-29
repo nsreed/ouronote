@@ -33,7 +33,7 @@ import {
   MAT_SNACK_BAR_DEFAULT_OPTIONS,
 } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, HammerModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { OnlineStatusModule } from 'ngx-online-status';
 import { NoopSharedWorker } from 'projects/ng-gun/src/lib/classes/NoopSharedWorker';
@@ -57,6 +57,10 @@ import { SessionInfoComponent } from './session-info/session-info.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import {
+  MatBottomSheetConfig,
+  MAT_BOTTOM_SHEET_DEFAULT_OPTIONS,
+} from '@angular/material/bottom-sheet';
 
 const RADISK_LOCAL = localStorage.getItem('RADISK_ENABLE');
 const RADISK_ENABLE = RADISK_LOCAL === null ? true : !!JSON.parse(RADISK_LOCAL);
@@ -106,6 +110,7 @@ const GUN_OPTIONS = {
     FilesModule,
     FlexLayoutModule,
     FormsUiModule,
+    HammerModule,
     HttpClientModule,
     LogModule,
     MatBadgeModule,
@@ -151,6 +156,13 @@ const GUN_OPTIONS = {
       useValue: {
         autoActiveFirstOption: true,
       } as MatAutocompleteDefaultOptions,
+    },
+    {
+      provide: MAT_BOTTOM_SHEET_DEFAULT_OPTIONS,
+      useValue: {
+        hasBackdrop: true,
+        backdropClass: 'sheet-backdrop',
+      } as MatBottomSheetConfig,
     },
     {
       provide: 'gun-options',

@@ -86,7 +86,7 @@ export class DiagnosticsService {
             return;
           }
           const age = Date.now() - peer.met;
-          this.logger.log(`met ${age}ms ago`);
+          this.logger.verbose(`met ${age}ms ago`);
           if (age < 30 * 1000) {
             return;
           }

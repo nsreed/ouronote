@@ -20,6 +20,7 @@ import { IEnhancedScope } from '../../../vector/IEnhancedScope';
 
 export class VectorTool extends Tool {
   // FIXME class names get mangled by production build, stop being lazy
+  // @Reflect.metadata('type', 'string')
   name = Object.getPrototypeOf(this).constructor.name.replace(/tool/gi, '');
   readonly logger = LogService.getLogger(`${this.name}`);
   static stack: any[] = [];
@@ -40,6 +41,13 @@ export class VectorTool extends Tool {
 
   get project() {
     return this.scope?.project as paper.Project;
+  }
+
+  get effectiveStyle(): paper.Style {
+    return {
+      ...((this.project?.currentStyle as any)._values || {}),
+      ...((this as any).style?._values || {}),
+    };
   }
 
   constructor(public readonly scope: IEnhancedScope) {
@@ -67,6 +75,7 @@ export class VectorTool extends Tool {
   }
   private isPointerDown = false;
   icon = 'hand-spock';
+  matIconName?: string;
 
   /** Determines whether the tool can be activated */
   enabled$ = of(true);

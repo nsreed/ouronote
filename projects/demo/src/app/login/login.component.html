@@ -1,7 +1,9 @@
 <mat-progress-bar mode="indeterminate" *ngIf="submitted"></mat-progress-bar>
 <h1>ouronote</h1>
 
-<div
+<form
+  [action]="false"
+  [method]="null"
   [formGroup]="form"
   fxLayout="column"
   fxLayoutAlign="center center"
@@ -132,7 +134,7 @@
     </a>
   </div>
   <!-- <button mat-flat-button (click)="about()">About</button> -->
-</div>
+</form>
 <img
   height="100"
   id="HeaderImage"

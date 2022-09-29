@@ -1,4 +1,4 @@
-<ng-container [gunChain]="vectorNode$ | async" #vectorChain="gunChain">
+<!-- <ng-container [gunChain]="vectorNode$ | async" #vectorChain="gunChain">
   <div
     (paste)="onPaste($event)"
     fxFlex="1 1 auto"
@@ -6,224 +6,196 @@
     fxLayoutAlign="stretch stretch"
     id="NavContainer"
     #Container
+  ></div>
+</ng-container> -->
+<mat-sidenav-container [hasBackdrop]="false">
+  <mat-sidenav #LeftSide [opened]="true" mode="side"> </mat-sidenav>
+  <mat-sidenav
+    #RightSide
+    [opened]="true"
+    position="end"
+    disableClose="true"
+    mode="side"
   >
-    <mat-toolbar
+    <mat-accordion
+      multi
+      dense
+      displayMode="flat"
+      *ngIf="paper.project && (canEdit$ | async)"
+      fxFlex="0 1 12em"
       class="ui"
-      *ngIf="vectorNode$ | async"
-      fxLayoutAlign="stretch center"
-      fxFlex="0 1 auto"
-      fxLayout="row"
     >
-      <div fxFlex="1 1 auto" class="title">
-        {{ (vector$ | async)?.title }} -
-        <ng-container *ngFor="let owner of owner$ | async | keyvalue">
-          @{{ owner.key | alias | async }}
-        </ng-container>
-      </div>
-
-      <ng-container
-        *ngIf="
-          (vectorNode$ | async) &&
-          !((layersNode$ | async).userCertificate$ | async)
-        "
-      >
-        <button
-          color="primary"
-          class="request"
-          mat-raised-button
-          (click)="requestAccess()"
-          *ngIf="!(myRequest$ | async); else PendingApproval"
-          matTooltip="Request permission to edit this vector."
-        >
-          <mat-icon>announcement</mat-icon>
-          Request Access
-        </button>
-        <ng-template #PendingApproval>
-          <button mat-flat-button disabled>
-            <mat-icon>announcement</mat-icon>
-            Pending Approval
-          </button>
+      <mat-expansion-panel *ngIf="selectedItems.length > 0" expanded>
+        <mat-expansion-panel-header>Selection</mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+          <ng-container
+            *ngIf="
+              selectedItems?.length === 1 &&
+              selectedItems[0].className === 'PointText'
+            "
+          >
+            <app-text-form
+              [appObject]="selectedItems[0]"
+              appObjectProperty="content"
+              (propertyValueChange)="
+                onContentValueChange(selectedItems[0], $event)
+              "
+              (blur$)="onContentBlur(selectedItems[0], $event)"
+            ></app-text-form>
+          </ng-container>
+          <button mat-button (click)="project.deselectAll()">Clear</button>
+          <app-selected-items
+            [selectedItems]="selectedItems"
+          ></app-selected-items>
         </ng-template>
-      </ng-container>
+      </mat-expansion-panel>
 
-      <button mat-icon-button (click)="onCopyrightClick()">
-        <mat-icon>copyright</mat-icon>
-      </button>
+      <mat-expansion-panel *ngIf="settings.debug">
+        <mat-expansion-panel-header>Layers</mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+          <mat-action-list dense>
+            <mat-list-item
+              *ngFor="let layer of project?.layers"
+              (click)="layer.activate()"
+              [ngClass]="{ active: layer === project.activeLayer }"
+            >
+              {{ layer.toString() }}
+              {{ layer === project.activeLayer ? "*" : "" }}
+              {{ layer.children?.length }}
+            </mat-list-item>
+          </mat-action-list>
+        </ng-template>
+        <mat-action-row>
+          <a mat-icon-button (click)="addLayer()">
+            <mat-icon>add</mat-icon>
+          </a>
+        </mat-action-row>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </mat-sidenav>
+  <section
+    id="NavContainer"
+    fxLayout="column"
+    fxLayoutAlign="stretch stretch"
+    style="overflow: hidden"
+    fxFlexFill
+  >
+    <mat-toolbar class="ui" *ngIf="vectorNode$ | async">
+      <mat-toolbar-row>
+        <div fxFlex="1 1 auto" class="title">
+          {{ (vector$ | async)?.title }} -
+          <ng-container *ngFor="let owner of owner$ | async | keyvalue">
+            @{{ owner.key | alias | async }}
+          </ng-container>
+        </div>
 
-      <button mat-icon-button [mat-menu-trigger-for]="ShareMenu">
-        <mat-icon>share</mat-icon>
-      </button>
+        <ng-container
+          *ngIf="
+            (vectorNode$ | async) &&
+            !((layersNode$ | async).userCertificate$ | async)
+          "
+        >
+          <button
+            color="primary"
+            class="request"
+            mat-raised-button
+            (click)="requestAccess()"
+            *ngIf="!(myRequest$ | async); else PendingApproval"
+            matTooltip="Request permission to edit this vector."
+          >
+            <mat-icon>announcement</mat-icon>
+            Request Access
+          </button>
+          <ng-template #PendingApproval>
+            <button mat-flat-button disabled>
+              <mat-icon>announcement</mat-icon>
+              Pending Approval
+            </button>
+          </ng-template>
+        </ng-container>
 
-      <mat-menu #ShareMenu>
-        <app-qr-code [text]="href" matTooltip="Scan to edit"></app-qr-code>
+        <button mat-icon-button (click)="onCopyrightClick()">
+          <mat-icon>copyright</mat-icon>
+        </button>
+
+        <button mat-icon-button [mat-menu-trigger-for]="ShareMenu">
+          <mat-icon>share</mat-icon>
+        </button>
+
+        <mat-menu #ShareMenu>
+          <app-qr-code [text]="href" matTooltip="Scan to edit"></app-qr-code>
+          <button
+            mat-menu-item
+            (click)="copyViewLink()"
+            matTooltip="Copy view link to clipboard"
+          >
+            Copy View Link
+          </button>
+          <button
+            mat-menu-item
+            (click)="copyEditLink()"
+            matTooltip="Copy edit link to clipboard"
+          >
+            Copy Edit Link
+          </button>
+        </mat-menu>
+
         <button
-          mat-menu-item
-          (click)="copyViewLink()"
-          matTooltip="Copy view link to clipboard"
+          mat-icon-button
+          (click)="onPeopleClick()"
+          *ngIf="isOwner$ | async"
+          #EditRequestsTooltip="matTooltip"
+          [matTooltip]="
+            (requestCount$ | async)
+              ? 'There are ' + (requestCount$ | async) + ' edit requests'
+              : null
+          "
         >
-          Copy View Link
+          <mat-icon
+            [matBadge]="(requestCount$ | async) || null"
+            matBadgeColor="warn"
+            >people</mat-icon
+          >
         </button>
-        <button
-          mat-menu-item
-          (click)="copyEditLink()"
-          matTooltip="Copy edit link to clipboard"
-        >
-          Copy Edit Link
-        </button>
-      </mat-menu>
 
-      <button
-        mat-icon-button
-        (click)="onPeopleClick()"
-        *ngIf="isOwner$ | async"
-        #EditRequestsTooltip="matTooltip"
-        [matTooltip]="
-          (requestCount$ | async)
-            ? 'There are ' + (requestCount$ | async) + ' edit requests'
-            : null
-        "
-      >
-        <mat-icon
-          [matBadge]="(requestCount$ | async) || null"
-          matBadgeColor="warn"
-          >people</mat-icon
-        >
-      </button>
+        <button mat-icon-button (click)="onFullscreenClick($event)">
+          <mat-icon>fullscreen</mat-icon>
+        </button>
 
-      <button mat-icon-button (click)="onFullscreenClick($event)">
-        <mat-icon>fullscreen</mat-icon>
-      </button>
+        <a mat-icon-button [matMenuTriggerFor]="menuMore" color="primary">
+          <mat-icon>more_horiz</mat-icon>
+        </a>
+        <mat-menu #menuMore>
+          <button mat-menu-item (click)="favorite()">
+            <mat-icon>favorite</mat-icon>
+            Favorite
+          </button>
+          <button mat-menu-item (click)="download()">
+            <mat-icon>file_download</mat-icon>
+            Download JSON
+          </button>
+          <button mat-menu-item (click)="downloadImage()">
+            <mat-icon>file_download</mat-icon>
+            Download PNG
+          </button>
+        </mat-menu>
 
-      <a mat-icon-button [matMenuTriggerFor]="menuMore" color="primary">
-        <mat-icon>more_horiz</mat-icon>
-      </a>
-      <mat-menu #menuMore>
-        <button mat-menu-item (click)="favorite()">
-          <mat-icon>favorite</mat-icon>
-          Favorite
+        <button mat-icon-button (click)="RightSide.toggle()">
+          <mat-icon>chevron_right</mat-icon>
         </button>
-        <button mat-menu-item (click)="download()">
-          <mat-icon>file_download</mat-icon>
-          Download JSON
-        </button>
-        <button mat-menu-item (click)="downloadImage()">
-          <mat-icon>file_download</mat-icon>
-          Download PNG
-        </button>
-      </mat-menu>
+      </mat-toolbar-row>
     </mat-toolbar>
 
     <div fxLayout="row" fxFlex="1 1 auto" fxLayoutAlign="stretch stretch">
-      <mat-accordion
-        multi
-        dense
-        displayMode="flat"
-        *ngIf="paper.project && (canEdit$ | async)"
-        fxFlex="0 1 12em"
-        class="ui"
-      >
-        <mat-expansion-panel expanded>
-          <ng-template matExpansionPanelContent>
-            <div
-              gdColumns="1fr 1fr"
-              cols="2"
-              rowHeight="1:1"
-              *ngIf="paperDirective && paper && tools.length"
-            >
-              <button
-                mat-button
-                (click)="onUndoClick()"
-                [disabled]="
-                  paperDirective?.scope?.actions?.length === 0 ||
-                  activeTool.name !== 'pen'
-                "
-                class="tool"
-                title="undo"
-              >
-                <mat-icon>undo</mat-icon>
-              </button>
-              <button
-                mat-button
-                (click)="onInsertImageClick()"
-                title="insert image"
-                class="tool"
-              >
-                <mat-icon>photo_library</mat-icon>
-              </button>
-            </div>
-            <app-tool-picker
-              [paperDirective]="paperDirective"
-              [activeTool]="activeTool"
-            ></app-tool-picker>
-            <mat-divider></mat-divider>
-            <app-tool-properties
-              [activeTool]="activeTool"
-              [paperEditDirective]="paperDirective"
-            ></app-tool-properties>
-          </ng-template>
-        </mat-expansion-panel>
-
-        <!-- <mat-expansion-panel>
-<mat-expansion-panel-header>Style</mat-expansion-panel-header>
-<ng-template matExpansionPanelContent>
-<app-style-form [style]="project?.currentStyle"></app-style-form>
-</ng-template>
-<mat-action-row>
-<a mat-icon-button>
-  <mat-icon>more_horiz</mat-icon>
-</a>
-</mat-action-row>
-</mat-expansion-panel> -->
-
-        <mat-expansion-panel *ngIf="selectedItems.length > 0" expanded>
-          <mat-expansion-panel-header>Selection</mat-expansion-panel-header>
-          <ng-template matExpansionPanelContent>
-            <ng-container
-              *ngIf="
-                selectedItems?.length === 1 &&
-                selectedItems[0].className === 'PointText'
-              "
-            >
-              <app-text-form
-                [appObject]="selectedItems[0]"
-                appObjectProperty="content"
-                (propertyValueChange)="
-                  onContentValueChange(selectedItems[0], $event)
-                "
-                (blur$)="onContentBlur(selectedItems[0], $event)"
-              ></app-text-form>
-            </ng-container>
-            <button mat-button (click)="project.deselectAll()">Clear</button>
-            <app-selected-items
-              [selectedItems]="selectedItems"
-            ></app-selected-items>
-          </ng-template>
-        </mat-expansion-panel>
-
-        <mat-expansion-panel *ngIf="settings.debug">
-          <mat-expansion-panel-header>Layers</mat-expansion-panel-header>
-          <ng-template matExpansionPanelContent>
-            <mat-action-list dense>
-              <mat-list-item
-                *ngFor="let layer of project?.layers"
-                (click)="layer.activate()"
-                [ngClass]="{ active: layer === project.activeLayer }"
-              >
-                {{ layer.toString() }}
-                {{ layer === project.activeLayer ? "*" : "" }}
-                {{ layer.children?.length }}
-              </mat-list-item>
-            </mat-action-list>
-          </ng-template>
-          <mat-action-row>
-            <a mat-icon-button (click)="addLayer()">
-              <mat-icon>add</mat-icon>
-            </a>
-          </mat-action-row>
-        </mat-expansion-panel>
-      </mat-accordion>
-      <div id="WorkspaceContainer" fxFlex="1 0 auto">
+      <div id="WorkspaceContainer" fxFlex="1 0 auto" appPaperScope>
+        <!-- <canvas id="Background" appPaper></canvas> -->
         <canvas id="Workspace" appPaperEdit #paper="appPaperEdit"></canvas>
+        <canvas
+          id="Foreground"
+          #paperForeground="paperMirror"
+          [paperMirror]="paper"
+        ></canvas>
+
         <div class="floating">
           <ng-container *ngIf="!paper.project">
             <h1>Loading...</h1>
@@ -246,5 +218,42 @@
         </div>
       </div>
     </div>
-  </div>
-</ng-container>
+    <mat-toolbar (press)="matBottomSheet.open(BottomSheet)">
+      <mat-toolbar-row>
+        <button
+          mat-icon-button
+          (click)="onUndoClick()"
+          [disabled]="paperDirective?.scope?.actions?.length === 0"
+          title="undo"
+          class="oro-action"
+        >
+          <mat-icon>undo</mat-icon>
+        </button>
+        <app-tool-picker
+          [paperDirective]="paperDirective"
+          [activeTool]="activeTool"
+          [tools]="paperDirective?.scope?.tools"
+          [orient]="'horizontal'"
+        >
+        </app-tool-picker>
+        <button
+          mat-icon-button
+          (click)="onInsertImageClick()"
+          title="insert image"
+          class="oro-action"
+        >
+          <mat-icon>photo_library</mat-icon>
+        </button>
+      </mat-toolbar-row>
+    </mat-toolbar>
+    <ng-template #BottomSheet>
+      <mat-card>
+        <mat-card-title>Tool Properties</mat-card-title>
+        <app-tool-properties
+          [activeTool]="activeTool"
+          [paperEditDirective]="paperDirective"
+        ></app-tool-properties>
+      </mat-card>
+    </ng-template>
+  </section>
+</mat-sidenav-container>
