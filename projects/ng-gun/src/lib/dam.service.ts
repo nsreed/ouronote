@@ -81,7 +81,15 @@ export class DamService {
           wire: ws,
         });
       };
-      timer(10000).subscribe(() => reject(new Error(`${peer} timed out`)));
+      timer(10000).subscribe(() => {
+        ws.onerror = null;
+        ws.onopen = null;
+        if (ws.removeAllListeners) {
+          ws.removeAllListeners('close');
+          ws.removeAllListeners('error');
+        }
+        reject(new Error(`${peer} timed out`));
+      });
     });
   }
 
