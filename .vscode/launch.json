@@ -7,9 +7,18 @@
     {
       "type": "chrome",
       "request": "launch",
-      "name": "ouronote - chrome",
+      "name": "ng serve chrome",
       "url": "http://localhost:4200",
-      "webRoot": "${workspaceFolder}"
+      "webRoot": "${workspaceFolder}",
+      "userDataDir": "${workspaceFolder}/.chrome-data"
+    },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "app-server chrome",
+      "url": "https://127.0.0.1:4321",
+      "webRoot": "${workspaceFolder}",
+      "userDataDir": "${workspaceFolder}/.chrome-data"
     },
     {
       "name": "Attach to Chrome",

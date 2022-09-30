@@ -3,5 +3,7 @@
   "todo-tree.filtering.excludeGlobs": [
     "**/node_modules",
     "**/dist"
-  ]
+  ],
+  "angular.log": "verbose",
+  "angular.enable-strict-mode-prompt": false
 }
