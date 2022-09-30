@@ -9,14 +9,8 @@
   ></div>
 </ng-container> -->
 <mat-sidenav-container [hasBackdrop]="false">
-  <mat-sidenav #LeftSide [opened]="true" mode="side"> </mat-sidenav>
-  <mat-sidenav
-    #RightSide
-    [opened]="true"
-    position="end"
-    disableClose="true"
-    mode="side"
-  >
+  <mat-sidenav #LeftSide [opened]="false" mode="side"> </mat-sidenav>
+  <mat-sidenav #RightSide [opened]="false" position="end" mode="side">
     <mat-accordion
       multi
       dense
@@ -186,8 +180,15 @@
       </mat-toolbar-row>
     </mat-toolbar>
 
+    <app-tool-picker
+      [paperDirective]="paperDirective"
+      [activeTool]="activeTool"
+      [tools]="paperDirective?.scope?.tools"
+      [orient]="'horizontal'"
+    >
+    </app-tool-picker>
     <div fxLayout="row" fxFlex="1 1 auto" fxLayoutAlign="stretch stretch">
-      <div id="WorkspaceContainer" fxFlex="1 0 auto" appPaperScope>
+      <div id="CanvasContainer" fxFlex="1 0 auto" appPaperScope>
         <!-- <canvas id="Background" appPaper></canvas> -->
         <canvas id="Workspace" appPaperEdit #paper="appPaperEdit"></canvas>
         <canvas
@@ -229,13 +230,6 @@
         >
           <mat-icon>undo</mat-icon>
         </button>
-        <app-tool-picker
-          [paperDirective]="paperDirective"
-          [activeTool]="activeTool"
-          [tools]="paperDirective?.scope?.tools"
-          [orient]="'horizontal'"
-        >
-        </app-tool-picker>
         <button
           mat-icon-button
           (click)="onInsertImageClick()"

@@ -26,15 +26,15 @@
         display: flex;
         flex-wrap: wrap;
         overflow: visible;
-        height: 18px;
+        // height: 18px;
         justify-content: space-around;
-        margin-top: -14px;
+        // margin-top: -14px;
         z-index: 1;
         & > * {
           z-index: 8;
         }
         .oro-action {
-          margin-top: 14px;
+          // margin-top: 14px;
           flex-grow: 0;
           flex-shrink: 0;
           align-self: stretch;
@@ -45,34 +45,20 @@
   }
 }
 
-#WorkspaceContainer {
+#CanvasContainer {
   overflow: auto;
   max-height: 100vh;
   max-height: -webkit-fill-available;
   min-height: 100vh;
   min-height: -webkit-fill-available;
-
   canvas {
-    // outline: solid 10px gray;
     touch-action: none;
     position: absolute;
     z-index: 0;
-
-    // height: 100vh;
   }
   canvas#Foreground {
     opacity: 100%;
     pointer-events: none;
-  }
-}
-
-#NavContainer {
-  max-height: 100vh;
-  max-height: -webkit-fill-available;
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
-  & > *:not(mat-toolbar) {
-    min-height: 0;
   }
 }
 
@@ -118,11 +104,6 @@ mat-accordion {
   &::-webkit-scrollbar-thumb:hover {
     background: #d1d1d1;
   }
-  // &::-webkit-scrollbar-button {
-  //   background: #f1f1f1;
-  //   box-shadow: inset 0 0 2px slategray;
-  //   border-radius: 3px;
-  // }
   scrollbar-width: thin;
   scrollbar-color: slategray;
 
@@ -134,15 +115,8 @@ mat-accordion {
   }
 }
 
-form {
-  padding: 0;
-  margin: 0;
-}
-
 app-qr-code {
   display: block;
-  // width: 100%;
-  // min-height: 50vh;
 }
 
 #ToolsContainer {
@@ -159,10 +133,6 @@ app-qr-code {
     display: none;
   }
 }
-.tool {
-  width: 100%;
-  padding: 0.65em 0;
-}
 
 mat-list-item.active {
   white-space: nowrap;
@@ -171,16 +141,3 @@ mat-list-item.active {
   text-overflow: ellipsis;
   outline: solid 3px #0000ff55;
 }
-
-// mat-button-toggle {
-//   border-top: solid 1px rgba(0,0,0,.12);
-// }
-
-// p {
-//   margin-top: -1em;
-//   padding-top: 0;
-
-//   margin-bottom: 0.5em;
-//   padding-left: 1em;
-//   padding-bottom: 0.15em;
-// }

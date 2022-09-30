@@ -55,6 +55,11 @@ export class ToolPickerComponent implements OnInit {
     private menus: ContextMenuTracker
   ) {}
 
+  activateTool(tool: VectorTool) {
+    tool.activate();
+    this.changes.markForCheck();
+  }
+
   @Input()
   toolCategories: string[] = ['view', 'draw', 'select', 'edit'];
   categories = {

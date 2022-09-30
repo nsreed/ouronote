@@ -1,39 +1,18 @@
-<ng-container *ngFor="let tkv of sortedCategories">
-  <button
-    mat-fab
-    [ngClass]="{
-      'mat-elevation-z3': activeCategory === tkv.key,
-      active: activeCategory === tkv.key,
-      'mat-elevation-z0': activeCategory !== tkv.key
-    }"
-    class="category"
-    (click)="onCategoryClick(tkv, catTrigger, GroupMenu)"
-    [cdkMenuTriggerFor]="GroupMenu"
-    #catTrigger="cdkMenuTriggerFor"
-    [disabled]="disabledCategories[tkv.key]"
-  >
-    <app-tool-icon
-      [tool]="activeCategory === tkv.key ? activeTool : tkv.value[0]"
-    ></app-tool-icon>
-  </button>
-  <ng-template #GroupMenu>
-    <div cdkMenu @myInsertRemoveTrigger>
-      <ng-container *ngFor="let tool of tkv.value | slice: 0">
-        <ng-container *ngIf="tool.enabled$ | async">
-          <button
-            mat-fab
-            cdkMenuItem
-            (click)="tool.activate()"
-            [title]="tool.name"
-            [ngClass]="{
-              active: tool === activeTool
-            }"
-            class="tool"
-          >
-            <app-tool-icon [tool]="tool"></app-tool-icon>
-          </button>
-        </ng-container>
-      </ng-container>
-    </div>
-  </ng-template>
+<ng-container *ngFor="let tkv of categories | keyvalue">
+  <ng-container *ngFor="let tool of tkv.value | slice: 0">
+    <ng-container *ngIf="tool.enabled$ | async">
+      <button
+        mat-stroked-button
+        (click)="activateTool(tool)"
+        [title]="tool.name"
+        [ngClass]="{
+          active: tool === activeTool
+        }"
+        class="oro-tool-button"
+        color="accent"
+      >
+        <app-tool-icon [tool]="tool"></app-tool-icon>
+      </button>
+    </ng-container>
+  </ng-container>
 </ng-container>
