@@ -12,6 +12,7 @@ import {
   Output,
 } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { after, around } from 'aspect-ts';
 import * as Hammer from 'hammerjs';
 import { LogService } from 'log';
 import * as paper from 'paper';
@@ -57,7 +58,7 @@ export class PaperBase implements OnInit, AfterViewInit {
     protected logger: LogService,
     @Inject(PaperScope)
     protected ps: PaperScope & IEnhancedScope & paper.PaperScope
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     if (!this.canvas) {
@@ -71,6 +72,10 @@ export class PaperBase implements OnInit, AfterViewInit {
     this.project = this.scope.project as any;
     this.project.activate();
     this.scope.project = this.project as any;
+
+    after(this.project.view, 'scrollBy', () => {
+      this.updateViewSize();
+    });
   }
 
   ngAfterViewInit() {
@@ -107,7 +112,7 @@ export class PaperBase implements OnInit, AfterViewInit {
     return this.el.nativeElement;
   }
 
-  updateViewSize() {}
+  updateViewSize() { }
 }
 
 @Directive({
@@ -124,7 +129,7 @@ export class PaperMirrorDirective extends PaperBase {
   public set source(value: PaperDirective) {
     this._source = value;
     this.source.viewBounds$.subscribe(() => this.updateFromSource());
-    this.projectChange.subscribe((p) => {
+    this.projectChange.subscribe((sourceProject) => {
       this.updateFromSource();
 
       this.cursor = (this.project.getItem({ name: 'cursor' }) ||
@@ -132,7 +137,7 @@ export class PaperMirrorDirective extends PaperBase {
       this.cursor.name = 'cursor';
       this.project.activeLayer.addChild(this.cursor);
 
-      value.project.view.on('mousewheel', (e: any) => {
+      this.source.project.view.on('mousewheel', (e: any) => {
         this.cursor.position = e.point;
       });
 
@@ -146,7 +151,7 @@ export class PaperMirrorDirective extends PaperBase {
         'mouseenter',
         'mouseleave',
       ].forEach((eType) => {
-        value.project.view.on(eType, (e: any) => {
+        this.source.project.view.on(eType, (e: any) => {
           this.cursor.position = e.point;
           this.updateCursor();
           this.project.view.emit(eType, {
