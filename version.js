@@ -11,6 +11,7 @@ const opt = {
   files: { include: ['**/*.js', '**/*.ts', '**/*.json'] }
 };
 
+// FIXME we can't (see: shouldn't) hash the dist directory and insert the result into the src directory
 hashElement('./dist', opt).then(dirHash => {
   // sha1.update(dirHash);
   // const hash = sha1.digest('hex');
