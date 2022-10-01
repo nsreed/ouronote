@@ -14,6 +14,9 @@ import { GunRadImporterService } from './services/gun-rad-importer.service';
 import { GunWebrtcImporterService } from './services/gun-webrtc-importer.service';
 import { User } from './user/model';
 
+declare const APP_HASH: any;
+console.log(APP_HASH);
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -44,11 +47,13 @@ export class AppComponent implements OnInit, AfterViewInit {
       )
     );
     // logger.out$.subscribe(console.log);
-    logger.log('app started');
+    logger.log('app started',
+      APP_HASH);
+    //what 
 
     logger.verbose('Gun Imports', {
       radImporter,
-      webRtcImporter,
+      webRtcImporter
     });
 
     this.user = this.ngGun.auth();

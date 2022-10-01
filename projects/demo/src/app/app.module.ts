@@ -76,6 +76,7 @@ if (typeof SharedWorker !== 'undefined') {
   worker = new NoopSharedWorker();
 }
 
+// FIXME this is for compatibility with `ng serve`
 const GUN_PEERS = [
   location.origin.match(/localhost/)
     ? 'http://localhost:8765/gun'

@@ -8,11 +8,10 @@
     "start:live:prod": "ng serve -c production",
     "build": "ng build demo -c development",
     "build:all": "ng build log && ng build ng-gun && ng build demo -c development",
-    "build:all:prod": "ng build log -c production && ng build demo -c production ",
+    "build:all:prod": "ng build log -c production && ng build ng-gun -c production && ng build demo -c production ",
     "build:watch": "ng build demo -c development --watch",
     "build:watch:prod": "ng build demo -c production --watch",
     "docker:build": "docker-compose build",
-    "postinstall": "node version.js && cp -r dist app-server/dist",
     "licenses": "license-checker --production --customPath licenseFormat.json --json > projects/demo/src/assets/licenses.json && node updateLicenses.js",
     "test": "ng test",
     "lint": "ng lint",
@@ -54,6 +53,7 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
+    "@angular-builders/custom-webpack": "^14.0.1",
     "@angular-devkit/build-angular": "^14.0.6",
     "@angular/cli": "^14.0.6",
     "@angular/compiler-cli": "^14.0.6",
@@ -81,6 +81,7 @@
     "ts-node": "10.9.1",
     "tslint": "~6.1.0",
     "typescript": "~4.7.4",
+    "webpack": "^5.74.0",
     "yarn-audit-fix": "^9.0.4"
   },
   "nodemonConfig": {
