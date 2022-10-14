@@ -57,6 +57,7 @@ export interface GunChainCallbackOptions {
   changes?: boolean;
   bypassZone?: boolean;
   clean?: boolean;
+  wait?: number;
 }
 
 export interface GunChainFunctions {

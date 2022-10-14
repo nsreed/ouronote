@@ -58,7 +58,7 @@ export class PaperBase implements OnInit, AfterViewInit {
     protected logger: LogService,
     @Inject(PaperScope)
     protected ps: PaperScope & IEnhancedScope & paper.PaperScope
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     if (!this.canvas) {
@@ -112,7 +112,7 @@ export class PaperBase implements OnInit, AfterViewInit {
     return this.el.nativeElement;
   }
 
-  updateViewSize() { }
+  updateViewSize() {}
 }
 
 @Directive({
@@ -133,7 +133,7 @@ export class PaperMirrorDirective extends PaperBase {
       this.updateFromSource();
 
       this.cursor = (this.project.getItem({ name: 'cursor' }) ||
-        new this.ps.Shape.Circle(this.project.view.center, 50)) as any;
+        new this.ps.Shape.Circle(this.project.view.center, 0)) as any;
       this.cursor.name = 'cursor';
       this.project.activeLayer.addChild(this.cursor);
 
@@ -174,8 +174,10 @@ export class PaperMirrorDirective extends PaperBase {
       let s =
         (this.source.scope.tool as any).effectiveStyle ||
         this.source.project.currentStyle;
-      this.cursor.strokeWidth = s.strokeWidth;
-      this.cursor.strokeColor = s.strokeColor;
+      // this.cursor.strokeWidth = s.strokeWidth;
+      this.cursor.radius = s.strokeWidth / 2;
+      this.cursor.fillColor = s.strokeColor;
+      this.cursor.strokeWidth = 0;
       this.cursor.style.strokeScaling =
         (this.source.scope.tool as any).scale || s.strokeScaling;
     }

@@ -1,5 +1,3 @@
-import { GunChain } from 'ng-gun';
-
 function getOrDefine(target: any, metadataKey: string, value: any = {}) {
   if (!Reflect.hasMetadata(metadataKey, target)) {
     Reflect.defineMetadata(metadataKey, value, target);
@@ -67,6 +65,16 @@ export function Bool(options?: PropertyOptions) {
   });
 }
 
+export type EnumOptions = PropertyOptions & {
+  options: Record<string | number, any>;
+};
+export function Enum(options?: EnumOptions) {
+  return Prop({
+    ...(options || {}),
+    type: 'enum',
+  });
+}
+
 export function Num(options?: PropertyOptions) {
   return Prop({
     ...(options || {}),
@@ -118,6 +126,9 @@ export type PropertyOptions =
   | {
       defaultValue?: any;
       decorator?: any;
+      description?: string;
+      summary?: string;
+      label?: string;
       type: string;
     }
   | Record<string, any>;

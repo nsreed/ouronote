@@ -24,7 +24,7 @@ import { LogService } from 'log';
 @Injectable({
   providedIn: 'root',
 })
-export class VectorResolver implements Resolve<boolean> {
+export class VectorResolver implements Resolve<any> {
   constructor(
     private vectorService: VectorService,
     private ngGun: NgGunService,

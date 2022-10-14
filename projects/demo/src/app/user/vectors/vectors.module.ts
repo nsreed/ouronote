@@ -1,6 +1,7 @@
 import { NgxMatColorPickerModule } from '@angular-material-components/color-picker';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CdkMenuModule } from '@angular/cdk/menu';
+import { PortalModule } from '@angular/cdk/portal';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
@@ -103,6 +104,7 @@ import { VectorsComponent } from './vectors.component';
     CdkMenuModule,
     CommonModule,
     DragDropModule,
+    PortalModule,
     ComponentsModule,
     DirectivesModule,
     MatBottomSheetModule,

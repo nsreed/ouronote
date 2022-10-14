@@ -1,18 +1,33 @@
-<ng-container *ngFor="let tkv of categories | keyvalue">
-  <ng-container *ngFor="let tool of tkv.value | slice: 0">
-    <ng-container *ngIf="tool.enabled$ | async">
-      <button
-        mat-stroked-button
-        (click)="activateTool(tool)"
-        [title]="tool.name"
-        [ngClass]="{
-          active: tool === activeTool
-        }"
-        class="oro-tool-button"
-        color="accent"
-      >
-        <app-tool-icon [tool]="tool"></app-tool-icon>
-      </button>
+<ng-template #Tools>
+  <button
+    *ngFor="let tool of tools"
+    mat-stroked-button
+    (click)="activateTool(tool)"
+    [title]="tool.name"
+    [ngClass]="{
+      active: tool === activeTool
+    }"
+    class="oro-tool-button"
+    color="accent"
+  >
+    <app-tool-icon [tool]="tool"></app-tool-icon>
+  </button>
+  <!-- <ng-container *ngFor="let tkv of categories | keyvalue">
+    <ng-container *ngFor="let tool of tkv.value | slice: 0">
+      <ng-container *ngIf="tool.enabled$ | async">
+        <button
+          mat-stroked-button
+          (click)="activateTool(tool)"
+          [title]="tool.name"
+          [ngClass]="{
+            active: tool === activeTool
+          }"
+          class="oro-tool-button"
+          color="accent"
+        >
+          <app-tool-icon [tool]="tool"></app-tool-icon>
+        </button>
+      </ng-container>
     </ng-container>
-  </ng-container>
-</ng-container>
+  </ng-container> -->
+</ng-template>

@@ -5,7 +5,7 @@
         id="Title"
         class="mat-title"
         fxFlex="1 1 auto"
-        [routerLink]="['/user/vectors', vector | soul, 'edit']"
+        [routerLink]="['.', vector | soul, 'edit']"
         [matTooltip]="vector.title"
         >{{ vector.title }}</a
       >
@@ -48,10 +48,7 @@
     &mdash; {{ vector | updated | date }}</mat-card-subtitle
   >
   <mat-card-actions>
-    <button
-      mat-raised-button
-      [routerLink]="['/user/vectors', vector | soul, 'edit']"
-    >
+    <button mat-raised-button [routerLink]="['.', vector | soul, 'edit']">
       open
     </button>
     <button mat-icon-button (click)="remove()">
@@ -60,7 +57,7 @@
     <button
       *ngIf="false"
       mat-icon-button
-      [routerLink]="['/user/vectors', vector | soul, 'permissions']"
+      [routerLink]="['.', vector | soul, 'permissions']"
     >
       <mat-icon>settings</mat-icon>
     </button>

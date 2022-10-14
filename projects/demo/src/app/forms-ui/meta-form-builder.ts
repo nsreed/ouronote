@@ -19,7 +19,7 @@ export class MetaFormBuilder extends FormBuilder {
 
   fromNodeMeta(nodeMeta: NodeMetadata, ...args: any[]): FormGroup {
     const propKeys = Object.entries(nodeMeta.properties).sort(
-      (a, b) => (b[1].order || 0) - (a[1].order || 0)
+      (a, b) => (a[1].order || 0) - (b[1].order || 0)
     );
     return this.group(
       propKeys.reduce(

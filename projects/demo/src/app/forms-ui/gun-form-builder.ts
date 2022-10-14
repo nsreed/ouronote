@@ -43,8 +43,14 @@ export class GunFormBuilder extends MetaFormBuilder {
     console.log(`fromProperty ${propertyMeta.type} ${s.path.join('.')}`);
     const p = super.fromProperty(propertyMeta, s);
     s.on({ ignoreLocal: true }).subscribe((value) => {
-      console.log('should update form', { value });
-      p.patchValue(value, { onlySelf: false, emitEvent: true });
+      console.log('should update form', value);
+      p.patchValue(value, { onlySelf: true, emitEvent: false });
+    });
+    p.valueChanges.subscribe((formValue) => {
+      if (!(p instanceof FormGroup)) {
+        console.log('got form value', formValue);
+        s.put(formValue as never);
+      }
     });
 
     return p;

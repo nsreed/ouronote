@@ -9,6 +9,8 @@
       selectedItems?.length === 1 ? "" : "s"
     }}
   </div>
+
+  <button mat-button (click)="onClearSelectionClick()">Clear</button>
   <button mat-flat-button (click)="onBringToFrontClick()">
     Bring to Front
   </button>

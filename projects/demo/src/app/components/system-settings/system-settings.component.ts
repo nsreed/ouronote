@@ -98,6 +98,10 @@ export class SystemSettingsComponent implements OnInit {
     this.settingsGun.get('gun');
   }
 
+  autoCase(camel: string): string {
+    return camel;
+  }
+
   save() {
     this.settingsService.enableRadisk = this.settingsForm.value.enableRadisk;
     this.settingsService.enableWebRTC = this.settingsForm.value.enableWebRTC;

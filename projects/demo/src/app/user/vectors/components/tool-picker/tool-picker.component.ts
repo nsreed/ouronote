@@ -1,25 +1,25 @@
 import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
+import { CdkMenuTrigger } from '@angular/cdk/menu';
+import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   Input,
   OnInit,
+  TemplateRef,
+  ViewChild,
+  ViewContainerRef,
 } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { LogService } from 'log';
 import { PaperEditDirective } from '../../../../vector/paper-edit.directive';
-import { EditVectorComponent } from '../../edit-vector/edit-vector.component';
 import { VectorTool } from '../../tools/paper-tool';
-import { TemplateRef } from '@angular/core';
-import { CdkMenuTrigger, ContextMenuTracker } from '@angular/cdk/menu';
-import { MatMenuTrigger } from '@angular/material/menu';
-import {
-  transition,
-  animate,
-  style,
-  trigger,
-  state,
-} from '@angular/animations';
 
 @Component({
   selector: 'app-tool-picker',
@@ -44,16 +44,24 @@ import {
       transition(':leave', [animate('400ms', style({ opacity: 0 }))]),
     ]),
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.Default,
 })
-export class ToolPickerComponent implements OnInit {
+export class ToolPickerComponent implements OnInit, AfterViewInit {
   constructor(
     private logger: LogService,
-    public editWorkspace: EditVectorComponent,
     private changes: ChangeDetectorRef,
-    private dialog: MatDialog,
-    private menus: ContextMenuTracker
+    private viewContainerRef: ViewContainerRef
   ) {}
+  @ViewChild('Tools')
+  toolsTmplRef!: TemplateRef<any>;
+  ngAfterViewInit(): void {
+    //Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
+    //Add 'implements AfterViewInit' to the class.
+    // this.changes.detectChanges();
+
+    this.viewContainerRef.createEmbeddedView(this.toolsTmplRef);
+    this.changes.detectChanges();
+  }
 
   activateTool(tool: VectorTool) {
     tool.activate();

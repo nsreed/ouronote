@@ -1,9 +1,9 @@
 <mat-sidenav-container fxFlexFill>
-  <mat-sidenav #nav [mode]="'side'" [opened]="user.is">
+  <mat-sidenav #nav [mode]="'push'">
     <mat-action-list style="padding-top: 0; height: 100%" fxLayout="column">
       <mat-list-item
         routerLinkActive="active"
-        routerLink="/user/vectors"
+        routerLink="/home"
         matTooltip="Vectors"
       >
         <mat-icon class="back">chevron_left</mat-icon>

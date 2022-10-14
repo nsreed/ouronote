@@ -92,6 +92,10 @@ export class SelectedItemsComponent implements OnInit {
     }
   }
 
+  onClearSelectionClick() {
+    this.editVectorComponent.project.deselectAll();
+  }
+
   onStyleChange(style: paper.Style | any) {
     // const simple = style.toJSON();
     // this.selectedItems.forEach((s: any) => {

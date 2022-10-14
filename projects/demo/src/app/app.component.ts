@@ -13,7 +13,7 @@ import { DiagnosticsService } from './diagnostics.service';
 import { GunRadImporterService } from './services/gun-rad-importer.service';
 import { GunWebrtcImporterService } from './services/gun-webrtc-importer.service';
 import { User } from './user/model';
-
+import { MediaObserver, MediaChange } from '@angular/flex-layout';
 declare const APP_HASH: any;
 console.log(APP_HASH);
 
@@ -38,8 +38,10 @@ export class AppComponent implements OnInit, AfterViewInit {
     @Optional()
     private webRtcImporter: GunWebrtcImporterService,
     private matIconRegistry: MatIconRegistry,
-    private domSanitizer: DomSanitizer
+    private domSanitizer: DomSanitizer,
+    public media: MediaObserver
   ) {
+    media.asObservable().subscribe(console.log);
     this.matIconRegistry.addSvgIcon(
       'lasso',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
@@ -47,33 +49,15 @@ export class AppComponent implements OnInit, AfterViewInit {
       )
     );
     // logger.out$.subscribe(console.log);
-    logger.log('app started',
-      APP_HASH);
-    //what 
+    logger.log('app started', APP_HASH);
+    //what
 
     logger.verbose('Gun Imports', {
       radImporter,
-      webRtcImporter
+      webRtcImporter,
     });
 
     this.user = this.ngGun.auth();
-    window.document.title = OURONOTE_DEFAULT_TITLE; // `ouronote version ${VERSION.version}`;
-
-    // let lastActivated: ChildActivationEnd;
-    // router.events
-    //   .pipe(filter((e: any) => e instanceof ChildActivationEnd))
-    //   .subscribe((e: any) => (lastActivated = e as any));
-    // router.events
-    //   .pipe(filter((e: any) => e instanceof NavigationEnd))
-    //   .subscribe((e: any) => {
-    //     // console.log('last activated at navigation end', lastActivated);
-    //     // this.logger.log(
-    //     //   'last activated',
-    //     //   // tslint:disable-next-line: only-arrow-functions
-    //     //   JSON.stringify(lastActivated.snapshot, ['children', 'data'])
-    //     // );
-    //   });
-
     this.ngGun.auth().auth$.subscribe((ack: any) => {
       const redirect = sessionStorage.getItem('redirect');
       if (redirect) {

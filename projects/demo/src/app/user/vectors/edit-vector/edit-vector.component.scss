@@ -1,3 +1,53 @@
+@mixin thinScroll {
+  transition: all 200ms ease-in-out;
+  box-shadow: inset 0 0 0.12em rgba(0, 0, 0, 0.01);
+  &:hover {
+    z-index: 20;
+    // margin-bottom: -0.2em;
+    // margin-bottom: -0.2em;
+    box-shadow: inset 0 0 0.41em rgba(0, 0, 0, 0.31);
+    &::-webkit-scrollbar {
+      opacity: 1;
+      // width: 0.4em;
+      // height: 0.4em;
+      // overflow: visible;
+      &:disabled {
+        opacity: 0;
+      }
+    }
+    &::-webkit-scrollbar-track {
+      box-shadow: 0 0 1em rgba(0, 0, 0, 0.31);
+      opacity: 1;
+    }
+  }
+
+  &::-webkit-scrollbar {
+    transition: all 200ms ease-in-out;
+    opacity: 0.6;
+    width: 0.2em;
+    height: 0.2em;
+    &:disabled {
+      opacity: 0;
+    }
+  }
+  &::-webkit-scrollbar-track {
+    opacity: 0.6;
+    background: #fafafa;
+    box-shadow: inset 0 0 3px whitesmoke;
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #f1f1f1;
+    box-shadow: inset 0 0 3px slategray;
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #d1d1d1;
+  }
+  // scrollbar-width: thin;
+  // scrollbar-color: slategray;
+}
+
 :host {
   // position: absolute;
   // width: 100%;
@@ -9,6 +59,22 @@
   max-height: -webkit-fill-available;
   min-height: 100vh;
   min-height: -webkit-fill-available;
+  overflow: auto;
+
+  #Bottom {
+    overflow: hidden;
+  }
+
+  #ToolContainer {
+    display: none;
+    overflow: auto;
+    display: inline-flex;
+    min-height: 0;
+    align-self: stretch;
+    flex-shrink: 1;
+    justify-self: center;
+    @include thinScroll();
+  }
 
   mat-toolbar {
     width: 100%;
@@ -85,28 +151,6 @@ mat-accordion {
   min-height: -webkit-fill-available;
   align-self: stretch;
 
-  &::-webkit-scrollbar {
-    width: 0.5em;
-    &:disabled {
-      opacity: 0;
-    }
-  }
-  &::-webkit-scrollbar-track {
-    background: #fafafa;
-    box-shadow: inset 0 0 3px whitesmoke;
-    border-radius: 3px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: #f1f1f1;
-    box-shadow: inset 0 0 3px slategray;
-    border-radius: 3px;
-  }
-  &::-webkit-scrollbar-thumb:hover {
-    background: #d1d1d1;
-  }
-  scrollbar-width: thin;
-  scrollbar-color: slategray;
-
   mat-expansion-panel {
     flex-shrink: 0;
     .mat-expansion-panel-body {
@@ -117,13 +161,6 @@ mat-accordion {
 
 app-qr-code {
   display: block;
-}
-
-#ToolsContainer {
-  justify-items: center;
-  mat-divider {
-    grid-column-start: span;
-  }
 }
 
 .toolTip {

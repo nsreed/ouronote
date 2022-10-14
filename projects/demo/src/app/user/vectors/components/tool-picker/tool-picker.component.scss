@@ -1,19 +1,28 @@
 @use "@angular/material" as mat;
 
+:host {
+  display: contents;
+}
+
 .oro-tool-button {
+  @include mat.elevation(0);
   &.mat-raised-button {
     @include mat.elevation(8);
-    @include mat.elevation(3);
+  }
+  &:hover {
+    color: rgba(0, 0, 0, 0.8);
+    @include mat.elevation(1);
   }
   &:active,
   &.active {
+    color: black;
     background-image: linear-gradient(80dev rgba(0, 0, 0, 0.6));
     background-blend-mode: difference;
     box-shadow: inset 0 0 70px rgba(255, 166, 0, 0.459);
     background-color: rgba(255, 255, 255, 0.7);
   }
-  padding: 0.6rem 0 0;
-  margin: 0.6rem 0.2rem;
+  padding: 0.5rem 0 0;
+  margin: 0.3rem 0.2rem;
 
   &.mat-fab {
     position: relative;
@@ -38,7 +47,7 @@
     display: inline-flex;
     flex-direction: column;
     .mat-fab {
-      margin-bottom: 1em;
+      margin-bottom: 0.2rem;
       .mat-icon {
         vertical-align: middle;
       }
@@ -73,8 +82,5 @@
     //   transition: box-shadow 700ms ease-out;
     //   box-shadow: inset 0 0 3rem red;
     // }
-  }
-  .tool {
-    padding: 0.3em 0;
   }
 }

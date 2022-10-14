@@ -10,6 +10,7 @@ import { FileUploaderComponent } from '../../files/file-uploader/file-uploader.c
 import { VectorExportDialogComponent } from './components/vector-export-dialog/vector-export-dialog.component';
 import { OURONOTE_DEFAULT_TITLE } from '../../constants';
 import { Router } from '@angular/router';
+import { MatSidenavContainer } from '@angular/material/sidenav';
 
 export function buildVectorLogger(parent: LogService) {
   return parent.supplemental('name');
@@ -44,8 +45,13 @@ export class VectorsComponent implements OnInit {
     private vectorService: VectorService,
     private dialog: MatDialog,
     private logger: LogService,
-    private router: Router
+    private router: Router,
+    private matSidenav: MatSidenavContainer
   ) {}
+
+  onOpenSidenavClick() {
+    this.matSidenav.open();
+  }
 
   ngOnInit(): void {
     document.title = OURONOTE_DEFAULT_TITLE;
@@ -62,7 +68,7 @@ export class VectorsComponent implements OnInit {
       return;
     }
     this.logger.log('Created vector %s', vector);
-    this.router.navigate(['/user/vectors', `~${vector}`, 'edit']);
+    this.router.navigate(['/home/vectors', `~${vector}`, 'edit']);
   }
 
   importVector() {

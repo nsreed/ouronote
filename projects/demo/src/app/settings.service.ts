@@ -2,7 +2,8 @@ import { Inject, Injectable, Optional, NgZone } from '@angular/core';
 import { NgGunService } from 'ng-gun';
 import { GunChain } from 'ng-gun';
 import * as Gun from 'gun';
-import { Bool, Node, Num, Prop, Ref, Str } from './common/metadata';
+import { Bool, Enum, Node, Num, Prop, Ref, Str } from './common/metadata';
+import { LogLevel } from 'log';
 
 export type GunSettingsSchema = {
   file: string;
@@ -12,19 +13,20 @@ export type GunSettingsSchema = {
   enableRadisk: boolean;
 };
 
-export type LogSettingsSchema = {
-  level: number;
-  outLevel: number;
+export type DiagnosticsSettingsSchema = {
+  timeout: number;
+  interval: number;
+  reconnectAfter: number;
 };
 
 export type DebugSettingsSchema = {
   enabled: boolean;
 };
 
-export type DiagnosticsSettingsSchema = {
-  timeout: number;
-  interval: number;
-  reconnectAfter: number;
+export type LogSettingsSchema = {
+  level: number;
+  outLevel: number;
+  persist: boolean;
 };
 
 export type SettingsSchema = {
@@ -36,8 +38,7 @@ export type SettingsSchema = {
 
 @Node()
 export class GunSettingsSchematic implements GunSettingsSchema {
-  @Str({ defaultValue: 'ouronote' }) file!: string;
-  @Bool() localStorage!: boolean;
+  @Str({ defaultValue: 'radata' }) file!: string;
   @Prop({
     defaultValue: [],
     multi: true,
@@ -45,16 +46,40 @@ export class GunSettingsSchematic implements GunSettingsSchema {
     reference: 'string',
   })
   peers!: string[];
-  @Bool() enableWebRTC!: boolean;
-  @Bool() enableRadisk!: boolean;
+  @Bool({ defaultValue: true }) enableWebRTC!: boolean;
+  @Bool({ defaultValue: true }) enableRadisk!: boolean;
+  @Bool({ defaultValue: false }) localStorage!: boolean;
 }
 
 @Node(true)
 export class LogSettingsSchematic implements LogSettingsSchema {
-  @Num()
+  @Enum({
+    description: 'Log messages above this level will be retained',
+    options: {
+      0: 'Verbose',
+      1: 'Info',
+      2: 'Warning',
+      3: 'Error',
+      4: 'Catastrophic Failure',
+    },
+  })
   level: number = 0;
-  @Num()
+  @Enum({
+    description: 'Log messages above this level will be output to the console',
+    options: {
+      0: 'Verbose',
+      1: 'Info',
+      2: 'Warning',
+      3: 'Error',
+      4: 'Catastrophic Failure',
+    },
+  })
   outLevel: number = 0;
+  @Bool({
+    description:
+      'Control whether or not past log messages from this session will remain accessible',
+  })
+  persist = false;
 }
 
 @Node()
@@ -63,7 +88,9 @@ export class DebugSettingsSchematic implements DebugSettingsSchema {
   enabled!: boolean;
 }
 
-@Node()
+@Node({
+  description: `Adjust when & how often ouronote attempts to reconnect to peers.`,
+})
 export class DiagnosticsSettingsSchematic implements DiagnosticsSettingsSchema {
   @Num({
     description: 'How long to wait before trying to refresh the connection',
@@ -92,7 +119,7 @@ export class DiagnosticsSettingsSchematic implements DiagnosticsSettingsSchema {
 }
 
 @Node()
-export class OuronoteSettingsSchematic implements Partial<SettingsSchema> {
+export class OuronoteSettingsSchematic implements SettingsSchema {
   @Ref({
     resolve: GunSettingsSchematic,
     summary: `gun.db settings`,

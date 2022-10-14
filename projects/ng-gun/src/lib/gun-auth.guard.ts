@@ -4,6 +4,7 @@ import {
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
   UrlTree,
+  CanActivate,
 } from '@angular/router';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import { catchError, filter, map, take, tap, timeout } from 'rxjs/operators';
@@ -15,13 +16,26 @@ import { NgGunSessionService } from './ng-gun-session.service';
 @Injectable({
   providedIn: 'root',
 })
-export class GunAuthGuard implements CanActivateChild {
+export class GunAuthGuard implements CanActivateChild, CanActivate {
   constructor(
     private ngGun: NgGunService,
     private router: Router,
     private logger: LogService,
     @Optional() private sessionService?: NgGunSessionService
   ) {}
+  canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ):
+    | boolean
+    | UrlTree
+    | Observable<boolean | UrlTree>
+    | Promise<boolean | UrlTree> {
+    if (route.data.publicOnly) {
+      return !this.ngGun.auth().is;
+    }
+    return this.canActivateChild(route, state);
+  }
   sessionOrRedirect() {}
   async canActivateChild(
     childRoute: ActivatedRouteSnapshot,

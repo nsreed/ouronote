@@ -10,6 +10,7 @@
 </ng-container> -->
 <mat-sidenav-container [hasBackdrop]="false">
   <mat-sidenav #LeftSide [opened]="false" mode="side"> </mat-sidenav>
+
   <mat-sidenav #RightSide [opened]="false" position="end" mode="side">
     <mat-accordion
       multi
@@ -17,9 +18,9 @@
       displayMode="flat"
       *ngIf="paper.project && (canEdit$ | async)"
       fxFlex="0 1 12em"
-      class="ui"
+      class="ui mat-elevation-z0"
     >
-      <mat-expansion-panel *ngIf="selectedItems.length > 0" expanded>
+      <mat-expansion-panel expanded>
         <mat-expansion-panel-header>Selection</mat-expansion-panel-header>
         <ng-template matExpansionPanelContent>
           <ng-container
@@ -37,7 +38,6 @@
               (blur$)="onContentBlur(selectedItems[0], $event)"
             ></app-text-form>
           </ng-container>
-          <button mat-button (click)="project.deselectAll()">Clear</button>
           <app-selected-items
             [selectedItems]="selectedItems"
           ></app-selected-items>
@@ -67,6 +67,7 @@
       </mat-expansion-panel>
     </mat-accordion>
   </mat-sidenav>
+
   <section
     id="NavContainer"
     fxLayout="column"
@@ -74,120 +75,153 @@
     style="overflow: hidden"
     fxFlexFill
   >
-    <mat-toolbar class="ui" *ngIf="vectorNode$ | async">
+    <mat-toolbar fxHide.xs="true" class="ui" *ngIf="vectorNode$ | async">
       <mat-toolbar-row>
-        <div fxFlex="1 1 auto" class="title">
-          {{ (vector$ | async)?.title }} -
-          <ng-container *ngFor="let owner of owner$ | async | keyvalue">
-            @{{ owner.key | alias | async }}
-          </ng-container>
-        </div>
-
-        <ng-container
-          *ngIf="
-            (vectorNode$ | async) &&
-            !((layersNode$ | async).userCertificate$ | async)
-          "
-        >
-          <button
-            color="primary"
-            class="request"
-            mat-raised-button
-            (click)="requestAccess()"
-            *ngIf="!(myRequest$ | async); else PendingApproval"
-            matTooltip="Request permission to edit this vector."
-          >
-            <mat-icon>announcement</mat-icon>
-            Request Access
-          </button>
-          <ng-template #PendingApproval>
-            <button mat-flat-button disabled>
-              <mat-icon>announcement</mat-icon>
-              Pending Approval
-            </button>
-          </ng-template>
-        </ng-container>
-
-        <button mat-icon-button (click)="onCopyrightClick()">
-          <mat-icon>copyright</mat-icon>
-        </button>
-
-        <button mat-icon-button [mat-menu-trigger-for]="ShareMenu">
-          <mat-icon>share</mat-icon>
-        </button>
-
-        <mat-menu #ShareMenu>
-          <app-qr-code [text]="href" matTooltip="Scan to edit"></app-qr-code>
-          <button
-            mat-menu-item
-            (click)="copyViewLink()"
-            matTooltip="Copy view link to clipboard"
-          >
-            Copy View Link
-          </button>
-          <button
-            mat-menu-item
-            (click)="copyEditLink()"
-            matTooltip="Copy edit link to clipboard"
-          >
-            Copy Edit Link
-          </button>
-        </mat-menu>
-
-        <button
-          mat-icon-button
-          (click)="onPeopleClick()"
-          *ngIf="isOwner$ | async"
-          #EditRequestsTooltip="matTooltip"
-          [matTooltip]="
-            (requestCount$ | async)
-              ? 'There are ' + (requestCount$ | async) + ' edit requests'
-              : null
-          "
-        >
-          <mat-icon
-            [matBadge]="(requestCount$ | async) || null"
-            matBadgeColor="warn"
-            >people</mat-icon
-          >
-        </button>
-
-        <button mat-icon-button (click)="onFullscreenClick($event)">
-          <mat-icon>fullscreen</mat-icon>
-        </button>
-
-        <a mat-icon-button [matMenuTriggerFor]="menuMore" color="primary">
-          <mat-icon>more_horiz</mat-icon>
-        </a>
-        <mat-menu #menuMore>
-          <button mat-menu-item (click)="favorite()">
-            <mat-icon>favorite</mat-icon>
-            Favorite
-          </button>
-          <button mat-menu-item (click)="download()">
-            <mat-icon>file_download</mat-icon>
-            Download JSON
-          </button>
-          <button mat-menu-item (click)="downloadImage()">
-            <mat-icon>file_download</mat-icon>
-            Download PNG
-          </button>
-        </mat-menu>
-
-        <button mat-icon-button (click)="RightSide.toggle()">
-          <mat-icon>chevron_right</mat-icon>
-        </button>
+        <ng-container *cdkPortalOutlet="titleBarPortal"></ng-container>
       </mat-toolbar-row>
     </mat-toolbar>
 
-    <app-tool-picker
-      [paperDirective]="paperDirective"
-      [activeTool]="activeTool"
-      [tools]="paperDirective?.scope?.tools"
-      [orient]="'horizontal'"
+    <ng-template #Menus>
+      <ng-container
+        *ngIf="
+          (vectorNode$ | async) &&
+          !((layersNode$ | async).userCertificate$ | async)
+        "
+      >
+        <button
+          color="primary"
+          class="request"
+          mat-raised-button
+          (click)="requestAccess()"
+          *ngIf="!(myRequest$ | async); else PendingApproval"
+          matTooltip="Request permission to edit this vector."
+        >
+          <mat-icon>announcement</mat-icon>
+          Request Access
+        </button>
+        <ng-template #PendingApproval>
+          <button mat-flat-button disabled>
+            <mat-icon>announcement</mat-icon>
+            Pending Approval
+          </button>
+        </ng-template>
+      </ng-container>
+
+      <button mat-icon-button (click)="onCopyrightClick()">
+        <mat-icon>copyright</mat-icon>
+      </button>
+
+      <button mat-icon-button [mat-menu-trigger-for]="ShareMenu">
+        <mat-icon>share</mat-icon>
+      </button>
+
+      <mat-menu #ShareMenu>
+        <app-qr-code [text]="href" matTooltip="Scan to edit"></app-qr-code>
+        <button
+          mat-menu-item
+          (click)="copyViewLink()"
+          matTooltip="Copy view link to clipboard"
+        >
+          Copy View Link
+        </button>
+        <button
+          mat-menu-item
+          (click)="copyEditLink()"
+          matTooltip="Copy edit link to clipboard"
+        >
+          Copy Edit Link
+        </button>
+      </mat-menu>
+
+      <button
+        mat-icon-button
+        (click)="onPeopleClick()"
+        *ngIf="isOwner$ | async"
+        #EditRequestsTooltip="matTooltip"
+        [matTooltip]="
+          (requestCount$ | async)
+            ? 'There are ' + (requestCount$ | async) + ' edit requests'
+            : null
+        "
+      >
+        <mat-icon
+          [matBadge]="(requestCount$ | async) || null"
+          matBadgeColor="warn"
+          >people</mat-icon
+        >
+      </button>
+
+      <button mat-icon-button (click)="onFullscreenClick($event)">
+        <mat-icon>fullscreen</mat-icon>
+      </button>
+
+      <a mat-icon-button [matMenuTriggerFor]="menuMore" color="primary">
+        <mat-icon>more_horiz</mat-icon>
+      </a>
+      <mat-menu #menuMore>
+        <button mat-menu-item (click)="favorite()">
+          <mat-icon>favorite</mat-icon>
+          Favorite
+        </button>
+        <button mat-menu-item (click)="download()">
+          <mat-icon>file_download</mat-icon>
+          Download JSON
+        </button>
+        <button mat-menu-item (click)="downloadImage()">
+          <mat-icon>file_download</mat-icon>
+          Download PNG
+        </button>
+      </mat-menu>
+    </ng-template>
+
+    <ng-template #TitleBar>
+      <div fxFlex="1 1 auto" class="title">
+        <a mat-icon-button (click)="onOpenSidenavClick()"
+          ><mat-icon>chevron_left</mat-icon></a
+        >
+        {{ (vector$ | async)?.title }} -
+        <ng-container *ngFor="let owner of owner$ | async | keyvalue">
+          @{{ owner.key | alias | async }}
+        </ng-container>
+      </div>
+
+      <button mat-icon-button (click)="onRightChevronClick($event, RightSide)">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </ng-template>
+
+    <ng-template #ToolPicker>
+      <app-tool-picker
+        [paperDirective]="paperDirective"
+        [activeTool]="activeTool"
+        [tools]="paperDirective?.scope?.tools"
+      >
+      </app-tool-picker>
+    </ng-template>
+
+    <ng-template #ToolProperties>
+      <app-tool-properties
+        [activeTool]="activeTool"
+        [paperEditDirective]="paperDirective"
+      ></app-tool-properties>
+    </ng-template>
+
+    <div
+      #Workspace
+      id="Bottom"
+      fxLayout="row"
+      fxLayout.xs="column"
+      fxFlex="1 1 auto"
+      fxLayoutAlign="stretch stretch"
     >
-    </app-tool-picker>
-    <div fxLayout="row" fxFlex="1 1 auto" fxLayoutAlign="stretch stretch">
+      <div
+        fxFlex.xs="1 0 auto"
+        fxLayout="column"
+        fxLayout.xs="row"
+        id="ToolContainer"
+      >
+        <ng-container *cdkPortalOutlet="toolPickerPortal"></ng-container>
+      </div>
       <div id="CanvasContainer" fxFlex="1 0 auto" appPaperScope>
         <!-- <canvas id="Background" appPaper></canvas> -->
         <canvas id="Workspace" appPaperEdit #paper="appPaperEdit"></canvas>
@@ -219,7 +253,8 @@
         </div>
       </div>
     </div>
-    <mat-toolbar (press)="matBottomSheet.open(BottomSheet)">
+
+    <mat-toolbar fxHide.gt-xs="true" (press)="matBottomSheet.open(BottomSheet)">
       <mat-toolbar-row>
         <button
           mat-icon-button
@@ -243,10 +278,9 @@
     <ng-template #BottomSheet>
       <mat-card>
         <mat-card-title>Tool Properties</mat-card-title>
-        <app-tool-properties
-          [activeTool]="activeTool"
-          [paperEditDirective]="paperDirective"
-        ></app-tool-properties>
+        <mat-card-content>
+          <!--TODO put properties back-->
+        </mat-card-content>
       </mat-card>
     </ng-template>
   </section>

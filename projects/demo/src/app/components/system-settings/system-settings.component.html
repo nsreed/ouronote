@@ -1,64 +1,94 @@
 <mat-toolbar>
+  <a mat-icon-button color="accent" [routerLink]="['/']"
+    ><mat-icon>chevron_left</mat-icon></a
+  >
   <h1>Settings</h1>
   <button mat-button color="primary" (click)="save()">Save Settings</button>
-  <a mat-button color="accent" [routerLink]="['/']">Back</a>
 </mat-toolbar>
-<section>
-  <ng-container [formGroup]="settingsForm">
-    <mat-checkbox formControlName="enableWebRTC">WebRTC</mat-checkbox>
-    <mat-hint
-      >WebRTC allows ouronote to connect directly to other machines running the
-      application in a peer-to-peer network. This is generally much faster than
-      connecting solely to the server. Disabling WebRTC may help diagnose
-      synchonization and performance issues within ouronote. It is recommended
-      you leave WebRTC enabled for normal use.</mat-hint
-    >
-    <mat-checkbox formControlName="enableRadisk">Radisk</mat-checkbox>
-    <mat-hint
-      >When enabled, ouronote will use your browser's IndexedDB feature to save
-      your data instead of LocalStorage. IndexedDB offers increased storage
-      limits and is more performant than LocalStorage. This setting is made
-      available for debugging purposes only. It is recommended you leave Radisk
-      enabled for normal use.</mat-hint
-    >
-  </ng-container>
-</section>
-<section #Settings="gunChain" [gunChain]="settingsGun">
-  <div *ngFor="let catKV of testFormGroup.controls | keyvalue">
-    <h4>{{ catKV.key }}</h4>
-    <ng-container
-      #CatGun="gunGet"
-      [formGroup]="catKV.value"
-      [gunGet]="catKV.key"
-    >
-      <div *ngFor="let settingKV of catKV.value.controls | keyvalue">
-        <ng-container #SettingGun="gunGet" [gunGet]="settingKV.key">
-          <div [ngSwitch]="settingKV.value.meta.type">
-            <div *ngSwitchCase="'boolean'">
-              <mat-checkbox [formControlName]="settingKV.key">{{
-                settingKV.key
-              }}</mat-checkbox>
-            </div>
-            <ng-container *ngSwitchCase="'set'"></ng-container>
-            <div *ngSwitchDefault>
-              <mat-form-field>
-                <mat-label>{{ settingKV.key }}</mat-label>
-                <mat-hint>{{ settingKV.value.meta.defaultValue }}</mat-hint>
-                <!-- {{ SettingGun.chain$ | open | async | json }} -->
-                <input
-                  [type]="settingKV.value.meta.type"
-                  matInput
-                  [formControlName]="settingKV.key"
-                />
-              </mat-form-field>
-            </div>
-          </div>
-        </ng-container>
-      </div>
+<mat-tab-group fxFlexFill>
+  <!-- <mat-tab>
+    <ng-container [formGroup]="settingsForm">
+      <mat-checkbox formControlName="enableWebRTC">WebRTC</mat-checkbox>
+      <mat-hint
+        >WebRTC allows ouronote to connect directly to other machines running
+        the application in a peer-to-peer network. This is generally much faster
+        than connecting solely to the server. Disabling WebRTC may help diagnose
+        synchonization and performance issues within ouronote. It is recommended
+        you leave WebRTC enabled for normal use.</mat-hint
+      >
+      <mat-checkbox formControlName="enableRadisk">Radisk</mat-checkbox>
+      <mat-hint
+        >When enabled, ouronote will use your browser's IndexedDB feature to
+        save your data instead of LocalStorage. IndexedDB offers increased
+        storage limits and is more performant than LocalStorage. This setting is
+        made available for debugging purposes only. It is recommended you leave
+        Radisk enabled for normal use.</mat-hint
+      >
     </ng-container>
-  </div>
-</section>
-<!-- <section>
+  </mat-tab> -->
+  <ng-container #Settings="gunChain" [gunChain]="settingsGun">
+    <!-- <mat-tab fxFlexFill *ngFor="let catKV of testFormGroup.controls | keyvalue"> -->
+    <mat-tab *ngFor="let catKey of ['gun', 'log', 'diagnostics', 'debug']">
+      <ng-template matTabLabel>{{ catKey | uppercase }}</ng-template>
+
+      <router-outlet></router-outlet>
+      <mat-card fxFlex>
+        <ng-container
+          #CatGun="gunGet"
+          [formGroup]="testFormGroup.controls[catKey]"
+          [gunGet]="catKey"
+        >
+          <ng-container
+            *ngFor="
+              let settingKV of testFormGroup.controls[catKey].controls
+                | keyvalue
+            "
+          >
+            <ng-container #SettingGun="gunGet" [gunGet]="settingKV.key">
+              <ng-container [ngSwitch]="settingKV.value.meta.type">
+                <div style="min-height: 4em" *ngSwitchCase="'boolean'">
+                  <mat-checkbox [formControlName]="settingKV.key">{{
+                    settingKV.key | unCamel
+                  }}</mat-checkbox>
+                </div>
+                <ng-container *ngSwitchCase="'set'"></ng-container>
+                <div *ngSwitchCase="'enum'">
+                  <mat-form-field>
+                    <mat-label>{{ settingKV.key | unCamel }}</mat-label>
+                    <mat-hint>{{ settingKV.value.meta.defaultValue }}</mat-hint>
+                    <mat-select [formControlName]="settingKV.key">
+                      <mat-option
+                        *ngFor="
+                          let option of settingKV.value.meta.options | keyvalue
+                        "
+                        [value]="option.key | number"
+                        >{{ option.value }}</mat-option
+                      >
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div *ngSwitchDefault>
+                  <mat-form-field>
+                    <mat-label>{{ settingKV.key | unCamel }}</mat-label>
+                    <mat-hint>{{ settingKV.value.meta.defaultValue }}</mat-hint>
+                    <!-- {{ SettingGun.chain$ | open | async | json }} -->
+                    <input
+                      [placeholder]="settingKV.value.meta.defaultValue"
+                      [matTooltip]="settingKV.value.meta.description || ''"
+                      [type]="settingKV.value.meta.type"
+                      matInput
+                      [formControlName]="settingKV.key"
+                    />
+                  </mat-form-field>
+                </div>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+      </mat-card>
+    </mat-tab>
+  </ng-container>
+  <!-- <section>
   <ng-container *ngIf="true" #Settings="gunChain" [gunChain]="settingsGun">
     <ng-container #Machine="gunGet" gunGet="log">
       <pre>{{ Machine.chain$ | open | async | json }}</pre>
@@ -70,20 +100,21 @@
       </ng-container>
       Auto:
       <div
-        *gunMapOf="
-          Settings.chain$ | async;
-          let chain = chain;
-          let k = key;
-          let s = $implicit
-        "
+      *gunMapOf="
+      Settings.chain$ | async;
+      let chain = chain;
+      let k = key;
+      let s = $implicit
+      "
       >
-        [{{ k }}]
-        <div
-          *gunMapOf="chain; let sk = key; let sub = chain; let sv = $implicit"
-        >
-          {{ k }}.{{ sk }} {{ sv }}
-        </div>
-      </div>
-    </ng-container>
-  </ng-container>
+      [{{ k }}]
+      <div
+      *gunMapOf="chain; let sk = key; let sub = chain; let sv = $implicit"
+      >
+      {{ k }}.{{ sk }} {{ sv }}
+    </div>
+  </div>
+</ng-container>
+</ng-container>
 </section> -->
+</mat-tab-group>

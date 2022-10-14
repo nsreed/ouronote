@@ -1,3 +1,5 @@
+import { MatCardModule } from '@angular/material/card';
+import { MatTabsModule } from '@angular/material/tabs';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
@@ -30,6 +32,7 @@ import { SessionSelectorComponent } from './session-selector/session-selector.co
 import { QrCodeComponent } from './qr-code/qr-code.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterModule } from '@angular/router';
+import { UnCamelPipe } from './un-camel.pipe';
 
 @NgModule({
   declarations: [
@@ -44,12 +47,14 @@ import { RouterModule } from '@angular/router';
     LicenseDialogComponent,
     SessionSelectorComponent,
     QrCodeComponent,
+    UnCamelPipe,
   ],
   imports: [
     CommonModule,
     FlexLayoutModule,
     MatAutocompleteModule,
     MatButtonModule,
+    MatCardModule,
     MatCheckboxModule,
     MatDatepickerModule,
     MatDialogModule,
@@ -62,6 +67,7 @@ import { RouterModule } from '@angular/router';
     MatRadioModule,
     MatSelectModule,
     MatStepperModule,
+    MatTabsModule,
     MatTooltipModule,
     MatToolbarModule,
     NgGunModule,
@@ -78,6 +84,7 @@ import { RouterModule } from '@angular/router';
     LicenseComponent,
     SessionSelectorComponent,
     QrCodeComponent,
+    UnCamelPipe,
   ],
 })
 export class ComponentsModule {}

@@ -1,4 +1,7 @@
 <mat-toolbar>
+  <button mat-icon-button (click)="onOpenSidenavClick()">
+    <mat-icon>chevron_left</mat-icon>
+  </button>
   <button mat-raised-button color="primary" (click)="create()">
     New Vector
   </button>
@@ -70,18 +73,13 @@
 >
   <ng-container *ngFor="let vector of vectors | async; let i = index">
     <div class="transparent" [ngClass]="{ odd: i % 2 === 0 }">
-      <a
-        mat-flat-button
-        [routerLink]="['/user/vectors', vector | soul, 'edit']"
-      >
+      <a mat-flat-button [routerLink]="['.', vector | soul, 'edit']">
         <!-- <mat-icon>enhanced_encryption</mat-icon> -->
         {{ vector.title }}
       </a>
-      <a
-        mat-flat-button
-        [routerLink]="['/user/vectors', vector | soul, 'edit']"
-        >{{ vector | updated | date }}</a
-      >
+      <a mat-flat-button [routerLink]="['.', vector | soul, 'edit']">{{
+        vector | updated | date
+      }}</a>
       <button
         mat-icon-button
         matTooltip="Remove vector"
@@ -92,7 +90,7 @@
       <button
         mat-icon-button
         matTooltip="Settings"
-        [routerLink]="['/user/vectors', vector | soul, 'permissions']"
+        [routerLink]="['.', vector | soul, 'permissions']"
       >
         <mat-icon>settings</mat-icon>
       </button>
