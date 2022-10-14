@@ -457,7 +457,7 @@ export class GunChain<
     ).pipe(take(1));
   }
 
-  open(opts?: any) {
+  open(opts?: GunChainCallbackOptions) {
     opts = opts || {};
     // return this.from((this.gun as any).load((d: any) => d) as any);
     return fromEventPattern(

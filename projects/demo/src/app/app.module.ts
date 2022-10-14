@@ -1,3 +1,4 @@
+import { MetaFormBuilder } from './forms-ui/meta-form-builder';
 import {
   MAT_COLOR_FORMATS,
   NgxMatColorPickerModule,
@@ -147,6 +148,10 @@ function appLoadFactory(gunFactory: GunFactoryService) {
     //   provide: SharedWorker,
     //   useValue: worker,
     // },
+    {
+      provide: MetaFormBuilder,
+      useFactory: () => new MetaFormBuilder(),
+    },
     {
       provide: APP_INITIALIZER,
       useFactory: appLoadFactory,

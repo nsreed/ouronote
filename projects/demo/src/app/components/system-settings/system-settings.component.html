@@ -23,7 +23,42 @@
     >
   </ng-container>
 </section>
-<section>
+<section #Settings="gunChain" [gunChain]="settingsGun">
+  <div *ngFor="let catKV of testFormGroup.controls | keyvalue">
+    <h4>{{ catKV.key }}</h4>
+    <ng-container
+      #CatGun="gunGet"
+      [formGroup]="catKV.value"
+      [gunGet]="catKV.key"
+    >
+      <div *ngFor="let settingKV of catKV.value.controls | keyvalue">
+        <ng-container #SettingGun="gunGet" [gunGet]="settingKV.key">
+          <div [ngSwitch]="settingKV.value.meta.type">
+            <div *ngSwitchCase="'boolean'">
+              <mat-checkbox [formControlName]="settingKV.key">{{
+                settingKV.key
+              }}</mat-checkbox>
+            </div>
+            <ng-container *ngSwitchCase="'set'"></ng-container>
+            <div *ngSwitchDefault>
+              <mat-form-field>
+                <mat-label>{{ settingKV.key }}</mat-label>
+                <mat-hint>{{ settingKV.value.meta.defaultValue }}</mat-hint>
+                <!-- {{ SettingGun.chain$ | open | async | json }} -->
+                <input
+                  [type]="settingKV.value.meta.type"
+                  matInput
+                  [formControlName]="settingKV.key"
+                />
+              </mat-form-field>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </ng-container>
+  </div>
+</section>
+<!-- <section>
   <ng-container *ngIf="true" #Settings="gunChain" [gunChain]="settingsGun">
     <ng-container #Machine="gunGet" gunGet="log">
       <pre>{{ Machine.chain$ | open | async | json }}</pre>
@@ -51,4 +86,4 @@
       </div>
     </ng-container>
   </ng-container>
-</section>
+</section> -->

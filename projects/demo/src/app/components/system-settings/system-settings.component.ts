@@ -1,15 +1,13 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { UntypedFormBuilder, FormBuilder } from '@angular/forms';
-import {
-  SettingsService,
-  SettingsSchema,
-  GunSettingsSchema,
-} from '../../settings.service';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, UntypedFormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { GunChain } from 'projects/ng-gun/src/lib/classes/GunChain';
-import { timer } from 'rxjs';
 import 'reflect-metadata';
-
+import { SettingsSchema, SettingsService } from '../../settings.service';
+import { AbstractGunControl } from './../../forms-ui/abstract-gun-control';
+import { MetaFormBuilder } from './../../forms-ui/meta-form-builder';
+import { DebugSettingsSchematic } from '../../settings.service';
+import { GunFormBuilder } from '../../forms-ui/gun-form-builder';
 function propsFor(con: any) {
   const proto = con.prototype || Object.getPrototypeOf(con);
   return proto.___PROPERTIES;
@@ -44,13 +42,25 @@ export class SystemSettingsComponent implements OnInit {
   settingsGun = this.settingsService.gun as unknown as GunChain<SettingsSchema>;
 
   // defaultSettings = new Settings();
+  logGunForm: AbstractGunControl = new AbstractGunControl(
+    this.settingsGun.get('log')
+  );
+
+  settingsFormGroup = this.mfb.fromClass(this.settingsService.schema);
+  testFormGroup = this.gfb.fromClass(
+    this.settingsService.schema,
+    this.settingsGun as any
+  );
 
   constructor(
     private fb: UntypedFormBuilder,
     private tfb: FormBuilder,
+    private mfb: MetaFormBuilder,
+    private gfb: GunFormBuilder,
     private settingsService: SettingsService,
     private router: Router
   ) {
+    console.log(this.testFormGroup);
     // TODO use metadata to build form
     // const ss = new SystemSettings();
     // ss.enableImages = false;
