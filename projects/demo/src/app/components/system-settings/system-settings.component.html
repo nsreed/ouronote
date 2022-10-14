@@ -24,15 +24,19 @@
   </ng-container>
 </section>
 <section>
-  <ng-container *ngIf="true" #Settings [gunChain]="settingsGun">
-    <ng-container #Machine="gunGet" gunGet="machine">
+  <ng-container *ngIf="true" #Settings="gunChain" [gunChain]="settingsGun">
+    <ng-container #Machine="gunGet" gunGet="log">
       <pre>{{ Machine.chain$ | open | async | json }}</pre>
-      <ng-container #Gun="gunGet" gunGet="gun/file">
+      <ng-container #Gun="gunGet" gunGet="level">
         <pre>{{ Gun.chain$ | open | async | json }}</pre>
       </ng-container>
+      <ng-container #Gun="gunGet" gunGet="outLevel">
+        <pre>{{ Gun.chain$ | open | async | json }}</pre>
+      </ng-container>
+      Auto:
       <div
         *gunMapOf="
-          Machine.chain$ | async;
+          Settings.chain$ | async;
           let chain = chain;
           let k = key;
           let s = $implicit

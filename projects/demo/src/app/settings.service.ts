@@ -21,13 +21,17 @@ export type SettingsSchema = {
   debug: {
     enabled: boolean;
   };
+  log: {
+    level: number;
+    outLevel: number;
+  };
 };
 
 @Injectable({
   providedIn: 'root',
 })
 export class SettingsService {
-  _gun = new GunChain<{ current: SettingsSchema }>(
+  private _gun = new GunChain<{ current: SettingsSchema }>(
     this.ngZone,
     new Gun({
       file: 'settings',

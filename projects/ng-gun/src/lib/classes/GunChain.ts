@@ -457,7 +457,8 @@ export class GunChain<
     ).pipe(take(1));
   }
 
-  open() {
+  open(opts?: any) {
+    opts = opts || {};
     // return this.from((this.gun as any).load((d: any) => d) as any);
     return fromEventPattern(
       (handler: (arg0: any) => void) => {
@@ -471,6 +472,7 @@ export class GunChain<
           },
           {
             meta: false,
+            ...opts,
           }
         );
         return signal;

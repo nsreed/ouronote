@@ -13,9 +13,10 @@ import { SoulPipe } from './soul.pipe';
 import { UpdatedPipe } from './updated.pipe';
 import { VerifyPipe } from './verify.pipe';
 import { LogModule } from 'log';
+import { FormsModule } from './forms/forms.module';
 
 @NgModule({
-  imports: [SchemaModule, LogModule],
+  imports: [SchemaModule, LogModule, FormsModule],
   declarations: [
     AliasPipe,
     ChainDirective,

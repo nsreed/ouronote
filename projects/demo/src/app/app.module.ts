@@ -5,27 +5,31 @@ import {
 } from '@angular-material-components/color-picker';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { HttpClientModule } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
   MatAutocompleteDefaultOptions,
-  MatAutocompleteModule,
   MAT_AUTOCOMPLETE_DEFAULT_OPTIONS,
 } from '@angular/material/autocomplete';
 import { MatBadgeModule } from '@angular/material/badge';
+import {
+  MatBottomSheetConfig,
+  MAT_BOTTOM_SHEET_DEFAULT_OPTIONS,
+} from '@angular/material/bottom-sheet';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import {
   MatFormFieldDefaultOptions,
-  MatFormFieldModule,
   MAT_FORM_FIELD_DEFAULT_OPTIONS,
 } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import {
@@ -35,11 +39,11 @@ import {
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserModule, HammerModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { LogModule, LogService } from 'log';
+import { NgGunModule, NgGunService } from 'ng-gun';
 import { OnlineStatusModule } from 'ngx-online-status';
 import { NoopSharedWorker } from 'projects/ng-gun/src/lib/classes/NoopSharedWorker';
-import { LogModule, LogService } from 'log';
-import { NgGunService } from 'ng-gun';
-import { environment } from '../environments/environment';
+import { firstValueFrom } from 'rxjs';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CertificatesModule } from './certificates/certificates.module';
@@ -51,16 +55,13 @@ import { DirectivesModule } from './directives/directives.module';
 import { FilesModule } from './files/files.module';
 import { FormsUiModule } from './forms-ui/forms-ui.module';
 import { LoginComponent } from './login/login.component';
+import { GunFactoryService } from './services/gun-factory.service';
 import { GunRadImporterService } from './services/gun-rad-importer.service';
 import { GunWebrtcImporterService } from './services/gun-webrtc-importer.service';
+import { OuronoteLogService } from './services/ouronote-log.service';
 import { SessionInfoComponent } from './session-info/session-info.component';
+import { SettingsService } from './settings.service';
 import { WelcomeComponent } from './welcome/welcome.component';
-import { MatButtonModule } from '@angular/material/button';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import {
-  MatBottomSheetConfig,
-  MAT_BOTTOM_SHEET_DEFAULT_OPTIONS,
-} from '@angular/material/bottom-sheet';
 
 const RADISK_LOCAL = localStorage.getItem('RADISK_ENABLE');
 const RADISK_ENABLE = RADISK_LOCAL === null ? true : !!JSON.parse(RADISK_LOCAL);
@@ -77,11 +78,7 @@ if (typeof SharedWorker !== 'undefined') {
 }
 
 // FIXME this is for compatibility with `ng serve`
-const GUN_PEERS = [
-  location.origin.match(/localhost/)
-    ? 'http://localhost:8765/gun'
-    : location.origin + '/gun',
-];
+const GUN_PEERS: string[] = [];
 const GUN_OPTIONS = {
   localStorage: !RADISK_ENABLE,
   sharedWorkerURL: '/assets/gun-shared.worker.js',
@@ -91,6 +88,11 @@ const GUN_OPTIONS = {
   },
   peers: [...GUN_PEERS],
 };
+
+function appLoadFactory(gunFactory: GunFactoryService) {
+  return () => firstValueFrom(gunFactory.root$);
+}
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -129,6 +131,7 @@ const GUN_OPTIONS = {
     MatSnackBarModule,
     MatTooltipModule,
     NgxMatColorPickerModule,
+    NgGunModule,
     OnlineStatusModule,
     ReactiveFormsModule,
     ScrollingModule,
@@ -144,6 +147,25 @@ const GUN_OPTIONS = {
     //   provide: SharedWorker,
     //   useValue: worker,
     // },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: appLoadFactory,
+      deps: [GunFactoryService],
+      multi: true,
+    },
+    {
+      provide: 'gun-options',
+      useFactory: (settingsService: SettingsService) => {
+        return () => firstValueFrom(settingsService.gun.open({ wait: 30 }));
+      },
+    },
+    {
+      provide: NgGunService,
+      useFactory: (factoryService: GunFactoryService) => {
+        return factoryService.root;
+      },
+      deps: [GunFactoryService],
+    },
     {
       provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
       useValue: {
@@ -166,18 +188,9 @@ const GUN_OPTIONS = {
       } as MatBottomSheetConfig,
     },
     {
-      provide: 'gun-options',
-      useValue: GUN_OPTIONS,
-    },
-    {
-      provide: 'gun-peers',
-      useValue: GUN_PEERS,
-    },
-    {
       provide: LogService,
-      useClass: LogService,
+      useClass: OuronoteLogService,
     },
-    NgGunService,
     {
       provide: GunWebrtcImporterService,
       useFactory: () => {
