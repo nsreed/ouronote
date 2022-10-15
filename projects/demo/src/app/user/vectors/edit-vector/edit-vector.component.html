@@ -14,7 +14,6 @@
       >
         <mat-icon>chevron_left</mat-icon>
       </button>
-      <div *cdkPortalOutlet="toolPropertiesPortal"></div>
       <mat-divider></mat-divider>
     </div>
   </mat-sidenav>
@@ -104,12 +103,19 @@
       <div
         id="ToolContainer"
         fxLayout.xs="row"
-        fxFlex.xs="1 0 auto"
         fxLayout="column"
+        fxFlex.xs="1 0 auto"
         #ToolContainer
         [style.zIndex]="3000"
         (mousewheel)="onToolContainerScroll($event, ToolContainer)"
       >
+        <a
+          mat-icon-button
+          fxShow.xs="true"
+          fxHide.gt-xs="true"
+          (click)="onOpenSidenavClick()"
+          ><mat-icon>chevron_left</mat-icon></a
+        >
         <ng-container *cdkPortalOutlet="toolPickerPortal"></ng-container>
       </div>
       <div id="CanvasContainer" fxFlex="1 1 auto" appPaperScope>
@@ -174,7 +180,7 @@
       <mat-card>
         <mat-card-title>Tool Properties</mat-card-title>
         <mat-card-content>
-          <!--TODO put properties back-->
+          <div *cdkPortalOutlet="toolPropertiesPortal"></div>
         </mat-card-content>
       </mat-card>
     </ng-template>
@@ -285,7 +291,7 @@
 
 <ng-template #ToolPicker>
   <app-tool-picker
-    (toolDoubleClick)="onToolDoubleClick($event)"
+    (toolDoubleClick)="matBottomSheet.open(BottomSheet)"
     [paperDirective]="paperDirective"
     [activeTool]="activeTool"
     [tools]="paperDirective?.scope?.tools"
