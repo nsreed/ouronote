@@ -1,0 +1,5 @@
+<mat-select [formControl]="formControl" placeholder="">
+  <mat-option [value]="vkp.key" *ngFor="let vkp of options | keyvalue">
+    {{ vkp.value }}
+  </mat-option>
+</mat-select>

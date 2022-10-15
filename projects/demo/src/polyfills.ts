@@ -17,6 +17,9 @@
 /***************************************************************************************************
  * BROWSER POLYFILLS
  */
+(window as any).process = {
+  env: { DEBUG: undefined },
+};
 
 /**
  * By default, zone.js will patch all possible macroTask and DomEvents
@@ -52,31 +55,40 @@ import 'zone.js'; // Included with Angular CLI.
  */
 // TODO This is part 1 of tracking down our phone bugs
 function Loader() {
-  function loader() { }
-  loader.tasks = [] as any[],
-    loader.addTask = (task: any) => {
+  function loader() {}
+  (loader.tasks = [] as any[]),
+    (loader.addTask = (task: any) => {
       loader.tasks.push(task);
-      const loadingOverlay = document.getElementById('ɵLoading') as HTMLPreElement;
+      const loadingOverlay = document.getElementById(
+        'ɵLoading'
+      ) as HTMLPreElement;
       loadingOverlay.innerHTML = loader.tasks.join('\n');
-    },
-    loader.hideOverlay = () => {
-      const loadingOverlay = document.getElementById('ɵLoading') as HTMLPreElement;
+    }),
+    (loader.hideOverlay = () => {
+      const loadingOverlay = document.getElementById(
+        'ɵLoading'
+      ) as HTMLPreElement;
       // loadingOverlay.innerHTML = AppModule['status'].tasks.join('\n');
       loadingOverlay.style.display = 'none';
-    },
-    loader.log = (message: any, ...args: any[]) => {
-      const loadingOverlay = document.getElementById('ɵLoading') as HTMLPreElement;
-      loadingOverlay.innerHTML = loader.tasks.join('\n') + `\n[LOG] ${message} ${JSON.stringify(args)}`;
-    },
-    loader.handleError = (error: Error) => {
-      loader.log(`Error: ${error.message}\n${error.stack}`)
-    },
-    loader.say = function (data: any) { window.dispatchEvent(new MessageEvent('message', data)) },
-    loader.statusListener = window.addEventListener('message', function (ev) {
+    }),
+    (loader.log = (message: any, ...args: any[]) => {
+      const loadingOverlay = document.getElementById(
+        'ɵLoading'
+      ) as HTMLPreElement;
+      loadingOverlay.innerHTML =
+        loader.tasks.join('\n') + `\n[LOG] ${message} ${JSON.stringify(args)}`;
+    }),
+    (loader.handleError = (error: Error) => {
+      loader.log(`Error: ${error.message}\n${error.stack}`);
+    }),
+    (loader.say = function (data: any) {
+      window.dispatchEvent(new MessageEvent('message', data));
+    }),
+    (loader.statusListener = window.addEventListener('message', function (ev) {
       console.log(ev.data);
-    });
+    }));
   return loader;
-};
+}
 const loader = Loader();
 (window as any)['loader'] = loader;
 loader.addTask('polyfills');
@@ -121,7 +133,6 @@ import {
 // tslint:disable: space-before-function-paren
 // tslint:disable: only-arrow-functions
 function enhancePaper(paper: any) {
-
   const IGNORED_PROPS: string[] = [
     'fullySelected',
     'selected',
@@ -368,7 +379,9 @@ function enhancePaper(paper: any) {
     item: any
   ) {
     us.call(this, item);
-    const selected = this.selectedItems.filter((i: paper.Item) => !i.data.ignore);
+    const selected = this.selectedItems.filter(
+      (i: paper.Item) => !i.data.ignore
+    );
     this.changes$?.next(['selectedItems', selected]);
     this.selectedItems$?.next(selected);
     // console.log('_updateSelection() after', this.selectedItems);
@@ -407,8 +420,13 @@ function enhancePaper(paper: any) {
     (this as any).changes$.next(['selectedItems', this.selectedItems]);
   };
 
-  const p = afterProto(paper.Project.prototype)('deselectAll')(function (this: any) {
-    (this as any)?.changes$?.next(['selectedItems', (this as any).selectedItems])
+  const p = afterProto(paper.Project.prototype)('deselectAll')(function (
+    this: any
+  ) {
+    (this as any)?.changes$?.next([
+      'selectedItems',
+      (this as any).selectedItems,
+    ]);
   });
 
   /**
@@ -434,7 +452,6 @@ function enhancePaper(paper: any) {
 
   // Add change emitters
   toIntercept.forEach((cns) => addChangeListeners(cns));
-
 }
 
 enhancePaper(paper);
