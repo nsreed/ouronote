@@ -52,6 +52,7 @@ import { LayerListComponent } from './components/layer-list/layer-list.component
 import { NumberFormComponent } from './components/number-form/number-form.component';
 import { SelectedItemsComponent } from './components/selected-items/selected-items.component';
 import { SelectionIntersectModeFormComponent } from './components/selection-intersect-mode-form/selection-intersect-mode-form.component';
+import { SelectorControlComponent } from './components/selector-control/selector-control.component';
 import { SettingsDialogComponent } from './components/settings-dialog/settings-dialog.component';
 import { SliderFormComponent } from './components/slider-form/slider-form.component';
 import { StrokeWidthFormComponent } from './components/stroke-width-form/stroke-width-form.component';
@@ -98,6 +99,7 @@ import { VectorsComponent } from './vectors.component';
     ToolPickerComponent,
     ToolPropertiesComponent,
     ToolIconComponent,
+    SelectorControlComponent,
   ],
   imports: [
     CertificatesModule,
@@ -146,6 +148,6 @@ import { VectorsComponent } from './vectors.component';
     VectorsRoutingModule,
     VectorModule,
   ],
-  exports: [ToolIconComponent],
+  exports: [ToolIconComponent, SelectorControlComponent],
 })
 export class VectorsModule {}

@@ -7,6 +7,7 @@
   "
   [appObject]="paperEditDirective.project.currentStyle"
 >
+  <!-- COLORS -->
   <app-color-form
     appObjectProperty="strokeColor"
     [color]="paperEditDirective.project.currentStyle.strokeColor"
@@ -23,11 +24,17 @@
     label="Fill Color"
   >
   </app-color-form>
+
+  <app-selector-control *ngIf="activeTool?.name === 'shapes'">
+  </app-selector-control>
+
+  <!--Sizing-->
   <ng-container
     [appObject]="activeTool"
     *ngIf="activeTool?.propertyNames?.includes('style')"
   >
     <mat-hint matSuffix>Stroke Width</mat-hint>
+
     <app-stroke-width-form
       [tool]="activeTool"
       [style]="activeTool.style"
@@ -47,12 +54,14 @@
     >
     </app-number-form>
   </ng-container>
+
   <div *ngIf="activeTool?.propertyNames?.includes('simplify')">
     <app-boolean-form
       [appObject]="activeTool"
       appObjectProperty="simplify"
     ></app-boolean-form>
   </div>
+
   <div
     *ngIf="
       activeTool?.propertyNames?.includes('smoothingStrength') &&

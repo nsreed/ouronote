@@ -8,6 +8,7 @@ import {
 import { PaperEditDirective } from '../../../../vector/paper-edit.directive';
 import { EditVectorComponent } from '../../edit-vector/edit-vector.component';
 import { VectorTool } from '../../tools/paper-tool';
+import { MetaFormBuilder } from './../../../../forms-ui/meta-form-builder';
 
 @Component({
   selector: 'app-tool-properties',
@@ -42,7 +43,8 @@ export class ToolPropertiesComponent implements OnInit {
 
   constructor(
     private workspace: EditVectorComponent,
-    private changes: ChangeDetectorRef
+    private changes: ChangeDetectorRef,
+    public mfb: MetaFormBuilder
   ) {}
 
   ngOnInit(): void {

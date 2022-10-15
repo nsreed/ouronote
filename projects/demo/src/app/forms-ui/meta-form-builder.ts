@@ -9,7 +9,7 @@ import { NodeMetadata, PropMetadata, RefMetadata } from '../common/metadata';
 
 @Injectable()
 export class MetaFormBuilder extends FormBuilder {
-  fromClass(target: Function, ...args: any[]): FormGroup {
+  fromClass(target: Function | any, ...args: any[]): FormGroup {
     const metadata = Reflect.getMetadata('meta:node', target);
     if (!metadata?.properties) {
       return this.group({});

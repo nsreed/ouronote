@@ -1,9 +1,7 @@
-import { Inject, Injectable, Optional, NgZone } from '@angular/core';
-import { NgGunService } from 'ng-gun';
-import { GunChain } from 'ng-gun';
+import { Inject, Injectable, NgZone, Optional } from '@angular/core';
 import * as Gun from 'gun';
+import { GunChain } from 'ng-gun';
 import { Bool, Enum, Node, Num, Prop, Ref, Str } from './common/metadata';
-import { LogLevel } from 'log';
 
 export type GunSettingsSchema = {
   file: string;
@@ -27,6 +25,7 @@ export type LogSettingsSchema = {
   level: number;
   outLevel: number;
   persist: boolean;
+  bypassLogger: boolean;
 };
 
 export type SettingsSchema = {
@@ -51,7 +50,7 @@ export class GunSettingsSchematic implements GunSettingsSchema {
   @Bool({ defaultValue: false }) localStorage!: boolean;
 }
 
-@Node(true)
+@Node()
 export class LogSettingsSchematic implements LogSettingsSchema {
   @Enum({
     description: 'Log messages above this level will be retained',
@@ -80,11 +79,18 @@ export class LogSettingsSchematic implements LogSettingsSchema {
       'Control whether or not past log messages from this session will remain accessible',
   })
   persist = false;
+  @Bool({
+    description: `Bypasses the logger functions so that real line numbers show up in the console`,
+  })
+  bypassLogger = false;
 }
 
-@Node()
+@Node({ description: `Various checkboxes for debugging/experimental purposes` })
 export class DebugSettingsSchematic implements DebugSettingsSchema {
-  @Bool()
+  @Bool({
+    description: `It isn't known whether turning this option off would end all experimental shenanigans,
+    but if there's a feature you want turned on and it isn't listed elsewhere, this is the switch for you!`,
+  })
   enabled!: boolean;
 }
 
@@ -93,13 +99,15 @@ export class DebugSettingsSchematic implements DebugSettingsSchema {
 })
 export class DiagnosticsSettingsSchematic implements DiagnosticsSettingsSchema {
   @Num({
-    description: 'How long to wait before trying to refresh the connection',
+    description:
+      'The number of time units to wait between each attept at restoring a connection?',
   })
   timeout!: number;
   @Num({
     defaultValue: 30 * 1000,
     min: 1000,
-    description: 'Automatically refresh the connection',
+    description:
+      'How long to wait after a communication lag before trying to disconnect & reconnect',
   })
   interval!: number;
   @Num({
@@ -107,6 +115,8 @@ export class DiagnosticsSettingsSchematic implements DiagnosticsSettingsSchema {
     min: 1000,
     unit: 'ms',
     units: 'ms',
+    description:
+      'After this amount of time, ouronote will forgive the offline peer and attempt communication again',
   })
   reconnectAfter!: number;
   @Num({
@@ -114,6 +124,7 @@ export class DiagnosticsSettingsSchematic implements DiagnosticsSettingsSchema {
     min: 10,
     unit: 'minute',
     units: 'minutes',
+    description: 'How long to wait until removing the peer from the peers list',
   })
   giveUpAfter!: number;
 }

@@ -1,15 +1,61 @@
-import { VectorTool } from './paper-tool';
 import * as paper from 'paper';
-import { Style } from 'paper';
+import { Enum, Node } from '../../../common/metadata';
 import { Property } from '../functions/decorators';
 import { DrawTool } from './draw-tool';
+import { ToolSchematic } from './paper-tool';
+
+// export enum ShapeType {
+//   LINE,
+//   CIRCLE,
+//   RECTANGLE,
+//   ELLIPSE,
+//   ARC,
+//   REGULAR_POLYGON,
+//   STAR,
+// }
+
+export type ShapeToolSchema = {
+  shapeType: TShape;
+};
+
+export type TShape =
+  | 'star'
+  | 'line'
+  | 'circle'
+  | 'rectangle'
+  | 'ellipse'
+  | 'arc'
+  | 'regular_polygon'
+  | string;
+
+const shameNames = [
+  'star',
+  'line',
+  'circle',
+  'rectangle',
+  'ellipse',
+  'arc',
+  'regular_polygon',
+];
+
+@Node()
+export class ShapeToolSchematic
+  extends ToolSchematic
+  implements ShapeToolSchema
+{
+  @Enum({
+    options: shameNames,
+  })
+  shapeType = `star`;
+}
+
 export class ShapeTool extends DrawTool {
   name = 'shapes';
   icon = 'shapes';
   shape?: paper.Shape;
 
   @Property()
-  style = new Style({
+  style = new paper.Style({
     strokeCap: 'round',
     strokeJoin: 'round',
     strokeWidth: 3,

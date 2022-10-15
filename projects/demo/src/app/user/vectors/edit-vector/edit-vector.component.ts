@@ -233,6 +233,9 @@ export class EditVectorComponent
     this.titleBarPortal = this.portify(this.titleBarContent);
     this.menusPortal = this.portify(this.menusContent);
     this.toolPropertiesPortal = this.portify(this.toolPropertiesContent);
+
+    this.matBottomSheet.open(this.bottomSheet as any);
+
     this.requestCount$.subscribe((count) => {
       if (count > 0 && this.editRequestsTooltip) {
         this.editRequestsTooltip.message = `There are ${count} edit requests.`;

@@ -1,22 +1,19 @@
-import { Tool, ToolEvent } from 'paper';
-import { fromEvent, of, ReplaySubject, Observable } from 'rxjs';
-import { after$ } from '../../../functions/aspect-rx';
-import * as paper from 'paper';
-import {
-  filter,
-  switchMap,
-  switchMapTo,
-  takeUntil,
-  tap,
-  shareReplay,
-} from 'rxjs/operators';
 import { LogService } from 'log';
-import { EventEmitter } from '@angular/core';
+import * as paper from 'paper';
+import { fromEvent, Observable, of } from 'rxjs';
+import { filter, map, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { IEnhancedPaper } from '../../../vector/IEnhancedPaper';
+import { IEnhancedScope } from '../../../vector/IEnhancedScope';
 import { PenEvent } from '../classes/PenEvent';
 import { propertyChange$ } from '../functions/paper-chain';
-import { IEnhancedPaper } from '../../../vector/IEnhancedPaper';
-import { map, bufferTime } from 'rxjs/operators';
-import { IEnhancedScope } from '../../../vector/IEnhancedScope';
+
+export type ToolSchema = {
+  name?: string;
+};
+
+export class ToolSchematic implements ToolSchema {
+  name!: string;
+}
 
 export class VectorTool extends Tool {
   // FIXME class names get mangled by production build, stop being lazy
@@ -27,8 +24,8 @@ export class VectorTool extends Tool {
 
   category = 'none';
 
-  get isActive() {
-    return this.scope.tool === this;
+  get isActive(): boolean {
+    return this.scope.tool === (this as VectorTool);
   }
 
   get enabled() {
