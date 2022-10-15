@@ -9,7 +9,7 @@ export function Prop(options: PropertyOptions = {}) {
   options = options || {};
   options.decorator = options.decorator || Prop;
   return (target: any, key: string) => {
-    console.log(`prop ${key}`);
+    // console.log(`prop ${key}`);
     const nodeMeta = getOrDefine(target.constructor, 'meta:properties');
     const order = Object.keys(nodeMeta).length;
     const propMeta = { target, key, order, ...options };
@@ -91,7 +91,7 @@ export function Str(options?: PropertyOptions) {
 export function Node(options?: any) {
   options = typeof options === 'object' ? options : { options };
   return (target: any) => {
-    console.log(`node ${target.name}`);
+    // console.log(`node ${target.name}`);
     const propsMeta = Reflect.getMetadata('meta:properties', target) || {};
     const refsMeta = Reflect.getMetadata('meta:referencedBy', target) || {};
     // getOrDefine(target, 'meta:node');

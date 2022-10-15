@@ -4,14 +4,16 @@
   display: contents;
 }
 
-.oro-tool-button {
-  @include mat.elevation(0);
+.oro-tool-button,
+button.oro-tool-button,
+a.oro-tool-button {
+  @include mat.elevation(1);
   &.mat-raised-button {
     @include mat.elevation(8);
   }
   &:hover {
     color: rgba(0, 0, 0, 0.8);
-    @include mat.elevation(1);
+    @include mat.elevation(0);
   }
   &:active,
   &.active {

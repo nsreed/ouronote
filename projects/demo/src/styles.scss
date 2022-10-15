@@ -40,6 +40,10 @@ html {
 
 body,
 app-root {
+  .fxhide-portrait,
+  .fxhide-landscape {
+    display: none !important;
+  }
   font-family: Arial, Helvetica, sans-serif;
   display: flex;
   flex-direction: column;
@@ -126,7 +130,6 @@ body {
     font-weight: bold;
   }
   .mat-sidenav-container {
-    position: unset;
     min-height: -webkit-fill-available;
     max-height: -webkit-fill-available;
   }

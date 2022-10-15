@@ -7,7 +7,12 @@ import {
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { FlexLayoutModule } from '@angular/flex-layout';
+import {
+  BREAKPOINTS,
+  DEFAULT_BREAKPOINTS,
+  FlexLayoutModule,
+  ORIENTATION_BREAKPOINTS,
+} from '@angular/flex-layout';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
   MatAutocompleteDefaultOptions,
@@ -148,6 +153,10 @@ function appLoadFactory(gunFactory: GunFactoryService) {
     //   provide: SharedWorker,
     //   useValue: worker,
     // },
+    {
+      provide: BREAKPOINTS,
+      useValue: [...DEFAULT_BREAKPOINTS, ...ORIENTATION_BREAKPOINTS],
+    },
     {
       provide: MetaFormBuilder,
       useFactory: () => new MetaFormBuilder(),

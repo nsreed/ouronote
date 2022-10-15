@@ -14,11 +14,11 @@ import { distinct, map, shareReplay, switchMap, take } from 'rxjs/operators';
 import { VectorGraph } from '../../VectorGraph';
 import { ProjectPair } from '../classes/ProjectPair';
 import { OURONOTE_DEFAULT_TITLE } from './../../../constants';
-import { ToolPickerComponent } from './../components/tool-picker/tool-picker.component';
 
 import { CdkDragMove, DragDrop } from '@angular/cdk/drag-drop';
-import { ComponentPortal, TemplatePortal } from '@angular/cdk/portal';
+import { TemplatePortal } from '@angular/cdk/portal';
 import { ElementRef, TemplateRef, ViewContainerRef } from '@angular/core';
+import { MediaObserver } from '@angular/flex-layout';
 import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
@@ -59,7 +59,6 @@ import { LassoSelectTool, RectangleSelectTool } from '../tools/select';
 import { ShapeTool } from '../tools/shape';
 import { TextTool } from '../tools/text';
 import { VectorService } from '../vector.service';
-import { MediaObserver } from '@angular/flex-layout';
 
 @Component({
   templateUrl: './edit-vector.component.html',
@@ -97,6 +96,7 @@ export class EditVectorComponent
 
   @ViewChild('EditRequestsTooltip')
   editRequestsTooltip?: MatTooltip;
+  media$ = this.media.asObservable().pipe(shareReplay(1));
 
   editToast?: MatSnackBarRef<TextOnlySnackBar>;
   activeTool?: VectorTool;
@@ -120,6 +120,10 @@ export class EditVectorComponent
 
   get tools(): VectorTool[] {
     return this.paperDirective.scope.tools as any;
+  }
+
+  portify(content: TemplateRef<any>) {
+    return new TemplatePortal(content, this._viewContainerRef);
   }
 
   constructor(
@@ -155,10 +159,10 @@ export class EditVectorComponent
   }
 
   onRightChevronClick(e: any, sideNav: MatSidenav) {
-    if (this.selectedItems.length === 0) {
-      sideNav.close();
-      return;
-    }
+    // if (this.selectedItems.length === 0) {
+    //   sideNav.close();
+    //   return;
+    // }
     sideNav.toggle();
   }
 
@@ -193,31 +197,34 @@ export class EditVectorComponent
     }
   }
 
+  onToolContainerScroll(event: WheelEvent, container: HTMLElement) {
+    container.scrollLeft += event.deltaY;
+  }
+
   @ViewChild('RightSide')
   rightSide!: MatSidenav;
-
-  @ViewChild('ToolPicker')
-  toolPickerContent!: TemplateRef<unknown>;
   toolPickerPortal!: TemplatePortal;
+  toolPropertiesPortal!: TemplatePortal;
+  titleBarPortal!: TemplatePortal;
+  menusPortal!: TemplatePortal;
 
   @ViewChild('TitleBar')
   titleBarContent!: TemplateRef<any>;
-  titleBarPortal!: TemplatePortal;
+
+  @ViewChild('Menus')
+  menusContent!: TemplateRef<any>;
 
   @ViewChild('ToolProperties')
   toolPropertiesContent!: TemplateRef<any>;
 
+  @ViewChild('ToolPicker')
+  toolPickerContent!: TemplateRef<unknown>;
+
   ngAfterViewInit(): void {
-    this.toolPickerPortal = new TemplatePortal(
-      this.toolPickerContent,
-      this._viewContainerRef
-    );
-
-    this.titleBarPortal = new TemplatePortal(
-      this.titleBarContent,
-      this._viewContainerRef
-    );
-
+    this.toolPickerPortal = this.portify(this.toolPickerContent);
+    this.titleBarPortal = this.portify(this.titleBarContent);
+    this.menusPortal = this.portify(this.menusContent);
+    this.toolPropertiesPortal = this.portify(this.toolPropertiesContent);
     this.requestCount$.subscribe((count) => {
       if (count > 0 && this.editRequestsTooltip) {
         this.editRequestsTooltip.message = `There are ${count} edit requests.`;
@@ -264,6 +271,12 @@ export class EditVectorComponent
   }
 
   ngOnInit(): void {
+    // this.media$.subscribe((changes) => {
+    //   const filteredChanges = changes
+    //     .filter((v) => v.matches)
+    //     .sort((a, b) => b.priority - a.priority);
+    //   console.log(JSON.stringify(filteredChanges, null, 2));
+    // });
     // TODO display appropriate document title
     this.vector$.subscribe((v) => {
       window.document.title = `${v.title} - ${OURONOTE_DEFAULT_TITLE}`;

@@ -19,9 +19,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgGunModule } from 'ng-gun';
 import { ObjectPropertyDirective } from './object-property.directive';
 import { ObjectDirective } from './object.directive';
+import { LayoutOrientationDirective } from './layout-orientation.directive';
 
 @NgModule({
-  declarations: [ObjectPropertyDirective, ObjectDirective],
+  declarations: [ObjectPropertyDirective, ObjectDirective, LayoutOrientationDirective],
   imports: [
     CommonModule,
     FlexLayoutModule,
@@ -43,6 +44,6 @@ import { ObjectDirective } from './object.directive';
     NgGunModule,
     ReactiveFormsModule,
   ],
-  exports: [ObjectPropertyDirective, ObjectDirective],
+  exports: [ObjectPropertyDirective, ObjectDirective, LayoutOrientationDirective],
 })
 export class DirectivesModule {}

@@ -1,16 +1,12 @@
 @mixin thinScroll {
-  transition: all 200ms ease-in-out;
+  $width: 0.35em;
+  transition: all 200ms ease-out;
   box-shadow: inset 0 0 0.12em rgba(0, 0, 0, 0.01);
   &:hover {
-    z-index: 20;
-    // margin-bottom: -0.2em;
-    // margin-bottom: -0.2em;
+    transition: all 200ms ease-out;
     box-shadow: inset 0 0 0.41em rgba(0, 0, 0, 0.31);
     &::-webkit-scrollbar {
       opacity: 1;
-      // width: 0.4em;
-      // height: 0.4em;
-      // overflow: visible;
       &:disabled {
         opacity: 0;
       }
@@ -22,24 +18,27 @@
   }
 
   &::-webkit-scrollbar {
+    z-index: 9820;
     transition: all 200ms ease-in-out;
     opacity: 0.6;
-    width: 0.2em;
-    height: 0.2em;
+    width: $width;
+    height: $width;
     &:disabled {
       opacity: 0;
     }
   }
   &::-webkit-scrollbar-track {
     opacity: 0.6;
+    transition: all 200ms ease-in-out;
     background: #fafafa;
     box-shadow: inset 0 0 3px whitesmoke;
-    border-radius: 3px;
+    border-radius: 0.1em;
   }
   &::-webkit-scrollbar-thumb {
     background: #f1f1f1;
     box-shadow: inset 0 0 3px slategray;
-    border-radius: 3px;
+    outline: dotted calc($width / 4) black;
+    pointer-events: all;
   }
   &::-webkit-scrollbar-thumb:hover {
     background: #d1d1d1;

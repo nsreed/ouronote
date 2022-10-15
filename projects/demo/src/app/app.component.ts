@@ -41,7 +41,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     private domSanitizer: DomSanitizer,
     public media: MediaObserver
   ) {
-    media.asObservable().subscribe(console.log);
     this.matIconRegistry.addSvgIcon(
       'lasso',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
