@@ -2,7 +2,7 @@
   <button
     *ngFor="let tool of tools"
     mat-stroked-button
-    (click)="activateTool(tool)"
+    (click)="onToolClick(tool)"
     [title]="tool.name"
     [ngClass]="{
       active: tool === activeTool

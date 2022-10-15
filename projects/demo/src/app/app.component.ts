@@ -1,19 +1,26 @@
-import { Component, OnInit, Optional, AfterViewInit } from '@angular/core';
+import { filter } from 'rxjs/operators';
+import {
+  AfterViewInit,
+  Component,
+  OnInit,
+  Optional,
+  ViewChild,
+} from '@angular/core';
+import { MediaObserver } from '@angular/flex-layout';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconRegistry } from '@angular/material/icon';
+import { MatSidenav } from '@angular/material/sidenav';
 import { DomSanitizer } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ClipboardService } from 'ngx-clipboard';
+import { ActivatedRoute, Router, RouterEvent } from '@angular/router';
 import { LogMessage, LogService } from 'log';
 import { NgGunService } from 'ng-gun';
+import { ClipboardService } from 'ngx-clipboard';
 import { AboutComponent } from './components/about/about.component';
 import { GunPeersComponent } from './components/gun-peers/gun-peers.component';
-import { OURONOTE_DEFAULT_TITLE } from './constants';
 import { DiagnosticsService } from './diagnostics.service';
 import { GunRadImporterService } from './services/gun-rad-importer.service';
 import { GunWebrtcImporterService } from './services/gun-webrtc-importer.service';
 import { User } from './user/model';
-import { MediaObserver, MediaChange } from '@angular/flex-layout';
 declare const APP_HASH: any;
 console.log(APP_HASH);
 
@@ -27,7 +34,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   messages: LogMessage[] = [];
   constructor(
     public ngGun: NgGunService<User>,
-    private router: Router,
+    public router: Router,
     private route: ActivatedRoute,
     private cb: ClipboardService,
     private logger: LogService,
@@ -66,7 +73,16 @@ export class AppComponent implements OnInit, AfterViewInit {
         window.location.href = redirect;
       }
     });
+
+    router.events
+      .pipe(filter((e) => e instanceof RouterEvent))
+      .subscribe((event) => {
+        console.log(event);
+      });
   }
+
+  @ViewChild('nav')
+  leftSidebar!: MatSidenav;
 
   async ngOnInit() {
     // if (typeof Worker !== 'undefined') {

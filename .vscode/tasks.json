@@ -1,0 +1,15 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "start:live",
+      "problemMatcher": [
+        "$tslint-webpack-watch"
+      ],
+      "label": "npm: start:live",
+      "detail": "ng serve -c development",
+      "isBackground": true
+    }
+  ]
+}

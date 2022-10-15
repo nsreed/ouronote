@@ -201,8 +201,16 @@ export class EditVectorComponent
     container.scrollLeft += event.deltaY;
   }
 
+  onToolDoubleClick(tool: VectorTool) {
+    this.logger.log(`someone wants to open tool details`);
+    this.leftSide.toggle();
+  }
+
   @ViewChild('RightSide')
   rightSide!: MatSidenav;
+
+  @ViewChild('LeftSide')
+  leftSide!: MatSidenav;
   toolPickerPortal!: TemplatePortal;
   toolPropertiesPortal!: TemplatePortal;
   titleBarPortal!: TemplatePortal;

@@ -1,7 +1,23 @@
-<mat-sidenav-container [hasBackdrop]="false">
-  <mat-sidenav #LeftSide [opened]="false" mode="side">
-    <div *cdkPortalOutlet="toolPropertiesPortal"></div
-  ></mat-sidenav>
+<mat-sidenav-container [hasBackdrop]="RightSide.opened ? false : true">
+  <mat-sidenav #LeftSide [opened]="false" mode="side" class="mat-elevation-z5">
+    <div
+      fxFlex="1 0 auto"
+      fxLayout="column"
+      fxLayoutAlign="stretch center"
+      [style.width]="'240px'"
+      [style.margin]="'0 1em'"
+    >
+      <button
+        mat-icon-button
+        (click)="LeftSide.close()"
+        [style.alignSelf]="'end'"
+      >
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <div *cdkPortalOutlet="toolPropertiesPortal"></div>
+      <mat-divider></mat-divider>
+    </div>
+  </mat-sidenav>
 
   <mat-sidenav #RightSide [opened]="false" position="end" mode="side">
     <mat-accordion
@@ -88,13 +104,15 @@
       <div
         id="ToolContainer"
         fxLayout.xs="row"
-        fxLayout.gt-xs="column"
+        fxFlex.xs="1 0 auto"
+        fxLayout="column"
         #ToolContainer
+        [style.zIndex]="3000"
         (mousewheel)="onToolContainerScroll($event, ToolContainer)"
       >
         <ng-container *cdkPortalOutlet="toolPickerPortal"></ng-container>
       </div>
-      <div id="CanvasContainer" fxFlex="1 0 auto" appPaperScope>
+      <div id="CanvasContainer" fxFlex="1 1 auto" appPaperScope>
         <!-- <canvas id="Background" appPaper></canvas> -->
         <canvas id="Workspace" appPaperEdit #paper="appPaperEdit"></canvas>
         <canvas
@@ -267,6 +285,7 @@
 
 <ng-template #ToolPicker>
   <app-tool-picker
+    (toolDoubleClick)="onToolDoubleClick($event)"
     [paperDirective]="paperDirective"
     [activeTool]="activeTool"
     [tools]="paperDirective?.scope?.tools"

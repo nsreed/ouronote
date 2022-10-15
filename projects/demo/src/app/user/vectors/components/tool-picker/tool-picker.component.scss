@@ -13,7 +13,7 @@ a.oro-tool-button {
   }
   &:hover {
     color: rgba(0, 0, 0, 0.8);
-    @include mat.elevation(0);
+    @include mat.elevation(2);
   }
   &:active,
   &.active {

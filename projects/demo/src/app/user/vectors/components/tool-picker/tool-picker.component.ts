@@ -11,8 +11,10 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  EventEmitter,
   Input,
   OnInit,
+  Output,
   TemplateRef,
   ViewChild,
   ViewContainerRef,
@@ -25,25 +27,6 @@ import { VectorTool } from '../../tools/paper-tool';
   selector: 'app-tool-picker',
   templateUrl: './tool-picker.component.html',
   styleUrls: ['./tool-picker.component.scss'],
-  animations: [
-    trigger('flyInOut', [
-      state('in', style({ transform: 'translatX(0)' })),
-      transition('void => *', [
-        style({ transform: 'translateX(-100)' }),
-        animate(100),
-      ]),
-      transition('* => void', [
-        animate(100, style({ transform: 'translateX(100%)' })),
-      ]),
-    ]),
-    trigger('myInsertRemoveTrigger', [
-      transition(':enter', [
-        style({ opacity: 0 }),
-        animate('400ms', style({ opacity: 1 })),
-      ]),
-      transition(':leave', [animate('400ms', style({ opacity: 0 }))]),
-    ]),
-  ],
   changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ToolPickerComponent implements OnInit, AfterViewInit {
@@ -61,11 +44,6 @@ export class ToolPickerComponent implements OnInit, AfterViewInit {
 
     this.viewContainerRef.createEmbeddedView(this.toolsTmplRef);
     this.changes.detectChanges();
-  }
-
-  activateTool(tool: VectorTool) {
-    tool.activate();
-    this.changes.markForCheck();
   }
 
   @Input()
@@ -214,6 +192,19 @@ export class ToolPickerComponent implements OnInit, AfterViewInit {
       // const menu = catTrigger.getMenu();
       // menu?.menuStack?.closeAll();
     }
+  }
+
+  @Output()
+  toolDoubleClick = new EventEmitter();
+
+  onToolClick(tool: VectorTool) {
+    if (tool === this.activeTool) {
+      this.toolDoubleClick.emit(tool);
+      this.changes.detectChanges();
+      return;
+    }
+    tool.activate();
+    this.changes.markForCheck();
   }
 
   ngOnInit(): void {

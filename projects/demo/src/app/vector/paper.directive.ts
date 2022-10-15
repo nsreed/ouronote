@@ -349,7 +349,7 @@ export class PaperDirective extends PaperBase implements OnInit, AfterViewInit {
 
   @HostListener('window:resize', ['$event'])
   onHostResize(event?: any) {
-    this.logger.log('onHostResize');
+    this.logger.verbose('onHostResize');
     this.updateViewSize();
   }
 
