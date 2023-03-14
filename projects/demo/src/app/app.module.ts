@@ -170,6 +170,9 @@ function appLoadFactory(gunFactory: GunFactoryService) {
     {
       provide: 'gun-options',
       useFactory: (settingsService: SettingsService) => {
+        /** NOTE an uninitialized GUN DB will sit here forever. For now the SettingsService will initialize it
+         *  if it not()'s
+         */
         return () => firstValueFrom(settingsService.gun.open({ wait: 30 }));
       },
     },
@@ -234,9 +237,7 @@ function appLoadFactory(gunFactory: GunFactoryService) {
       },
     },
   ],
-  exports: [CertificatesComponent],
+  exports: [],
   bootstrap: [AppComponent],
 })
-export class AppModule {
-  static status: any;
-}
+export class AppModule {}

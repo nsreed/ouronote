@@ -53,45 +53,55 @@ import 'zone.js'; // Included with Angular CLI.
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
+
+type Task = { name: string, steps: number };
 // TODO This is part 1 of tracking down our phone bugs
 function Loader() {
-  function loader() {}
-  (loader.tasks = [] as any[]),
-    (loader.addTask = (task: any) => {
-      loader.tasks.push(task);
-      const loadingOverlay = document.getElementById(
-        'ɵLoading'
-      ) as HTMLPreElement;
-      loadingOverlay.innerHTML = loader.tasks.join('\n');
-    }),
-    (loader.hideOverlay = () => {
-      const loadingOverlay = document.getElementById(
-        'ɵLoading'
-      ) as HTMLPreElement;
-      // loadingOverlay.innerHTML = AppModule['status'].tasks.join('\n');
-      loadingOverlay.style.display = 'none';
-    }),
-    (loader.log = (message: any, ...args: any[]) => {
-      const loadingOverlay = document.getElementById(
-        'ɵLoading'
-      ) as HTMLPreElement;
-      loadingOverlay.innerHTML =
-        loader.tasks.join('\n') + `\n[LOG] ${message} ${JSON.stringify(args)}`;
-    }),
-    (loader.handleError = (error: Error) => {
-      loader.log(`Error: ${error.message}\n${error.stack}`);
-    }),
-    (loader.say = function (data: any) {
-      window.dispatchEvent(new MessageEvent('message', data));
-    }),
-    (loader.statusListener = window.addEventListener('message', function (ev) {
-      console.log(ev.data);
-    }));
+  function loader() { }
+  loader.tasks = [] as any[];
+  const loadingOverlay = document.getElementById(
+    'ɵLoading'
+  ) as HTMLDivElement;
+  loader.loadingOverlay = loadingOverlay;
+  loader.logOutput = document.getElementById('ɵLogOutput') as HTMLPreElement;
+  loader.addTask = (name: any, steps = 1) => {
+    const task = { name, steps };
+    loader.tasks.push(task);
+    loader.log(`[${task.name}] READY`)
+  }
+  loader.finishTask = (name: string) => {
+    const taskIndex = loader.tasks.findIndex(t => t.name === name);
+    if (taskIndex < 0) { return; }
+    loader.log(`${name} finished.`);
+    loader.tasks = loader.tasks.splice(taskIndex);
+  }
+  loader.hideOverlay = () => {
+    const loadingOverlay = document.getElementById(
+      'ɵLoading'
+    ) as HTMLPreElement;
+    // loadingOverlay.innerHTML = AppModule['status'].tasks.join('\n');
+    loadingOverlay.style.display = 'none';
+  }
+  loader.log = (message: any, ...args: any[]) => {
+
+    loader.logOutput.innerHTML = `${loader.logOutput.innerHTML}\n[LOG] ${message} ${JSON.stringify(args)}`;
+  }
+  loader.handleError = (error: Error) => {
+    loader.log(`Error: ${error.message}\n${error.stack}`);
+  }
+  loader.say = function (data: any) {
+    window.dispatchEvent(new MessageEvent('message', data));
+  }
+  loader.statusListener = window.addEventListener('message', function (ev) {
+    console.log(ev.data);
+  })
   return loader;
 }
 const loader = Loader();
 (window as any)['loader'] = loader;
 loader.addTask('polyfills');
+loader.addTask('bootstrap');
+loader.addTask('appstart');
 
 /* GUN IMPORT */
 // TODO move GUN.js imports to a better place
@@ -455,3 +465,4 @@ function enhancePaper(paper: any) {
 }
 
 enhancePaper(paper);
+loader.finishTask('polyfills');

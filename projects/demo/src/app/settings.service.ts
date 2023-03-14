@@ -166,6 +166,7 @@ export class SettingsService {
   input = {
     touchToDraw: true,
   };
+
   constructor(
     @Inject('enable-webrtc')
     public enableWebRTC: boolean,
@@ -175,7 +176,21 @@ export class SettingsService {
     @Inject('settings.debug')
     public debug: boolean,
     private ngZone: NgZone
-  ) {}
+  ) {
+    console.log('settings service started');
+    this.gun.not().subscribe(() => {
+      console.log('settings DB not initialized');
+      this.gun.put({
+        gun: {
+          file: 'ouronote',
+          localStorage: false,
+          enableRadisk: true,
+          enableWebRTC: false,
+          peers: [],
+        },
+      });
+    });
+  }
 
   save() {
     localStorage.setItem('WEBRTC_ENABLE', JSON.stringify(this.enableWebRTC));

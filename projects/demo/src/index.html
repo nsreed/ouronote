@@ -221,12 +221,19 @@
       You must have javascript enabled to use ouronote
     </noscript>
     <!--TODO this is part 3-->
-    <pre
-      style="width: 100%; height: 100%; position: absolute; z-index: 9001"
+    <div
+      style="
+        display: inline-block;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        z-index: 9001;
+      "
       id="ɵLoading"
     >
-Ouronote is loading, please stand by...</pre
-    >
+      <pre id="ɵLogOutput"></pre>
+    </div>
+
     <app-root></app-root>
   </body>
 </html>

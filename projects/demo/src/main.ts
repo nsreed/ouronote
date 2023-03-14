@@ -9,22 +9,29 @@ import { environment } from './environments/environment';
 //   data: 'bootstrapping'
 // }));
 const loader = (window as any)['loader'];
-loader.addTask('bootstrap');
 if (environment.production) {
   enableProdMode();
 }
 // setTimeout(() => {
+async function main() {
+  loader.log('attempting bootstrap of AppModule');
+  try {
+    const ref = await platformBrowserDynamic()
+      .bootstrapModule(AppModule)
+      .catch((reason) => {
+        console.error(reason);
+        loader.handleError(reason);
+      });
 
-// try {
-platformBrowserDynamic()
-  .bootstrapModule(AppModule)
-  .catch((reason) => {
-    loader.handleError(reason);
-    console.error(reason);
-  });
-// AppModule.status.hideOverlay();
-// } catch (err: any) {
-//   console.error(err);
-//   loader.handleError(err);
-// }
-// }, 4000);
+    if (ref) {
+
+      loader.finishTask('bootstrap');
+    }
+    // AppModule.status.hideOverlay();
+  } catch (err: any) {
+    console.error(err);
+    //   loader.handleError(err);
+  }
+  // }, 4000);
+}
+main();

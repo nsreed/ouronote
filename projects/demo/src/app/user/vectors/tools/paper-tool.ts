@@ -15,7 +15,7 @@ export class ToolSchematic implements ToolSchema {
   name!: string;
 }
 
-export class VectorTool extends Tool {
+export class VectorTool extends paper.Tool {
   // FIXME class names get mangled by production build, stop being lazy
   // @Reflect.metadata('type', 'string')
   name = Object.getPrototypeOf(this).constructor.name.replace(/tool/gi, '');

@@ -22,7 +22,8 @@ import { GunRadImporterService } from './services/gun-rad-importer.service';
 import { GunWebrtcImporterService } from './services/gun-webrtc-importer.service';
 import { User } from './user/model';
 declare const APP_HASH: any;
-console.log(APP_HASH);
+
+const loader = (window as any)['loader'];
 
 @Component({
   selector: 'app-root',
@@ -48,6 +49,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     private domSanitizer: DomSanitizer,
     public media: MediaObserver
   ) {
+    loader.finishTask('appstart');
     this.matIconRegistry.addSvgIcon(
       'lasso',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
