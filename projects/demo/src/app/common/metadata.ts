@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 function getOrDefine(target: any, metadataKey: string, value: any = {}) {
   if (!Reflect.hasMetadata(metadataKey, target)) {
     Reflect.defineMetadata(metadataKey, value, target);
@@ -28,7 +29,7 @@ export function Prop(options: PropertyOptions = {}) {
   };
 }
 
-type RefOptions = {
+type RefOptions = PropertyOptions & {
   resolve: Function | string;
   decorator: typeof Ref | Function;
 };
@@ -46,6 +47,7 @@ export function Ref(options?: RefOptions | Function | Record<string, any>) {
     options = {
       type: 'reference',
       resolvesTo: null,
+      validate: ([value, property]) => value !== undefined && value !== null,
       ...options,
     };
     Reflect.defineProperty(options, 'resolvesTo', {
@@ -70,19 +72,35 @@ export type EnumOptions = PropertyOptions & {
 };
 export function Enum(options?: EnumOptions) {
   return Prop({
+    validate: ([value, property]: [any, any]) =>
+      Object.keys(property.options).includes(value),
     ...(options || {}),
     type: 'enum',
   });
 }
 
+export type NumberOptions = PropertyOptions & {
+  min?: number;
+  max?: number;
+};
 export function Num(options?: PropertyOptions) {
   return Prop({
     ...(options || {}),
     type: 'number',
   });
 }
+
+export type StringOptions = PropertyOptions & {
+  minLength?: number;
+  maxLength?: number;
+};
 export function Str(options?: PropertyOptions) {
   return Prop({
+    minLength: 0,
+    // TODO test validate at some point
+    validate: ([value, property]: [string, any]) =>
+      value.length >= property.minLength &&
+      (property.maxLength >= value || property.maxLength < property.minLength),
     ...(options || {}),
     type: 'string',
   });
@@ -127,11 +145,16 @@ export type PropertyOptions =
       defaultValue?: any;
       decorator?: any;
       description?: string;
-      summary?: string;
       label?: string;
+      summary?: string;
       type: string;
+      validate?: PropertyValidatorFn;
     }
   | Record<string, any>;
+
+type PropertyValidatorFn = (
+  ...args: any[]
+) => boolean | Promise<boolean> | Observable<boolean>;
 
 export type PropMetadata = (StringMetadata | BooleanMetadata | RefMetadata) & {
   key: string;
@@ -139,13 +162,23 @@ export type PropMetadata = (StringMetadata | BooleanMetadata | RefMetadata) & {
   description?: string;
   label?: string;
   defaultValue?: any;
+  nullable: boolean;
+  validate?: PropertyValidatorFn;
 };
+
 export type NodeMetadata = {
   type: 'node';
   properties: Record<string, PropMetadata>;
 };
 
-export function getNodeMeta(metadataKey: string = 'meta:node', node: any) {
+export function makeMetaGetter(metadataKey: string = 'meta:node') {
+  return (o: any) => getNodeMeta(metadataKey, o);
+}
+
+export function getNodeMeta(
+  metadataKey: string = 'meta:node',
+  node: any
+): NodeMetadata {
   if (typeof node === 'function') {
     return (
       Reflect.getMetadata('meta:node', node) ||
@@ -153,13 +186,14 @@ export function getNodeMeta(metadataKey: string = 'meta:node', node: any) {
     );
   } else if (typeof node === 'object') {
     return Reflect.getMetadata(
-      'meta.node',
+      'meta:node',
       Object.getPrototypeOf(node).constructor
     );
   }
-  return {};
+  return { type: 'node', properties: {} };
 }
 
 export function getNodeProps(node: any) {
-  return getNodeMeta('meta:node', node).properties;
+  const nodeMeta = getNodeMeta('meta:node', node);
+  return nodeMeta.properties;
 }

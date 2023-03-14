@@ -9,7 +9,7 @@ export class AbstractGunControl extends AbstractControl {
   ) {
     super(validators || null, asyncValidators);
     const t = Reflect.getMetadataKeys(node); // Reflect.getMetadata('Gun:type', node);
-    console.log({ t });
+    // console.log({ t });
     node?.open({ ignoreLocal: true, clean: true }).subscribe((value) => {
       this.patchValue(value);
     });

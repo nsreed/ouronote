@@ -60,7 +60,7 @@ export class SystemSettingsComponent implements OnInit {
     private settingsService: SettingsService,
     private router: Router
   ) {
-    console.log(this.testFormGroup);
+    // console.log(this.testFormGroup);
     // TODO use metadata to build form
     // const ss = new SystemSettings();
     // ss.enableImages = false;

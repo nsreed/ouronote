@@ -61,7 +61,7 @@
                         *ngFor="
                           let option of settingKV.value.meta.options | keyvalue
                         "
-                        [value]="option.key | number"
+                        [value]="option.key"
                         >{{ option.value }}</mat-option
                       >
                     </mat-select>

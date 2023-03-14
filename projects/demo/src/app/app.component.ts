@@ -1,4 +1,10 @@
-import { filter } from 'rxjs/operators';
+import {
+  filter,
+  takeWhile,
+  takeUntil,
+  take,
+  withLatestFrom,
+} from 'rxjs/operators';
 import {
   AfterViewInit,
   Component,
@@ -21,6 +27,9 @@ import { DiagnosticsService } from './diagnostics.service';
 import { GunRadImporterService } from './services/gun-rad-importer.service';
 import { GunWebrtcImporterService } from './services/gun-webrtc-importer.service';
 import { User } from './user/model';
+import { SettingsService } from './settings.service';
+import { switchMap } from 'rxjs/operators';
+import { from } from 'rxjs';
 declare const APP_HASH: any;
 
 const loader = (window as any)['loader'];
@@ -47,7 +56,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     private webRtcImporter: GunWebrtcImporterService,
     private matIconRegistry: MatIconRegistry,
     private domSanitizer: DomSanitizer,
-    public media: MediaObserver
+    public media: MediaObserver,
+    private settingsService: SettingsService
   ) {
     loader.finishTask('appstart');
     this.matIconRegistry.addSvgIcon(
@@ -75,12 +85,20 @@ export class AppComponent implements OnInit, AfterViewInit {
         window.location.href = redirect;
       }
     });
+    const debugEnabled$ = this.settingsService.gun
+      .get('debug')
+      .get('enabled')
+      .on();
 
-    router.events
-      .pipe(filter((e) => e instanceof RouterEvent))
-      .subscribe((event) => {
-        console.log(event);
-      });
+    const routerEvent$ = debugEnabled$.pipe(
+      switchMap((e) =>
+        e
+          ? router.events.pipe(filter((e) => e instanceof RouterEvent))
+          : from([])
+      )
+    );
+
+    routerEvent$.subscribe((e) => console.log(e));
   }
 
   @ViewChild('nav')

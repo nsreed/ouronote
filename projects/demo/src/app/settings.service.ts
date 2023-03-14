@@ -1,14 +1,36 @@
 import { Inject, Injectable, NgZone, Optional } from '@angular/core';
 import * as Gun from 'gun';
 import { GunChain } from 'ng-gun';
-import { Bool, Enum, Node, Num, Prop, Ref, Str } from './common/metadata';
+import { firstValueFrom, from } from 'rxjs';
+import { filter, map, mergeMap, mergeWith, take } from 'rxjs/operators';
+import { PropertyOptions } from './common/metadata';
+import {
+  Bool,
+  Enum,
+  makeMetaGetter,
+  Node,
+  Num,
+  Prop,
+  PropMetadata,
+  Ref,
+  Str,
+} from './common/metadata';
+export enum GunStoreEnum {
+  RADISK = 'radisk',
+  LOCALSTORAGE = 'localstorage',
+  NONE = 'none',
+}
 
 export type GunSettingsSchema = {
-  file: string;
-  localStorage: boolean;
   peers: string[];
   enableWebRTC: boolean;
-  enableRadisk: boolean;
+  /** @deprecated use GunSettingsSchema.storage instead */
+  enableRadisk?: boolean;
+  /** @deprecated use #storage instead */
+  localStorage?: boolean;
+
+  storage: GunStoreEnum;
+  file: string;
 };
 
 export type DiagnosticsSettingsSchema = {
@@ -37,23 +59,52 @@ export type SettingsSchema = {
 
 @Node()
 export class GunSettingsSchematic implements GunSettingsSchema {
-  @Str({ defaultValue: 'radata' }) file!: string;
+  @Str({
+    description: 'IndexedDB Database Name',
+    defaultValue: 'radata',
+    minLength: 1,
+  })
+  file!: string;
+
   @Prop({
+    description: 'Relay peer URLs',
     defaultValue: [],
     multi: true,
     type: 'set',
     reference: 'string',
   })
   peers!: string[];
-  @Bool({ defaultValue: true }) enableWebRTC!: boolean;
-  @Bool({ defaultValue: true }) enableRadisk!: boolean;
-  @Bool({ defaultValue: false }) localStorage!: boolean;
+
+  @Bool({
+    description: 'Enable direct communication to mesh peers via WebRTC',
+    defaultValue: true,
+  })
+  enableWebRTC!: boolean;
+  @Enum({
+    description: 'Data storage strategy',
+    defaultValue: 'radisk',
+    options: {
+      radisk: 'radisk',
+      localstorage: 'localStorage',
+      none: 'none',
+    },
+    optionDescriptions: {
+      radisk:
+        'Uses radix trees & IndexedDB. High performance and storage capacity.',
+      localstorage:
+        'Uses the localStorage API to store up to 5MB of data. Slow and small.',
+      none:
+        `For testing purposes only. Ouronote will be unable to store data except in memory, ` +
+        `and will forget everything unless it gets transmitted to a peer.`,
+    },
+  })
+  storage = GunStoreEnum.RADISK;
 }
 
 @Node()
 export class LogSettingsSchematic implements LogSettingsSchema {
   @Enum({
-    description: 'Log messages above this level will be retained',
+    description: 'Retain messages at or above this level',
     options: {
       0: 'Verbose',
       1: 'Info',
@@ -64,7 +115,7 @@ export class LogSettingsSchematic implements LogSettingsSchema {
   })
   level: number = 0;
   @Enum({
-    description: 'Log messages above this level will be output to the console',
+    description: 'Output messages at or above this level to the console',
     options: {
       0: 'Verbose',
       1: 'Info',
@@ -75,12 +126,11 @@ export class LogSettingsSchematic implements LogSettingsSchema {
   })
   outLevel: number = 0;
   @Bool({
-    description:
-      'Control whether or not past log messages from this session will remain accessible',
+    description: 'Save log messages after closing/refreshing the tab?',
   })
   persist = false;
   @Bool({
-    description: `Bypasses the logger functions so that real line numbers show up in the console`,
+    description: `Output messages directly to console?`,
   })
   bypassLogger = false;
 }
@@ -178,6 +228,44 @@ export class SettingsService {
     private ngZone: NgZone
   ) {
     console.log('settings service started');
+
+    let n = this.gun;
+    const propertiesToArray = (props: Record<string, PropMetadata>) =>
+      Object.entries(props).map((k) => ({ name: k[0], ...k[1] }));
+
+    // we know n should conform to the OuronoteSettingsSchematic... we just have to validate that it does
+    const update = (n: GunChain, schematic: any) => {
+      const getSchematicMetadata = makeMetaGetter();
+      const schmeta = getSchematicMetadata(schematic);
+      const nProps = propertiesToArray(schmeta.properties);
+      const requiredProps = nProps.filter((p) => !p.nullable);
+      requiredProps
+        .map((p) => [n.get(p.key), p])
+        .forEach((p) => {
+          // should probably be checking all the rules all the time...
+          console.log('checking non-nullable edge', p);
+        });
+      const validatedProps = nProps.filter(
+        (p) => p.validate && 'function' === typeof p.validate.call
+      );
+      const validations$ = from(validatedProps).pipe(
+        mergeMap(async (validatedProp) => {
+          const r = n.get(validatedProp.key);
+          const not$ = r.not().pipe(map(() => undefined));
+          const beOrNot = not$.pipe(mergeWith(r.once()));
+          const value = await firstValueFrom(beOrNot);
+          return [value, validatedProp] as [any, PropertyOptions];
+        })
+      );
+
+      const invalidProps$ = validations$.pipe(
+        filter(([value, prop]) => !prop.validate([value, prop]))
+      );
+      invalidProps$.subscribe(console.log);
+    };
+    update(this.gun, OuronoteSettingsSchematic);
+    update(this.gun.get('log'), LogSettingsSchematic);
+
     this.gun.not().subscribe(() => {
       console.log('settings DB not initialized');
       this.gun.put({
@@ -187,6 +275,7 @@ export class SettingsService {
           enableRadisk: true,
           enableWebRTC: false,
           peers: [],
+          storage: GunStoreEnum.RADISK,
         },
       });
     });

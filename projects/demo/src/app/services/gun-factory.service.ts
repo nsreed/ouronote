@@ -1,16 +1,24 @@
 import { OuronoteGunService } from './ouronote-gun.service';
 import { NgGunService } from './../../../../ng-gun/src/lib/ng-gun.service';
-import { shareReplay, take } from 'rxjs/operators';
+import { shareReplay, take, map } from 'rxjs/operators';
 import { SettingsService } from './../settings.service';
 import { Injectable, NgZone } from '@angular/core';
 import { Subject, ReplaySubject } from 'rxjs';
+import { GunStoreEnum } from '../settings.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GunFactoryService {
   gunSettingsNode = this.settingsService.gun.get('gun');
-  gunSettings$ = this.gunSettingsNode.on().pipe(shareReplay(1));
+  gunSettings$ = this.gunSettingsNode.on().pipe(
+    map((gs) => ({
+      ...gs,
+      localStorage: gs.storage === GunStoreEnum.LOCALSTORAGE,
+      enableRadisk: gs.storage === GunStoreEnum.RADISK,
+    })),
+    shareReplay(1)
+  );
   root$ = new ReplaySubject<OuronoteGunService>(1);
   root?: OuronoteGunService;
   constructor(

@@ -1,5 +1,6 @@
 import { NgGunService } from 'ng-gun';
 import { Inject, Injectable, NgZone } from '@angular/core';
+import { GunStoreEnum } from '../settings.service';
 
 @Injectable({
   providedIn: 'root',
