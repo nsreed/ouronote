@@ -8,6 +8,7 @@
       "type": "chrome",
       "request": "launch",
       "name": "ng serve chrome",
+      "port": 9222,
       "url": "http://localhost:4200",
       "webRoot": "${workspaceFolder}",
       "timeout": 15000,
@@ -23,8 +24,8 @@
     },
     {
       "name": "Attach to Chrome",
-      "port": 9222,
       "request": "attach",
+      "port": 9222,
       "type": "chrome",
       "webRoot": "${workspaceFolder}"
     },
@@ -33,7 +34,13 @@
       "request": "launch",
       "name": "Launch Firefox against localhost",
       "url": "http://localhost:4200",
-      "webRoot": "${workspaceFolder}"
+      "webRoot": "${workspaceFolder}",
+      "pathMappings": [
+        {
+          "url": "webpack:///projects/demo",
+          "path": "${workspaceFolder}/projects/demo"
+        }
+      ]
     }
   ]
 }
