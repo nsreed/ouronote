@@ -7,7 +7,6 @@ import {
   Output,
 } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
-import { ValidationError } from 'webpack';
 
 @Component({
   selector: 'app-selector-control',
@@ -22,7 +21,7 @@ export class SelectorControlComponent implements OnInit {
       (ctrl) =>
         Object.keys(this.options).includes((ctrl as FormControl).value)
           ? null
-          : new ValidationError([], null as any, null as any),
+          : { error: true },
     ],
   });
 
