@@ -1,4 +1,6 @@
-import * as Gun from 'gun';
+import { around } from 'aspect-ts';
+import { LogService } from 'log';
+import { GunChain } from 'ng-gun';
 import { from, of } from 'rxjs';
 import {
   bufferTime,
@@ -11,10 +13,10 @@ import {
   shareReplay,
   skip,
   switchMap,
+  take,
   tap,
 } from 'rxjs/operators';
-import { LogService } from 'log';
-import { GunChain, GunChainCallbackOptions } from 'ng-gun';
+import { environment } from '../../../../environments/environment';
 import { after$, before$, returned } from '../../../functions/aspect-rx';
 import { ItemGraph } from '../../ItemGraph';
 import { getUUID as getSetKey } from '../edit-vector/converter-functions';
@@ -23,22 +25,14 @@ import {
   hasRequired,
   MUTATIONS,
   MUTATION_PROPERTIES,
-  SAVE_DEBOUNCE,
-} from '../functions/constants';
-import { getDeep, getShallow, serializeValue } from '../functions/packaging';
-import { PaperPair } from './PaperPair';
-import { SaveStrategy } from './SaveStrategy';
-import {
   PAPER_STYLE_DEFAULTS,
   PAPER_STYLE_EMPTY,
 } from '../functions/constants';
-import { IterableDiffers } from '@angular/core';
+import { getDeep, getShallow, serializeValue } from '../functions/packaging';
 import { defaultsFor } from '../functions/paper-functions';
 import { PairedItem } from './paper-pair';
-import { around } from 'aspect-ts';
-import { take, distinct } from 'rxjs/operators';
-import { NgSeaService } from 'ng-gun';
-import { environment } from '../../../../environments/environment';
+import { PaperPair } from './PaperPair';
+import { SaveStrategy } from './SaveStrategy';
 
 export class ItemPair extends PaperPair {
   private ipTimer = this.logger.time('ItemPair');
