@@ -6,6 +6,7 @@ import { IEnhancedPaper } from '../../../vector/IEnhancedPaper';
 import { IEnhancedScope } from '../../../vector/IEnhancedScope';
 import { PenEvent } from '../classes/PenEvent';
 import { propertyChange$ } from '../functions/paper-chain';
+import { EventEmitter } from '@angular/core';
 
 export type ToolSchema = {
   name?: string;
@@ -13,9 +14,11 @@ export type ToolSchema = {
 
 export class ToolSchematic implements ToolSchema {
   name!: string;
+  constructor(public target?: any) {}
 }
 
 export class VectorTool extends paper.Tool {
+  activate$!: EventEmitter<any>;
   schematic = new ToolSchematic();
   // FIXME class names get mangled by production build, stop being lazy
   // @Reflect.metadata('type', 'string')

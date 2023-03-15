@@ -202,6 +202,9 @@ export class OuronoteSettingsSchematic implements SettingsSchema {
   log!: LogSettingsSchema;
 }
 
+/**
+ * Probably only manages settings for the machine
+ */
 @Injectable({
   providedIn: 'root',
 })
@@ -239,23 +242,17 @@ export class SettingsService {
       Object.entries(props).map((k) => ({ name: k[0], ...k[1] }));
 
     // we know n should conform to the OuronoteSettingsSchematic... we just have to validate that it does
-    const update = (n: GunChain, schematic: any) => {
-      const getSchematicMetadata = makeMetaGetter();
-      const schmeta = getSchematicMetadata(schematic);
-      const nProps = propertiesToArray(schmeta.properties);
-      const requiredProps = nProps.filter((p) => !p.nullable);
-      requiredProps
-        .map((p) => [n.get(p.key), p])
-        .forEach((p) => {
-          // should probably be checking all the rules all the time...
-          console.log('checking non-nullable edge', p);
-        });
-      const validatedProps = nProps.filter(
+    // TODO! HEY, why aren't we just saying the schematic is a form? Why not use validation?
+    const update = (node: GunChain, schematic: any) => {
+      const schematicMetadata = makeMetaGetter()(schematic);
+      const nodeProperties = propertiesToArray(schematicMetadata.properties);
+      const validatedProps = nodeProperties.filter(
         (p) => p.validate && 'function' === typeof p.validate.call
       );
       const validations$ = from(validatedProps).pipe(
         mergeMap(async (validatedProp) => {
-          const r = n.get(validatedProp.key);
+          // the node wouldn't be necessary here if the prop had a copy of it
+          const r = node.get(validatedProp.key);
           const not$ = r.not().pipe(map(() => undefined));
           const beOrNot = not$.pipe(mergeWith(r.once()));
           const value = await firstValueFrom(beOrNot);

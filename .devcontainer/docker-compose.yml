@@ -1,10 +1,14 @@
 version: "3.0"
 services:
   devcontainer:
-    build:
-      context: .
-      dockerfile: dockerfile
-    volumes:
-      - ../../workspaces:cached
-    network_mode: service:db
+    image: mcr.microsoft.com/devcontainers/typescript-node:0-18
+    # build:
+    #   context: .
+    #   dockerfile: dockerfile
+    # volumes:
+    #   - ouronote-cached:/cached
     command: sleep infinity
+#  gunrelay:
+ #   build:
+  #    context: ..
+   #   image: app-server/DOCKERFILE

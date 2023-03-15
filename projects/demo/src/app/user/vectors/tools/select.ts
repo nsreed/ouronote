@@ -1,8 +1,7 @@
-import { VectorTool } from './paper-tool';
 import * as paper from 'paper';
-import { filter, mergeMapTo, switchMapTo, tap } from 'rxjs/operators';
+import { filter, tap } from 'rxjs/operators';
 import { Property } from '../functions/decorators';
-import { isIgnored } from '../functions/paper-functions';
+import { VectorTool } from './paper-tool';
 
 export type ToolSelectionMode = 'new' | 'add' | 'remove';
 

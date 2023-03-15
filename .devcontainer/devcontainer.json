@@ -1,38 +1,42 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
 {
-	"name": "Node.js & TypeScript",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"dockerComposeFile": "docker-compose.yml",
+  "name": "Node.js & TypeScript",
+  // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+  "dockerComposeFile": "docker-compose.yml",
   "service": "devcontainer",
-	"features": {
-		"ghcr.io/devcontainers/features/git:1": {}
-	},
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+"workspaceFolder": "/workspaces/ouronote",
+  // Features to add to the dev container. More info: https://containers.dev/features.
+  // "features": {},
 
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  "forwardPorts": [8765, 4321, 4200],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+		"loiane.angular-extension-pack",
+		"esbenp.prettier-vscode",
+		"pmneo.tsimporter",
+		"formulahendry.auto-close-tag",
+		"formulahendry.auto-rename-tag",
+		"aaron-bond.better-comments",
+		"wayou.vscode-todo-highlight",
+		"ms-azuretools.vscode-docker",
+		"steoates.autoimport",
+		"NuclleaR.vscode-extension-auto-import"
+	]
+    }
+  }
 
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [
-		8765,
-		4321,
-		4200
-	],
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"loiane.angular-extension-pack",
-				"esbenp.prettier-vscode"
-			]
-		}
-	}
+  // Use 'postCreateCommand' to run commands after the container is created.
+  // "postCreateCommand": "yarn install"
 
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "yarn install"
+  // Configure tool-specific properties.
+  // "customizations": {},
 
-	// Configure tool-specific properties.
-	// "customizations": {},
-
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
+  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+  // "remoteUser": "root"
 }

@@ -1,6 +1,4 @@
 import { VectorTool } from './paper-tool';
-import { filter } from 'rxjs/operators';
-import { isMouse, isTouch } from '../functions/tool-functions';
 export class PanTool extends VectorTool {
   name = 'pan';
   category = 'view';

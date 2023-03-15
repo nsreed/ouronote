@@ -1,6 +1,3 @@
-import { of } from 'rxjs';
-import { VectorTool } from './paper-tool';
-import * as paper from 'paper';
 import { SelectionTool } from './selection-tool';
 export class MoveTool extends SelectionTool {
   name = 'move';

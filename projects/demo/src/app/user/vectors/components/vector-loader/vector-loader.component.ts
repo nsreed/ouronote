@@ -1,13 +1,11 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { RouteVectorDirective } from '../../route-vector.directive';
-import { switchMap, filter, pluck, map, shareReplay } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import * as paper from 'paper';
-import { unpack } from '../../functions/packaging';
-import { IEnhancedPaper } from '../../../../vector/IEnhancedPaper';
-import { PaperEditDirective } from '../../../../vector/paper-edit.directive';
-import { VectorTool } from '../../tools/paper-tool';
 import { IEnhancedItem } from 'projects/demo/src/app/vector/IEnhancedItem';
+import { Observable } from 'rxjs';
+import { filter, shareReplay, switchMap } from 'rxjs/operators';
+import { PaperEditDirective } from '../../../../vector/paper-edit.directive';
+import { unpack } from '../../functions/packaging';
+import { RouteVectorDirective } from '../../route-vector.directive';
 
 @Component({
   selector: 'app-vector-loader',

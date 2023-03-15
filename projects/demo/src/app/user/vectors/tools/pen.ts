@@ -1,11 +1,9 @@
 import * as paper from 'paper';
 import { Observable } from 'rxjs';
 import { CAPABILITIES } from '../../../system.service';
+import { ItemPair } from '../classes/ItemPair';
 import { PenEvent } from '../classes/PenEvent';
 import { Property } from '../functions/decorators';
-import { VectorTool, ToolSchema } from './paper-tool';
-import { copyNulls } from '../functions/paper-functions';
-import { ItemPair } from '../classes/ItemPair';
 import { DrawTool } from './draw-tool';
 
 export class PenTool extends DrawTool {

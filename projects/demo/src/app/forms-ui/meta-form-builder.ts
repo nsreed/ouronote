@@ -1,14 +1,25 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
 import {
   FormBuilder,
   AbstractControl,
   FormControl,
   FormGroup,
 } from '@angular/forms';
+import { LogService } from 'log';
 import { NodeMetadata, PropMetadata, RefMetadata } from '../common/metadata';
+
+// schema => schematic => instance
+//        -> ui -> form ->
 
 @Injectable()
 export class MetaFormBuilder extends FormBuilder {
+  constructor(
+    @Optional()
+    private logger: LogService = new LogService('selector-control.component')
+  ) {
+    super();
+  }
+
   fromClass(target: Function | any, ...args: any[]): FormGroup {
     const metadata = Reflect.getMetadata('meta:node', target);
     if (!metadata?.properties) {
@@ -18,17 +29,16 @@ export class MetaFormBuilder extends FormBuilder {
   }
 
   fromNodeMeta(nodeMeta: NodeMetadata, ...args: any[]): FormGroup {
-    const propKeys = Object.entries(nodeMeta.properties).sort(
-      (a, b) => (a[1].order || 0) - (b[1].order || 0)
-    );
     return this.group(
-      propKeys.reduce(
-        (p, c) => ({
-          ...p,
-          [c[0]]: this.fromProperty(c[1], ...args),
-        }),
-        {}
-      )
+      Object.entries(nodeMeta.properties)
+        .sort((a, b) => (a[1].order || 0) - (b[1].order || 0))
+        .reduce(
+          (acc, current) => ({
+            ...acc,
+            [current[0]]: this.fromProperty(current[1], ...args),
+          }),
+          {}
+        )
     );
   }
 
@@ -38,12 +48,16 @@ export class MetaFormBuilder extends FormBuilder {
   ): FormControl | FormGroup {
     switch (propertyMeta.type) {
       case 'reference':
+        this.logger.log('Creating a ... resolving control?');
         return this.fromNodeMeta(
           (propertyMeta as RefMetadata).resolvesTo,
           ...args
         );
       default:
-        return this.control(null, propertyMeta);
+        this.logger.log('Defaulting to control');
+        const ctrl = this.control(propertyMeta.defaultValue, propertyMeta);
+
+        return ctrl;
     }
   }
 

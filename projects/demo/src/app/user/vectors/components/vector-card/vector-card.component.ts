@@ -1,23 +1,14 @@
-import {
-  Component,
-  OnInit,
-  ViewChild,
-  ElementRef,
-  ViewChildren,
-  QueryList,
-} from '@angular/core';
-import { ChainDirective } from 'ng-gun';
-import { NgGunService } from 'ng-gun';
-import { UserService } from '../../../user.service';
-import { map, filter, switchMap } from 'rxjs/operators';
-import { VectorGraph } from '../../../VectorGraph';
-import { MatDialog } from '@angular/material/dialog';
-import { VectorService } from '../../vector.service';
-import { GunAuthChain, GunChain } from 'ng-gun';
-import { ConfirmComponent } from 'projects/demo/src/app/components/confirm/confirm.component';
-import { VectorExportDialogComponent } from '../vector-export-dialog/vector-export-dialog.component';
+import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { UntypedFormBuilder, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { ChainDirective, GunChain, NgGunService } from 'ng-gun';
+import { ConfirmComponent } from 'projects/demo/src/app/components/confirm/confirm.component';
 import { ReplaySubject } from 'rxjs';
+import { filter, map, switchMap } from 'rxjs/operators';
+import { UserService } from '../../../user.service';
+import { VectorGraph } from '../../../VectorGraph';
+import { VectorService } from '../../vector.service';
+import { VectorExportDialogComponent } from '../vector-export-dialog/vector-export-dialog.component';
 
 @Component({
   selector: 'app-vector-card',

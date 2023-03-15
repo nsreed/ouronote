@@ -8,8 +8,8 @@ services:
     # volumes:
     #   - ./:/usr/src/app
     ports:
-      - 4430:4430
-      - 8080:8765
+      - 4321:4321
+      - 8765:8765
     environment:
       - PORT=8081
       - HTTPS_PORT=4430

@@ -1,4 +1,3 @@
-import { VectorTool } from './paper-tool';
 import * as paper from 'paper';
 import { Style } from 'paper/dist/paper-core';
 import { Property } from '../functions/decorators';

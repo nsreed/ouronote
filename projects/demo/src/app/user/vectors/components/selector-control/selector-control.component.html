@@ -1,16 +1,10 @@
-<mat-form-field>
+<mat-form-field *ngIf="control">
   <mat-label>{{ meta.description }}</mat-label>
-  <mat-select
-    ngDefaultControl
-    *ngIf="control"
-    [formControl]="control"
-    placeholder=""
-  >
+  <mat-select ngDefaultControl [formControl]="control" placeholder="">
     <mat-option
       [value]="vkp.key"
       *ngFor="let vkp of propertyDirective.meta.options | keyvalue"
     >
-      {{ vkp.value }}
     </mat-option>
   </mat-select>
 </mat-form-field>

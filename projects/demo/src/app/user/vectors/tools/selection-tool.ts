@@ -1,7 +1,6 @@
-import { VectorTool } from './paper-tool';
+import { map } from 'rxjs/operators';
 import { IEnhancedScope } from '../../../vector/IEnhancedScope';
-import { map, shareReplay } from 'rxjs/operators';
-import { IEnhancedPaper } from '../../../vector/IEnhancedPaper';
+import { VectorTool } from './paper-tool';
 export class SelectionTool extends VectorTool {
   category = 'edit';
   constructor(scope: IEnhancedScope) {

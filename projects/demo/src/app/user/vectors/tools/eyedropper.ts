@@ -1,6 +1,5 @@
-import { VectorTool } from './paper-tool';
-import * as paper from 'paper';
 import { copyNulls, copyStyleToItem } from '../functions/paper-functions';
+import { VectorTool } from './paper-tool';
 
 export class EyedropperTool extends VectorTool {
   name = 'Eyedropper';

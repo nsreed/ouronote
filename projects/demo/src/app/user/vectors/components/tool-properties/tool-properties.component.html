@@ -28,9 +28,10 @@
 
   <ng-container [appObject]="activeTool" *ngIf="activeTool">
     <!--Sizing-->
-    <!-- FIXME: shape ain't there --->
-    <app-selector-control appObjectProperty="shapeType"> </app-selector-control>
-
+    <div class="control-container">
+      <app-selector-control appObjectProperty="shapeType">
+      </app-selector-control>
+    </div>
     <mat-hint matSuffix>Stroke Width</mat-hint>
 
     <app-stroke-width-form
@@ -53,7 +54,10 @@
     </app-number-form>
   </ng-container>
   <ng-container [appObject]="activeTool">
-    <div *ngIf="activeTool?.propertyNames?.includes('simplify')">
+    <div
+      class="control-container"
+      *ngIf="activeTool?.propertyNames?.includes('simplify')"
+    >
       <app-boolean-form
         [appObject]="activeTool"
         appObjectProperty="simplify"
@@ -61,6 +65,7 @@
     </div>
 
     <div
+      class="control-container"
       *ngIf="
         activeTool?.propertyNames?.includes('smoothingStrength') &&
         activeTool?.simplify

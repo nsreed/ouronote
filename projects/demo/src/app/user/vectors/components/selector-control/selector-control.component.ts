@@ -7,6 +7,7 @@ import {
   Output,
 } from '@angular/core';
 import { FormBuilder, FormControl, AbstractControl } from '@angular/forms';
+import { LogService } from 'log';
 import { ObjectPropertyDirective } from 'projects/demo/src/app/directives/object-property.directive';
 import { MetaFormBuilder } from 'projects/demo/src/app/forms-ui/meta-form-builder';
 
@@ -17,17 +18,10 @@ import { MetaFormBuilder } from 'projects/demo/src/app/forms-ui/meta-form-builde
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SelectorControlComponent implements OnInit {
-  @Input('appSelectorControl')
-  formControl = this.mfb.control(null, {
-    validators: [
-      (ctrl: AbstractControl) =>
-        Object.keys(this.options || {}).includes((ctrl as FormControl).value)
-          ? {}
-          : { error: true },
-    ],
-  });
-
   control!: FormControl;
+  get object() {
+    return this.propertyDirective.object;
+  }
   get meta() {
     return this.propertyDirective.meta;
   }
@@ -43,12 +37,17 @@ export class SelectorControlComponent implements OnInit {
 
   constructor(
     private mfb: MetaFormBuilder,
-    public propertyDirective: ObjectPropertyDirective
+    public propertyDirective: ObjectPropertyDirective,
+    private logger: LogService
   ) {}
 
   ngOnInit(): void {
-    this.control = this.mfb.fromProperty(
-      this.propertyDirective.meta
-    ) as FormControl;
+    const cfp = this.mfb.fromProperty(this.propertyDirective.meta);
+    // Technically we shouldn't even know what this property is, so we're kind of cheating relying on the UI.
+    this.control = cfp as FormControl;
+    this.control.valueChanges.subscribe((v) => {
+      console.log(`new value for ${this.propertyDirective.label}: ${v}`);
+      this.propertyDirective.value = v;
+    });
   }
 }

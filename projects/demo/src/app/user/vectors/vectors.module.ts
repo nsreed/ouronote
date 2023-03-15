@@ -64,7 +64,6 @@ import { ToolPickerComponent } from './components/tool-picker/tool-picker.compon
 import { ToolPropertiesComponent } from './components/tool-properties/tool-properties.component';
 import { VectorCardComponent } from './components/vector-card/vector-card.component';
 import { VectorExportDialogComponent } from './components/vector-export-dialog/vector-export-dialog.component';
-import { VectorFormComponent } from './components/vector-form/vector-form.component';
 import { VectorLoaderComponent } from './components/vector-loader/vector-loader.component';
 import { EditVectorComponent } from './edit-vector/edit-vector.component';
 import { PermissionsComponent } from './permissions/permissions.component';
@@ -86,7 +85,6 @@ import { MatSelectModule } from '@angular/material/select';
     StyleFormComponent,
     VectorCardComponent,
     VectorExportDialogComponent,
-    VectorFormComponent,
     VectorsComponent,
     SettingsDialogComponent,
     InvitedUsersComponent,

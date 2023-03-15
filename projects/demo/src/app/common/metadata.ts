@@ -14,6 +14,9 @@ export function Prop(options: PropertyOptions = {}) {
     const nodeMeta = getOrDefine(target.constructor, 'meta:properties');
     const order = Object.keys(nodeMeta).length;
     const propMeta = { target, key, order, ...options };
+    // nodeMeta.properties.push(propMeta);
+    // nodeMeta.properties = [];
+    // nodeMeta.properties.push(propMeta);
     nodeMeta[key] = propMeta;
     Reflect.defineMetadata(
       `meta:property:${key}`,
@@ -132,8 +135,8 @@ export function Node(options?: any) {
   options = typeof options === 'object' ? options : { options };
   return (target: any) => {
     // console.log(`node ${target.name}`);
-    const propsMeta = Reflect.getMetadata('meta:properties', target) || {};
-    const refsMeta = Reflect.getMetadata('meta:referencedBy', target) || {};
+    const propsMeta = Reflect.getMetadata('meta:properties', target) || [];
+    const refsMeta = Reflect.getMetadata('meta:referencedBy', target) || [];
     // getOrDefine(target, 'meta:node');
     getOrDefine(target, 'meta:properties', propsMeta);
     getOrDefine(target, 'meta:referencedBy', refsMeta);
@@ -190,6 +193,8 @@ export type PropMetadata = (StringMetadata | BooleanMetadata | RefMetadata) & {
 
 export type NodeMetadata = {
   type: 'node';
+  // TODO why not an array here? how often am I
+  // indexing into metadata properties for the sole purpose of getting the metadata?
   properties: Record<string, PropMetadata>;
 };
 
