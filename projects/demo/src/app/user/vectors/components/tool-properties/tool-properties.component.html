@@ -5,34 +5,32 @@
     (selectedItems.length === 0 ||
       ['lasso select', 'rectangle select'].includes(activeTool.name))
   "
-  [appObject]="paperEditDirective.project.currentStyle"
 >
-  <!-- COLORS -->
-  <app-color-form
-    appObjectProperty="strokeColor"
-    [color]="paperEditDirective.project.currentStyle.strokeColor"
-    *ngIf="activeTool?.propertyNames?.includes('style')"
-    [style]="activeTool.style"
-    label="Stroke Color"
-  >
-  </app-color-form>
-  <app-color-form
-    appObjectProperty="fillColor"
-    [color]="paperEditDirective.project.currentStyle.fillColor"
-    [style]="activeTool.style"
-    *ngIf="activeTool?.propertyNames?.includes('style')"
-    label="Fill Color"
-  >
-  </app-color-form>
+  <ng-container [appObject]="paperEditDirective.project.currentStyle">
+    <!-- COLORS -->
+    <app-color-form
+      appObjectProperty="strokeColor"
+      [color]="paperEditDirective.project.currentStyle.strokeColor"
+      *ngIf="activeTool?.propertyNames?.includes('style')"
+      [style]="activeTool.style"
+      label="Stroke Color"
+    >
+    </app-color-form>
+    <app-color-form
+      appObjectProperty="fillColor"
+      [color]="paperEditDirective.project.currentStyle.fillColor"
+      [style]="activeTool.style"
+      *ngIf="activeTool?.propertyNames?.includes('style')"
+      label="Fill Color"
+    >
+    </app-color-form>
+  </ng-container>
 
-  <app-selector-control *ngIf="activeTool?.name === 'shapes'">
-  </app-selector-control>
+  <ng-container [appObject]="activeTool" *ngIf="activeTool">
+    <!--Sizing-->
+    <!-- FIXME: shape ain't there --->
+    <app-selector-control appObjectProperty="shapeType"> </app-selector-control>
 
-  <!--Sizing-->
-  <ng-container
-    [appObject]="activeTool"
-    *ngIf="activeTool?.propertyNames?.includes('style')"
-  >
     <mat-hint matSuffix>Stroke Width</mat-hint>
 
     <app-stroke-width-form
@@ -54,33 +52,28 @@
     >
     </app-number-form>
   </ng-container>
+  <ng-container [appObject]="activeTool">
+    <div *ngIf="activeTool?.propertyNames?.includes('simplify')">
+      <app-boolean-form
+        [appObject]="activeTool"
+        appObjectProperty="simplify"
+      ></app-boolean-form>
+    </div>
 
-  <div *ngIf="activeTool?.propertyNames?.includes('simplify')">
-    <app-boolean-form
-      [appObject]="activeTool"
-      appObjectProperty="simplify"
-    ></app-boolean-form>
-  </div>
-
-  <div
-    *ngIf="
-      activeTool?.propertyNames?.includes('smoothingStrength') &&
-      activeTool?.simplify
-    "
-  >
-    <app-slider-form
-      [appObject]="activeTool"
-      appObjectProperty="smoothingStrength"
-    ></app-slider-form>
-  </div>
-  <div *ngIf="activeTool?.propertyNames?.includes('scale')">
-    <app-boolean-form
-      [appObject]="activeTool"
-      appObjectProperty="scale"
-    ></app-boolean-form>
-  </div>
-  <app-selection-intersect-mode-form
-    [tool]="activeTool"
-    *ngIf="activeTool?.propertyNames?.includes('greedySelect')"
-  ></app-selection-intersect-mode-form>
+    <div
+      *ngIf="
+        activeTool?.propertyNames?.includes('smoothingStrength') &&
+        activeTool?.simplify
+      "
+    >
+      <app-slider-form appObjectProperty="smoothingStrength"></app-slider-form>
+    </div>
+    <div *ngIf="activeTool?.propertyNames?.includes('scale')">
+      <app-boolean-form appObjectProperty="scale"></app-boolean-form>
+    </div>
+    <app-selection-intersect-mode-form
+      [tool]="activeTool"
+      *ngIf="activeTool?.propertyNames?.includes('greedySelect')"
+    ></app-selection-intersect-mode-form>
+  </ng-container>
 </div>

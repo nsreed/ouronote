@@ -3,7 +3,7 @@ import * as Gun from 'gun';
 import { GunChain } from 'ng-gun';
 import { firstValueFrom, from } from 'rxjs';
 import { filter, map, mergeMap, mergeWith, take } from 'rxjs/operators';
-import { PropertyOptions } from './common/metadata';
+import { PropertyOptions, ValidationTuple } from './common/metadata';
 import {
   Bool,
   Enum,
@@ -83,6 +83,7 @@ export class GunSettingsSchematic implements GunSettingsSchema {
   @Enum({
     description: 'Data storage strategy',
     defaultValue: 'radisk',
+    indexType: 'string',
     options: {
       radisk: 'radisk',
       localstorage: 'localStorage',
@@ -112,8 +113,9 @@ export class LogSettingsSchematic implements LogSettingsSchema {
       3: 'Error',
       4: 'Catastrophic Failure',
     },
+    defaultValue: 2,
   })
-  level: number = 0;
+  level: number = 2;
   @Enum({
     description: 'Output messages at or above this level to the console',
     options: {
@@ -123,14 +125,17 @@ export class LogSettingsSchematic implements LogSettingsSchema {
       3: 'Error',
       4: 'Catastrophic Failure',
     },
+    defaultValue: 3,
   })
-  outLevel: number = 0;
+  outLevel: number = 3;
   @Bool({
     description: 'Save log messages after closing/refreshing the tab?',
+    defaultValue: false,
   })
   persist = false;
   @Bool({
     description: `Output messages directly to console?`,
+    defaultValue: false,
   })
   bypassLogger = false;
 }
@@ -261,7 +266,9 @@ export class SettingsService {
       const invalidProps$ = validations$.pipe(
         filter(([value, prop]) => !prop.validate([value, prop]))
       );
-      invalidProps$.subscribe(console.log);
+      invalidProps$.subscribe(([value, property]: ValidationTuple) => {
+        console.log(`got ${value}, from ${property.key} ${property.type}`);
+      });
     };
     update(this.gun, OuronoteSettingsSchematic);
     update(this.gun.get('log'), LogSettingsSchematic);

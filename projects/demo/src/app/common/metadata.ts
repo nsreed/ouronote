@@ -33,6 +33,7 @@ type RefOptions = PropertyOptions & {
   resolve: Function | string;
   decorator: typeof Ref | Function;
 };
+export type ValidationTuple<V = any> = [V, any];
 
 export function Ref(options?: RefOptions | Function | Record<string, any>) {
   let refOptions: RefOptions = {} as any;
@@ -44,10 +45,15 @@ export function Ref(options?: RefOptions | Function | Record<string, any>) {
   }
   return (target: any, key: any) => {
     const resolve = refOptions.resolve;
+
+    const ValidateNotNull: any | TValidateProperty | undefined = ([
+      value,
+      property,
+    ]: ValidationTuple) => value !== undefined && value !== null;
     options = {
       type: 'reference',
       resolvesTo: null,
-      validate: ([value, property]) => value !== undefined && value !== null,
+      validate: ValidateNotNull,
       ...options,
     };
     Reflect.defineProperty(options, 'resolvesTo', {
@@ -69,11 +75,26 @@ export function Bool(options?: PropertyOptions) {
 
 export type EnumOptions = PropertyOptions & {
   options: Record<string | number, any>;
+  indexType?: 'string' | 'number';
 };
+
+const ValidateEnum = ([value, property]: ValidationTuple) => {
+  // this technically works, but I feel like typescript doesn't like it
+  if (value in property.options) {
+    return null;
+  }
+  return { [property.key]: `${value} is not a valid selection` };
+  return Object.keys(property.options)
+    .map((k) => (property.indexType === 'number' ? parseInt(k) : k))
+    .includes(value)
+    ? null
+    : { [property.key]: 'Value is not there' };
+};
+
 export function Enum(options?: EnumOptions) {
   return Prop({
-    validate: ([value, property]: [any, any]) =>
-      Object.keys(property.options).includes(value),
+    validate: ValidateEnum,
+    indexType: 'number',
     ...(options || {}),
     type: 'enum',
   });
@@ -95,12 +116,13 @@ export type StringOptions = PropertyOptions & {
   maxLength?: number;
 };
 export function Str(options?: PropertyOptions) {
+  const ValidateString = ([value, property]: ValidationTuple<string>) =>
+    value.length >= property.minLength &&
+    (property.maxLength >= value || property.maxLength < property.minLength);
   return Prop({
     minLength: 0,
     // TODO test validate at some point
-    validate: ([value, property]: [string, any]) =>
-      value.length >= property.minLength &&
-      (property.maxLength >= value || property.maxLength < property.minLength),
+    validate: ValidateString,
     ...(options || {}),
     type: 'string',
   });
@@ -148,11 +170,11 @@ export type PropertyOptions =
       label?: string;
       summary?: string;
       type: string;
-      validate?: PropertyValidatorFn;
+      validate?: TValidateProperty;
     }
   | Record<string, any>;
 
-type PropertyValidatorFn = (
+type TValidateProperty = (
   ...args: any[]
 ) => boolean | Promise<boolean> | Observable<boolean>;
 
@@ -163,7 +185,7 @@ export type PropMetadata = (StringMetadata | BooleanMetadata | RefMetadata) & {
   label?: string;
   defaultValue?: any;
   nullable: boolean;
-  validate?: PropertyValidatorFn;
+  validate?: TValidateProperty;
 };
 
 export type NodeMetadata = {

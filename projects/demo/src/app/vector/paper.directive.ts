@@ -122,6 +122,8 @@ export class PaperBase implements OnInit, AfterViewInit {
 export class PaperMirrorDirective extends PaperBase {
   private cursor!: paper.Shape.Circle;
   private _source!: PaperDirective;
+
+  /** The PaperDirective instance to mimick */
   public get source(): PaperDirective {
     return this._source;
   }
@@ -209,7 +211,7 @@ export class PaperDirective extends PaperBase implements OnInit, AfterViewInit {
 
   @Output()
   selectedItemsChange: Observable<paper.Item[]> = this.projectChange.pipe(
-    tap((p) => console.log('project', p)),
+    // tap((p) => console.log('project', p)),
     switchMap((p) => p.selectedItems$),
     shareReplay(1)
   );

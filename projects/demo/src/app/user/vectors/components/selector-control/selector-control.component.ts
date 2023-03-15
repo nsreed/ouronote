@@ -6,7 +6,9 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { FormBuilder, FormControl } from '@angular/forms';
+import { FormBuilder, FormControl, AbstractControl } from '@angular/forms';
+import { ObjectPropertyDirective } from 'projects/demo/src/app/directives/object-property.directive';
+import { MetaFormBuilder } from 'projects/demo/src/app/forms-ui/meta-form-builder';
 
 @Component({
   selector: 'app-selector-control',
@@ -16,17 +18,22 @@ import { FormBuilder, FormControl } from '@angular/forms';
 })
 export class SelectorControlComponent implements OnInit {
   @Input('appSelectorControl')
-  formControl = this.fb.control(null, {
+  formControl = this.mfb.control(null, {
     validators: [
-      (ctrl) =>
-        Object.keys(this.options).includes((ctrl as FormControl).value)
-          ? null
+      (ctrl: AbstractControl) =>
+        Object.keys(this.options || {}).includes((ctrl as FormControl).value)
+          ? {}
           : { error: true },
     ],
   });
 
+  control!: FormControl;
+  get meta() {
+    return this.propertyDirective.meta;
+  }
+
   @Output()
-  valueChange = new EventEmitter();
+  valueChange = new EventEmitter<any>();
 
   @Input()
   value = null;
@@ -34,7 +41,14 @@ export class SelectorControlComponent implements OnInit {
   @Input()
   options = {};
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private mfb: MetaFormBuilder,
+    public propertyDirective: ObjectPropertyDirective
+  ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.control = this.mfb.fromProperty(
+      this.propertyDirective.meta
+    ) as FormControl;
+  }
 }

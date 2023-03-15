@@ -44,7 +44,9 @@ export class ShapeToolSchematic
   implements ShapeToolSchema
 {
   @Enum({
-    options: shameNames,
+    description: 'Shape Type',
+    defaultValue: 'line',
+    options: shameNames.reduce((p, c) => ({ ...p, [c]: c }), {}),
   })
   shapeType = `star`;
 }
@@ -53,6 +55,8 @@ export class ShapeTool extends DrawTool {
   name = 'shapes';
   icon = 'shapes';
   shape?: paper.Shape;
+
+  schematic = new ShapeToolSchematic();
 
   @Property()
   style = new paper.Style({

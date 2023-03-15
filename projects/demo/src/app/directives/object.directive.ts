@@ -1,4 +1,5 @@
 import { Directive, Input, OnInit, EventEmitter } from '@angular/core';
+import { getNodeMeta } from '../common/metadata';
 
 @Directive({
   selector: '[appObject]',
@@ -15,6 +16,10 @@ export class ObjectDirective implements OnInit {
     this.object$.emit(value);
   }
   constructor() {}
+
+  get metadata() {
+    return getNodeMeta('meta:node', this.object || {});
+  }
 
   ngOnInit(): void {}
 }

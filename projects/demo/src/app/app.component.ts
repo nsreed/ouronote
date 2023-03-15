@@ -98,7 +98,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       )
     );
 
-    routerEvent$.subscribe((e) => console.log(e));
+    // routerEvent$.subscribe((e) => console.log(e));
   }
 
   @ViewChild('nav')

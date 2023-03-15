@@ -19,6 +19,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -70,6 +71,7 @@ import { PermissionsComponent } from './permissions/permissions.component';
 import { RouteVectorDirective } from './route-vector.directive';
 import { VectorsRoutingModule } from './vectors-routing.module';
 import { VectorsComponent } from './vectors.component';
+import { MatSelectModule } from '@angular/material/select';
 @NgModule({
   declarations: [
     ColorFormComponent,
@@ -126,6 +128,7 @@ import { VectorsComponent } from './vectors.component';
     MatDialogModule,
     MatDividerModule,
     MatExpansionModule,
+    MatFormFieldModule,
     MatGridListModule,
     MatIconModule,
     MatInputModule,
@@ -134,6 +137,7 @@ import { VectorsComponent } from './vectors.component';
     MatMenuModule,
     MatProgressSpinnerModule,
     MatProgressBarModule,
+    MatSelectModule,
     MatSidenavModule,
     MatSliderModule,
     MatSlideToggleModule,

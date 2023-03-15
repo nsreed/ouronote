@@ -234,7 +234,7 @@ export class EditVectorComponent
     this.menusPortal = this.portify(this.menusContent);
     this.toolPropertiesPortal = this.portify(this.toolPropertiesContent);
 
-    this.matBottomSheet.open(this.bottomSheet as any);
+    // this.matBottomSheet.open(this.bottomSheet as any);
 
     this.requestCount$.subscribe((count) => {
       if (count > 0 && this.editRequestsTooltip) {
