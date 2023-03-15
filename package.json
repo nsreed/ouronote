@@ -3,8 +3,8 @@
   "version": "0.0.3",
   "scripts": {
     "ng": "yarn",
-    "start": "node app-server local --https-port 4321 --https-crt app-server/ouronote-dev.crt --https-key app-server/ouronote-dev.key --data-dir data/radata",
-    "start:live": "ng serve -c development",
+    "start": "node app-server local --https-port 4321 --https-crt app-server/ouronote-dev.crt --https-key app-server/ouronote-dev.key --data-dir radata",
+    "start:live": "ng serve --host 0.0.0.0 -c development",
     "start:live:prod": "ng serve -c production",
     "build": "ng build demo -c development",
     "build:all": "ng build log && ng build ng-gun && ng build demo -c development",

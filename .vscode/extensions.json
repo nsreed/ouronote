@@ -7,6 +7,7 @@
     "mike-co.import-sorter",
     "formulahendry.auto-rename-tag",
     "aaron-bond.better-comments",
-    "firefox-devtools.vscode-firefox-debug"
+    "firefox-devtools.vscode-firefox-debug",
+    "eamodio.gitlens"
   ]
 }

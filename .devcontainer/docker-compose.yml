@@ -1,0 +1,10 @@
+version: "3.0"
+services:
+  devcontainer:
+    build:
+      context: .
+      dockerfile: dockerfile
+    volumes:
+      - ../../workspaces:cached
+    network_mode: service:db
+    command: sleep infinity

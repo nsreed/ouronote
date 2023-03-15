@@ -85,7 +85,7 @@ httpsGroup.add_argument('--https-key', { type: ExistingFileType('r'), default: '
 
 const logParser = new ArgumentParser({ add_help: false });
 const logGroup = logParser.add_argument_group({ title: 'Logging Options' });
-logGroup.add_argument('--log-level', { choices: ['verbose', 'info', 'warn', 'error', 'none'], default: 'error' });
+logGroup.add_argument('--log-level', { choices: ['verbose', 'info', 'warn', 'error', 'none'], default: 'info' });
 
 const parser = new ArgumentParser({
   description: 'starts the ouronote webserver',
@@ -164,6 +164,27 @@ function importGun() {
   return Gun;
 }
 
+function getHttps(app, args) {
+  let httpsServer;
+  try {
+    const EXPRESS_OPTS = {
+      key: fs.readFileSync(args.https_key),
+      cert: fs.readFileSync(args.https_crt),
+    };
+    // TODO un-comment this for local deploys?
+    httpsServer = https.createServer(EXPRESS_OPTS, app).listen(args.https_port, '0.0.0.0');
+    return httpsServer;
+  } catch (e) {
+    console.error("Error starting HTTPS server: ", e);
+    console.log("will default to HTTP");
+    return null;
+  }
+}
+
+function getHttp(app, args) {
+  return app.listen(args.http_port);
+}
+
 function getExpress(args) {
   const Gun = importGun();
   const app = express();
@@ -178,27 +199,6 @@ function getExpress(args) {
   };
 }
 
-function getHttps(app, args) {
-  let httpsServer;
-  try {
-    const EXPRESS_OPTS = {
-      key: fs.readFileSync(args.https_key),
-      cert: fs.readFileSync(args.https_crt),
-    };
-    // TODO un-comment this for local deploys?
-    httpsServer = https.createServer(EXPRESS_OPTS, app).listen(args.https_port);
-    return httpsServer;
-  } catch (e) {
-    console.error("Error starting HTTPS server: ", e);
-    console.log("will default to HTTP");
-    return null;
-  }
-}
-
-function getHttp(app, args) {
-  return app.listen(args.http_port);
-}
-
 function startLocalServer(args) {
   console.log('starting local server configuration');
   console.dir({ args });
@@ -209,7 +209,7 @@ function startLocalServer(args) {
     console.error('https not started!');
   }
   const gun = new Gun({
-    web: httpsServer || httpServer,
+    web: httpServer,
     file: args.data_dir,
     axe: false,
     port: args.http_port,
@@ -258,7 +258,7 @@ function main(...args) {
       cert: certificate,
     };
     // TODO un-comment this for local deploys?
-    // httpsServer = https.createServer(EXPRESS_OPTS, app).listen(HTTPS_PORT);
+    httpsServer = https.createServer(EXPRESS_OPTS, app).listen(HTTPS_PORT);
   } catch (e) {
     console.error("Error starting HTTPS server: ", e);
     console.log("will default to HTTP");
