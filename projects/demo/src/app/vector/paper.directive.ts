@@ -143,6 +143,7 @@ export class PaperMirrorDirective extends PaperBase {
         this.cursor.position = e.point;
       });
 
+      // Intercept all mouse events from the canvas
       [
         'click',
         'doubleclick',
@@ -173,9 +174,7 @@ export class PaperMirrorDirective extends PaperBase {
         this.cursor.remove();
         return;
       }
-      let s =
-        (this.source.scope.tool as any).effectiveStyle ||
-        this.source.project.currentStyle;
+      let s = this.currentStyle();
       // this.cursor.strokeWidth = s.strokeWidth;
       this.cursor.radius = s.strokeWidth / 2;
       this.cursor.fillColor = s.strokeColor;
@@ -183,6 +182,13 @@ export class PaperMirrorDirective extends PaperBase {
       this.cursor.style.strokeScaling =
         (this.source.scope.tool as any).scale || s.strokeScaling;
     }
+  }
+
+  private currentStyle() {
+    return (
+      (this.source.scope.tool as any).effectiveStyle ||
+      this.source.project.currentStyle
+    );
   }
 
   updateViewSize(): void {
@@ -292,6 +298,7 @@ export class PaperDirective extends PaperBase implements OnInit, AfterViewInit {
   ngOnInit(): void {
     super.ngOnInit();
     this.setupHammer();
+    timer(100, 10).subscribe((t) => this.drawSpinner());
     // this.project.currentStyle.strokeWidth = 5;
 
     // CREATE BACKGROUND LAYER
@@ -305,10 +312,6 @@ export class PaperDirective extends PaperBase implements OnInit, AfterViewInit {
   }
 
   updateViewSize() {
-    if (!this.project) {
-      console.warn('scope not set on CanvasDirective');
-      return;
-    }
     // this.logger.log('updateViewSize()');
     let tempWidth = 0;
     let tempHeight = 0;
@@ -329,6 +332,43 @@ export class PaperDirective extends PaperBase implements OnInit, AfterViewInit {
     this.project.view.viewSize.height -= this.project.view.viewSize.height;
     this.project.view.viewSize.height = tempHeight;
     this.onViewBounds();
+  }
+
+  drawSpinner() {
+    return;
+    const doUpdateRotation = (spinner: paper.Shape.Rectangle) => {
+      spinner.rotation += 1;
+    };
+
+    const getOrBuildSpinner = () => {
+      let found = this.project.getItem({ name: 'drawSpinner' });
+
+      if (!found) {
+        // If there's no spinner
+        // build new one, hopefully the only one
+        const spinner = this.backgroundLayer.addChild(
+          new paper.Path.Rectangle(
+            new paper.Rectangle(
+              new paper.Point(0, 0),
+              new paper.Point(100, 100)
+            )
+          )
+        );
+        // name it drawSpinner
+        spinner.name = 'drawSpinner';
+        found = spinner;
+      }
+      return found;
+    };
+    this.scope.activate();
+    if (!this.project) {
+      return;
+    }
+
+    const spinner = getOrBuildSpinner();
+    if (spinner) {
+      doUpdateRotation(spinner as any);
+    }
   }
 
   drawBackground() {

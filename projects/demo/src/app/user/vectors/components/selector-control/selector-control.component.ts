@@ -49,5 +49,10 @@ export class SelectorControlComponent implements OnInit {
       console.log(`new value for ${this.propertyDirective.label}: ${v}`);
       this.propertyDirective.value = v;
     });
+    this.control.setValue(this.propertyDirective.value, {onlySelf: true, emitEvent: false})
+    this.propertyDirective.propertyValueChange.subscribe(vc => {
+      // console.log('vc', vc);
+      this.control.setValue(this.propertyDirective.value, {onlySelf: true, emitEvent: false})
+    })
   }
 }
