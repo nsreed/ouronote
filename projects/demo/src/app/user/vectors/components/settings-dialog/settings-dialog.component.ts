@@ -9,6 +9,7 @@ import { LICENSES } from '../../../../LICENSES';
 import { UserService } from '../../../user.service';
 import { VectorGraph } from '../../../VectorGraph';
 import { VectorService } from '../../vector.service';
+import { LogService } from 'log';
 
 export interface VectorSettingsData {
   mode: 'general' | 'people' | 'license';
@@ -54,8 +55,10 @@ export class SettingsDialogComponent implements OnInit {
     private vectorService: VectorService,
     private userService: UserService,
     public dialogRef: MatDialogRef<any>,
-    private fb: UntypedFormBuilder
+    private fb: UntypedFormBuilder,
+    private logger: LogService
   ) {
+    logger.name = 'settings-dialog';
     // this.vector.open().subscribe((v) => {
     //   console.log(v);
     // });
@@ -128,7 +131,11 @@ export class SettingsDialogComponent implements OnInit {
         this.userService.user.userPair
       );
 
-      // TODO Sign license
+      if (!signedLicense) {
+        this.logger.error('signedLicense is null/undefined!', signedLicense);
+        return;
+      }
+
       console.log('putting signedLicense: ', signedLicense);
       licenseNode.put(signedLicense as any);
       licenseNode.on().subscribe((n: any) => {
