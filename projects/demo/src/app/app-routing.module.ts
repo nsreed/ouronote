@@ -4,7 +4,6 @@ import { GunAuthGuard } from 'ng-gun';
 import { LoginComponent } from './login/login.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { SystemSettingsComponent } from './components/system-settings/system-settings.component';
-import { TitleResolver } from './vector/title.resolver';
 
 const routes: Routes = [
   {
