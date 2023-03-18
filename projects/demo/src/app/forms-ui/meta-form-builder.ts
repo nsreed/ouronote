@@ -46,6 +46,10 @@ export class MetaFormBuilder extends FormBuilder {
     propertyMeta: PropMetadata,
     ...args: any[]
   ): FormControl | FormGroup {
+    if (!propertyMeta) {
+      this.logger.warn('no property descriptor found for', propertyMeta);
+      return this.control(null);
+    }
     switch (propertyMeta.type) {
       case 'reference':
         this.logger.log('Creating a ... resolving control?');

@@ -1,12 +1,22 @@
 import { LogService } from 'log';
 import * as paper from 'paper';
-import { fromEvent, Observable, of } from 'rxjs';
-import { filter, map, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { fromEvent, Observable, of, from, timer } from 'rxjs';
+import {
+  filter,
+  flatMap,
+  map,
+  shareReplay,
+  switchMap,
+  tap,
+  mergeMap,
+  mergeMapTo,
+} from 'rxjs/operators';
 import { IEnhancedPaper } from '../../../vector/IEnhancedPaper';
 import { IEnhancedScope } from '../../../vector/IEnhancedScope';
 import { PenEvent } from '../classes/PenEvent';
 import { propertyChange$ } from '../functions/paper-chain';
 import { EventEmitter } from '@angular/core';
+import { timeout, take, takeUntil, mergeWith } from 'rxjs/operators';
 
 export type ToolSchema = {
   name?: string;
@@ -146,15 +156,27 @@ export class VectorTool extends paper.Tool {
     this,
     'mouseup'
   ).pipe(filter((e: any) => this.filterEvent(e)));
-  click: Observable<paper.ToolEvent> = fromEvent<paper.ToolEvent>(
-    this,
-    'mouseclick'
+  click = this.down.pipe<paper.ToolEvent>(
+    mergeMap(() => this.up.pipe(takeUntil(this.drag), take(1)))
   );
+  downHold = this.down
+    .pipe(
+      mergeMap((e) => timer(0, 100).pipe(map(() => Date.now() - e.timeStamp)))
+    )
+    .pipe(takeUntil(this.drag.pipe(mergeWith(this.up))))
+    .pipe(map((e) => e));
 
   wheel: Observable<WheelEvent | any> = fromEvent<{
     event: WheelEvent;
     point: paper.Point;
   }>(this, 'mousewheel');
+  heldTime = this.down.pipe(
+    switchMap((e: paper.ToolEvent) =>
+      timer(0, 1).pipe(
+        takeUntil(this.up.pipe(mergeWith(this.drag), mergeWith(this.move)))
+      )
+    )
+  );
 
   keydown: Observable<paper.KeyEvent> = fromEvent<paper.KeyEvent>(
     this,

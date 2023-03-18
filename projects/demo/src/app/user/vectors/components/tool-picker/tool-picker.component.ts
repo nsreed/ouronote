@@ -76,12 +76,21 @@ export class ToolPickerComponent implements OnInit, AfterViewInit {
   public set tools(value: VectorTool[]) {
     this._tools = value;
     value
-      ?.filter((tool) => !this.categories[tool.category].includes(tool))
+      ?.filter(
+        (tool) =>
+          tool.category &&
+          this.categories &&
+          !(this.categories[tool.category] || []).includes(tool)
+      )
       .forEach((tool) => {
-        (this.categories as any)[tool.category].push(tool);
+        if (!tool.category) {
+          return;
+        }
+
+        (this.categories as any)[tool.category]?.push(tool);
         tool.enabled$.subscribe((enabled) => {
           // if(!enabled){
-          if (!this.categories[tool.category].some((t) => t.enabled)) {
+          if (!(this.categories[tool.category] || []).some((t) => t.enabled)) {
             this.disabledCategories[tool.category] = 'no tools are enabled!';
           } else {
             delete this.disabledCategories[tool.category];

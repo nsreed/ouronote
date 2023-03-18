@@ -12,9 +12,11 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { LogModule } from 'log';
 import { ComponentsModule } from '../components/components.module';
 import { NgxMatColorPickerModule } from '@angular-material-components/color-picker';
+import { VectorModule } from '../vector/vector.module';
+import { SandboxComponent } from './sandbox/sandbox.component';
 
 @NgModule({
-  declarations: [UserComponent, DashboardComponent],
+  declarations: [UserComponent, DashboardComponent, SandboxComponent],
   imports: [
     CommonModule,
     UserRoutingModule,
@@ -26,6 +28,7 @@ import { NgxMatColorPickerModule } from '@angular-material-components/color-pick
     NgxMatColorPickerModule,
     FlexLayoutModule,
     ComponentsModule,
+    VectorModule,
   ],
 })
 export class UserModule {}

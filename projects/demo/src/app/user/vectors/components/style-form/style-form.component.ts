@@ -1,4 +1,11 @@
-import { Component, Input, OnInit, EventEmitter, Output } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  EventEmitter,
+  Output,
+  ChangeDetectorRef,
+} from '@angular/core';
 import * as paper from 'paper';
 import { UntypedFormBuilder } from '@angular/forms';
 import { serializeValue } from '../../functions/packaging';
@@ -39,7 +46,6 @@ export class StyleFormComponent implements OnInit {
       return;
     }
     this._style = value;
-
     console.log('set style', value);
 
     // TODO find a much better way to do this
@@ -69,6 +75,8 @@ export class StyleFormComponent implements OnInit {
       onlySelf: true,
       emitEvent: false,
     });
+
+    this.changeDetectorRef.markForCheck();
   }
 
   @Output()
@@ -114,19 +122,21 @@ export class StyleFormComponent implements OnInit {
     strokeWidth: null,
   });
 
-  constructor(private fb: UntypedFormBuilder) {
+  constructor(
+    private fb: UntypedFormBuilder,
+    private changeDetectorRef: ChangeDetectorRef
+  ) {
     this.form.valueChanges.subscribe((v) => {
       const ns = new paper.Style(v);
       this.styleChange.emit(ns);
     });
     // tslint:disable-next-line: forin
     for (const k in this.form.controls) {
-      // if (Object.prototype.hasOwnProperty.call(this.form.controls, k)) {
       const control = this.form.controls[k];
-      control.valueChanges.subscribe((vc) =>
-        this.stylePropChange.emit([k, vc])
-      );
-      // }
+      control.valueChanges.subscribe((vc) => {
+        this.stylePropChange.emit([k, vc]);
+        this.changeDetectorRef.markForCheck();
+      });
     }
   }
 

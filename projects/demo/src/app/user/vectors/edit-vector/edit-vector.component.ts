@@ -185,7 +185,7 @@ export class EditVectorComponent
       console.log('you did it!');
       if (this.bottomSheet && !this.matBottomSheet._openedBottomSheetRef) {
         this.matBottomSheet
-          .open(this.bottomSheet)
+          .open(this.bottomSheet, { backdropClass: '' })
           .afterDismissed()
           .subscribe(() => {
             this.dragDrop.createDrag(event.source.element);

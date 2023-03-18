@@ -86,7 +86,6 @@ export class SelectedItemsComponent implements OnInit {
         const currentStyle = ({ ...c.style } as any)._values;
         return copyMatchingKeys(p, currentStyle);
       }, firstStyle);
-      console.log('computed', computedStyle);
       this.styleForm.patchValue(computedStyle);
       this.selectedStyle = new paper.Style(computedStyle);
     }

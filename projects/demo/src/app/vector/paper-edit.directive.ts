@@ -18,13 +18,17 @@ import { TextTool } from '../user/vectors/tools/text';
 import { PanTool } from '../user/vectors/tools/pan';
 import { VectorTool } from '../user/vectors/tools/paper-tool';
 import { Observable } from 'rxjs';
+import { PointerTool } from '../user/vectors/tools/pointer';
 
 @Directive({
   selector: '[appPaperEdit]',
   exportAs: 'appPaperEdit',
 })
 export class PaperEditDirective extends PaperDirective implements OnInit {
-  tool$: Observable<VectorTool> = propertyChange$(this.scope, 'tool').pipe(shareReplay(1) as any);
+  tool$: Observable<VectorTool> = propertyChange$(this.scope, 'tool').pipe(
+    shareReplay(1) as any
+  );
+  public pointer = new PointerTool(this.scope as any);
   public pen = new PenTool(this.scope as any);
   public eraser = new EraserTool(this.scope as any);
   public shape = new ShapeTool(this.scope as any);

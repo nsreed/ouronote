@@ -6,6 +6,34 @@ Grid
 
 Guides
 
+## Smarter tools (context-awareness, state switching, etc)
+
+IDLE
+
+NO_SELECTION
+
+HOVER
+
+CLICK
+
+DRAG
+
+(for line)
+
+CREATING
+
+(for star)
+
+DEFINE_CENTER
+
+DEFINE_OUTER_RADIUS
+
+DEFINE_INNER_RADIUS
+
+DEFINE_POINTS
+
+SELECTION
+
 ## Performance
 
 ### Input lag for large project (1000+ paths)
@@ -271,3 +299,7 @@ For a given property, e.g., stroke width, maybe not all items in the selection h
 If the values are the same, show the value. If they're different, show a special state.
 
 Changing the value should write the value to each of the items.
+
+## State-Driven
+
+NgRx looks pretty convincing. Think React/Flux.

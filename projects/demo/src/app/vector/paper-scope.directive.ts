@@ -15,6 +15,7 @@ export class PaperScope {
 }
 
 @Directive({
+  exportAs: 'appPaperScope',
   selector: '[appPaperScope]',
   providers: [
     {
@@ -30,9 +31,7 @@ export class PaperScope {
 })
 export class PaperScopeDirective implements AfterViewInit, OnDestroy {
   constructor(private ps: PaperScope) {}
-  ngAfterViewInit(): void {
-    console.log(this.secrets);
-  }
+  ngAfterViewInit(): void {}
   ngOnDestroy(): void {}
   private get secrets() {
     const { _id, _scopes } = (this.ps as any).initialize;

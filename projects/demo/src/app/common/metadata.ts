@@ -118,7 +118,7 @@ export type StringOptions = PropertyOptions & {
   minLength?: number;
   maxLength?: number;
 };
-export function Str(options?: PropertyOptions) {
+export function Str(options?: StringOptions) {
   const ValidateString = ([value, property]: ValidationTuple<string>) =>
     value.length >= property.minLength &&
     (property.maxLength >= value || property.maxLength < property.minLength);
@@ -221,6 +221,7 @@ export function getNodeMeta(
 }
 
 export function getNodeProps(node: any) {
-  const nodeMeta = getNodeMeta('meta:node', node);
-  return nodeMeta.properties;
+  return (
+    (getNodeMeta('meta:node', node || {}) || { type: 'node' }).properties || {}
+  );
 }

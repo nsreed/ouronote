@@ -264,7 +264,11 @@ export class SettingsService {
         filter(([value, prop]) => !prop.validate([value, prop]))
       );
       invalidProps$.subscribe(([value, property]: ValidationTuple) => {
-        console.log(`got ${value}, from ${property.key} ${property.type}`);
+        console.log(
+          `got invalid value ${value} ${typeof value}, from ${property.key} ${
+            property.type
+          }`
+        );
       });
     };
     update(this.gun, OuronoteSettingsSchematic);
