@@ -1,5 +1,5 @@
-<mat-sidenav-container [hasBackdrop]="RightSide.opened ? false : true">
-  <mat-sidenav #LeftSide [opened]="false" mode="side" class="mat-elevation-z5">
+<mat-sidenav-container [hasBackdrop]="false">
+  <mat-sidenav #LeftSide mode="side" class="mat-elevation-z5">
     <div
       fxFlex="1 0 auto"
       fxLayout="column"
@@ -9,15 +9,17 @@
     >
       <button
         mat-icon-button
-        (click)="LeftSide.close()"
+        (click)="toggleToolProperties()"
         [style.alignSelf]="'end'"
       >
         <mat-icon>chevron_left</mat-icon>
       </button>
       <mat-divider></mat-divider>
+
+      <!-- <ng-container *cdkPortalOutlet="toolPickerPortal"></ng-container> -->
+      <ng-container *cdkPortalOutlet="toolPropertiesPortal"></ng-container>
     </div>
   </mat-sidenav>
-
   <mat-sidenav #RightSide [opened]="false" position="end" mode="side">
     <mat-accordion
       multi
@@ -99,14 +101,13 @@
       </mat-toolbar-row>
     </mat-toolbar>
 
-    <div id="Bottom" fxLayout="row" fxLayout.xs="column" fxFlex="1 1 auto">
+    <div id="Bottom" fxFlex="1 1 auto" fxLayout="row" fxLayout.xs="column">
       <div
         id="ToolContainer"
         fxLayout.xs="row"
         fxLayout="column"
-        fxFlex.xs="1 0 auto"
+        fxFlex.xs="0 0 auto"
         #ToolContainer
-        [style.zIndex]="3000"
         (mousewheel)="onToolContainerScroll($event, ToolContainer)"
       >
         <a
@@ -118,7 +119,12 @@
         >
         <ng-container *cdkPortalOutlet="toolPickerPortal"></ng-container>
       </div>
-      <div id="CanvasContainer" fxFlex="1 1 auto" appPaperScope>
+
+      <div id="Midriff" fxFlex="0 0 272px" [fxHide]="!state.showToolProperties">
+        <ng-container *cdkPortalOutlet="toolPropertiesPortal"></ng-container>
+      </div>
+
+      <div id="CanvasContainer" fxFlex="1 0 auto" appPaperScope>
         <!-- <canvas id="Background" appPaper></canvas> -->
         <canvas id="Workspace" appPaperEdit #paper="appPaperEdit"></canvas>
         <canvas
@@ -150,7 +156,11 @@
       </div>
     </div>
 
-    <mat-toolbar fxHide.gt-xs="true" (press)="matBottomSheet.open(BottomSheet)">
+    <mat-toolbar
+      fxFlex="0 1 auto"
+      fxHide.gt-xs="true"
+      (press)="matBottomSheet.open(BottomSheet)"
+    >
       <mat-toolbar-row>
         <button
           mat-icon-button
@@ -176,6 +186,7 @@
         ></ng-container>
       </mat-toolbar-row>
     </mat-toolbar>
+
     <ng-template #BottomSheet>
       <mat-card>
         <mat-card-title>Tool Properties</mat-card-title>
@@ -291,10 +302,11 @@
 
 <ng-template #ToolPicker>
   <app-tool-picker
-    (toolDoubleClick)="matBottomSheet.open(BottomSheet)"
+    (toolDoubleClick)="onToolDoubleClick()"
     [paperDirective]="paperDirective"
     [activeTool]="activeTool"
     [tools]="paperDirective?.scope?.tools"
+    [style]="{ zOrder: 1 }"
   >
   </app-tool-picker>
 </ng-template>

@@ -46,6 +46,7 @@ export class StyleFormComponent implements OnInit {
       return;
     }
     this._style = value;
+
     console.log('set style', value);
 
     // TODO find a much better way to do this
@@ -76,7 +77,7 @@ export class StyleFormComponent implements OnInit {
       emitEvent: false,
     });
 
-    this.changeDetectorRef.markForCheck();
+    this.changeDetectorRef.detectChanges();
   }
 
   @Output()

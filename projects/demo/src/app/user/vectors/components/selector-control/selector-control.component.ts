@@ -15,7 +15,7 @@ import { MetaFormBuilder } from 'projects/demo/src/app/forms-ui/meta-form-builde
   selector: 'app-selector-control',
   templateUrl: './selector-control.component.html',
   styleUrls: ['./selector-control.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class SelectorControlComponent implements OnInit {
   control!: FormControl;
@@ -49,10 +49,16 @@ export class SelectorControlComponent implements OnInit {
       console.log(`new value for ${this.propertyDirective.label}: ${v}`);
       this.propertyDirective.value = v;
     });
-    this.control.setValue(this.propertyDirective.value, {onlySelf: true, emitEvent: false})
-    this.propertyDirective.propertyValueChange.subscribe(vc => {
-      // console.log('vc', vc);
-      this.control.setValue(this.propertyDirective.value, {onlySelf: true, emitEvent: false})
-    })
+    this.control.setValue(this.propertyDirective.value, {
+      onlySelf: true,
+      emitEvent: false,
+    });
+    this.propertyDirective.propertyValueChange.subscribe((vc) => {
+      console.log('vc', vc);
+      this.control.setValue(this.propertyDirective.value, {
+        onlySelf: true,
+        emitEvent: false,
+      });
+    });
   }
 }

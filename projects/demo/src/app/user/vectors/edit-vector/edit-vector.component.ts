@@ -72,6 +72,10 @@ export class EditVectorComponent
   @ViewChild('paper')
   public paperDirective!: PaperEditDirective;
 
+  state = {
+    showToolProperties: false,
+  };
+
   previewSVG?: SafeHtml;
   project!: paper.Project;
   projectPair!: ProjectPair;
@@ -96,7 +100,17 @@ export class EditVectorComponent
 
   @ViewChild('EditRequestsTooltip')
   editRequestsTooltip?: MatTooltip;
-  media$ = this.media.asObservable().pipe(shareReplay(1));
+
+  media$ = this.media.asObservable().pipe();
+  mediaAlias$ = this.media$.pipe(
+    map((mc) => {
+      return mc.reduce(
+        (sizeDict, change) => ({ ...sizeDict, [change.mqAlias]: change }),
+        {}
+      );
+    }),
+    shareReplay(1)
+  );
 
   editToast?: MatSnackBarRef<TextOnlySnackBar>;
   activeTool?: VectorTool;
@@ -201,9 +215,28 @@ export class EditVectorComponent
     container.scrollLeft += event.deltaY;
   }
 
+  toggleToolProperties() {
+    this.state.showToolProperties = !this.state.showToolProperties;
+    if (this.state.showToolProperties) {
+      // this.leftSide.open();
+      // this.matBottomSheet
+      //   .open(this.toolPropertiesContent, {
+      //     backdropClass: 'mat-card',
+      //   })
+      //   .afterDismissed()
+      //   .subscribe(() => {
+      //     this.state.showToolProperties = true;
+      //     this.toggleToolProperties();
+      //   });
+    } else {
+      // this.leftSide.close();
+      // this.matBottomSheet.dismiss();
+    }
+  }
+
   onToolDoubleClick(tool: VectorTool) {
     this.logger.log(`someone wants to open tool details`);
-    this.leftSide.toggle();
+    this.toggleToolProperties();
   }
 
   @ViewChild('RightSide')

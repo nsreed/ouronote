@@ -1,15 +1,6 @@
+import { from } from 'rxjs';
+import { map, shareReplay } from 'rxjs/operators';
 import { VectorTool } from './paper-tool';
-import {
-  map,
-  mapTo,
-  shareReplay,
-  mergeWith,
-  mergeMap,
-  switchMap,
-} from 'rxjs/operators';
-import { ReplaySubject, from, timer } from 'rxjs';
-import e from 'express';
-import { timeout } from 'rxjs/operators';
 
 type Action = {};
 
