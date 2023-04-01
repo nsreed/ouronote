@@ -8188,6 +8188,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ng-keyboard-shortcuts@npm:^13.0.8":
+  version: 13.0.8
+  resolution: "ng-keyboard-shortcuts@npm:13.0.8"
+  dependencies:
+    tslib: ^2.3.0
+  peerDependencies:
+    "@angular/animations": ">=9.0.0"
+    "@angular/common": ">=9.0.0"
+    "@angular/compiler": ">=9.0.0"
+    "@angular/core": ">=9.0.0"
+    "@angular/platform-browser": ">=9.0.0"
+    rxjs: ">=6.0.0"
+  checksum: ffc563b59599d62cc97ee3853aa69496cb91819a08612e564ec2398e446ce4cfba1ac304ef89e74621d95b3208c67959082c4c47bf4a958fd6a310afdacb2e0f
+  languageName: node
+  linkType: hard
+
 "ng-packagr@npm:^14.0.3":
   version: 14.2.0
   resolution: "ng-packagr@npm:14.2.0"
@@ -8760,6 +8776,7 @@ __metadata:
     karma-jasmine: ^5.1.0
     karma-jasmine-html-reporter: 2.0.0
     license-checker: ^25.0.1
+    ng-keyboard-shortcuts: ^13.0.8
     ng-packagr: ^14.0.3
     ngx-clipboard: ^15.1.0
     ngx-online-status: ^2.0.0

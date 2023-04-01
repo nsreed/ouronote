@@ -42,6 +42,7 @@
     "file-saver": "^2.0.5",
     "gun": "nsreed/gun#ouronote",
     "hammerjs": "^2.0.8",
+    "ng-keyboard-shortcuts": "^13.0.8",
     "ngx-clipboard": "^15.1.0",
     "ngx-online-status": "^2.0.0",
     "nodemon": "^2.0.7",

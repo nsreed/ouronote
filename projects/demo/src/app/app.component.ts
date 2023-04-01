@@ -30,6 +30,7 @@ import { User } from './user/model';
 import { SettingsService } from './settings.service';
 import { switchMap } from 'rxjs/operators';
 import { from } from 'rxjs';
+import { ShortcutInput } from 'ng-keyboard-shortcuts';
 declare const APP_HASH: any;
 
 const loader = (window as any)['loader'];
@@ -137,13 +138,19 @@ export class AppComponent implements OnInit, AfterViewInit {
     (window as any).loader.hideOverlay();
   }
 
+  shortcuts: ShortcutInput[] = [
+    { key: 'alt + b', label: 'Bug Report', command: () => this.bugReport() },
+    { key: 'alt + p', label: 'Peers', command: () => this.peers() },
+    { key: 'alt + a', label: 'About', command: () => this.about() },
+  ];
+
   logout() {
     this.ngGun.auth().logout();
     this.router.navigateByUrl('/login');
   }
 
   peers() {
-    this.dialog.open(GunPeersComponent, {
+    return this.dialog.open(GunPeersComponent, {
       data: {
         ngGun: this.ngGun,
       },
@@ -158,6 +165,6 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   about() {
-    this.dialog.open(AboutComponent);
+    return this.dialog.open(AboutComponent);
   }
 }

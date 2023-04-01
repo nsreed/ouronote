@@ -1,9 +1,12 @@
 import { Item } from 'paper/dist/paper-core';
 import { from } from 'rxjs';
-import { map, shareReplay, scan, filter } from 'rxjs/operators';
+import { map, shareReplay, scan, filter, switchMap } from 'rxjs/operators';
 import { VectorTool } from './paper-tool';
 import * as paper from 'paper';
-import { HitResultWidget } from '../../../vector/widgets/hit-result-widget';
+import {
+  HitResultWidget,
+  isHitResultEqual as sameItemAndType,
+} from '../../../vector/widgets/hit-result-widget';
 import { isIgnored } from '../functions/paper-functions';
 
 const selectedStyle = {
@@ -65,11 +68,32 @@ const findPoints =
       tolerance: ((options?.tolerance || 0) * 1) / project.view.zoom,
     });
 
+type THitResultDiffs = {
+  all: HitResultWidget[];
+  added: HitResultWidget[];
+  removed: HitResultWidget[];
+  updated: HitResultWidget[];
+};
+
 export class PointerTool extends VectorTool {
   name = 'pointer';
   icon = 'cursor';
   category = 'select';
   propertyNames = ['selectLayerConstraint'];
+
+  private readonly hitResults$ = this.move.pipe(
+    map((e) => e.point),
+    map((p) =>
+      findPoints(this.project)({
+        tolerance: 30,
+        ...PathTests,
+        ends: true,
+        curves: true,
+        segments: true,
+        stroke: true,
+      })(p).filter((hr) => hr.point && !isIgnored(hr.item))
+    )
+  );
 
   get foregroundLayer() {
     let foreground = this.project.getItem({
@@ -114,35 +138,26 @@ export class PointerTool extends VectorTool {
   }
 
   subs = [
-    this.drag.subscribe(console.log),
-    // this.heldTime.subscribe((t) => console.log('HELD TO 5 OR WHATEVRER', t)),
-    this.move
+    this.click.subscribe((e) => {
+      if (e.item.layer.name === 'background') {
+        console.log('clicked nothing');
+        this.project.deselectAll();
+      }
+    }),
+    this.hitResults$
       .pipe(
-        map((e) => e.point),
-        map((p) =>
-          findPoints(this.project)({
-            tolerance: 30,
-            ...PathTests,
-            ends: true,
-            curves: false,
-            segments: true,
-          })(p).filter((hr) => hr.point && !isIgnored(hr.item))
-        ),
-        // filter((e) => !isIgnored(e.item)),
         scan(
-          (allResults, currentResults) => {
-            const matchWidgetHitResult =
+          (diffs, hits) => {
+            const withResult =
               (widget: HitResultWidget) => (hitResult: paper.HitResult) =>
-                isHitResultEqual(hitResult, widget.hitResult);
+                sameItemAndType(hitResult, widget.hitResult);
 
-            const updated: HitResultWidget[] = allResults.all.filter((r) =>
-              currentResults.some(matchWidgetHitResult(r))
-            );
-            const added: HitResultWidget[] = currentResults
+            const updated = diffs.all.filter((r) => hits.some(withResult(r)));
+            const added = hits
               .filter(
                 (c) =>
                   !updated.some((e: HitResultWidget) =>
-                    isHitResultEqual(c, e.hitResult)
+                    sameItemAndType(c, e.hitResult)
                   )
               )
               .map(
@@ -154,16 +169,22 @@ export class PointerTool extends VectorTool {
                     paper
                   )
               );
-            const removed: HitResultWidget[] = allResults.all.filter(
-              (a) =>
-                !currentResults.some((c) => isHitResultEqual(c, a.hitResult))
+            const removed = diffs.all.filter(
+              (a) => !hits.some((c) => sameItemAndType(c, a.hitResult))
             );
             updated.forEach(
               (u) =>
-                (u.hitResult = currentResults.find((c) =>
-                  isHitResultEqual(c, u.hitResult)
+                (u.hitResult = hits.find((c) =>
+                  sameItemAndType(c, u.hitResult)
                 ) as paper.HitResult)
             );
+            // if (hits.length > 0) {
+            //   console.log({ added, removed, updated }, [
+            //     added.length,
+            //     removed.length,
+            //     updated.length,
+            //   ]);
+            // }
             return {
               all: added.concat(updated),
               added,
@@ -171,27 +192,32 @@ export class PointerTool extends VectorTool {
               updated,
             };
           },
-          { all: [] as HitResultWidget[] } as {
-            all: HitResultWidget[];
-            added: HitResultWidget[];
-            removed: HitResultWidget[];
-            updated: HitResultWidget[];
-          }
+          { all: [] as HitResultWidget[] } as THitResultDiffs
         )
       )
       .subscribe((hitResults) => {
         this.saveProjectState();
         hitResults.removed.forEach((r) => r.remove());
         hitResults.updated.forEach((a) => a.draw());
+
+        from(hitResults.added)
+          .pipe(
+            switchMap((a) =>
+              a.mouseDown$.pipe(map((e) => ({ widget: a, event: e })))
+            )
+          )
+          .subscribe((e) => {
+            const hitResult = e.widget.hitResult;
+            const item = hitResult.item;
+            item.selected = !item.selected;
+            [hitResult.location?.curve, hitResult.segment]
+              .filter((v) => v)
+              .forEach((n) => (n.selected = item.selected));
+          });
+
         this.restoreProjectState();
       }),
-    this.drag.subscribe((e) => {}),
-    this.click.subscribe(() => console.log('click')),
   ];
-}
-
-function isHitResultEqual(c: paper.HitResult, r: paper.HitResult): unknown {
-  return c.item === r.item && c.type === r.type;
 }
 
 const drawHitResult = (project: paper.Project) => (hr: paper.HitResult) => {
@@ -201,8 +227,6 @@ const drawHitResult = (project: paper.Project) => (hr: paper.HitResult) => {
   const textOffset = new paper.Point(0, 30);
   const fontSize = 30;
 
-  // const overlay = drawItemOverlay(hr.item);
-  // hoverGroup.addChild(overlay);
   const styleForType = {
     stroke: {
       strokeColor: new paper.Color('green'),

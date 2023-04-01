@@ -172,7 +172,7 @@ export class DiagnosticsService {
 
   bugReport() {
     // LogService.buffer$.pipe(take(1)).subscribe((messages) => {
-    this.dialog.open(BugReportComponent, {
+    return this.dialog.open(BugReportComponent, {
       data: {
         messages: this.messages,
         gun: this.ngGun.gun,

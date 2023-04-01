@@ -71,6 +71,7 @@ import { RouteVectorDirective } from './route-vector.directive';
 import { VectorsRoutingModule } from './vectors-routing.module';
 import { VectorsComponent } from './vectors.component';
 import { MatSelectModule } from '@angular/material/select';
+import { KeyboardShortcutsModule } from 'ng-keyboard-shortcuts';
 @NgModule({
   declarations: [
     ColorFormComponent,
@@ -113,6 +114,7 @@ import { MatSelectModule } from '@angular/material/select';
     FilesModule,
     FlexLayoutModule,
     HammerModule,
+    KeyboardShortcutsModule,
     LogModule,
     MatAutocompleteModule,
     MatBadgeModule,

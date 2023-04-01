@@ -39,7 +39,7 @@ export const PAPER_STYLE_EMPTY = {
   leading: null,
   justification: null,
   miterLimit: null,
-};
+} as unknown as paper.Style;
 export const PAPER_STYLE_LIB_DEFAULTS = {
   ...PAPER_STYLE_EMPTY,
   strokeWidth: 0,

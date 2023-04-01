@@ -68,6 +68,7 @@ import { OuronoteLogService } from './services/ouronote-log.service';
 import { SessionInfoComponent } from './session-info/session-info.component';
 import { SettingsService } from './settings.service';
 import { WelcomeComponent } from './welcome/welcome.component';
+import { KeyboardShortcutsModule } from 'ng-keyboard-shortcuts';
 
 const RADISK_LOCAL = localStorage.getItem('RADISK_ENABLE');
 const RADISK_ENABLE = RADISK_LOCAL === null ? true : !!JSON.parse(RADISK_LOCAL);
@@ -121,6 +122,7 @@ function appLoadFactory(gunFactory: GunFactoryService) {
     FormsUiModule,
     HammerModule,
     HttpClientModule,
+    KeyboardShortcutsModule.forRoot(),
     LogModule,
     MatBadgeModule,
     MatButtonModule,

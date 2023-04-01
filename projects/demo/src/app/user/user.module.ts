@@ -14,12 +14,14 @@ import { ComponentsModule } from '../components/components.module';
 import { NgxMatColorPickerModule } from '@angular-material-components/color-picker';
 import { VectorModule } from '../vector/vector.module';
 import { SandboxComponent } from './sandbox/sandbox.component';
+import { KeyboardShortcutsModule } from 'ng-keyboard-shortcuts';
 
 @NgModule({
   declarations: [UserComponent, DashboardComponent, SandboxComponent],
   imports: [
     CommonModule,
     UserRoutingModule,
+    KeyboardShortcutsModule,
     LogModule,
     MatButtonModule,
     MatToolbarModule,

@@ -59,6 +59,7 @@ import { LassoSelectTool, RectangleSelectTool } from '../tools/select';
 import { ShapeTool } from '../tools/shape';
 import { TextTool } from '../tools/text';
 import { VectorService } from '../vector.service';
+import { ShortcutInput } from 'ng-keyboard-shortcuts';
 
 @Component({
   templateUrl: './edit-vector.component.html',
@@ -164,9 +165,83 @@ export class EditVectorComponent
     super(vectorService, route, ngGun, userService);
     this.logger = logger.supplemental('edit-vector');
   }
+
   ngOnDestroy(): void {
     this.projectPair?.destroy();
   }
+
+  ngOnInit(): void {
+    // TODO display appropriate document title
+    this.vector$.subscribe((v) => {
+      window.document.title = `${v.title} - ${OURONOTE_DEFAULT_TITLE}`;
+    });
+
+    this.myRequest$.subscribe((myRequest) => {
+      if (myRequest) {
+        this.showRequestToast();
+      } else {
+        this.hideRequestToast();
+      }
+    });
+  }
+
+  ngAfterViewInit(): void {
+    this.toolPickerPortal = this.portify(this.toolPickerContent);
+    this.titleBarPortal = this.portify(this.titleBarContent);
+    this.menusPortal = this.portify(this.menusContent);
+    this.toolPropertiesPortal = this.portify(this.toolPropertiesContent);
+
+    // this.matBottomSheet.open(this.bottomSheet as any);
+
+    this.requestCount$.subscribe((count) => {
+      if (count > 0 && this.editRequestsTooltip) {
+        this.editRequestsTooltip.message = `There are ${count} edit requests.`;
+        this.editRequestsTooltip.show();
+        timer(5000).subscribe(() => this.editRequestsTooltip?.hide());
+      }
+    });
+    this.vectorNode$.subscribe((node) => {
+      if (!this.paperDirective.project) {
+        console.warn('NO PAPER PROJECT');
+        return;
+      }
+
+      this.onProjectReady(this.paperDirective.project as any, node as any);
+      node
+        .get('title')
+        .on()
+        .subscribe((title: any) => {
+          this.vectorForm.get('title')?.patchValue(title, { emitEvent: false });
+        });
+      this.vectorNode = node;
+      this.vectorForm
+        .get('title')
+        ?.valueChanges.pipe(distinct())
+        .subscribe((title) => {
+          node.get('title').put(title);
+        });
+    });
+    this.vector$.subscribe((vector: VectorGraph) => {
+      if (!this.paperDirective.project) {
+        this.logger.error('vector$ but no paperDirective.project', vector);
+        return;
+      }
+      this.project = this.paperDirective.project;
+    });
+
+    this.canEdit$.subscribe((ce) => {
+      if (ce) {
+        // TODO don't select pen tool if user has already panned
+        this.paperDirective.pen.activate();
+        this.changes.detectChanges();
+      }
+    });
+  }
+
+  shortcuts: ShortcutInput[] = [
+    { key: 'ctrl', command: () => this.tools[1].activate() },
+    { key: 'ctrl + 1', command: () => this.tools[0].activate() },
+  ];
 
   onOpenSidenavClick() {
     this.matSidenav.open();
@@ -260,80 +335,6 @@ export class EditVectorComponent
 
   @ViewChild('ToolPicker')
   toolPickerContent!: TemplateRef<unknown>;
-
-  ngAfterViewInit(): void {
-    this.toolPickerPortal = this.portify(this.toolPickerContent);
-    this.titleBarPortal = this.portify(this.titleBarContent);
-    this.menusPortal = this.portify(this.menusContent);
-    this.toolPropertiesPortal = this.portify(this.toolPropertiesContent);
-
-    // this.matBottomSheet.open(this.bottomSheet as any);
-
-    this.requestCount$.subscribe((count) => {
-      if (count > 0 && this.editRequestsTooltip) {
-        this.editRequestsTooltip.message = `There are ${count} edit requests.`;
-        this.editRequestsTooltip.show();
-        timer(5000).subscribe(() => this.editRequestsTooltip?.hide());
-      }
-    });
-    this.vectorNode$.subscribe((node) => {
-      if (!this.paperDirective.project) {
-        console.warn('NO PAPER PROJECT');
-        return;
-      }
-
-      this.onProjectReady(this.paperDirective.project as any, node as any);
-      node
-        .get('title')
-        .on()
-        .subscribe((title: any) => {
-          this.vectorForm.get('title')?.patchValue(title, { emitEvent: false });
-        });
-      this.vectorNode = node;
-      this.vectorForm
-        .get('title')
-        ?.valueChanges.pipe(distinct())
-        .subscribe((title) => {
-          node.get('title').put(title);
-        });
-    });
-    this.vector$.subscribe((vector: VectorGraph) => {
-      if (!this.paperDirective.project) {
-        this.logger.error('vector$ but no paperDirective.project', vector);
-        return;
-      }
-      this.project = this.paperDirective.project;
-    });
-
-    this.canEdit$.subscribe((ce) => {
-      if (ce) {
-        // TODO don't select pen tool if user has already panned
-        this.paperDirective.pen.activate();
-        this.changes.detectChanges();
-      }
-    });
-  }
-
-  ngOnInit(): void {
-    // this.media$.subscribe((changes) => {
-    //   const filteredChanges = changes
-    //     .filter((v) => v.matches)
-    //     .sort((a, b) => b.priority - a.priority);
-    //   console.log(JSON.stringify(filteredChanges, null, 2));
-    // });
-    // TODO display appropriate document title
-    this.vector$.subscribe((v) => {
-      window.document.title = `${v.title} - ${OURONOTE_DEFAULT_TITLE}`;
-    });
-
-    this.myRequest$.subscribe((myRequest) => {
-      if (myRequest) {
-        this.showRequestToast();
-      } else {
-        this.hideRequestToast();
-      }
-    });
-  }
 
   showRequestToast() {
     this.owner$

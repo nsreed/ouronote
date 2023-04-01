@@ -1,30 +1,44 @@
-import { PaperWidget } from './paper-widget';
 import * as paper from 'paper';
-import { PaperDirective } from '../paper.directive';
-import { around, before } from 'aspect-ts';
-import { fromEvent, map, shareReplay } from 'rxjs';
-import { Advice, Aspect, AspectContext, UseAspect } from 'ts-aspect';
-import { saveStyle } from '../../user/vectors/functions/paper-functions';
-import { EPaperBlendMode } from '../../user/vectors/functions/constants';
 import {
-  copyStyleToItem,
-  copyNulls,
-} from '../../user/vectors/functions/paper-functions';
-import {
-  PAPER_STYLE_EMPTY,
   PAPER_STYLE_LIB_DEFAULTS,
+  EPaperBlendMode,
 } from '../../user/vectors/functions/constants';
+import {
+  PaperHaverCtx,
+  getPaperState,
+  applyPaperState,
+} from '../aspects/paper-state-aspect';
+import { PointWidget } from './point-widget';
+import { EventEmitter } from '@angular/core';
+import {
+  ReplaySubject,
+  of,
+  shareReplay,
+  map,
+  combineLatest,
+  merge,
+} from 'rxjs';
+import {
+  switchMap,
+  tap,
+  mergeMap,
+  take,
+  filter,
+  combineLatestWith,
+  withLatestFrom,
+  auditTime,
+} from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { distinct, pluck, debounceTime } from 'rxjs/operators';
+import { Advice, UseAspect } from 'ts-aspect';
+import { PaperStateAspect } from '../aspects/paper-state-aspect';
 const p2 = paper;
-interface IPaperState {
-  activeLayer?: any;
-  restoreStyle?: any;
-  autoUpdate?: any;
-  insertItems?: any;
-}
 
-interface IHitResultWidgetCtx extends AspectContext {
-  target: HitResultWidget;
-  state: IPaperState;
+export function isHitResultEqual(
+  c?: paper.HitResult,
+  r?: paper.HitResult
+): boolean {
+  return c?.item === r?.item && c?.type === r?.type;
 }
 
 interface IHasProject {
@@ -35,171 +49,185 @@ interface IHasPaper {
   paper: paper.PaperScope;
 }
 
-class PaperStateAspect implements Aspect {
-  /**
-   * @param tempState The state to apply during the function call
-   */
-  constructor(private tempState: IPaperState = {}) {}
-  execute(ctx: IHitResultWidgetCtx) {
-    const { project, paper } = ctx.target;
-
-    // return:
-    if (ctx.state) {
-      applyPaperState(ctx.state, project, paper);
-      return;
-    }
-
-    // enter:
-    ctx.state = getPaperState(project, paper);
-    applyPaperState(this.tempState, project, paper);
-  }
-}
-
-class NameCacheAspect implements Aspect {
-  constructor(private name: any, private ignore = true) {}
-  execute(ctx: IHitResultWidgetCtx) {
-    if (ctx.returnValue) {
-      ctx.returnValue.name = this.name;
-      ctx.returnValue.data.ignore = true;
-      ctx.target.cache.addChild(ctx.returnValue);
-      return;
-    }
-    const cached = ctx.target.cache.children[this.name];
-    if (!cached) {
-      return;
-    }
-    ctx.functionParams[3] = cached;
-  }
+interface IHasGroup extends PaperHaverCtx {
+  cache: paper.Group;
 }
 
 export class HitResultWidget
-  extends PaperWidget<paper.HitResult>
+  extends PointWidget<paper.HitResult>
   implements IHasPaper, IHasProject
 {
-  resize$ = fromEvent(this.project.view, 'resize').pipe(shareReplay(1));
-  get scale() {
-    return 1 / this.project.view.zoom;
+  @UseAspect(
+    Advice.Around,
+    new PaperStateAspect({ insertItems: false, autoUpdate: false })
+  )
+  snapshot<T extends (...args: any[]) => O, O>(fn: T): O {
+    return fn() as O;
   }
-  scale$ = this.resize$.pipe(map(() => this.scale));
-
+  // saveState(observable: Observable<any>) {
+  //   return of(getPaperState(this.project, this.paper)).pipe(
+  //     combineLatestWith(observable),
+  //     tap(([state, o]) => {
+  //       applyPaperState(state, this.project, this.paper);
+  //       return o;
+  //     })
+  //   );
+  // }
+  mouseDown$ = new EventEmitter<paper.MouseEvent>();
+  group$ = this.paper$.pipe(
+    combineLatestWith(this.layer$),
+    switchMap(
+      ([paper, layer]) =>
+        this.snapshot(() => {
+          layer.data.ignore = true;
+          layer.activate();
+          const group = new paper.Group();
+          group.data.ignore = true;
+          layer.addChild(group);
+          return of(group);
+        }) as Observable<paper.Group>
+    ),
+    shareReplay(1)
+  );
+  hitResult$ = new ReplaySubject<paper.HitResult>(1);
+  type$ = this.hitResult$.pipe(
+    map((r) => r.type),
+    distinct()
+  );
+  hitPoint$ = this.hitResult$.pipe(
+    auditTime(100),
+    map((r) => r.point)
+  );
+  item$ = this.hitResult$.pipe(map((r) => r.item));
+  update$ = combineLatest([
+    this.paper$.pipe(take(1)),
+    this.project$.pipe(take(1)),
+    this.hitResult$,
+    of(1).pipe(mergeMap((v) => this.scale$)),
+  ]);
+  style$ = this.type$.pipe(
+    combineLatestWith(this.scale$.pipe(take(1))),
+    // tap(console.log),
+    map(([type, scale]) => {
+      // return this.snapshot(() => {
+      const paper = this.paper;
+      const fontStyle = {
+        justification: 'center',
+        fontFamily: 'serif',
+        fontWeight: 200,
+      } as paper.Style;
+      const style = new paper.Style({
+        ...PAPER_STYLE_LIB_DEFAULTS,
+        ...fontStyle,
+        strokeScaling: true,
+        fillColor: new paper.Color('blue'),
+        strokeColor: new paper.Color('white'),
+        strokeWidth: 1,
+        shadowColor: null,
+      } as unknown as Partial<paper.Style>) as paper.Style;
+      switch (type) {
+        case 'segment':
+          style.fillColor = new paper.Color('indigo');
+          style.strokeColor = new paper.Color('blue');
+          break;
+        case 'stroke':
+          style.fillColor = new paper.Color('orange');
+          style.strokeColor = new paper.Color('white').set({ alpha: 0.4 });
+          break;
+        default:
+          style.fillColor = new paper.Color('orange');
+          style.strokeColor = new paper.Color('red');
+      }
+      return style;
+      // });
+    })
+  );
+  label$ = this.group$.pipe(
+    map((group) => {
+      return this.snapshot(() => {
+        this.layer.activate();
+        const label = new this.paper.PointText(new this.paper.Point(0, 0)).set({
+          name: 'label',
+          data: { ignore: true },
+        });
+        group.addChild(label);
+        label.blendMode = EPaperBlendMode.normal;
+        return label;
+      }) as paper.PointText;
+    }),
+    combineLatestWith(this.hitResult$),
+    map(([label, hitResult]) => {
+      label.data.hitResult = this.hitResult;
+      label.set({ content: hitResult.type });
+      label.translate(hitResult.point.subtract(label.bounds.center));
+      return label;
+    }),
+    combineLatestWith(this.style$),
+    tap(([label, style]) => (label.style = style)),
+    shareReplay(1)
+  );
   constructor(
-    private _hitResult: paper.HitResult,
+    hitResult: paper.HitResult,
     layer: paper.Layer,
     project: paper.Project,
     scope: paper.PaperScope
   ) {
-    super(project, scope);
-    this.draw();
+    super(layer, project, scope);
+    this.hitResult = hitResult;
+    this.destroy$.subscribe(() => {
+      this.group$.pipe(take(1)).subscribe((group) => {
+        group.remove();
+        group.removeOnMove();
+      });
+    });
+    this.registerSubs([this.label$.subscribe((label) => {})]);
   }
 
-  subs = [this.scale$.subscribe((scale) => this.onScale(scale))];
-
+  private _hitResult!: paper.HitResult;
   public get hitResult(): paper.HitResult {
     return this._hitResult;
   }
   public set hitResult(value: paper.HitResult) {
-    this._hitResult = value;
-    this.draw();
-  }
-
-  private lastFrame = Date.now();
-  private _cache?: paper.Group;
-  public get cache(): paper.Group {
-    if (!this._cache) {
-      this._cache = new this.paper.Group();
-      this._cache.data.ignore = true;
+    if (
+      isHitResultEqual(this._hitResult, value) &&
+      this._hitResult.point.equals(value.point)
+    ) {
+      return;
     }
-    return this._cache;
+    this._hitResult = value;
+    this.hitResult$.next(value);
   }
 
-  @UseAspect(
-    Advice.Around,
-    new PaperStateAspect({ autoUpdate: false, insertItems: false })
-  )
-  draw() {
+  onDraw() {
     const indicatorStyle = new this.paper.Style({
       ...PAPER_STYLE_LIB_DEFAULTS,
       strokeColor: new this.paper.Color('white'),
       fillColor: new this.paper.Color(0.7, 0.7, 0.7, 0.8),
       shadowColor: new this.paper.Color(0, 0, 0, 0.25),
       strokeScaling: false,
-      strokeWidth: 0.5,
+      strokeWidth: 1.5,
+      shadowOffset: new this.paper.Point(0, 0).multiply(this.scale),
     } as unknown as Partial<paper.Style>);
-    indicatorStyle.shadowOffset = new this.paper.Point(0, 0).multiply(
-      this.scale
-    );
-    const [dMin, dMax] = [10, 15];
-    let pipDiameter = this.hitResult.item.strokeWidth || 5;
-
-    pipDiameter =
-      pipDiameter < dMin ? dMin : pipDiameter > dMax ? dMax : pipDiameter;
+    let pipDiameter = 5;
     indicatorStyle.shadowBlur = pipDiameter * this.scale;
     this.project.currentStyle = indicatorStyle;
-    this.drawPoint(this.hitResult.point, (pipDiameter * this.scale) / 2);
-  }
 
-  @UseAspect(Advice.Around, new NameCacheAspect('indicator'))
-  drawPoint(
-    center: paper.Point,
-    radius: number = this.project.currentStyle.strokeWidth,
-    style: paper.Style = this.project.currentStyle,
-    circle?: paper.Path.Circle
-  ) {
-    if (circle) {
-      circle.position = center;
-      const radiusPoint = new paper.Point(radius, radius);
-      circle.fitBounds(
-        new paper.Rectangle(
-          center.add(radiusPoint),
-          center.add(radiusPoint.multiply(-1))
-        ),
-        true
-      );
-    }
-    circle = circle || new this.paper.Path.Circle(center, radius);
-    circle.applyMatrix = true;
-    circle.blendMode = EPaperBlendMode.normal;
-    circle.style = style;
-    return circle;
+    const indicator = this.drawPoint(
+      this.hitResult.point,
+      pipDiameter * 0.5 * this.scale,
+      {
+        style: this.project.currentStyle,
+        data: { hitResult: this.hitResult, ignore: true },
+        blendMode: 'difference',
+      }
+    );
+    indicator.onMouseDown = (e: paper.MouseEvent) => {
+      this.mouseDown$.emit(e);
+    };
   }
 
   remove() {
-    this.subs.forEach((s) => s.unsubscribe());
     this.cache.remove();
-    this._cache = undefined;
+    super.onDestroy();
   }
-
-  onScale(scale: number) {
-    this.draw();
-  }
-}
-function applyPaperState(
-  state: IPaperState,
-  project: paper.Project,
-  paper: paper.PaperScope
-) {
-  if (state?.activeLayer) {
-    state.activeLayer.activate();
-  }
-  if (state?.restoreStyle) {
-    state.restoreStyle();
-  }
-  if (state?.autoUpdate !== undefined) {
-    project.view.autoUpdate = state.autoUpdate;
-  }
-  if (state?.insertItems !== undefined) {
-    paper.settings.insertItems = state.insertItems;
-  }
-}
-
-function getPaperState(
-  project: paper.Project,
-  paper: paper.PaperScope
-): IPaperState {
-  return {
-    activeLayer: project.activeLayer,
-    restoreStyle: saveStyle(project),
-    autoUpdate: project.view.autoUpdate,
-    insertItems: paper.settings.insertItems,
-  };
 }

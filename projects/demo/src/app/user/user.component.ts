@@ -8,6 +8,7 @@ import { map } from 'rxjs/operators';
 import { LogService } from 'log';
 import { NgGunService } from 'ng-gun';
 import { ConfirmComponent } from '../components/confirm/confirm.component';
+import { ShortcutInput } from 'ng-keyboard-shortcuts';
 
 @Component({
   selector: 'app-user',

@@ -11,6 +11,7 @@ import { VectorExportDialogComponent } from './components/vector-export-dialog/v
 import { OURONOTE_DEFAULT_TITLE } from '../../constants';
 import { Router } from '@angular/router';
 import { MatSidenavContainer } from '@angular/material/sidenav';
+import { ShortcutInput } from 'ng-keyboard-shortcuts';
 
 export function buildVectorLogger(parent: LogService) {
   return parent.supplemental('name');
@@ -48,6 +49,11 @@ export class VectorsComponent implements OnInit {
     private router: Router,
     private matSidenav: MatSidenavContainer
   ) {}
+
+  shortcuts: ShortcutInput[] = [
+    { key: 'n', label: 'New Vector', command: () => this.create() },
+    { key: 'i', label: 'Import Vector', command: () => this.importVector() },
+  ];
 
   onOpenSidenavClick() {
     this.matSidenav.open();
