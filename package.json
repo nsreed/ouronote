@@ -35,6 +35,7 @@
     "@fortawesome/fontawesome-svg-core": "6.1.1",
     "@fortawesome/free-solid-svg-icons": "6.1.1",
     "@jsdevtools/host-environment": "^2.1.2",
+    "@ngrx/store": "^15.4.0",
     "aspect-ts": "^1.0.6",
     "esbuild": "^0.14.49",
     "express": "^4.17.1",
@@ -49,7 +50,9 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "7.5.6",
     "safe-stable-stringify": "^2.3.1",
+    "ts-aspect": "^3.0.4",
     "tslib": "^2.3.1",
+    "util": "^0.12.5",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {

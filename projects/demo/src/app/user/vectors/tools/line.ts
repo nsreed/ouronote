@@ -4,6 +4,7 @@ import { Property } from '../functions/decorators';
 import { DrawTool } from './draw-tool';
 export class LineTool extends DrawTool {
   path!: paper.Path;
+  pathNew!: paper.Path;
 
   icon = 'bezier-curve';
   name = 'line';
@@ -21,9 +22,12 @@ export class LineTool extends DrawTool {
   scale = false;
 
   propertyNames = ['style', 'scale'];
-  downSub = this.down.subscribe();
-
-  dragSub = this.drag.subscribe((e: paper.ToolEvent) => {
+  downSub = this.down.subscribe((e: paper.ToolEvent) => {
+    // paper.Key.modifiers.control;
+    if (!e.modifiers.shift) {
+      this.path = null as any;
+      this.pathNew = null as any;
+    }
     if (!this.path) {
       this.path = new paper.Path(e.point) as any;
 
@@ -37,18 +41,28 @@ export class LineTool extends DrawTool {
       this.path.strokeColor = this.project.currentStyle.strokeColor;
       this.path.fillColor = this.project.currentStyle.fillColor;
     }
-    this.path.removeSegments();
-    this.path.add(e.downPoint);
-    this.path.add(e.point);
   });
 
+  moveSub = this.move.subscribe((e: paper.ToolEvent) => {
+    if (e.modifiers.shift) {
+      this.pathNew = this.path.clone();
+      this.pathNew.removeOnMove();
+
+      // this.path.removeSegments();
+      // this.path.add();
+      this.pathNew.add(e.point);
+    }
+  });
+  dragSub = this.drag.subscribe((e: paper.ToolEvent) => {});
+
   upSub = this.up.subscribe((e: any) => {
-    if (this.path) {
-      if (this.path.length === 0) {
-        this.path.remove();
+    if (this.pathNew) {
+      if (this.pathNew.length === 0) {
+        this.pathNew.remove();
         return;
       } else {
         const p = this.path;
+        p.copyContent(this.pathNew);
         this.scope.actions = this.scope.actions || [];
         this.scope.actions.push({
           undoFn: () => {
@@ -61,7 +75,7 @@ export class LineTool extends DrawTool {
       (this.path as any).pair.doSave();
       (this.path as any).pair.editing = false;
       // TODO add this path to the undo stack
-      this.path = null as any;
+      // this.path = null as any;
     }
   });
 

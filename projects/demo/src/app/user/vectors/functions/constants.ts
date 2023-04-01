@@ -40,6 +40,10 @@ export const PAPER_STYLE_EMPTY = {
   justification: null,
   miterLimit: null,
 };
+export const PAPER_STYLE_LIB_DEFAULTS = {
+  ...PAPER_STYLE_EMPTY,
+  strokeWidth: 0,
+};
 export const PAPER_STYLE_DEFAULTS: {
   [key: string]: any;
 } = {
@@ -50,6 +54,29 @@ export const PAPER_STYLE_DEFAULTS: {
     justification: 'left',
   },
 };
+export enum EPaperBlendMode {
+  normal = 'normal',
+  multiply = 'multiply',
+  screen = 'screen',
+  overlay = 'overlay',
+  'soft-light' = 'soft-light',
+  'hard-light' = 'hard-light',
+  'color-dodge' = 'color-dodge',
+  'color-burn' = 'color-burn',
+  darken = 'darken',
+  lighten = 'lighten',
+  difference = 'difference',
+  exclusion = 'exclusion',
+  hue = 'hue',
+  saturation = 'saturation',
+  luminosity = 'luminosity',
+  color = 'color',
+  add = 'add',
+  subtract = 'subtract',
+  average = 'average',
+  negation = 'negation',
+}
+
 export const EXPECT_PRIMITIVE_ARRAY = [
   'matrix',
   'size',

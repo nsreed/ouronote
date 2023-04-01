@@ -1,11 +1,12 @@
 import { Directive, Input, OnInit, EventEmitter } from '@angular/core';
 import { getNodeMeta } from '../common/metadata';
+import { ReplaySubject } from 'rxjs';
 
 @Directive({
   selector: '[appObject]',
 })
 export class ObjectDirective implements OnInit {
-  object$ = new EventEmitter();
+  object$ = new ReplaySubject();
   private _object: any;
   public get object(): any {
     return this._object;
@@ -13,7 +14,7 @@ export class ObjectDirective implements OnInit {
   @Input('appObject')
   public set object(value: any) {
     this._object = value;
-    this.object$.emit(value);
+    this.object$.next(value);
   }
   constructor() {}
 

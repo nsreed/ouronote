@@ -5,7 +5,10 @@ import {
 } from './constants';
 import stringify from 'safe-stable-stringify';
 import * as paper from 'paper';
-export const isIgnored = (item: paper.Item) => !item.data?.ignore;
+import { PAPER_STYLE_EMPTY } from './constants';
+const p2 = paper;
+export const isIgnored = (item: paper.Item) =>
+  item ? item.data?.ignore || item.layer?.data.ignore : true;
 export const hasSoul = (item: paper.Item) =>
   item.data.soul !== null && item.data.soul !== undefined;
 export const copyNulls = (source: any, dest: any) => {
@@ -20,16 +23,36 @@ export const copyNulls = (source: any, dest: any) => {
 };
 export const copyStyleToItem = (
   style: paper.Style | any,
-  item: paper.Item | any,
+  item: paper.Item | paper.Style | any,
   overwrite = false
 ) => {
+  // console.log(`copying style to Item`);
   PAPER_STYLE_PROPS.forEach((p) => {
-    if (overwrite) {
-      item[p] = style[p];
-    } else {
-      item[p] = item[p] || style[p];
+    let value = overwrite ? style[p] : item[p] || style[p];
+    if (Array.isArray(value)) {
+      if (value.length >= 4 && value[0] === 'Color') {
+        const [red, green, blue, alpha] = value.slice(1);
+        const color = new paper.Color({ red, green, blue, alpha });
+        value = overwrite ? color : item[p] || color;
+      }
     }
+    Object.assign(item, { [p]: value });
   });
+};
+
+export const saveStyle = (
+  project: paper.Project,
+  paper: paper.PaperScope = p2
+) => {
+  const value = JSON.stringify({ ...(project.currentStyle as any)._values });
+  return () => {
+    const saved = JSON.parse(value);
+    const style = new paper.Style(PAPER_STYLE_EMPTY);
+    // console.log(style.strokeColor);
+    copyStyleToItem(saved, style, true);
+    // console.log(`restoring ${JSON.stringify(style, null, 2)}`);
+    project.currentStyle = style;
+  };
 };
 
 export const defaultsFor = (item: paper.Item, json: any) => {

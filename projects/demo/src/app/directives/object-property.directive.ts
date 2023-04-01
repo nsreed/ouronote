@@ -1,6 +1,7 @@
 import { Directive, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { getNodeMeta, getNodeProps } from '../common/metadata';
 import { ObjectDirective } from './object.directive';
+import { ReplaySubject } from 'rxjs';
 
 @Directive({
   selector: '[appObjectProperty]',
@@ -23,7 +24,7 @@ export class ObjectPropertyDirective implements OnInit {
   }
 
   @Output()
-  propertyValueChange = new EventEmitter();
+  propertyValueChange = new ReplaySubject();
 
   get meta() {
     const props = getNodeProps(this.object.schematic);
@@ -42,12 +43,14 @@ export class ObjectPropertyDirective implements OnInit {
 
   ngOnInit(): void {}
 
+  object$ = this.objectDirective.object$;
+
   get value() {
     return this.objectDirective.object[this.propertyName];
   }
 
   set value(value: any) {
     this.objectDirective.object[this.propertyName] = value;
-    this.propertyValueChange.emit(value);
+    this.propertyValueChange.next(value);
   }
 }

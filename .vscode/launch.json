@@ -12,7 +12,12 @@
       "url": "http://localhost:4200",
       "webRoot": "${workspaceFolder}",
       "timeout": 15000,
-      "userDataDir": "${workspaceFolder}/.chrome-data"
+      "userDataDir": "${workspaceFolder}/.chrome-data",
+      "pathMapping": {
+        "webpack:///projects": "${workspaceFolder}/projects"
+      },
+      "pauseForSourceMap": true,
+      "sourceMaps": true
     },
     {
       "type": "chrome",

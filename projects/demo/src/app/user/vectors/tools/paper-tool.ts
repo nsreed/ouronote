@@ -54,6 +54,10 @@ export class VectorTool extends paper.Tool {
     return this.scope?.project as paper.Project;
   }
 
+  get scaling() {
+    return 1 / this.scope?.project.view.zoom;
+  }
+
   get effectiveStyle(): paper.Style {
     return {
       ...((this.project?.currentStyle as any)._values || {}),

@@ -56,6 +56,7 @@ export class PaperMirrorDirective extends PaperBase {
   }
 
   updateCursor() {
+    this.cursor.remove();
     if (this.cursor) {
       if (CAPABILITIES.POINTER || CAPABILITIES.TOUCH) {
         this.cursor.remove();
