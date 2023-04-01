@@ -1,7 +1,7 @@
 import * as paper from 'paper';
 import {
   PAPER_STYLE_LIB_DEFAULTS,
-  EPaperBlendMode,
+  BlendMode,
 } from '../../user/vectors/functions/constants';
 import {
   PaperHaverCtx,
@@ -151,7 +151,7 @@ export class HitResultWidget
           data: { ignore: true },
         });
         group.addChild(label);
-        label.blendMode = EPaperBlendMode.normal;
+        label.blendMode = BlendMode.normal;
         return label;
       }) as paper.PointText;
     }),

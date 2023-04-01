@@ -17,6 +17,7 @@ import { GunAuthChain } from 'ng-gun';
 })
 export class VectorService {
   vectors = this.userService.user.get('vectors');
+  vectorRefs = this.userService.user.get('vectorRefs');
 
   constructor(
     private userService: UserService,
@@ -27,7 +28,30 @@ export class VectorService {
     private sea: NgSeaService,
     private logger: LogService,
     private router: Router
-  ) {}
+  ) {
+    // this.vectorRefs.once().subscribe((r) => console.log(r));
+    // this.vectors.once({ includeKeys: true }).subscribe((vectors: any) => {
+    //   console.log(Object.entries(vectors));
+    // });
+    this.vectors.gun.map().on((...args: any[]) => {
+      if (!args) {
+        return;
+      }
+      const [data, key, at, ev] = args;
+      const vrefForKey = this.vectorRefs.gun.get(key);
+      vrefForKey.load!((data) => {
+        console.log('found one!', data);
+      });
+      vrefForKey.not!((...args: any[]) => {
+        const [notKey, notFn] = args;
+        console.log('not', key, at);
+        this.vectorRefs.gun
+          .get(key)
+          .get('reference' as never)
+          .put(at as never);
+      });
+    });
+  }
 
   async certify(
     certificant: any,

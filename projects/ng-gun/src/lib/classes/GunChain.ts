@@ -73,6 +73,36 @@ export interface GunChainMeta {
   } & any;
 }
 
+const applyCallbackOptions =
+  <D, K extends keyof D>(
+    target: GunChain<D>,
+    handler: any,
+    signal: any,
+    options?: GunChainCallbackOptions
+  ) =>
+  (data: D, key: K, at?: any, ev?: any) => {
+    options = {
+      ...({
+        clean: false,
+        includeKeys: false,
+        includeNulls: true,
+      } as GunChainCallbackOptions),
+      ...(options || {}),
+    };
+    if (options?.ignoreLocal && target.pendingMutationCount > 0) {
+      target.logger.verbose(
+        `ignoring ${target.pendingMutationCount} more puts`
+      );
+      return;
+    }
+    if (ev && signal.stopped) {
+      return ev.off();
+    }
+    target.ngZone.run(() => {
+      handler(data);
+    });
+  };
+
 @Injectable()
 export class GunChain<
   DataType = Record<string, any>,
@@ -255,7 +285,7 @@ export class GunChain<
   }
 
   constructor(
-    protected ngZone: NgZone,
+    public readonly ngZone: NgZone,
     @Optional()
     @Inject(GUN_NODE)
     gun: IGunChainReference<DataType, ReferenceKey, IsTop> &
@@ -566,6 +596,7 @@ export class GunChain<
     return fromEventPattern(
       (handler: any) => {
         const signal = { stopped: false };
+        const optionize = applyCallbackOptions(this, signal, options);
         this.gun.on(
           (
             data: AlwaysDisallowedType<ArrayAsRecord<DataType>>,
@@ -609,37 +640,37 @@ export class GunChain<
     );
   }
 
-  once() {
-    return fromEventPattern(
+  once<DT = Record<string, DataType>>(
+    options?: GunChainCallbackOptions
+  ): Observable<DT> {
+    return fromEventPattern<DT>(
       (handler: any) => {
         const signal = { stopped: false };
-        this.gun.once(
-          (
-            data:
-              | AlwaysDisallowedType<ArrayAsRecord<DataType>>
-              | DisallowPrimitives<
-                  IsTop,
-                  AlwaysDisallowedType<ArrayAsRecord<DataType>>
-                >
-              | undefined,
-            key,
-            at?: any,
-            ev?: any
-          ) => {
-            if (ev && signal.stopped) {
-              return ev.off();
-            }
-            this.ngZone.run(() => {
-              handler(data);
-            });
-          }
-        );
+        const optionize = applyCallbackOptions(this, handler, signal, options);
+        type ADT = AlwaysDisallowedType<ArrayAsRecord<DataType>>;
+        type DP = DisallowPrimitives<
+          IsTop,
+          AlwaysDisallowedType<ArrayAsRecord<DataType>>
+        >;
+        const cb = (
+          data: ADT | DP | undefined,
+          key: any,
+          at?: any,
+          ev?: any
+        ) => {
+          optionize(data as any, key, at, ev);
+        };
+        this.gun.once(cb);
         return signal;
       },
       (handler: any, signal: { stopped: boolean }) => {
         signal.stopped = true;
       }
-    ).pipe(take(1));
+    )
+      .pipe
+      // map((d) => d as ArrayAsRecord<DataType>),
+      // take(1)
+      ();
   }
 
   auth(recall = true) {

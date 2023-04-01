@@ -54,7 +54,7 @@ export const PAPER_STYLE_DEFAULTS: {
     justification: 'left',
   },
 };
-export enum EPaperBlendMode {
+export enum BlendMode {
   normal = 'normal',
   multiply = 'multiply',
   screen = 'screen',

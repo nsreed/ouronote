@@ -2,7 +2,7 @@ import { PaperWidget } from './paper-widget';
 import { ReplaySubject } from 'rxjs';
 import * as paper from 'paper';
 import { UseAspect, Advice } from 'ts-aspect';
-import { EPaperBlendMode } from '../../user/vectors/functions/constants';
+import { BlendMode } from '../../user/vectors/functions/constants';
 import { NameCacheAspect, CachedName } from '../aspects/name-cache-aspect';
 
 function pathCircleFactory(
