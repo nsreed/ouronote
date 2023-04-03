@@ -17,6 +17,7 @@ import {
 } from 'rxjs';
 import Gun from 'gun';
 import { GunChain } from 'ng-gun';
+import stringify from 'safe-stable-stringify';
 
 interface LogSchema {
   [name: string]: LogMessage[];
@@ -41,17 +42,7 @@ export class OuronoteLogService extends LogService {
   logSettingsNode = this.settingsService.gun.get('log');
   persist$ = this.logSettingsNode.get('persist').on().pipe(shareReplay(1));
   toPersist$ = this.persist$.pipe(
-    switchMap((persist) =>
-      persist
-        ? LogService.root.out$
-        : of({
-            name: 'log-viewer.service',
-            message: 'no persisting',
-            args: [],
-            level: LogLevel.INFO,
-            timestamp: Date.now(),
-          } as LogMessage)
-    )
+    switchMap((persist) => (persist ? LogService.root.out$ : of()))
   );
 
   logs$ = this.logsNode.reduce({ includeKeys: true }).pipe(
@@ -74,13 +65,14 @@ export class OuronoteLogService extends LogService {
       console.log({ persist });
     });
     this.toPersist$.subscribe((toPersist) => {
-      const { name, level, timestamp, message, args } = toPersist;
+      const { name, level, timestamp, message } = toPersist;
+      // TODO include args if they are safe to stringify
       this.logsNode.get(toPersist.name).set({
         name,
         level,
         timestamp,
         message,
-        args,
+        args: stringify(toPersist.args),
       } as never);
     });
     this.logs$.subscribe((messages) => {

@@ -6,9 +6,10 @@ import {
 } from '@angular-material-components/color-picker';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { HttpClientModule } from '@angular/common/http';
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
 import {
   BREAKPOINTS,
+  CoreModule,
   DEFAULT_BREAKPOINTS,
   FlexLayoutModule,
   ORIENTATION_BREAKPOINTS,
@@ -69,6 +70,8 @@ import { SessionInfoComponent } from './session-info/session-info.component';
 import { SettingsService } from './settings.service';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { KeyboardShortcutsModule } from 'ng-keyboard-shortcuts';
+import { SharedModule } from './shared/shared.module';
+import { GlobalErrorHandler } from './core/global-error-handler';
 
 const RADISK_LOCAL = localStorage.getItem('RADISK_ENABLE');
 const RADISK_ENABLE = RADISK_LOCAL === null ? true : !!JSON.parse(RADISK_LOCAL);
@@ -143,6 +146,8 @@ function appLoadFactory(gunFactory: GunFactoryService) {
     OnlineStatusModule,
     ReactiveFormsModule,
     ScrollingModule,
+    SharedModule,
+    CoreModule,
     // ServiceWorkerModule.register('ngsw-worker.js', {
     //   enabled: environment.production,
     //   // Register the ServiceWorker as soon as the app is stable
@@ -155,6 +160,10 @@ function appLoadFactory(gunFactory: GunFactoryService) {
     //   provide: SharedWorker,
     //   useValue: worker,
     // },
+    {
+      provide: ErrorHandler,
+      useClass: GlobalErrorHandler,
+    },
     {
       provide: BREAKPOINTS,
       useValue: [...DEFAULT_BREAKPOINTS, ...ORIENTATION_BREAKPOINTS],

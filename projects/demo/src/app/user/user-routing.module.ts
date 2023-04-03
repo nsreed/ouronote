@@ -20,6 +20,7 @@ const routes: Routes = [
       },
       {
         path: 'vectors',
+        title: 'Browse Vectors',
         loadChildren: () =>
           import('./vectors/vectors.module').then((m) => m.VectorsModule),
       },

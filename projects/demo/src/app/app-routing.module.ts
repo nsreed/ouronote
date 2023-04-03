@@ -7,7 +7,7 @@ import { SystemSettingsComponent } from './components/system-settings/system-set
 import { LogViewerComponent } from './components/log-viewer/log-viewer.component';
 
 const routes: Routes = [
-  { path: 'log-viewer', component: LogViewerComponent },
+  { path: 'log-viewer', title: 'Log Viewer', component: LogViewerComponent },
   {
     path: 'posts',
     loadChildren: () =>

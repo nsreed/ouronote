@@ -10,12 +10,16 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatIconRegistry } from '@angular/material/icon';
 import { MatSidenav } from '@angular/material/sidenav';
 import { DomSanitizer } from '@angular/platform-browser';
-import { ActivatedRoute, Router, RouterEvent } from '@angular/router';
+import {
+  ActivatedRoute,
+  NavigationEnd,
+  NavigationError,
+  Router,
+} from '@angular/router';
 import { LogMessage, LogService } from 'log';
 import { NgGunService } from 'ng-gun';
 import { ShortcutInput } from 'ng-keyboard-shortcuts';
 import { ClipboardService } from 'ngx-clipboard';
-import { Observable, from } from 'rxjs';
 import { filter, map, shareReplay, switchMap } from 'rxjs/operators';
 import { AboutComponent } from './components/about/about.component';
 import { GunPeersComponent } from './components/gun-peers/gun-peers.component';
@@ -41,6 +45,14 @@ export class AppComponent implements OnInit, AfterViewInit {
     map((changes) => changes.map((change) => change.mqAlias)),
     shareReplay(1)
   );
+
+  navigationEnd$ = this.router.events.pipe(
+    filter((e) => e instanceof NavigationEnd)
+  );
+  navigationError$ = this.router.events.pipe(
+    filter((e) => e instanceof NavigationError)
+  );
+
   constructor(
     public ngGun: NgGunService<User>,
     public router: Router,
@@ -91,14 +103,10 @@ export class AppComponent implements OnInit, AfterViewInit {
       .on();
 
     const routerEvent$ = debugEnabled$.pipe(
-      switchMap((e) =>
-        e
-          ? router.events.pipe(map((e) => e as RouterEvent))
-          : (from([]) as Observable<RouterEvent>)
-      )
+      switchMap(() => this.router.events)
     );
 
-    routerEvent$.subscribe((e) => logger.log(`router event ${e.id} ${e.url}`));
+    router.events.subscribe((e) => console.log(`router event`, e));
   }
 
   @ViewChild('nav')
@@ -135,6 +143,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     (window as any).loader?.hideOverlay();
+    // throw new Error('anything'); // TODO using this we know there's no error being thrown on mobile
   }
 
   shortcuts: ShortcutInput[] = [

@@ -60,7 +60,7 @@ export class VectorsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    document.title = OURONOTE_DEFAULT_TITLE;
+    // document.title = OURONOTE_DEFAULT_TITLE;
   }
 
   async create() {

@@ -2,7 +2,15 @@ import { Inject, Injectable, NgZone, Optional } from '@angular/core';
 import * as Gun from 'gun';
 import { GunChain } from 'ng-gun';
 import { firstValueFrom, from } from 'rxjs';
-import { filter, map, mergeMap, mergeWith, take } from 'rxjs/operators';
+import {
+  filter,
+  map,
+  mergeAll,
+  mergeMap,
+  mergeWith,
+  switchMap,
+  take,
+} from 'rxjs/operators';
 import { PropertyOptions, ValidationTuple } from './common/metadata';
 import {
   Bool,
@@ -220,6 +228,10 @@ export class SettingsService {
   );
 
   gun = this._gun.get('current');
+  current$ = from([this.gun.not(), this.gun.once()]).pipe(
+    switchMap((v) => from(firstValueFrom(v)))
+  );
+
   schema = OuronoteSettingsSchematic;
   input = {
     touchToDraw: true,
@@ -236,8 +248,24 @@ export class SettingsService {
     private ngZone: NgZone
   ) {
     console.log('settings service started');
+    this.current$.subscribe((v) => console.log('current settings value: ', v));
+    this.gun.not().subscribe(() => {
+      console.log('settings DB not initialized');
+      this.gun.put({
+        gun: {
+          file: 'ouronote',
+          localStorage: false,
+          enableRadisk: true,
+          enableWebRTC: false,
+          storage: GunStoreEnum.RADISK,
+        },
+      } as any);
+    });
 
     let n = this.gun;
+  }
+
+  tryAutoInit() {
     const propertiesToArray = (props: Record<string, PropMetadata>) =>
       Object.entries(props).map((k) => ({ name: k[0], ...k[1] }));
 
@@ -275,19 +303,6 @@ export class SettingsService {
     update(this.gun.get('log'), LogSettingsSchematic);
 
     // FIXME add a way to clear these
-    this.gun.not().subscribe(() => {
-      console.log('settings DB not initialized');
-      this.gun.put({
-        gun: {
-          file: 'ouronote',
-          localStorage: false,
-          enableRadisk: true,
-          enableWebRTC: false,
-          peers: [],
-          storage: GunStoreEnum.RADISK,
-        },
-      });
-    });
   }
 
   save() {

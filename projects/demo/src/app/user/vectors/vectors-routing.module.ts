@@ -17,6 +17,7 @@ const routes: Routes = [
   },
   {
     path: ':soul/edit',
+    title: 'Edit Vector',
     component: EditVectorComponent,
     resolve: {
       soul: VectorResolver,
