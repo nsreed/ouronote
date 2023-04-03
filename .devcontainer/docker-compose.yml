@@ -8,6 +8,13 @@ services:
     # volumes:
     #   - ouronote-cached:/cached
     command: sleep infinity
+    ports:
+      - 4200:4200
+      - 4321:4321
+      - 8765:8765
+    # expose:
+    #   - 4321
+    #   - 8765
 #  gunrelay:
  #   build:
   #    context: ..

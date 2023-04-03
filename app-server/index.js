@@ -80,8 +80,8 @@ const httpsParser = new ArgumentParser({ add_help: false });
 const httpsGroup = httpsParser.add_argument_group({ title: 'HTTPS Options' });
 httpsGroup.add_argument('--https', { action: 'store_true', help: 'Enable HTTPS Server', default: false });
 httpsGroup.add_argument('--https-port', { type: Number, default: 443, help: 'HTTPS Port' });
-httpsGroup.add_argument('--https-crt', { type: ExistingFileType('r'), default: 'ouronote-dev.crt' });
-httpsGroup.add_argument('--https-key', { type: ExistingFileType('r'), default: 'ouronote-dev.key' });
+httpsGroup.add_argument('--https-crt', { type: ExistingFileType('r'), default: './ouronote-dev.crt' });
+httpsGroup.add_argument('--https-key', { type: ExistingFileType('r'), default: './ouronote-dev.key' });
 
 const logParser = new ArgumentParser({ add_help: false });
 const logGroup = logParser.add_argument_group({ title: 'Logging Options' });
@@ -188,7 +188,6 @@ function getHttp(app, args) {
 function getExpress(args) {
   const Gun = importGun();
   const app = express();
-  app.use(Gun.serve);
   app.use(express.static(args.web_root));
   app.get("/*", function (req, res) {
     res.sendFile(path.resolve(args.web_root, "index.html"));
@@ -209,12 +208,13 @@ function startLocalServer(args) {
     console.error('https not started!');
   }
   const gun = new Gun({
-    web: httpServer,
+    web: httpsServer,
     file: args.data_dir,
     axe: false,
     port: args.http_port,
     multicast: false
   });
+  app.use(Gun.serve);
   return gun;
 }
 

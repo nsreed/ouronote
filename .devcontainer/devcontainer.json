@@ -8,35 +8,61 @@
   "features": {
     "ghcr.io/devcontainers/features/git:1": {}
   },
-"workspaceFolder": "/workspaces/ouronote",
+
+  "workspaceFolder": "/workspaces/ouronote",
   // Features to add to the dev container. More info: https://containers.dev/features.
   // "features": {},
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  "forwardPorts": [8765, 4321, 4200],
+  "forwardPorts": [4200, 4321, 8765],
+  "portsAttributes": {
+    "4200": {
+      "label": "Application",
+      "onAutoForward": "silent",
+      "requireLocalPort": true
+      // "protocol": "http"
+    },
+    "4321": {
+      "label": "Application SSL",
+      "onAutoForward": "silent",
+      "requireLocalPort": true
+      // "protocol": "https"
+    },
+    "8765": {
+      "label": "GUN",
+      "onAutoForward": "silent",
+      "requireLocalPort": true
+      // "protocol": "http"
+    }
+  },
   "customizations": {
     "vscode": {
       "extensions": [
-		"loiane.angular-extension-pack",
-		"esbenp.prettier-vscode",
-		"pmneo.tsimporter",
-		"formulahendry.auto-close-tag",
-		"formulahendry.auto-rename-tag",
-		"aaron-bond.better-comments",
-		"wayou.vscode-todo-highlight",
-		"ms-azuretools.vscode-docker",
-		"steoates.autoimport",
-		"NuclleaR.vscode-extension-auto-import"
-	]
+        "loiane.angular-extension-pack",
+        "esbenp.prettier-vscode",
+        "pmneo.tsimporter",
+        "formulahendry.auto-close-tag",
+        "formulahendry.auto-rename-tag",
+        "aaron-bond.better-comments",
+        "wayou.vscode-todo-highlight",
+        "ms-azuretools.vscode-docker"
+        // "steoates.autoimport",
+        // "NuclleaR.vscode-extension-auto-import"
+      ]
     }
-  }
-
+  },
+  "postAttachCommand": {
+    "aliasNg": "alias ng='yarn exec ng'"
+  },
+  "postCreateCommand": "yarn config set --home enableTelemetry 0 && yarn install && echo \"alias ng='yarn exec ng'\" >> /home/node/.bash_aliases && openssl req -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out /workspaces/ouronote/ouronote-dev.crt -keyout /workspaces/ouronote/ouronote-dev.key -subj \"/C=UN/ST=Space/L=Graph/O=IT/CN=www.www\""
+  // "postCreateCommand": {
+  //   "yarn": "yarn config set --home enableTelemetry 0 && yarn install && ng completion && source <(yarn exec ng completion script) && echo 'source <(yarn exec ng completion script)' >> /home/node/.bashrc",
+  //   "openssl": "openssl req -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out /workspaces/ouronote/ouronote-dev.crt -keyout /workspaces/ouronote/ouronote-dev.key -subj \"/C=UN/ST=Space/L=Graph/O=IT/CN=www.www\""
+  // }
+  //echo 'source <(yarn exec ng completion script)' >> /home/node/.bashrc"
+  //echo \"alias ng='yarn exec ng'\" >> /home/node/.bashrc
   // Use 'postCreateCommand' to run commands after the container is created.
   // "postCreateCommand": "yarn install"
-
-  // Configure tool-specific properties.
-  // "customizations": {},
-
   // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
   // "remoteUser": "root"
 }

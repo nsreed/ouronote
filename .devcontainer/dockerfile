@@ -2,3 +2,4 @@ FROM mcr.microsoft.com/devcontainers/typescript-node:0-18
 # RUN sudo apt-get update && apt-get #
 # TODO generate self-signed certs
 # TODO heck, even make an initial build hash
+#   - ng completion
