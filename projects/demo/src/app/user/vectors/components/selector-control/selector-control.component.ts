@@ -46,7 +46,7 @@ export class SelectorControlComponent implements OnInit {
     // Technically we shouldn't even know what this property is, so we're kind of cheating relying on the UI.
     this.control = cfp as FormControl;
     this.control.valueChanges.subscribe((v) => {
-      console.log(`new value for ${this.propertyDirective.label}: ${v}`);
+      // console.log(`new value for ${this.propertyDirective.label}: ${v}`);
       this.propertyDirective.value = v;
     });
     this.control.setValue(this.propertyDirective.value, {
@@ -54,7 +54,7 @@ export class SelectorControlComponent implements OnInit {
       emitEvent: false,
     });
     this.propertyDirective.propertyValueChange.subscribe((vc) => {
-      console.log('vc', vc);
+      // console.log('vc', vc);
       this.control.setValue(this.propertyDirective.value, {
         onlySelf: true,
         emitEvent: false,

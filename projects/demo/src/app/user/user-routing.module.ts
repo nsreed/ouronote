@@ -29,8 +29,13 @@ const routes: Routes = [
           import('./settings/settings.module').then((m) => m.SettingsModule),
       },
       {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: '/user/vectors',
+      },
+      {
         path: '**',
-        redirectTo: 'vectors',
+        component: DashboardComponent,
       },
     ],
   },

@@ -74,7 +74,7 @@ export class VectorsComponent implements OnInit {
       return;
     }
     this.logger.log('Created vector %s', vector);
-    this.router.navigate(['/home/vectors', `~${vector}`, 'edit']);
+    this.router.navigate(['/user/vectors', `~${vector}`, 'edit']);
   }
 
   importVector() {

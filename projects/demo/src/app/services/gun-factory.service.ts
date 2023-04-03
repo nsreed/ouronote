@@ -44,7 +44,7 @@ function gunOptionsFromSettings(gunSettings: {
 }) {
   return JSON.parse(
     JSON.stringify({
-      peers: ['http://localhost:8765/gun'],
+      peers: [],
       file: gunSettings.file,
       localStorage: !gunSettings.enableRadisk,
     })

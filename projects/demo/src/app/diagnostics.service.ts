@@ -12,13 +12,14 @@ import {
   timeout,
 } from 'rxjs/operators';
 import { BugReportComponent } from './components/bug-report/bug-report.component';
-import { LogMessage, LogService } from 'log';
+import { LogLevel, LogMessage, LogService } from 'log';
 import { timer, Observable, of } from 'rxjs';
 import { CAPABILITIES } from './system.service';
 import { DamService } from 'ng-gun';
 import { HttpClient } from '@angular/common/http';
 import { distinct, bufferTime } from 'rxjs/operators';
 import { SettingsService } from './settings.service';
+import { Router } from '@angular/router';
 
 const TIMEOUT = 60 * 1000;
 const POLL = 10 * 1000;
@@ -39,13 +40,23 @@ export class DiagnosticsService {
     private logger: LogService,
     private dam: DamService,
     private http: HttpClient,
-    private settings: SettingsService
+    private settings: SettingsService,
+    private router: Router
   ) {
+    logger.name = 'diagnostics.service';
+    logger.outLevel = LogLevel.INFO;
+    logger.level = LogLevel.INFO;
     settings.gun.get('diagnostics');
+
     LogService.buffer$.subscribe((buff: LogMessage[]) => {
       // console.log('got message', buff);
       this.messages = buff;
     });
+
+    router.events.subscribe((event) =>
+      this.logger.log(`navigation event ${event.toString()}`)
+    );
+
     this.later$.pipe(bufferTime(1000)).subscribe((peers) => {
       peers.forEach((peer) => {
         if (peer.wire?.readyState) {

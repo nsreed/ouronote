@@ -15,7 +15,7 @@ import { NodeMetadata, PropMetadata, RefMetadata } from '../common/metadata';
 export class MetaFormBuilder extends FormBuilder {
   constructor(
     @Optional()
-    private logger: LogService = new LogService('selector-control.component')
+    private logger: LogService = new LogService('meta-form-builder.service')
   ) {
     super();
   }
@@ -47,18 +47,18 @@ export class MetaFormBuilder extends FormBuilder {
     ...args: any[]
   ): FormControl | FormGroup {
     if (!propertyMeta) {
-      this.logger.warn('no property descriptor found for', propertyMeta);
+      this.logger.log('no property descriptor found for', propertyMeta);
       return this.control(null);
     }
     switch (propertyMeta.type) {
       case 'reference':
-        this.logger.log('Creating a ... resolving control?');
+        this.logger.verbose('Creating a ... resolving control?');
         return this.fromNodeMeta(
           (propertyMeta as RefMetadata).resolvesTo,
           ...args
         );
       default:
-        this.logger.log('Defaulting to control');
+        this.logger.verbose('Defaulting to control');
         const ctrl = this.control(propertyMeta.defaultValue, propertyMeta);
 
         return ctrl;

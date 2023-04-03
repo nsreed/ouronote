@@ -29,9 +29,9 @@ export class DamService {
   ) {
     this.gunPeers = this.gunPeers || [];
     logger.name = 'dam.service';
-    this.logger.log(
-      `DAM service started with peers: ${JSON.stringify(gunPeers)}`
-    );
+    // this.logger.log(
+    //   `DAM service started with peers: ${JSON.stringify(gunPeers)}`
+    // );
     // this.connectAll();
     timer(1000, 20000).subscribe(() => {
       this.connectAll();
@@ -54,12 +54,12 @@ export class DamService {
         })
       );
       const all = allResults.filter((r) => r !== undefined);
-      this.logger.verbose(
-        `connecting all that aren't in ${JSON.stringify(
-          Object.keys(this.peerMap)
-        )}`
-      );
-      this.logger.verbose('results:', all);
+      // this.logger.verbose(
+      //   `connecting all that aren't in ${JSON.stringify(
+      //     Object.keys(this.peerMap)
+      //   )}`
+      // );
+      // this.logger.verbose('results:', all);
       all.forEach((peer) => this.connect(peer));
     }
   }
@@ -103,10 +103,10 @@ export class DamService {
         if (err) {
           this.logger.error('refresh put() err', err);
         } else {
-          this.logger.log('refresh ack ok', ok);
+          this.logger.verbose('refresh ack ok', ok);
         }
       });
-    this.logger.log('peer disconnected.');
+    this.logger.verbose('peer disconnected.');
   }
 
   connect(peer: any) {

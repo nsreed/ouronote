@@ -274,6 +274,7 @@ export class SettingsService {
     update(this.gun, OuronoteSettingsSchematic);
     update(this.gun.get('log'), LogSettingsSchematic);
 
+    // FIXME add a way to clear these
     this.gun.not().subscribe(() => {
       console.log('settings DB not initialized');
       this.gun.put({

@@ -6,7 +6,14 @@ import {
   SkipSelf,
 } from '@angular/core';
 import { Subject } from 'rxjs';
-import { scan, shareReplay, take, filter, bufferTime } from 'rxjs/operators';
+import {
+  scan,
+  shareReplay,
+  take,
+  filter,
+  bufferTime,
+  tap,
+} from 'rxjs/operators';
 import { around } from 'aspect-ts';
 export enum LogLevel {
   VERBOSE,
@@ -134,7 +141,11 @@ export class LogService {
   private _name!: string;
 
   protected _out$ = new EventEmitter<LogMessage>();
-  out$ = this._out$;
+  out$ = this._out$.pipe(
+    tap((message) =>
+      this === LogService.root ? null : LogService.root._out$.next(message)
+    )
+  );
   outSub = this.out$
     .pipe(filter((msg) => msg.level >= this.outLevel))
     .subscribe((m) => {
@@ -187,7 +198,7 @@ export class LogService {
       LogLevel.INFO,
       () => this.level,
       (message: string, ...args: any[]) =>
-        this.out$.emit(buildMessage(this.level, this.name, message, ...args))
+        this._out$.next(buildMessage(this.level, this.name, message, ...args))
     )
   );
 

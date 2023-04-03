@@ -33,6 +33,7 @@ import { QrCodeComponent } from './qr-code/qr-code.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterModule } from '@angular/router';
 import { UnCamelPipe } from './un-camel.pipe';
+import { LogViewerComponent } from './log-viewer/log-viewer.component';
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import { UnCamelPipe } from './un-camel.pipe';
     SessionSelectorComponent,
     QrCodeComponent,
     UnCamelPipe,
+    LogViewerComponent,
   ],
   imports: [
     CommonModule,

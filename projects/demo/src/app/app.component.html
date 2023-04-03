@@ -1,9 +1,18 @@
-<mat-sidenav-container fxFlexFill>
-  <mat-sidenav #nav [mode]="'push'">
+<mat-sidenav-container
+  *ngIf="true"
+  fxFlexFill
+  [hasBackdrop]="
+    ((mediaClasses$ | async) || []).includes('lt-md') ? true : false
+  "
+>
+  <mat-sidenav
+    #nav
+    [mode]="((mediaClasses$ | async) || []).includes('lt-md') ? 'over' : 'side'"
+  >
     <mat-action-list style="padding-top: 0; height: 100%" fxLayout="column">
       <mat-list-item
         routerLinkActive="active"
-        routerLink="/home"
+        routerLink="/user/vectors"
         matTooltip="Vectors"
       >
         <mat-icon class="back">chevron_left</mat-icon>

@@ -4,13 +4,10 @@ import { GunAuthGuard } from 'ng-gun';
 import { LoginComponent } from './login/login.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { SystemSettingsComponent } from './components/system-settings/system-settings.component';
+import { LogViewerComponent } from './components/log-viewer/log-viewer.component';
 
 const routes: Routes = [
-  {
-    path: 'home',
-    loadChildren: () => import('./user/user.module').then((m) => m.UserModule),
-    canActivateChild: [GunAuthGuard],
-  },
+  { path: 'log-viewer', component: LogViewerComponent },
   {
     path: 'posts',
     loadChildren: () =>
@@ -39,13 +36,18 @@ const routes: Routes = [
     pathMatch: 'full',
   },
   {
+    path: 'user',
+    loadChildren: () => import('./user/user.module').then((m) => m.UserModule),
+    canActivateChild: [GunAuthGuard],
+  },
+  {
     path: '',
     pathMatch: 'full',
-    redirectTo: '/home',
+    redirectTo: '/user/vectors',
   },
   {
     path: '**',
-    redirectTo: '/home',
+    component: WelcomeComponent,
   },
 ];
 

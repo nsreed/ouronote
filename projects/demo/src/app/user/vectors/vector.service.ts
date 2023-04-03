@@ -44,11 +44,11 @@ export class VectorService {
       });
       vrefForKey.not!((...args: any[]) => {
         const [notKey, notFn] = args;
-        console.log('not', key, at);
+        console.log('not', key, at.put._['#']);
         this.vectorRefs.gun
           .get(key)
           .get('reference' as never)
-          .put(at as never);
+          .put({ '#': at.put._['#'] } as never);
       });
     });
   }

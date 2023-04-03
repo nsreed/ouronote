@@ -9,21 +9,22 @@
       "request": "launch",
       "name": "ng serve chrome",
       "port": 9222,
-      "url": "http://localhost:4200",
+      "url": "https://localhost:4200",
       "webRoot": "${workspaceFolder}",
       "timeout": 15000,
-      "userDataDir": "${workspaceFolder}/.chrome-data",
       "pathMapping": {
         "webpack:///projects": "${workspaceFolder}/projects"
       },
+      "browserLaunchLocation": "ui",
       "pauseForSourceMap": true,
-      "sourceMaps": true
+      "sourceMaps": true,
+      "runtimeArgs": ["--allow-insecure-localhost", "--disable-web-security"]
     },
     {
       "type": "chrome",
       "request": "launch",
       "name": "app-server chrome",
-      "url": "https://127.0.0.1:4321",
+      "url": "https://localhost:4321",
       "webRoot": "${workspaceFolder}",
       "userDataDir": "${workspaceFolder}/.chrome-data"
     },

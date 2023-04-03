@@ -85,7 +85,7 @@ function Loader() {
   loader.log = (message: any, ...args: any[]) => {
     loader.logOutput.innerHTML = `${
       loader.logOutput.innerHTML
-    }\n[LOG] ${message} ${JSON.stringify(args)}`;
+    }\n[LOG] ${message} ${args.length > 0 ? JSON.stringify(args) : ''}`;
   };
   loader.handleError = (error: Error) => {
     loader.log(`Error: ${error.message}\n${error.stack}`);

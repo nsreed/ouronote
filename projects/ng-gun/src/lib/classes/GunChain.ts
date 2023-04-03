@@ -582,10 +582,8 @@ export class GunChain<
   not() {
     return fromEventPattern((handler: (arg0: ReferenceKey) => void) => {
       const signal = { stopped: false };
-      if (this.gun.not) {
-        this.gun.not((key: ReferenceKey) => {
-          handler(key);
-        });
+      if ('function' === typeof this.gun.not) {
+        this.gun.not((key: ReferenceKey) => handler(key));
       }
     });
   }

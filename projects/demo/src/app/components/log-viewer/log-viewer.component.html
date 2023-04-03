@@ -1,0 +1,7 @@
+<h1>Log Viewer</h1>
+<div *ngFor="let message of messages$ | async">
+  {{ message.timestamp | date : "YYYY.MM.dd HH:mm:ss" }} {{ message.level }}
+  {{ message.name }}:
+  {{ message.message }}
+  {{ message.args | json }}
+</div>

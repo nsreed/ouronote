@@ -1,11 +1,4 @@
 import {
-  filter,
-  takeWhile,
-  takeUntil,
-  take,
-  withLatestFrom,
-} from 'rxjs/operators';
-import {
   AfterViewInit,
   Component,
   OnInit,
@@ -20,17 +13,17 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterEvent } from '@angular/router';
 import { LogMessage, LogService } from 'log';
 import { NgGunService } from 'ng-gun';
+import { ShortcutInput } from 'ng-keyboard-shortcuts';
 import { ClipboardService } from 'ngx-clipboard';
+import { Observable, from } from 'rxjs';
+import { filter, map, shareReplay, switchMap } from 'rxjs/operators';
 import { AboutComponent } from './components/about/about.component';
 import { GunPeersComponent } from './components/gun-peers/gun-peers.component';
 import { DiagnosticsService } from './diagnostics.service';
 import { GunRadImporterService } from './services/gun-rad-importer.service';
 import { GunWebrtcImporterService } from './services/gun-webrtc-importer.service';
-import { User } from './user/model';
 import { SettingsService } from './settings.service';
-import { switchMap } from 'rxjs/operators';
-import { from } from 'rxjs';
-import { ShortcutInput } from 'ng-keyboard-shortcuts';
+import { User } from './user/model';
 declare const APP_HASH: any;
 
 const loader = (window as any)['loader'];
@@ -43,6 +36,11 @@ const loader = (window as any)['loader'];
 export class AppComponent implements OnInit, AfterViewInit {
   user: any;
   messages: LogMessage[] = [];
+  mediaChanges$ = this.media.asObservable();
+  mediaClasses$ = this.mediaChanges$.pipe(
+    map((changes) => changes.map((change) => change.mqAlias)),
+    shareReplay(1)
+  );
   constructor(
     public ngGun: NgGunService<User>,
     public router: Router,
@@ -60,6 +58,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     public media: MediaObserver,
     private settingsService: SettingsService
   ) {
+    media.filterOverlaps = true;
     loader.finishTask('appstart');
     this.matIconRegistry.addSvgIcon(
       'lasso',
@@ -94,12 +93,12 @@ export class AppComponent implements OnInit, AfterViewInit {
     const routerEvent$ = debugEnabled$.pipe(
       switchMap((e) =>
         e
-          ? router.events.pipe(filter((e) => e instanceof RouterEvent))
-          : from([])
+          ? router.events.pipe(map((e) => e as RouterEvent))
+          : (from([]) as Observable<RouterEvent>)
       )
     );
 
-    // routerEvent$.subscribe((e) => console.log(e));
+    routerEvent$.subscribe((e) => logger.log(`router event ${e.id} ${e.url}`));
   }
 
   @ViewChild('nav')
@@ -135,7 +134,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    (window as any).loader.hideOverlay();
+    (window as any).loader?.hideOverlay();
   }
 
   shortcuts: ShortcutInput[] = [
