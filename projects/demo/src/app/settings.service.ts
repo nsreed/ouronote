@@ -41,6 +41,14 @@ export type GunSettingsSchema = {
   file: string;
 };
 
+export type SuppressWarningSchema = {
+  browserIncompatible: boolean;
+};
+
+export type UiSettingsSchema = {
+  suppressWarning: SuppressWarningSchema;
+};
+
 export type DiagnosticsSettingsSchema = {
   timeout: number;
   interval: number;
@@ -63,6 +71,7 @@ export type SettingsSchema = {
   diagnostics: DiagnosticsSettingsSchema;
   debug: DebugSettingsSchema;
   log: LogSettingsSchema;
+  ui: UiSettingsSchema;
 };
 
 @Node()
@@ -193,6 +202,16 @@ export class DiagnosticsSettingsSchematic implements DiagnosticsSettingsSchema {
 }
 
 @Node()
+export class SuppressWarningSchematic implements SuppressWarningSchema {
+  @Bool()
+  browserIncompatible: boolean = false;
+}
+
+export class UiSettingsSchematic implements UiSettingsSchema {
+  suppressWarning!: SuppressWarningSchema;
+}
+
+@Node()
 export class OuronoteSettingsSchematic implements SettingsSchema {
   @Ref({
     resolve: GunSettingsSchematic,
@@ -208,6 +227,7 @@ export class OuronoteSettingsSchematic implements SettingsSchema {
     summary: 'Logging settings',
   })
   log!: LogSettingsSchema;
+  ui!: UiSettingsSchema;
 }
 
 /**

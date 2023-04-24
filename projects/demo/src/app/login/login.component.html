@@ -56,21 +56,6 @@
     >
   </mat-form-field>
 
-  <div
-    fxLayout="row"
-    fxLayoutAlign="center center"
-    fxLayoutGap=".5em"
-    class="mat-error"
-    *ngIf="unsupportedBrowser"
-  >
-    <mat-icon>warning</mat-icon>
-    <div>
-      Caution: This is an unsupported browser.<br />You may be unable to view or
-      edit your 'verses from this device.
-    </div>
-    <!-- <pre>{{ unsupportedBrowser | json }}</pre> -->
-  </div>
-
   <ng-container *ngIf="mode === 'login'; else Create">
     <div fxLayout="row" fxLayoutAlign="center baseline" fxLayoutGap="1em">
       <button

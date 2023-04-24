@@ -27,6 +27,16 @@
     </ng-container>
   </mat-tab> -->
   <ng-container #Settings="gunChain" [gunChain]="settingsGun">
+    <mat-tab>
+      <ng-template matTabLabel>General</ng-template>
+      <button
+        mat-button
+        class="mat-warn"
+        (click)="onResetSuppressedWarningsClick()"
+      >
+        Reset Suppressed Warnings
+      </button>
+    </mat-tab>
     <!-- <mat-tab fxFlexFill *ngFor="let catKV of testFormGroup.controls | keyvalue"> -->
     <mat-tab *ngFor="let catKey of ['gun', 'log', 'diagnostics', 'debug']">
       <ng-template matTabLabel>{{ catKey | uppercase }}</ng-template>
@@ -47,16 +57,23 @@
             <ng-container #SettingGun="gunGet" [gunGet]="settingKV.key">
               <ng-container [ngSwitch]="settingKV.value.meta.type">
                 <div style="min-height: 4em" *ngSwitchCase="'boolean'">
-                  <mat-checkbox [formControlName]="settingKV.key">{{
-                    settingKV.key | unCamel
-                  }}</mat-checkbox>
+                  <mat-checkbox
+                    [matTooltip]="settingKV.value.meta.description"
+                    [formControlName]="settingKV.key"
+                    >{{ settingKV.key | unCamel }}</mat-checkbox
+                  >
                 </div>
+
                 <ng-container *ngSwitchCase="'set'"></ng-container>
+
                 <div *ngSwitchCase="'enum'">
                   <mat-form-field>
                     <mat-label>{{ settingKV.key | unCamel }}</mat-label>
-                    <mat-hint>{{ settingKV.value.meta.defaultValue }}</mat-hint>
-                    <mat-select [formControlName]="settingKV.key">
+                    <!-- <mat-hint>{{ settingKV.value.meta.defaultValue }}</mat-hint> -->
+                    <mat-select
+                      [matTooltip]="settingKV.value.meta.description"
+                      [formControlName]="settingKV.key"
+                    >
                       <mat-option
                         *ngFor="
                           let option of settingKV.value.meta.options | keyvalue
@@ -71,6 +88,7 @@
                     </mat-select>
                   </mat-form-field>
                 </div>
+
                 <div *ngSwitchDefault>
                   <mat-form-field>
                     <mat-label>{{ settingKV.key | unCamel }}</mat-label>

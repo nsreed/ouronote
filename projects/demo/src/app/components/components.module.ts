@@ -34,6 +34,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterModule } from '@angular/router';
 import { UnCamelPipe } from './un-camel.pipe';
 import { LogViewerComponent } from './log-viewer/log-viewer.component';
+import { BrowserWarningComponent } from './browser-warning/browser-warning.component';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { LogViewerComponent } from './log-viewer/log-viewer.component';
     QrCodeComponent,
     UnCamelPipe,
     LogViewerComponent,
+    BrowserWarningComponent,
   ],
   imports: [
     CommonModule,
@@ -87,6 +89,7 @@ import { LogViewerComponent } from './log-viewer/log-viewer.component';
     SessionSelectorComponent,
     QrCodeComponent,
     UnCamelPipe,
+    BrowserWarningComponent,
   ],
 })
 export class ComponentsModule {}

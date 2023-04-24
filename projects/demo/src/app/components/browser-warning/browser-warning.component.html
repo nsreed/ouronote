@@ -1,0 +1,22 @@
+<div
+  fxLayout="row"
+  fxLayoutAlign="center center"
+  fxLayoutGap=".5em"
+  *ngIf="unsupportedBrowser && (force || !(supressWarning$ | async))"
+>
+  <div>
+    <mat-icon class="mat-error">warning</mat-icon>
+  </div>
+  <div class="mat-error">
+    Caution: This is an unsupported browser.
+    <span
+      matTooltip=" You may be unable to view or edit your vectors from this device."
+      >...</span
+    >
+  </div>
+
+  <button mat-icon-button (click)="onDismissClick()">
+    <mat-icon matTooltip="Hide this warning">visibility_off</mat-icon>
+  </button>
+  <!-- <pre>{{ unsupportedBrowser | json }}</pre> -->
+</div>

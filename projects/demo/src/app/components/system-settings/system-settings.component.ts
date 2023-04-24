@@ -3,7 +3,11 @@ import { FormBuilder, UntypedFormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { GunChain } from 'projects/ng-gun/src/lib/classes/GunChain';
 import 'reflect-metadata';
-import { SettingsSchema, SettingsService } from '../../settings.service';
+import {
+  SettingsSchema,
+  SettingsService,
+  SuppressWarningSchema,
+} from '../../settings.service';
 import { AbstractGunControl } from './../../forms-ui/abstract-gun-control';
 import { MetaFormBuilder } from './../../forms-ui/meta-form-builder';
 import { DebugSettingsSchematic } from '../../settings.service';
@@ -60,7 +64,7 @@ export class SystemSettingsComponent implements OnInit {
     private settingsService: SettingsService,
     private router: Router
   ) {
-    console.log({group: this.settingsFormGroup});
+    console.log({ group: this.settingsFormGroup });
     // TODO use metadata to build form
     // const ss = new SystemSettings();
     // ss.enableImages = false;
@@ -109,5 +113,14 @@ export class SystemSettingsComponent implements OnInit {
     this.router
       .navigateByUrl('/')
       .then((s) => (window.location = window.location));
+  }
+
+  onResetSuppressedWarningsClick() {
+    this.settingsService.gun
+      .get('ui')
+      .get('suppressWarning')
+      .put({
+        browserIncompatible: false,
+      } as SuppressWarningSchema);
   }
 }

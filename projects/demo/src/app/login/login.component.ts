@@ -9,7 +9,6 @@ import { NgGunService } from 'ng-gun';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { AboutComponent } from '../components/about/about.component';
-import host from '@jsdevtools/host-environment';
 import { UserService } from '../user/user.service';
 import { NgGunSessionService } from 'ng-gun';
 import { LogService } from 'log';
@@ -32,7 +31,6 @@ import { IGunCryptoKeyPair } from 'gun/types/types';
 export class LoginComponent implements OnInit {
   error: any;
   submitted = false;
-  unsupportedBrowser = !(host.browser as any).chrome;
   onLine = false;
 
   onLine$ = from([
