@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { UserComponent } from './user.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { VectorsComponent } from './vectors/vectors.component';
 
 const routes: Routes = [
   {
@@ -32,7 +33,7 @@ const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: '/user/vectors',
+        component: VectorsComponent,
       },
       {
         path: '**',
